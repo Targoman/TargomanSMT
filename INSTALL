@@ -1,0 +1,9 @@
+
+Here is a brief guide on how to build Targoman SMTCore, tools and associated
+libraries.
+
+1 - Unpack.  This should give a top-level directory with the subdirectories
+    listed in README, as well as a few documentation files and a buildAndTest
+    script. For an overview of Targoman, see the documentation in Docs folder.
+
+2 - You need Qt v5.3 and above

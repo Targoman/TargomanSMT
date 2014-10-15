@@ -1,0 +1,15 @@
+Subdirectories of Targoman
+
+	Apps/		     Application derived from Targoman libraries
+	Apps/E4SMT           Essential for Statistical Machine trasnlation text processor
+	Apps/TargomanCmd     Command-line interface to Targoman
+        Apps/TargomanServer  Targoman Server which can be used by the documented API
+        CommonLibs           Commonly used libraries these are shared between different Targoman Apps
+        Docs                 Documantation related to Targoman
+        NLPLibs              All the NLP libraries used in Targoman
+        Scripts              Train, Tune, and other usefull scripts
+        SMTCore              Targoman SMT Core library
+        Test                 BlackBox Tests
+
+See INSTALL for build instructions.
+

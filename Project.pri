@@ -1,0 +1,106 @@
+################################################################################
+# Copyright © 2012-2014, Targoman.com
+#
+# Published under the terms of TCRL(Targoman Community Research License)
+# You can find a copy of the license file with distributed source or
+# download it from http://targoman.com/License.txt
+#
+################################################################################
+
+DependencyIncludePaths+=
+DependencyLibPaths+=
+Dependencies +=
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+CONFIG(debug, debug|release): DEFINES += TARGOMAN_SHOW_DEBUG=1
+DEFINES += TARGOMAN_DEBUG_PROCESS_LINE=1
+DEFINES += TARGOMAN_DEBUG_PROCESS_LINE_SHOW_FILE
+DEFINES += TARGOMAN_DEFAULT_DEBUG_LEVEL=7
+DEFINES += TARGOMAN_LOG_SYNC=1
+DEFINES += TARGOMAN_SHOW_LOG=1
+DEFINES += TARGOMAN_DEFAULT_ERROR_LEVEL=10
+DEFINES += TARGOMAN_ERROR_SHOW_FILE=1
+DEFINES += TARGOMAN_DEFAULT_WARNING_LEVEL=10
+DEFINES += TARGOMAN_WARNING_SHOW_FILE=1
+DEFINES += TARGOMAN_DEFAULT_INFO_LEVEL=10
+DEFINES += TARGOMAN_INFO_SHOW_FILE=1
+DEFINES += PROJ_VERSION=$$VERSION
+
+#############################################################################################
+#                     DO NOT CHANGE ANYTHING BELOW
+#############################################################################################
+
+!unix{
+  error("********* Compile on OS other than Linux is not ready yet")
+}
+
+isEmpty(PREFIX) {
+ PREFIX = $$(HOME)/local
+}
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+message("*********************   $$ProjectName CONFIG  ***************************** ")
+message("* Building $$ProjectName Ver. $$VERSION")
+message("* Base Out Path has been set to: $$BaseOutput/")
+message("* Install Path has been set to: $$PREFIX/")
+message("****************************************************************** ")
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+QT += core
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+LibFolderPattern        = ./lib
+LibIncludeFolderPattern = ./include
+BinFolderPattern        = ./bin
+BuildFolderPattern      = ./build
+TestBinFolder           = ./test
+
+BaseLibraryFolder        = $$BaseOutput/out/$$LibFolderPattern
+BaseLibraryIncludeFolder = $$BaseOutput/out/$$LibIncludeFolderPattern
+BaseBinFolder            = $$BaseOutput/out/$$BinFolderPattern
+BaseTestBinFolder        = $$BaseOutput/out/$$TestBinFolder
+BaseBuildFolder          = $$BaseOutput/out/$$BuildFolderPattern
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+INCLUDEPATH += $$BaseLibraryIncludeFolder \
+               $$(PREFIX)/include \
+               $$(DependencyIncludePaths)/
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+DependencyLibPaths      += $$BaseOutput/out/$$LibFolderPattern \
+                         $$BaseLibraryFolder
+FullDependencySearchPaths=   $$DependencyLibPaths
+
+unix {
+  DependencySearchPaths += $$(PREFIX)/lib \
+                           $$(PREFIX)/lib/lib
+
+  FullDependencySearchPaths+=  /usr/lib \
+                               /usr/lib64 \
+                               /usr/local/lib \
+                               /usr/local/lib64
+}
+
+QMAKE_LIBDIR +=  $$DependencyLibPaths
+
+for(Project, Dependencies) {
+  for(Path, FullDependencySearchPaths):isEmpty( Found ) {
+      message(Looking for $$Project in $$Path)
+      exists($$Path/lib$$Project*) {
+        Found = "TRUE"
+        message(-------------> $$Project Found!!!)
+      }
+      message("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-")
+  }
+  isEmpty( Found ) {
+    message("***********************************************************************************************")
+    message("!!!!!! $$ProjectName Depends on $$Project but not found ")
+    message("***********************************************************************************************")
+    error("")
+  }
+  Found = ""
+}
+
+
+for(Library, Dependencies):LIBS += -l$$Library
+
