@@ -14,16 +14,12 @@ Dependencies +=
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 CONFIG(debug, debug|release): DEFINES += TARGOMAN_SHOW_DEBUG=1
 DEFINES += TARGOMAN_DEBUG_PROCESS_LINE=1
-DEFINES += TARGOMAN_DEBUG_PROCESS_LINE_SHOW_FILE
-DEFINES += TARGOMAN_DEFAULT_DEBUG_LEVEL=7
+DEFINES += TARGOMAN_SHOW_WARNING=1
+DEFINES += TARGOMAN_SHOW_INFO=1
+DEFINES += TARGOMAN_SHOW_HAPPY=1
+
 DEFINES += TARGOMAN_LOG_SYNC=1
 DEFINES += TARGOMAN_SHOW_LOG=1
-DEFINES += TARGOMAN_DEFAULT_ERROR_LEVEL=10
-DEFINES += TARGOMAN_ERROR_SHOW_FILE=1
-DEFINES += TARGOMAN_DEFAULT_WARNING_LEVEL=10
-DEFINES += TARGOMAN_WARNING_SHOW_FILE=1
-DEFINES += TARGOMAN_DEFAULT_INFO_LEVEL=10
-DEFINES += TARGOMAN_INFO_SHOW_FILE=1
 DEFINES += PROJ_VERSION=$$VERSION
 
 #############################################################################################
@@ -39,6 +35,10 @@ isEmpty(PREFIX) {
 }
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+isEmpty(BasePath) {
+ BasePath = .
+}
+BaseOutput=$$BasePath/$$BaseOutput
 message("*********************   $$ProjectName CONFIG  ***************************** ")
 message("* Building $$ProjectName Ver. $$VERSION")
 message("* Base Out Path has been set to: $$BaseOutput/")
@@ -104,3 +104,18 @@ for(Project, Dependencies) {
 
 for(Library, Dependencies):LIBS += -l$$Library
 
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+defineTest(addSubdirs) {
+    for(subdirs, 1) {
+        entries = $$files($$subdirs)
+        for(entry, entries) {
+            name = $$replace(entry, [/\\\\], _)
+            SUBDIRS += $$name
+            eval ($${name}.subdir = $$entry)
+            for(dep, 2):eval ($${name}.depends += $$replace(dep, [/\\\\], _))
+            export ($${name}.subdir)
+            export ($${name}.depends)
+        }
+    }
+    export (SUBDIRS)
+}

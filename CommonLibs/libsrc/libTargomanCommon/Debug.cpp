@@ -15,6 +15,7 @@
 #include <link.h>
 
 #include "Macros.h"
+#include "Debug.h"
 
 typedef std::string (*delGetTargomanLibVersion)();
 
@@ -55,27 +56,23 @@ void printLoadedLibs()
     dl_iterate_phdr(targomanLinkedLibrariesCallback, NULL);
 }
 
-#ifdef TARGOMAN_DEFAULT_DEBUG_LEVEL
-quint8  TARGOMAN_DEBUG_LEVEL=TARGOMAN_DEFAULT_DEBUG_LEVEL;
-#else
-quint8  TARGOMAN_DEBUG_LEVEL=10;
-#endif
+void silent()
+{
+    OUTPUT_SETTINGS_DEBUG.setLevel(0);
+    OUTPUT_SETTINGS_HAPPY.setLevel(0);
+    OUTPUT_SETTINGS_INFO.setLevel(0);
+    OUTPUT_SETTINGS_WARNING.setLevel(0);
+//    OUTPUT_SETTINGS_ERROR.setLevel(0); //Error outputs must not be silented
+}
 
-#ifdef TARGOMAN_DEFAULT_ERROR_LEVEL
-quint8  TARGOMAN_ERROR_LEVEL=TARGOMAN_DEFAULT_ERROR_LEVEL;
-#else
-quint8  TARGOMAN_ERROR_LEVEL=10;
-#endif
-#ifdef TARGOMAN_DEFAULT_WARNINIG_LEVEL
-quint8  TARGOMAN_WARNING_LEVEL=TARGOMAN_DEFAULT_WARNINIG_LEVEL;
-#else
-quint8  TARGOMAN_WARNING_LEVEL=10;
-#endif
-#ifdef TARGOMAN_DEFAULT_INFO_LEVEL
-quint8  TARGOMAN_INFO_LEVEL=TARGOMAN_DEFAULT_INFO_LEVEL;
-#else
-quint8  TARGOMAN_INFO_LEVEL=10;
-#endif
+bool OUTPUT_SETTINGS_SHOWCOLORED = false;
+
+clsOutputInfo OUTPUT_SETTINGS_DEBUG;
+clsOutputInfo OUTPUT_SETTINGS_INFO;
+clsOutputInfo OUTPUT_SETTINGS_WARNING;
+clsOutputInfo OUTPUT_SETTINGS_HAPPY;
+clsOutputInfo OUTPUT_SETTINGS_ERROR;
+
 
 }
 }

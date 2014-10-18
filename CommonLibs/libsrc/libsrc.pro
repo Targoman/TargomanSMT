@@ -42,3 +42,10 @@ build_static {
     CONFIG+= staticlib
 }
 
+#QMAKE_EXTRA_TARGETS += copyheaders
+#POST_TARGETDEPS += copyheaders
+
+#unix {
+#    copyheaders.commands += mkdir -p $$BaseLibraryIncludeFolder/lib$$ProjectName
+#    copyheaders.commands += for h in lib$$ProjectName/*.h; do ln -s "$h" lnk"${t%.*}"; done
+#}

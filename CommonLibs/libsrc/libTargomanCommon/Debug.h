@@ -13,7 +13,8 @@
 #ifndef TARGOMAN_COMMON_DEBUG_H_
 #define TARGOMAN_COMMON_DEBUG_H_
 
-#include <QDebug>
+#include <QDateTime>
+#include <stdio.h>
 #include "libTargomanCommon/Macros.h"
 
 /********************************************************************************************
@@ -22,11 +23,72 @@
 namespace Targoman {
 namespace Common {
 
-extern short int  TARGOMAN_DEBUG_LEVEL;
-extern short int  TARGOMAN_ERROR_LEVEL;
-extern short int  TARGOMAN_WARNING_LEVEL;
-extern short int  TARGOMAN_INFO_LEVEL;
-extern bool       TARGOMAN_COLORED;
+class clsOutputInfo{
+public:
+    clsOutputInfo(){
+        this->Details = 0xFF;
+    }
+
+    inline bool canBeShown(quint8 _level){
+        return (this->Details & 0x0F) >= _level;
+    }
+
+    inline void setLevel(quint8 _level){
+        this->Details = (this->Details & 0xF0) + _level;
+    }
+
+    inline void setDetails(bool _time = false, bool _func = false, bool _line = false, bool _file = false) {
+        this->Details &= 0x0F;
+        if(_time)
+            this->Details |= 0x10;
+        if(_func)
+            this->Details |= 0x40;
+        if(_file)
+            this->Details |= 0x20;
+        if(_line)
+            this->Details |= 0x80;
+    }
+
+    inline void set(quint8 _level, bool _time = false, bool _func = false, bool _line = false, bool _file = false) {
+        this->Details = _level;
+        if(_time)
+            this->Details |= 0x10;
+        if(_func)
+            this->Details |= 0x40;
+        if(_file)
+            this->Details |= 0x20;
+        if(_line)
+            this->Details |= 0x80;
+    }
+
+    inline QString details(const char* _function, const char* _file, quint16 _line){
+        QString OutStr;
+        OutStr +=  (this->Details & 0x10 ?
+                    QString("[" + QDateTime().currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]") :
+                    QString(""));
+        if (this->Details & 0x60){
+            OutStr += "[";
+            if (this->Details & 0x20)
+                    OutStr +=  QString(" %1 %2").arg(_file).arg(this->Details & 0xC0 ? ":" : "");
+            if (this->Details & 0x40)
+                    OutStr +=  QString(" %1 ").arg(_function);
+            OutStr += QString(":%1").arg(_line);
+        }
+
+        return OutStr + " ]";
+    }
+
+private:
+    quint8 Details; //0-15: Levels, 0x10:TimeStamp, 0x20: File, 0x40: Func, 0x80: Line
+};
+
+extern clsOutputInfo OUTPUT_SETTINGS_DEBUG;
+extern clsOutputInfo OUTPUT_SETTINGS_INFO;
+extern clsOutputInfo OUTPUT_SETTINGS_WARNING;
+extern clsOutputInfo OUTPUT_SETTINGS_HAPPY;
+extern clsOutputInfo OUTPUT_SETTINGS_ERROR;
+
+extern bool       OUTPUT_SETTINGS_SHOWCOLORED;
 
 #if TARGOMAN_SHOW_DEBUG
   void printLoadedLibs();
@@ -35,7 +97,7 @@ extern bool       TARGOMAN_COLORED;
   #define printLoadedLibs dummyPrintLoadedLibs
 #endif
 
-#define TARGOMANDBG_ALLWAYS 1
+  void silent();
 }
 }
 /********************************************************************************************
@@ -59,129 +121,101 @@ extern bool       TARGOMAN_COLORED;
 #define TARGOMAN_OUTPUT_BLINKING_CYAN      "\033[5;25;36m"
 #define TARGOMAN_OUTPUT_BLINKING_WHITE     "\033[5;25;37m"
 
-#define TARGOMAN_COLOR_DEBUG    (TARGOMAN_COLORED ? TARGOMAN_OUTPUT_COLOR_MAGENTA : TARGOMAN_OUTPUT_RESET)
-#define TARGOMAN_COLOR_ERROR    (TARGOMAN_COLORED ? TARGOMAN_OUTPUT_BLINKING_RED : TARGOMAN_OUTPUT_RESET)
-#define TARGOMAN_COLOR_WARNING  (TARGOMAN_COLORED ? TARGOMAN_OUTPUT_COLOR_YELLOW : TARGOMAN_OUTPUT_RESET)
-#define TARGOMAN_COLOR_INFO     (TARGOMAN_COLORED ? TARGOMAN_OUTPUT_COLOR_BLUE : TARGOMAN_OUTPUT_RESET)
-#define TARGOMAN_COLOR_NORMAL   (TARGOMAN_COLORED ? TARGOMAN_OUTPUT_RESET : TARGOMAN_OUTPUT_RESET)
-#define TARGOMAN_COLOR_HAPPY    (TARGOMAN_COLORED ? TARGOMAN_OUTPUT_COLOR_GREEN : TARGOMAN_OUTPUT_RESET)
+#define TARGOMAN_COLOR_DEBUG    (Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED ? TARGOMAN_OUTPUT_COLOR_MAGENTA : "" )
+#define TARGOMAN_COLOR_ERROR    (Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED ? TARGOMAN_OUTPUT_BLINKING_RED : "" )
+#define TARGOMAN_COLOR_WARNING  (Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED ? TARGOMAN_OUTPUT_COLOR_YELLOW : "" )
+#define TARGOMAN_COLOR_INFO     (Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED ? TARGOMAN_OUTPUT_COLOR_BLUE : "" )
+#define TARGOMAN_COLOR_NORMAL   (Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED ? TARGOMAN_OUTPUT_RESET : "" )
+#define TARGOMAN_COLOR_HAPPY    (Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED ? TARGOMAN_OUTPUT_COLOR_GREEN : "" )
 
 /********************************************************************************************
  * Debugging Macros
  ********************************************************************************************/
 #if TARGOMAN_SHOW_DEBUG
-  #if TARGOMAN_DEBUG_PROCESS_LINE
-    #if TARGOMAN_DEBUG_PROCESS_LINE_SHOW_FILE
-        #define TARGOMAN_DEBUG_CAUSE __FUNCTION__
-    #else
-        #define TARGOMAN_DEBUG_CAUSE Q_FUNC_INFO
-    #endif
+    #if TARGOMAN_DEBUG_PROCESS_LINE
 
-    #define TargomanDebugLine  {if (Targoman::Common::TARGOMAN_DEBUG_LEVEL > 7) \
-        {qDebug("+++> [ %s : %d ][8] Processed!", TARGOMAN_DEBUG_CAUSE,__LINE__);}}
+      #define TargomanDebugLine  {if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(7)) \
+          {qDebug("%s+++> %s [8] %sProcessed!", TARGOMAN_COLOR_DEBUG, \
+                Targoman::Common::OUTPUT_SETTINGS_DEBUG.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+                TARGOMAN_COLOR_NORMAL);}}
+    #else
+      #define TargomanDebugLine {}
+    #endif
 
     #define TargomanDebug_Multi(_debugLevel,_fmt,...) \
-    {fprintf( stderr,TARGOMAN_OUTPUT_COLOR_MAGENTA"+++> [ %s : %d ][%d]: " _fmt ""TARGOMAN_OUTPUT_RESET, \
-      TARGOMAN_DEBUG_CAUSE,__LINE__, _debugLevel, __VA_ARGS__);}
+    {fprintf(stderr,"%s+++> %s[%d]: %s" _fmt "\n",TARGOMAN_OUTPUT_COLOR_MAGENTA, \
+        Targoman::Common::OUTPUT_SETTINGS_DEBUG.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+        _debugLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
 
     #define TargomanDebug_Single(_debugLevel,_lbl) \
-    {fprintf( stderr,TARGOMAN_OUTPUT_COLOR_MAGENTA"+++> [ %s : %d ][%d]: %s"TARGOMAN_OUTPUT_RESET, TARGOMAN_DEBUG_CAUSE,__LINE__, _debugLevel, _lbl);}
+    {fprintf(stderr,"%s+++> %s[%d]: %s%s\n", TARGOMAN_COLOR_DEBUG, \
+        Targoman::Common::OUTPUT_SETTINGS_DEBUG.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+         _debugLevel, _lbl, TARGOMAN_COLOR_NORMAL);}
 
-    #define TargomanDebug_None(_debugLevel) \
-    cerr<<TARGOMAN_COLOR_DEBUG"+++> [ "<<TARGOMAN_DEBUG_CAUSE<<" : "<<__LINE__<<" ]["<<_debugLevel<<"]: "<<TARGOMAN_OUTPUT_RESET
-
-    #define TargomanDebug(_debugLevel,...) {PRINT_THIS_POINTER \
-        {if (Targoman::Common::TARGOMAN_DEBUG_LEVEL >= _debugLevel){ \
+    #define TargomanDebug(_debugLevel,...) { \
+        {if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(_debugLevel)){ \
             TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanDebug_,__VA_ARGS__)(_debugLevel, __VA_ARGS__)}}}
-
-    #define TargomanDebugAbstract(_debugLevel,...) \
-        {if (Targoman::Common::TARGOMAN_DEBUG_LEVEL >= _debugLevel){ \
-            TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanDebug_,__VA_ARGS__)(_debugLevel, __VA_ARGS__)}}
-
-  #else
-    #define TargomanDebugLine {}
+#else
     #define TargomanDebug(_debugLevel, ...) {}
-    #define TargomanDebugAbstract(_debugLevel,...) {}
-  #endif
-#else
-    #define TargomanDebugLine {}
-    #define TargomanDebug(_debugLevel, ...) {}
-    #define TargomanDebugAbstract(_debugLevel,...) {}
 #endif
 
-#if TARGOMAN_DEFAULT_ERROR_LEVEL
-    #if TARGOMAN_ERROR_SHOW_FILE
-        #define TARGOMAN_ERROR_CAUSE __FILE__
-    #else
-        #define TARGOMAN_ERROR_CAUSE Q_FUNC_INFO
+#define TargomanError_Multi(_fmt,...)\
+    {fprintf(stderr,"%s%s[ERROR][-] %s" _fmt "\n", TARGOMAN_COLOR_ERROR, \
+        Targoman::Common::OUTPUT_SETTINGS_ERROR.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+        TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
+#define TargomanError_Single(_lbl)\
+    {fprintf(stderr,"%s%s[ERROR][-] %s%s\n", TARGOMAN_COLOR_ERROR, \
+        Targoman::Common::OUTPUT_SETTINGS_ERROR.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+        _lbl, TARGOMAN_COLOR_NORMAL);}
 
-    #endif
-    #define TargomanError_Multi(_fmt,...)\
-        {qCritical("[ %s : %d ][ERROR][%d] " _fmt "", TARGOMAN_ERROR_CAUSE,__LINE__, Targoman::Common::TARGOMAN_ERROR_LEVEL, __VA_ARGS__);}
-    #define TargomanError_Single(_lbl)\
-        {qCritical("[ %s : %d ][ERROR][%d] %s", TARGOMAN_ERROR_CAUSE,__LINE__, Targoman::Common::TARGOMAN_ERROR_LEVEL, _lbl);}
+#define TargomanError(...)  {TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanError_,__VA_ARGS__)(__VA_ARGS__)}
 
-    #define TargomanError(...)  {TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanError_,__VA_ARGS__)(__VA_ARGS__)}
+#if TARGOMAN_SHOW_WARNING
+    #define TargomanWarn_Multi(_warnLevel,_fmt,...)\
+        {fprintf(stderr,"%s%s[WARN][%d] %s" _fmt "\n", TARGOMAN_COLOR_WARNING, \
+            Targoman::Common::OUTPUT_SETTINGS_WARNING.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+            _warnLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
+    #define TargomanWarn_Single(_warnLevel,_lbl)\
+        {fprintf(stderr,"%s%s[WARN][%d] %s%s\n", TARGOMAN_COLOR_WARNING,  \
+            Targoman::Common::OUTPUT_SETTINGS_WARNING.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+            _warnLevel, TARGOMAN_COLOR_NORMAL, _lbl);}
 
+    #define TargomanWarn(_warnLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_WARNING.canBeShown(_warnLevel)) {\
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanWarn_,__VA_ARGS__)(_warnLevel, __VA_ARGS__)}}
 #else
-    #define TargomanError(...) ;
+    #define TargomanWarn(_warnLevel,...) ;
 #endif
 
-#if TARGOMAN_DEFAULT_WARNING_LEVEL
-    #if TARGOMAN_WARNING_SHOW_FILE
-        #define TARGOMAN_WARNING_CAUSE __FILE__
-    #else
-        #define TARGOMAN_WARNING_CAUSE Q_FUNC_INFO
+#if TARGOMAN_SHOW_INFO
+    #define TargomanInfo_Multi(_infoLevel,_fmt,...)\
+        {fprintf(stderr,"%s%s[INFO][%d] %s" _fmt "\n", TARGOMAN_COLOR_INFO, \
+            Targoman::Common::OUTPUT_SETTINGS_INFO.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+            _infoLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
+    #define TargomanInfo_Single(_infoLevel,_lbl)\
+        {fprintf(stderr,"%s%s[INFO][%d] %s%s\n", TARGOMAN_COLOR_INFO, \
+            Targoman::Common::OUTPUT_SETTINGS_INFO.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+            _infoLevel, TARGOMAN_COLOR_NORMAL, _lbl);}
 
-    #endif
-    #define TARGOMANWarn_Multi(_warnLevel,_fmt,...)\
-        {qWarning("[ %s : %d ][WARN][%d] " _fmt "", TARGOMAN_WARNING_CAUSE,__LINE__, _warnLevel, __VA_ARGS__);}
-    #define TARGOMANWarn_Single(_warnLevel,_lbl)\
-        {qWarning("[ %s : %d ][WARN][%d] %s", TARGOMAN_WARNING_CAUSE,__LINE__, _warnLevel, _lbl);}
-
-    #define TARGOMANWarn(_warnLevel,...)  {if (Targoman::Common::TARGOMAN_WARNING_LEVEL >= _warnLevel) {\
-        TARGOMAN_MACRO_ARG_BASED_FUNC(TARGOMANWarn_,__VA_ARGS__)(_warnLevel, __VA_ARGS__)}}
-
-#else
-    #define TARGOMANWarn(_warnLevel,...) ;
-#endif
-
-#if TARGOMAN_DEFAULT_INFO_LEVEL
-    #if TARGOMAN_INFO_SHOW_FILE
-        #define TARGOMAN_INFO_CAUSE __FILE__
-    #else
-        #define TARGOMAN_INFO_CAUSE Q_FUNC_INFO
-
-    #endif
-    #define TARGOMANInfo_Multi(_infoLevel,_fmt,...)\
-        {printf("[ %s : %d ][INFO][%d] " _fmt "\n", TARGOMAN_INFO_CAUSE,__LINE__, _infoLevel, __VA_ARGS__);}
-    #define TARGOMANInfo_Single(_infoLevel,_lbl)\
-        {printf("[ %s : %d ][INFO][%d] %s\n", TARGOMAN_INFO_CAUSE,__LINE__, _infoLevel, _lbl);}
-
-    #define TARGOMANInfo(_infoLevel,...)  {if (Targoman::Common::TARGOMAN_INFO_LEVEL >= _infoLevel) {\
-        TARGOMAN_MACRO_ARG_BASED_FUNC(TARGOMANInfo_,__VA_ARGS__)(_infoLevel,__VA_ARGS__)}}
-
+    #define TargomanInfo(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_INFO.canBeShown(_infoLevel)) {\
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanInfo_,__VA_ARGS__)(_infoLevel, __VA_ARGS__)}}
 #else
     #define TargomanInfo(_infoLevel,...) ;
 #endif
 
-#if TARGOMAN_DEFAULT_INFO_LEVEL
-  #if TARGOMAN_INFO_SHOW_FILE
-    #define TARGOMAN_INFO_CAUSE __FILE__
-  #else
-    #define TARGOMAN_INFO_CAUSE Q_FUNC_INFO
-  #endif
+#if TARGOMAN_SHOW_HAPPY
+    #define TargomanHappy_Multi(_happyLevel,_fmt,...)\
+        {fprintf(stderr,"%s%s[HAPPY][%d] %s" _fmt "\n", TARGOMAN_COLOR_HAPPY, \
+            Targoman::Common::OUTPUT_SETTINGS_HAPPY.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+            _happyLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
+    #define TargomanHappy_Single(_happyLevel,_lbl)\
+        {fprintf(stderr,"%s%s[HAPPY][%d] %s%s\n", TARGOMAN_COLOR_HAPPY, \
+            Targoman::Common::OUTPUT_SETTINGS_HAPPY.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+            _happyLevel, TARGOMAN_COLOR_NORMAL, _lbl);}
 
-  #define TARGOMANInfo_Multi(_infoLevel,_fmt,...)\
-  {printf("[ %s : %d ][INFO][%d] " _fmt "\n", TARGOMAN_INFO_CAUSE,__LINE__, _infoLevel, __VA_ARGS__);}
-  #define TARGOMANInfo_Single(_infoLevel,_lbl)\
-  {printf("[ %s : %d ][INFO][%d] %s\n", TARGOMAN_INFO_CAUSE,__LINE__, _infoLevel, _lbl);}
-
-  #define TARGOMANInfo(_infoLevel,...)  {if (Targoman::Common::TARGOMAN_INFO_LEVEL >= _infoLevel) {\
-  TARGOMAN_MACRO_ARG_BASED_FUNC(TARGOMANInfo_,__VA_ARGS__)(_infoLevel,__VA_ARGS__)}}
-
+    #define TargomanHappy(_happyLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_HAPPY.canBeShown(_happyLevel)) {\
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanHappy_,__VA_ARGS__)(_happyLevel, __VA_ARGS__)}}
 #else
-  #define TargomanInfo(_infoLevel,...) ;
+    #define TargomanHappy(_happyLevel,...) ;
 #endif
 
 #endif /* TARGOMAN_COMMON_DEBUG_H_ */

@@ -26,9 +26,9 @@ bool clsSafeCoreApplication::notify(QObject * _object, QEvent * _ev)
     try{
         return QCoreApplication::notify(_object, _ev);
     } catch (Targoman::Common::exTargomanBase &ex) {
-        TargomanError("Fatal Error at Application scope: %s", qPrintable(ex.what()));
+        //TargomanError("Fatal Error at Application scope: %s", qPrintable(ex.what()));
     } catch (...) {
-        TargomanError("Fatal Unrecognized Exception occured at application scope. Seems like a bug.");
+        //TargomanError("Fatal Unrecognized Exception occured at application scope. Seems like a bug.");
     }
 
     return false;

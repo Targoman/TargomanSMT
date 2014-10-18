@@ -18,6 +18,7 @@ include ($$ConfigFile)
 TEMPLATE = subdirs
 CONFIG += ordered
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-SUBDIRS = libsrc \
-          test \
-          unitTest
+addSubdirs(libsrc)
+addSubdirs(test, libsrc)
+addSubdirs(unitTest, libsrc)
+
