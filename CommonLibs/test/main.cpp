@@ -10,7 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "libTargomanCommon/Debug.h"
+#include "libTargomanCommon/CmdIO.h"
+#include "libTargomanCommon/Logger.h"
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 #include "libTargomanCommon/Macros.h"
@@ -25,11 +26,11 @@ public:
   exSample(const QString& _message, int _line) throw () :
     exTargomanBase(_message, _line)
   {
-    this->Message.append(">exSample: ");
+    this->Message.append(" >;exSample:");
   }
 };
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exSample2, exSample)
+TARGOMAN_ADD_EXCEPTION_HANDLER(exSample2, exSample);
 
 class clsSample
 {
@@ -54,50 +55,93 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
 "Val3"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
+void checkOutput()
+{
+    TargomanDebugLine
+    TargomanDebug(6,"DEBUG");
+    TargomanDebug(5,"%s b=%d","DEBUG",2);
+    TargomanInlineDebug(5,"Checking...");
+    TargomanFinishInlineDebug(TARGOMAN_COLOR_HAPPY,"Ok");
+
+    TargomanWarn(6,"Warn");
+    TargomanWarn(5,"%s b=%d","Warn",2);
+
+    TargomanInfo(6,"Info");
+    TargomanInfo(5,"%s b=%d","Info",2);
+    TargomanInlineInfo(5,"Checking...");
+    TargomanFinishInlineInfo(TARGOMAN_COLOR_ERROR,"Failed");
+
+    TargomanOut(6,"Normal");
+    TargomanOut(5,"%s b=%d","Normal",2);
+    TargomanInlineOut(5,"Checking...");
+    TargomanFinishInlineOut(TARGOMAN_COLOR_WARNING,"Warn");
+
+    TargomanHappy(6,"Happy");
+    TargomanHappy(5,"%s b=%d","Happy",2);
+
+    TargomanError("Error");
+    TargomanError("%s b=%d","Error",2);
+}
 
 int main(int argc, char *argv[])
 {
   Targoman::Common::printLoadedLibs();
 
-//  QString ActorUUID;
+  QString ActorUUID;
 
-//  ETSLOG_REGISTER_ACTOR("testLibDefinition");
+  TARGOMAN_REGISTER_ACTOR("testLibCommon");
   OUTPUT_SETTINGS_DEBUG.set(10,true,true,true,true);
   OUTPUT_SETTINGS_ERROR.set(10,true,true,true,true);
   OUTPUT_SETTINGS_WARNING.set(10,true,true,true,true);
   OUTPUT_SETTINGS_INFO.set(10,true,true,true,true);
   OUTPUT_SETTINGS_HAPPY.set(10,true,true,true,true);
+  Targoman::Common::Logger::instance()->init("log.log");
+
+  Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = false;
+  checkOutput();
   Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = true;
-//  ETSLOG_INIT("log.log",5);
+  checkOutput();
+  Targoman::Common::silent();
+  qDebug("************************* Silented");
+  checkOutput();
+  qDebug("************************* After Silence");
 
-  TargomanDebugLine
-  TargomanDebug(5,"DEBUG");
-  TargomanDebug(5,"%s b=%d","DEBUG",2);
+  OUTPUT_SETTINGS_DEBUG.set(5,true);
+  OUTPUT_SETTINGS_ERROR.set(5,true);
+  OUTPUT_SETTINGS_WARNING.set(5,true);
+  OUTPUT_SETTINGS_INFO.set(5,true);
+  OUTPUT_SETTINGS_HAPPY.set(5,true);
+  OUTPUT_SETTINGS_NORMAL.set(5,true);
 
-  TargomanWarn(5,"Warn");
-  TargomanWarn(5,"%s b=%d","Warn",2);
+  checkOutput();
 
-  TargomanInfo(5,"Info");
-  TargomanInfo(5,"%s b=%d","Info",2);
-
-  TargomanHappy(5,"Happy");
-  TargomanHappy(5,"%s b=%d","Happy",2);
-
-  TargomanError("Error");
-  TargomanError("%s b=%d","Error",2);
 
   clsSample Sample;
 
   clsSafeCoreApplication App(argc, argv);
 
-//  ETSLOG_WARN(5, "After Log")
+  TargomanLogWarn(5, " Log Warn");
+  TargomanLogInfo(5, " Log Info");
+  TargomanLogHappy(5, " Log Happy");
+  TargomanLogDebug(5, " Log Debug");
+  TargomanLogError(" Log Error");
+
+
   try{
-    throw exSample2("Hello Wolrd");
+    throw exSample2("Hello Wolrd to exception");
     throw exSample("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ", __LINE__);
   }catch (exSample& e){
-    TargomanError(" Sample: %s", qPrintable(e.what()));
+    TargomanError(" %s", qPrintable(e.what()));
   }catch (exTargomanBase& e){
-    TargomanError(" Base: %s", qPrintable(e.what()));
+    TargomanError(" %s", qPrintable(e.what()));
+  }
+
+  try{
+    throw exTargomanInvalidParameter("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ", __LINE__);
+  }catch (exSample& e){
+    TargomanError(" %s", qPrintable(e.what()));
+  }catch (exTargomanBase& e){
+    TargomanError(" %s", qPrintable(e.what()));
   }
 /**/
   //  return a.exec();*/

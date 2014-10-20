@@ -16,7 +16,7 @@
 #include <qtconcurrentexception.h>
 #include <QString>
 
-#include "libTargomanCommon/Debug.h"
+#include "libTargomanCommon/CmdIO.h"
 
 namespace Targoman {
 namespace Common {
@@ -28,8 +28,8 @@ namespace Common {
     class _name : public _base{\
     public: _name (const QString& _message = "", int _line = 0) : \
             _base (_message, _line){ \
-    this->Message.append(">;"TARGOMAN_M2STR(_name));\
-    }};
+    this->Message.append(" >;"TARGOMAN_M2STR(_name));\
+    }}
 
 /**
  * @exception exTargomanBase

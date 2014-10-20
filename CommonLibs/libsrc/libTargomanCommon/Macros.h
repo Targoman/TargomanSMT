@@ -76,7 +76,7 @@
 #define TARGOMAN_MACRO_ARG_REST(_arg, ...) __VA_ARGS__
 
 /********************************************************************************************
- * Predefined functions. This function must be included in all libraries.
+ * Predefined functions. This macro must be included in all libraries.
  ********************************************************************************************/
 #define TARGOMAN_LIBRARY_VERSION \
 extern "C" std::string getETSLibVersion() { \

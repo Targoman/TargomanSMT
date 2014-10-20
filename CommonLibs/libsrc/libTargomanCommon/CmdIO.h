@@ -23,10 +23,11 @@
 namespace Targoman {
 namespace Common {
 
-class clsOutputInfo{
+class clsOutputSettings{
 public:
-    clsOutputInfo(){
+    clsOutputSettings(){
         this->Details = 0xFF;
+
     }
 
     inline bool canBeShown(quint8 _level){
@@ -79,14 +80,16 @@ public:
     }
 
 private:
-    quint8 Details; //0-15: Levels, 0x10:TimeStamp, 0x20: File, 0x40: Func, 0x80: Line
+    quint8 Details; //0-7: Levels, 0x10:TimeStamp, 0x20: File, 0x40: Func, 0x80: Line
 };
 
-extern clsOutputInfo OUTPUT_SETTINGS_DEBUG;
-extern clsOutputInfo OUTPUT_SETTINGS_INFO;
-extern clsOutputInfo OUTPUT_SETTINGS_WARNING;
-extern clsOutputInfo OUTPUT_SETTINGS_HAPPY;
-extern clsOutputInfo OUTPUT_SETTINGS_ERROR;
+extern clsOutputSettings OUTPUT_SETTINGS_DEBUG;
+extern clsOutputSettings OUTPUT_SETTINGS_INFO;
+extern clsOutputSettings OUTPUT_SETTINGS_WARNING;
+extern clsOutputSettings OUTPUT_SETTINGS_HAPPY;
+extern clsOutputSettings OUTPUT_SETTINGS_ERROR;
+extern clsOutputSettings OUTPUT_SETTINGS_NORMAL;
+
 
 extern bool       OUTPUT_SETTINGS_SHOWCOLORED;
 
@@ -135,28 +138,40 @@ extern bool       OUTPUT_SETTINGS_SHOWCOLORED;
     #if TARGOMAN_DEBUG_PROCESS_LINE
 
       #define TargomanDebugLine  {if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(7)) \
-          {qDebug("%s+++> %s [8] %sProcessed!", TARGOMAN_COLOR_DEBUG, \
+          {fprintf(stderr,"%s+++> %s[8] %sProcessed!\n", TARGOMAN_COLOR_DEBUG, \
                 Targoman::Common::OUTPUT_SETTINGS_DEBUG.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
                 TARGOMAN_COLOR_NORMAL);}}
     #else
       #define TargomanDebugLine {}
     #endif
 
-    #define TargomanDebug_Multi(_debugLevel,_fmt,...) \
-    {fprintf(stderr,"%s+++> %s[%d]: %s" _fmt "\n",TARGOMAN_OUTPUT_COLOR_MAGENTA, \
+    #define TargomanDebug_Multi(_debugLevel,_newline,_fmt,...) \
+    {fprintf(stderr,"%s+++> %s[%d]: %s" _fmt _newline,TARGOMAN_COLOR_DEBUG, \
         Targoman::Common::OUTPUT_SETTINGS_DEBUG.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
         _debugLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
 
-    #define TargomanDebug_Single(_debugLevel,_lbl) \
-    {fprintf(stderr,"%s+++> %s[%d]: %s%s\n", TARGOMAN_COLOR_DEBUG, \
+    #define TargomanDebug_Single(_debugLevel,_newline,_lbl) \
+    {fprintf(stderr,"%s+++> %s[%d]: %s%s"_newline, TARGOMAN_COLOR_DEBUG, \
         Targoman::Common::OUTPUT_SETTINGS_DEBUG.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
          _debugLevel, _lbl, TARGOMAN_COLOR_NORMAL);}
 
     #define TargomanDebug(_debugLevel,...) { \
         {if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(_debugLevel)){ \
-            TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanDebug_,__VA_ARGS__)(_debugLevel, __VA_ARGS__)}}}
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanDebug_,__VA_ARGS__)(_debugLevel, "\n",__VA_ARGS__)}}}
+
+    #define TargomanInlineDebug(_debugLevel,...) { \
+        {if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(_debugLevel)){ \
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanDebug_,__VA_ARGS__)(_debugLevel,"",__VA_ARGS__)}}}
+
+    #define TargomanFinishInlineDebug(_colorType, _lbl) {\
+        if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(1)) \
+        fprintf(stderr,"%s[%s]%s\n", _colorType, _lbl,TARGOMAN_COLOR_NORMAL);}
+
 #else
     #define TargomanDebug(_debugLevel, ...) {}
+    #define TargomanInlineDebug(_debugLevel, ...) {}
+    #define TargomanFinishInlineDebug(_color, _lbl) {}
+
 #endif
 
 #define TargomanError_Multi(_fmt,...)\
@@ -183,39 +198,72 @@ extern bool       OUTPUT_SETTINGS_SHOWCOLORED;
     #define TargomanWarn(_warnLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_WARNING.canBeShown(_warnLevel)) {\
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanWarn_,__VA_ARGS__)(_warnLevel, __VA_ARGS__)}}
 #else
-    #define TargomanWarn(_warnLevel,...) ;
+    #define TargomanWarn(_warnLevel,...) {}
 #endif
 
 #if TARGOMAN_SHOW_INFO
-    #define TargomanInfo_Multi(_infoLevel,_fmt,...)\
-        {fprintf(stderr,"%s%s[INFO][%d] %s" _fmt "\n", TARGOMAN_COLOR_INFO, \
+    #define TargomanInfo_Multi(_infoLevel,_newline,_fmt,...)\
+        {fprintf(stdout,"%s%s[INFO][%d] %s" _fmt _newline, TARGOMAN_COLOR_INFO, \
             Targoman::Common::OUTPUT_SETTINGS_INFO.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
             _infoLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
-    #define TargomanInfo_Single(_infoLevel,_lbl)\
-        {fprintf(stderr,"%s%s[INFO][%d] %s%s\n", TARGOMAN_COLOR_INFO, \
+    #define TargomanInfo_Single(_infoLevel,_newline,_lbl)\
+        {fprintf(stdout,"%s%s[INFO][%d] %s%s"_newline, TARGOMAN_COLOR_INFO, \
             Targoman::Common::OUTPUT_SETTINGS_INFO.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
             _infoLevel, TARGOMAN_COLOR_NORMAL, _lbl);}
 
     #define TargomanInfo(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_INFO.canBeShown(_infoLevel)) {\
-        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanInfo_,__VA_ARGS__)(_infoLevel, __VA_ARGS__)}}
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanInfo_,__VA_ARGS__)(_infoLevel, "\n",__VA_ARGS__)}}
+    #define TargomanInlineInfo(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_INFO.canBeShown(_infoLevel)) {\
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanInfo_,__VA_ARGS__)(_infoLevel, "",__VA_ARGS__)}}
+
+    #define TargomanFinishInlineInfo(_colorType, _lbl) {\
+        if (Targoman::Common::OUTPUT_SETTINGS_INFO.canBeShown(1))   \
+            fprintf(stdout,"%s[%s]%s\n", _colorType, _lbl,TARGOMAN_COLOR_NORMAL);}
 #else
-    #define TargomanInfo(_infoLevel,...) ;
+    #define TargomanInfo(_infoLevel,...) {}
+    #define TargomanInlineInfo(_infoLevel,...) {}
+    #define TargomanFinishInlineInfo(_color, _lbl) {}
+#endif
+
+#if TARGOMAN_SHOW_NORMAL
+    #define TargomanOut_Multi(_infoLevel,_newline,_fmt,...)\
+        {fprintf(stdout,"%s[NORMAL][%d] " _fmt _newline, \
+            Targoman::Common::OUTPUT_SETTINGS_NORMAL.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+            _infoLevel,  __VA_ARGS__);}
+    #define TargomanOut_Single(_infoLevel,_newline,_lbl)\
+        {fprintf(stdout,"%s[NORMAL][%d] %s"_newline,  \
+            Targoman::Common::OUTPUT_SETTINGS_NORMAL.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
+            _infoLevel,  _lbl);}
+
+    #define TargomanOut(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_NORMAL.canBeShown(_infoLevel)) {\
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanOut_,__VA_ARGS__)(_infoLevel, "\n",__VA_ARGS__)}}
+    #define TargomanInlineOut(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_NORMAL.canBeShown(_infoLevel)) {\
+        TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanOut_,__VA_ARGS__)(_infoLevel, "",__VA_ARGS__)}}
+
+    #define TargomanFinishInlineOut(_colorType, _lbl) {\
+        if (Targoman::Common::OUTPUT_SETTINGS_NORMAL.canBeShown(1)) \
+            fprintf(stdout,"%s[%s]%s\n", _colorType, _lbl,TARGOMAN_COLOR_NORMAL);}
+#else
+    #define TargomanOut(_infoLevel,...) {}
+    #define TargomanInlineOut(_infoLevel,...) {}
+    #define TargomanFinishInlineOut(_color, _lbl) {}
 #endif
 
 #if TARGOMAN_SHOW_HAPPY
     #define TargomanHappy_Multi(_happyLevel,_fmt,...)\
-        {fprintf(stderr,"%s%s[HAPPY][%d] %s" _fmt "\n", TARGOMAN_COLOR_HAPPY, \
+        {fprintf(stdout,"%s%s[HAPPY][%d] %s" _fmt "\n", TARGOMAN_COLOR_HAPPY, \
             Targoman::Common::OUTPUT_SETTINGS_HAPPY.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
             _happyLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
     #define TargomanHappy_Single(_happyLevel,_lbl)\
-        {fprintf(stderr,"%s%s[HAPPY][%d] %s%s\n", TARGOMAN_COLOR_HAPPY, \
+        {fprintf(stdout,"%s%s[HAPPY][%d] %s%s\n", TARGOMAN_COLOR_HAPPY, \
             Targoman::Common::OUTPUT_SETTINGS_HAPPY.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
             _happyLevel, TARGOMAN_COLOR_NORMAL, _lbl);}
 
     #define TargomanHappy(_happyLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_HAPPY.canBeShown(_happyLevel)) {\
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanHappy_,__VA_ARGS__)(_happyLevel, __VA_ARGS__)}}
 #else
-    #define TargomanHappy(_happyLevel,...) ;
+    #define TargomanHappy(_happyLevel,...) {}
 #endif
+
 
 #endif /* TARGOMAN_COMMON_DEBUG_H_ */

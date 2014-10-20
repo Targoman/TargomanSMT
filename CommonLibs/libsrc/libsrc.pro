@@ -11,14 +11,17 @@ BasePath = ".."
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Macros.h \
-    libTargomanCommon/Debug.h \
-    libTargomanCommon/clsSafeCoreApplication.h
+    libTargomanCommon/clsSafeCoreApplication.h \
+    libTargomanCommon/CmdIO.h \
+    libTargomanCommon/Logger.h \
+    libTargomanCommon/Private/Logger_p.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
     libTargomanCommon/exTargomanBase.cpp \
-    libTargomanCommon/Debug.cpp \
-    libTargomanCommon/clsSafeCoreApplication.cpp
+    libTargomanCommon/clsSafeCoreApplication.cpp \
+    libTargomanCommon/CmdIO.cpp \
+    libTargomanCommon/Logger.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

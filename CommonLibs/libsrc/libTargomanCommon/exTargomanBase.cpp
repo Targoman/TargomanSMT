@@ -10,7 +10,6 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "Debug.h"
 #include "exTargomanBase.h"
 
 namespace Targoman {
