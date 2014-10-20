@@ -9,10 +9,12 @@
 BasePath = ".."
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-HEADERS +=
+HEADERS += \
+    UnitTest.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-SOURCES += libID.cpp
+SOURCES += \
+    UnitTest.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
@@ -23,20 +25,12 @@ error("**** libsrc: Unable to find Configuration file $$ConfigFile ****")
 }
 include ($$ConfigFile)
 
-TEMPLATE = lib
-TARGET = $$ProjectName
-DESTDIR = $$BaseLibraryFolder
+TEMPLATE = app
+CONFIG += qtestlib
+TARGET = unitTest_$$ProjectName
+DESTDIR = $$BaseTestBinFolder
 OBJECTS_DIR = $$BaseBuildFolder/obj
 MOC_DIR = $$BaseBuildFolder/moc
-QMAKE_CXXFLAGS_RELEASE += -fPIC
-QMAKE_CXXFLAGS_DEBUG += -fPIC
-INCLUDEPATH+=lib$$ProjectName
-
-build_static {
-    DEFINES += TARGOMAN_BUILD_STATIC
-    CONFIG+= staticlib
-}
-
-QMAKE_POST_LINK += mkdir -p $$BaseLibraryIncludeFolder/lib$$ProjectName;
-QMAKE_POST_LINK += cp -vf lib$$ProjectName/*.h lib$$ProjectName/*.hpp $$BaseLibraryIncludeFolder/lib$$ProjectName 2>/dev/null|| : ;
-
+INCLUDEPATH += $$BasePath/libsrc
+QMAKE_LIBDIR += $$BaseLibraryFolder
+LIBS += -l$$ProjectName

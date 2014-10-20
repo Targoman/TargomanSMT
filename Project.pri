@@ -54,12 +54,14 @@ LibIncludeFolderPattern = ./include
 BinFolderPattern        = ./bin
 BuildFolderPattern      = ./build
 TestBinFolder           = ./test
+ConfigFolderPattern     = ./conf
 
 BaseLibraryFolder        = $$BaseOutput/out/$$LibFolderPattern
 BaseLibraryIncludeFolder = $$BaseOutput/out/$$LibIncludeFolderPattern
 BaseBinFolder            = $$BaseOutput/out/$$BinFolderPattern
 BaseTestBinFolder        = $$BaseOutput/out/$$TestBinFolder
 BaseBuildFolder          = $$BaseOutput/out/$$BuildFolderPattern
+BaseConfigFolder         = $$BaseOutput/out/$$ConfigFolderPattern
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 INCLUDEPATH += $$BaseLibraryIncludeFolder \
@@ -67,42 +69,20 @@ INCLUDEPATH += $$BaseLibraryIncludeFolder \
                $$(DependencyIncludePaths)/
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-DependencyLibPaths      += $$BaseOutput/out/$$LibFolderPattern \
-                         $$BaseLibraryFolder
+DependencyLibPaths      +=   $$BaseLibraryFolder $$PREFIX/lib
 FullDependencySearchPaths=   $$DependencyLibPaths
 
 unix {
-  DependencySearchPaths += $$(PREFIX)/lib \
-                           $$(PREFIX)/lib/lib
+  DependencySearchPaths +=
 
-  FullDependencySearchPaths+=  /usr/lib \
+  FullDependencySearchPaths+=  $$DependencySearchPaths \
+                               /usr/lib \
                                /usr/lib64 \
                                /usr/local/lib \
                                /usr/local/lib64
 }
 
 QMAKE_LIBDIR +=  $$DependencyLibPaths
-
-for(Project, Dependencies) {
-  for(Path, FullDependencySearchPaths):isEmpty( Found ) {
-      message(Looking for $$Project in $$Path)
-      exists($$Path/lib$$Project*) {
-        Found = "TRUE"
-        message(-------------> $$Project Found!!!)
-      }
-      message("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-")
-  }
-  isEmpty( Found ) {
-    message("***********************************************************************************************")
-    message("!!!!!! $$ProjectName Depends on $$Project but not found ")
-    message("***********************************************************************************************")
-    error("")
-  }
-  Found = ""
-}
-
-
-for(Library, Dependencies):LIBS += -l$$Library
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 unix{
@@ -112,7 +92,8 @@ unix{
 
   target.files= $$BaseOutput/out/$$BinFolderPattern \
                 $$BaseOutput/out/$$LibFolderPattern \
-                $$BaseOutput/out/$$LibIncludeFolderPattern
+                $$BaseOutput/out/$$LibIncludeFolderPattern \
+                $$BaseOutput/out/$$ConfigFolderPattern
 
   target.path = $$PREFIX/
   target.extra= rm -rvf $$PREFIX/lib/lib/

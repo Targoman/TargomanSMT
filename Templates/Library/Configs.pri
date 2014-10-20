@@ -33,3 +33,4 @@ error("***** $$ProjectName: Unable to find Configuration file $$ProjectConfig **
 
 include ($$ProjectConfig)
 
+INCLUDEPATH+=$$BaseLibraryIncludeFolder

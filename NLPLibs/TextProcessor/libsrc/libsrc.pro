@@ -9,10 +9,14 @@
 BasePath = ".."
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-HEADERS +=
+HEADERS += \
+    libTargomanTextProcessor/Private/Normalizer.h \
+    libTargomanTextProcessor/TextProcessor.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-SOURCES += libID.cpp
+SOURCES += libID.cpp \
+    libTargomanTextProcessor/Private/Normalizer.cpp \
+    libTargomanTextProcessor/TextProcessor.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
