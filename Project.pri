@@ -105,6 +105,23 @@ for(Project, Dependencies) {
 for(Library, Dependencies):LIBS += -l$$Library
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+unix{
+  documentation.path = $$PREFIX/doc
+  documentation.files=docs/*
+#  documentation.extra=create_docs; mv master.doc toc.doc
+
+  target.files= $$BaseOutput/out/$$BinFolderPattern \
+                $$BaseOutput/out/$$LibFolderPattern \
+                $$BaseOutput/out/$$LibIncludeFolderPattern
+
+  target.path = $$PREFIX/
+  target.extra= rm -rvf $$PREFIX/lib/lib/
+
+  INSTALLS += documentation \
+              target
+}
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 defineTest(addSubdirs) {
     for(subdirs, 1) {
         entries = $$files($$subdirs)
@@ -119,3 +136,4 @@ defineTest(addSubdirs) {
     }
     export (SUBDIRS)
 }
+
