@@ -93,14 +93,9 @@ extern clsOutputSettings OUTPUT_SETTINGS_NORMAL;
 
 extern bool       OUTPUT_SETTINGS_SHOWCOLORED;
 
-#if TARGOMAN_SHOW_DEBUG
-  void printLoadedLibs();
-#else
-  void dummyPrintLoadedLibs();
-  #define printLoadedLibs dummyPrintLoadedLibs
-#endif
+void printLoadedLibs();
 
-  void silent();
+void silent();
 }
 }
 /********************************************************************************************
@@ -168,10 +163,10 @@ extern bool       OUTPUT_SETTINGS_SHOWCOLORED;
         fprintf(stderr,"%s[%s]%s\n", _colorType, _lbl,TARGOMAN_COLOR_NORMAL);}
 
 #else
+    #define TargomanDebugLine {}
     #define TargomanDebug(_debugLevel, ...) {}
     #define TargomanInlineDebug(_debugLevel, ...) {}
     #define TargomanFinishInlineDebug(_color, _lbl) {}
-
 #endif
 
 #define TargomanError_Multi(_fmt,...)\

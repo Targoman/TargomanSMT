@@ -78,12 +78,21 @@
 /********************************************************************************************
  * Predefined functions. This macro must be included in all libraries.
  ********************************************************************************************/
-#define TARGOMAN_LIBRARY_VERSION \
-extern "C" std::string getETSLibVersion() { \
-  return std::string("Version: ") + \
-         std::string(TARGOMAN_M2STR(PROJ_VERSION)) + \
-         std::string(" Last Build: ") + \
-         std::string(__DATE__);}
+#ifdef TARGOMAN_SHOW_DEBUG
+    #define TARGOMAN_LIBRARY_VERSION \
+    extern "C" std::string getTargomanLibVersion() { \
+      return std::string("Version: ") + \
+             std::string(TARGOMAN_M2STR(PROJ_VERSION)) + \
+             std::string(" [DEBUG] Last Build: ") + \
+             std::string(__DATE__);}
+#else
+    #define TARGOMAN_LIBRARY_VERSION \
+    extern "C" std::string getTargomanLibVersion() { \
+      return std::string("Version: ") + \
+             std::string(TARGOMAN_M2STR(PROJ_VERSION)) + \
+             std::string(" [RELEASE] Last Build: ") + \
+             std::string(__DATE__);}
+#endif
 
 /********************************************************************************************
  * Base Macros.

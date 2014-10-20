@@ -26,6 +26,7 @@ int targomanLinkedLibrariesCallback(struct dl_phdr_info *_info, size_t _size, vo
 {
     Q_UNUSED(_size)
     Q_UNUSED(_data)
+
     delGetTargomanLibVersion getTargomanLibVersion;
 
     QString LibName = _info->dlpi_name;
@@ -53,6 +54,9 @@ void dummyPrintLoadedLibs()
 
 void printLoadedLibs()
 {
+    if (OUTPUT_SETTINGS_DEBUG.canBeShown(5) == false)
+        return;
+
     dl_iterate_phdr(targomanLinkedLibrariesCallback, NULL);
 }
 

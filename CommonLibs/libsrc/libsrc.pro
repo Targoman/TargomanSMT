@@ -21,7 +21,8 @@ SOURCES += \
     libTargomanCommon/exTargomanBase.cpp \
     libTargomanCommon/clsSafeCoreApplication.cpp \
     libTargomanCommon/CmdIO.cpp \
-    libTargomanCommon/Logger.cpp
+    libTargomanCommon/Logger.cpp \
+    libID.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
@@ -45,10 +46,6 @@ build_static {
     CONFIG+= staticlib
 }
 
-#QMAKE_EXTRA_TARGETS += copyheaders
-#POST_TARGETDEPS += copyheaders
+QMAKE_POST_LINK += mkdir -p $$BaseLibraryIncludeFolder/lib$$ProjectName;
+QMAKE_POST_LINK += cp -vf lib$$ProjectName/*.h lib$$ProjectName/*.hpp $$BaseLibraryIncludeFolder/lib$$ProjectName 2>/dev/null|| : ;
 
-#unix {
-#    copyheaders.commands += mkdir -p $$BaseLibraryIncludeFolder/lib$$ProjectName
-#    copyheaders.commands += for h in lib$$ProjectName/*.h; do ln -s "$h" lnk"${t%.*}"; done
-#}
