@@ -4,7 +4,7 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
@@ -34,6 +34,7 @@ public:
     inline bool active(){return this->Active;}
     inline QString& autoCorrectFile(){return this->AutoCorrectFile;}
     inline uint maxAutoCorrectTokens(){return this->MaxAutoCorrectTokens;}
+
 public:
     virtual bool init(const QVariantHash _settings) = 0;
     virtual QString process(const QStringList& _tokens) = 0;

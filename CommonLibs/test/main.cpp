@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   OUTPUT_SETTINGS_WARNING.set(10,true,true,true,true);
   OUTPUT_SETTINGS_INFO.set(10,true,true,true,true);
   OUTPUT_SETTINGS_HAPPY.set(10,true,true,true,true);
-  Targoman::Common::Logger::instance()->init("log.log");
+  Targoman::Common::Logger::instance().init("log.log");
 
   Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = false;
   checkOutput();

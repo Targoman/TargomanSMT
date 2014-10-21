@@ -4,7 +4,7 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
@@ -29,17 +29,20 @@ public:
     QString process(const QStringList& _tokens);
     bool canBeCheckedInteractive(const QString &_inputWord);
 
-
+private:
+    QString processStartingWithBi_Ba_Na(const QSet<QString>& _set, const QString& _prefix, const QString& Buffer);
 private:
     QSet<QString>            CanAppendHa;
-    QSet<QString>            CanAppendTar;
-    QSet<QString>            CanStartWithMi;
+    QSet<QString>            CanAppendTar_Tarin;
+    QSet<QString>            CanStartWithMi_Nemi;
     QSet<QString>            CanStartWithBi_Ba;
+    QSet<QString>            CanStartWithNa;
     QSet<QString>            RemoveSpaces;
 
     QRegExp                  RxInteractiveChars;
     QRegExp                  RxVerbFinisher;
     QRegExp                  RxHa;
+    QRegExp                  RxEndWithHa;
 
 };
 

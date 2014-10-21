@@ -17,7 +17,7 @@
 #include <QSet>
 #include <QStringList>
 
-#include "TextProcessor.h"
+#include "libTargomanTextProcessor/TextProcessor.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -56,7 +56,10 @@ public:
                       const QString& _phrase,
                       size_t _charPos);
 
-    QString normalize(const QString& _string, bool _interactive);
+    QString normalize(const QString& _string, bool _interactive = false);
+
+    static QString fullTrim(const QString& _str) { return _str.trimmed().remove(ARABIC_ZWNJ);}
+
 
 private:
     Normalizer();
