@@ -31,7 +31,6 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuDicType)
     RemovingCharcters,
     SpaceCharacters,
     ZeroWidthSpaceCharacters,
-    ApostrofAttached,
     EndOfFile
 TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "WhiteList",
@@ -39,7 +38,6 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "RemovingCharacters",
     "SpaceCharacters",
     "ZeroWidthSpaceCharacters",
-    "ApostrofAttached"
     "EOF"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
@@ -49,7 +47,7 @@ class Normalizer
 {
 public:
     void init(const QString& _configFile);
-    static Normalizer& instance(){return *(Instance ? Instance : (Instance = new Normalizer));}
+    static Normalizer& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new Normalizer));}
 
     QString normalize(const QChar& _char,
                       const QChar& _nextChar,
@@ -77,7 +75,6 @@ private:
     QChar                   LastChar;
     QStringList             NormalizedDiacritics;
     QString                 PersianChars;
-    QRegExp                 RxShorteningQuote;
     QRegExp                 RxDetokenDQuote;
     QRegExp                 RxDetokenQuote;
 };

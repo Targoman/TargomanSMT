@@ -17,7 +17,7 @@
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Logger.h"
-
+#include "ISO639.h" //From https://github.com/softnhard/ISO639
 
 namespace Targoman {
 namespace NLPLibs {
@@ -52,21 +52,23 @@ extern QString ActorUUID;
 class TextProcessor
 {
 public:
-    static inline const TextProcessor* instance(){return Instance ? Instance : (Instance = new TextProcessor);}
+    static inline const TextProcessor& instance(){
+        return *(Q_LIKELY(Instance) ? Instance : (Instance = new TextProcessor));}
 
     bool init(const QString& _configFile) const;
 
     QString text2IXML(const QString& _inStr,
+                      const QString& _lang = "",
                       quint32 _lineNo = 0,
                       bool _interactive = true,
                       bool _useSpellCorrecter = true,
                       QList<enuTextTags::Type> _removingTags = QList<enuTextTags::Type>()) const;
-    QString text2RichIXML(const QString& _inStr) const;
+    QString text2RichIXML(const QString& _inStr, const QString& _lang = "") const;
 
     QString ixml2Text(const QString& _ixml) const;
     QString richIXML2Text(const QString& _ixml) const;
 
-    QString normalizeText(const QString _input) const;
+    QString normalizeText(const QString _input, const QString& _lang = "") const;
 
 private:
     TextProcessor();

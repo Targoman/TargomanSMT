@@ -44,6 +44,7 @@ bool TextProcessor::init(const QString &_configFile) const
  * @return
  */
 QString TextProcessor::text2IXML(const QString &_inStr,
+                                 const QString& _lang,
                                  quint32 _lineNo,
                                  bool _interactive,
                                  bool _useSpellCorrecter,
@@ -56,7 +57,7 @@ QString TextProcessor::text2IXML(const QString &_inStr,
  * @param _inStr
  * @return
  */
-QString TextProcessor::text2RichIXML(const QString &_inStr) const
+QString TextProcessor::text2RichIXML(const QString &_inStr, const QString &_lang) const
 {
 }
 
@@ -83,7 +84,7 @@ QString TextProcessor::richIXML2Text(const QString &_ixml) const
  * @param _input
  * @return
  */
-QString TextProcessor::normalizeText(const QString _input) const
+QString TextProcessor::normalizeText(const QString _input, const QString &_lang) const
 {
 
 }

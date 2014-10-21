@@ -133,7 +133,7 @@ class Logger : public QObject
 {
     Q_OBJECT
 public:
-    static inline Logger* instance(){return Instance ? Instance : (Instance = new Logger);}
+    static inline Logger& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new Logger));}
     ~Logger();
     /**
      * @brief Initialization method. If Logger is not initialized then no other function will work
