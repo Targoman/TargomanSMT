@@ -28,23 +28,23 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
 
 /** @brief below macro must be used to generate new UUID and register actor */
 #define TARGOMAN_REGISTER_ACTOR(_actorName) \
-  Targoman::Common::Logger::instance()->registerActor(&ActorUUID, _actorName);
+  Targoman::Common::Logger::instance().registerActor(&ActorUUID, _actorName);
 
 /** @brief These are helper macros to ease usage of Logger */
 #define TargomanLogWarn(_level, _message) \
-  Targoman::Common::Logger::instance()->write(ActorUUID, Targoman::Common::enuLogType::Warning, _level, _message);
+  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Warning, _level, _message);
 
 #define TargomanLogInfo( _level, _message) \
-  Targoman::Common::Logger::instance()->write(ActorUUID, Targoman::Common::enuLogType::Info, _level, _message);
+  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Info, _level, _message);
 
 #define TargomanLogError( _message) \
-  Targoman::Common::Logger::instance()->write(ActorUUID, Targoman::Common::enuLogType::Error, 9, _message);
+  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Error, 9, _message);
 
 #define TargomanLogDebug(_level, _message) \
-  Targoman::Common::Logger::instance()->write(ActorUUID, Targoman::Common::enuLogType::Debug, _level, _message);
+  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, _level, _message);
 
 #define TargomanLogHappy(_level, _message) \
-  Targoman::Common::Logger::instance()->write(ActorUUID, Targoman::Common::enuLogType::Happy, _level, _message);
+  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Happy, _level, _message);
 
 namespace Private {
     class LoggerPrivate;

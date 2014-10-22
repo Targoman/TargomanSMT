@@ -58,28 +58,28 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_END
 void checkOutput()
 {
     TargomanDebugLine
-    TargomanDebug(6,"DEBUG");
+    TargomanDebug(6,"DEBUG"<<" Stream"<<1);
     TargomanDebug(5,"%s b=%d","DEBUG",2);
     TargomanInlineDebug(5,"Checking...");
     TargomanFinishInlineDebug(TARGOMAN_COLOR_HAPPY,"Ok");
 
-    TargomanWarn(6,"Warn");
+    TargomanWarn(6,"Warn"<<" Stream"<<1);
     TargomanWarn(5,"%s b=%d","Warn",2);
 
-    TargomanInfo(6,"Info");
+    TargomanInfo(6,"Info"<<" Stream"<<1);
     TargomanInfo(5,"%s b=%d","Info",2);
     TargomanInlineInfo(5,"Checking...");
     TargomanFinishInlineInfo(TARGOMAN_COLOR_ERROR,"Failed");
 
-    TargomanOut(6,"Normal");
+    TargomanOut(6,"Normal"<<" Stream"<<1);
     TargomanOut(5,"%s b=%d","Normal",2);
     TargomanInlineOut(5,"Checking...");
     TargomanFinishInlineOut(TARGOMAN_COLOR_WARNING,"Warn");
 
-    TargomanHappy(6,"Happy");
+    TargomanHappy(6,"Happy"<<" Stream"<<1);
     TargomanHappy(5,"%s b=%d","Happy",2);
 
-    TargomanError("Error");
+    TargomanError("Error"<<" Stream"<<1);
     TargomanError("%s b=%d","Error",2);
 }
 

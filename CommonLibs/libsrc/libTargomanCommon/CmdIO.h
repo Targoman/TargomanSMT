@@ -14,6 +14,7 @@
 #define TARGOMAN_COMMON_DEBUG_H_
 
 #include <QDateTime>
+#include <QTextStream>
 #include <stdio.h>
 #include "libTargomanCommon/Macros.h"
 
@@ -145,10 +146,12 @@ void silent();
         Targoman::Common::OUTPUT_SETTINGS_DEBUG.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
         _debugLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
 
-    #define TargomanDebug_Single(_debugLevel,_newline,_lbl) \
-    {fprintf(stderr,"%s+++> %s[%d]: %s%s"_newline, TARGOMAN_COLOR_DEBUG, \
+    #define TargomanDebug_Single(_debugLevel,_newline,_stream) \
+    {QString Buffer; fprintf(stderr,"%s+++> %s[%d]: %s%s"_newline, TARGOMAN_COLOR_DEBUG, \
         Targoman::Common::OUTPUT_SETTINGS_DEBUG.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
-         _debugLevel, _lbl, TARGOMAN_COLOR_NORMAL);}
+         _debugLevel, \
+        ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()) \
+        , TARGOMAN_COLOR_NORMAL);}
 
     #define TargomanDebug(_debugLevel,...) { \
         {if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(_debugLevel)){ \
@@ -158,9 +161,12 @@ void silent();
         {if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(_debugLevel)){ \
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanDebug_,__VA_ARGS__)(_debugLevel,"",__VA_ARGS__)}}}
 
-    #define TargomanFinishInlineDebug(_colorType, _lbl) {\
+    #define TargomanFinishInlineDebug(_colorType, _stream) {\
+        QString Buffer;\
         if (Targoman::Common::OUTPUT_SETTINGS_DEBUG.canBeShown(1)) \
-        fprintf(stderr,"%s[%s]%s\n", _colorType, _lbl,TARGOMAN_COLOR_NORMAL);}
+        fprintf(stderr,"%s[%s]%s\n", _colorType, \
+            ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()) \
+            ,TARGOMAN_COLOR_NORMAL);}
 
 #else
     #define TargomanDebugLine {}
@@ -173,10 +179,11 @@ void silent();
     {fprintf(stderr,"%s%s[ERROR][-] %s" _fmt "\n", TARGOMAN_COLOR_ERROR, \
         Targoman::Common::OUTPUT_SETTINGS_ERROR.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
         TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
-#define TargomanError_Single(_lbl)\
-    {fprintf(stderr,"%s%s[ERROR][-] %s%s\n", TARGOMAN_COLOR_ERROR, \
+#define TargomanError_Single(_stream)\
+    {QString Buffer; fprintf(stderr,"%s%s[ERROR][-] %s%s\n", TARGOMAN_COLOR_ERROR, \
         Targoman::Common::OUTPUT_SETTINGS_ERROR.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
-        _lbl, TARGOMAN_COLOR_NORMAL);}
+            ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()) \
+            , TARGOMAN_COLOR_NORMAL);}
 
 #define TargomanError(...)  {TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanError_,__VA_ARGS__)(__VA_ARGS__)}
 
@@ -185,10 +192,11 @@ void silent();
         {fprintf(stderr,"%s%s[WARN][%d] %s" _fmt "\n", TARGOMAN_COLOR_WARNING, \
             Targoman::Common::OUTPUT_SETTINGS_WARNING.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
             _warnLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
-    #define TargomanWarn_Single(_warnLevel,_lbl)\
-        {fprintf(stderr,"%s%s[WARN][%d] %s%s\n", TARGOMAN_COLOR_WARNING,  \
+    #define TargomanWarn_Single(_warnLevel,_stream)\
+        {QString Buffer;fprintf(stderr,"%s%s[WARN][%d] %s%s\n", TARGOMAN_COLOR_WARNING,  \
             Targoman::Common::OUTPUT_SETTINGS_WARNING.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
-            _warnLevel, TARGOMAN_COLOR_NORMAL, _lbl);}
+            _warnLevel, TARGOMAN_COLOR_NORMAL, \
+            ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()));}
 
     #define TargomanWarn(_warnLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_WARNING.canBeShown(_warnLevel)) {\
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanWarn_,__VA_ARGS__)(_warnLevel, __VA_ARGS__)}}
@@ -201,19 +209,23 @@ void silent();
         {fprintf(stdout,"%s%s[INFO][%d] %s" _fmt _newline, TARGOMAN_COLOR_INFO, \
             Targoman::Common::OUTPUT_SETTINGS_INFO.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
             _infoLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
-    #define TargomanInfo_Single(_infoLevel,_newline,_lbl)\
-        {fprintf(stdout,"%s%s[INFO][%d] %s%s"_newline, TARGOMAN_COLOR_INFO, \
+    #define TargomanInfo_Single(_infoLevel,_newline,_stream)\
+        {QString Buffer; fprintf(stdout,"%s%s[INFO][%d] %s%s"_newline, TARGOMAN_COLOR_INFO, \
             Targoman::Common::OUTPUT_SETTINGS_INFO.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
-            _infoLevel, TARGOMAN_COLOR_NORMAL, _lbl);}
+            _infoLevel, TARGOMAN_COLOR_NORMAL, \
+           ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()));}
 
     #define TargomanInfo(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_INFO.canBeShown(_infoLevel)) {\
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanInfo_,__VA_ARGS__)(_infoLevel, "\n",__VA_ARGS__)}}
     #define TargomanInlineInfo(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_INFO.canBeShown(_infoLevel)) {\
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanInfo_,__VA_ARGS__)(_infoLevel, "",__VA_ARGS__)}}
 
-    #define TargomanFinishInlineInfo(_colorType, _lbl) {\
+    #define TargomanFinishInlineInfo(_colorType, _stream) {\
+        QString Buffer;\
         if (Targoman::Common::OUTPUT_SETTINGS_INFO.canBeShown(1))   \
-            fprintf(stdout,"%s[%s]%s\n", _colorType, _lbl,TARGOMAN_COLOR_NORMAL);}
+            fprintf(stdout,"%s[%s]%s\n", _colorType, \
+                ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()) \
+                ,TARGOMAN_COLOR_NORMAL);}
 #else
     #define TargomanInfo(_infoLevel,...) {}
     #define TargomanInlineInfo(_infoLevel,...) {}
@@ -225,19 +237,23 @@ void silent();
         {fprintf(stdout,"%s[NORMAL][%d] " _fmt _newline, \
             Targoman::Common::OUTPUT_SETTINGS_NORMAL.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
             _infoLevel,  __VA_ARGS__);}
-    #define TargomanOut_Single(_infoLevel,_newline,_lbl)\
-        {fprintf(stdout,"%s[NORMAL][%d] %s"_newline,  \
+    #define TargomanOut_Single(_infoLevel,_newline,_stream)\
+        {QString Buffer;fprintf(stdout,"%s[NORMAL][%d] %s"_newline,  \
             Targoman::Common::OUTPUT_SETTINGS_NORMAL.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
-            _infoLevel,  _lbl);}
+            _infoLevel,  \
+            ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()));}
 
     #define TargomanOut(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_NORMAL.canBeShown(_infoLevel)) {\
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanOut_,__VA_ARGS__)(_infoLevel, "\n",__VA_ARGS__)}}
     #define TargomanInlineOut(_infoLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_NORMAL.canBeShown(_infoLevel)) {\
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanOut_,__VA_ARGS__)(_infoLevel, "",__VA_ARGS__)}}
 
-    #define TargomanFinishInlineOut(_colorType, _lbl) {\
+    #define TargomanFinishInlineOut(_colorType, _stream) {\
+        QString Buffer; \
         if (Targoman::Common::OUTPUT_SETTINGS_NORMAL.canBeShown(1)) \
-            fprintf(stdout,"%s[%s]%s\n", _colorType, _lbl,TARGOMAN_COLOR_NORMAL);}
+            fprintf(stdout,"%s[%s]%s\n", _colorType, \
+            ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()) \
+            ,TARGOMAN_COLOR_NORMAL);}
 #else
     #define TargomanOut(_infoLevel,...) {}
     #define TargomanInlineOut(_infoLevel,...) {}
@@ -249,10 +265,11 @@ void silent();
         {fprintf(stdout,"%s%s[HAPPY][%d] %s" _fmt "\n", TARGOMAN_COLOR_HAPPY, \
             Targoman::Common::OUTPUT_SETTINGS_HAPPY.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
             _happyLevel, TARGOMAN_COLOR_NORMAL, __VA_ARGS__);}
-    #define TargomanHappy_Single(_happyLevel,_lbl)\
-        {fprintf(stdout,"%s%s[HAPPY][%d] %s%s\n", TARGOMAN_COLOR_HAPPY, \
+    #define TargomanHappy_Single(_happyLevel,_stream)\
+        {QString Buffer; fprintf(stdout,"%s%s[HAPPY][%d] %s%s\n", TARGOMAN_COLOR_HAPPY, \
             Targoman::Common::OUTPUT_SETTINGS_HAPPY.details(Q_FUNC_INFO,__FILE__,__LINE__).toUtf8().constData(), \
-            _happyLevel, TARGOMAN_COLOR_NORMAL, _lbl);}
+            _happyLevel, TARGOMAN_COLOR_NORMAL, \
+            ((QTextStream(&Buffer)<<_stream).string()->toUtf8().constData()));}
 
     #define TargomanHappy(_happyLevel,...)  {if (Targoman::Common::OUTPUT_SETTINGS_HAPPY.canBeShown(_happyLevel)) {\
         TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanHappy_,__VA_ARGS__)(_happyLevel, __VA_ARGS__)}}
