@@ -4,13 +4,20 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
 #include "TextProcessor.h"
+
+#include "Private/Normalizer.h"
+#include "Private/SpellCorrector.h"
+#include "Private/IXMLWriter.h"
+using namespace Targoman::NLPLibs::Private;
+
+#include "ISO639.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -31,9 +38,14 @@ TextProcessor::TextProcessor()
  * @param _configFile
  * @return
  */
-bool TextProcessor::init(const QString &_configFile) const
+bool TextProcessor::init(const stuConfigs& _configs) const
 {
-    return true;
+    if (Normalizer::instance().init(_configs.NormalizationFile) &&
+            SpellCorrector::instance().init(_configs.SpellCorrector) &&
+            IXMLWriter::instance().init(_configs.AbbreviationsFile))
+        return false;
+    else
+        return false;
 }
 
 /**
@@ -51,6 +63,23 @@ QString TextProcessor::text2IXML(const QString &_inStr,
                                  bool _useSpellCorrecter,
                                  QList<enuTextTags::Type> _removingTags) const
 {
+    TargomanLogDebug(5,"ConvertToIXML Process Started");
+
+    if(ISO639isValid(_lang.toAscii().constData()) == false)
+        throw exTextProcessor("Invalid language code. It must be in ISO639 format");
+
+    QString IXML = IXMLWriter::instance().convert2IXML(
+                _inStr,
+                ISO639getAlpha3B(_lang.toAscii().constData()),
+                _lineNo,
+                _interactive,
+                _useSpellCorrecter);
+
+   /* foreach(const QString& Tag, _removingTags)
+        IXML.remove("<" + Tag + ">").remove("</"+Tag+">");*/
+    TargomanDebug(7, "[NO-TAGS]"<<IXML);
+    TargomanLogDebug(5,"ConvertToIXML Process Finished");
+    return IXML;
 }
 
 /**
@@ -60,6 +89,18 @@ QString TextProcessor::text2IXML(const QString &_inStr,
  */
 QString TextProcessor::text2RichIXML(const QString &_inStr, const QString &_lang) const
 {
+    TargomanLogDebug(5,"ConvertToRichIXML Process Started");
+
+    if(ISO639isValid(_lang.toAscii().constData()) == false)
+        throw exTextProcessor("Invalid language code. It must be in ISO639 format");
+
+    QString IXML = IXMLWriter::instance().convert2IXML(_inStr, ISO639getAlpha3B(_lang.toAscii().constData()));
+
+    //TODO convert tags to rich tags
+
+    TargomanDebug(7, "[NO-TAGS]"<<IXML);
+    TargomanLogDebug(5,"ConvertToRichIXML Process Finished");
+    return IXML;
 }
 
 /**
@@ -69,6 +110,7 @@ QString TextProcessor::text2RichIXML(const QString &_inStr, const QString &_lang
  */
 QString TextProcessor::ixml2Text(const QString &_ixml) const
 {
+    //TODO detokenize
 }
 
 /**
@@ -78,6 +120,7 @@ QString TextProcessor::ixml2Text(const QString &_ixml) const
  */
 QString TextProcessor::richIXML2Text(const QString &_ixml) const
 {
+    //TODO detokenize
 }
 
 /**
@@ -85,9 +128,17 @@ QString TextProcessor::richIXML2Text(const QString &_ixml) const
  * @param _input
  * @return
  */
-QString TextProcessor::normalizeText(const QString _input, const QString &_lang) const
+QString TextProcessor::normalizeText(const QString _input, bool _interactive, const QString &_lang) const
 {
+    QString Output = Normalizer::instance().normalize(_input, _interactive);
+    if (_lang.size()){
+        if(ISO639isValid(_lang.toAscii().constData()) == false)
+            throw exTextProcessor("Invalid language code. It must be in ISO639 format");
+        Output =
+                SpellCorrector::instance().process(ISO639getAlpha3B(_lang.toAscii().constData()), Output, _interactive);
+    }
 
+    return Output;
 }
 
 }

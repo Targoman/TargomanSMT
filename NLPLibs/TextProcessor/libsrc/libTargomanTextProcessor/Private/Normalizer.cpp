@@ -338,7 +338,7 @@ QChar Normalizer::str2QChar(QString _str, quint16 _line)
         throw exNormalizer(("Invalid normalization character at line "+ QString::number(_line)+": <" + _str + ">"));
 }
 
-void Normalizer::init(const QString &_configFile)
+bool Normalizer::init(const QString &_configFile)
 {
     if (_configFile.isEmpty()){
         this->ReplacingTable.clear();
@@ -346,7 +346,7 @@ void Normalizer::init(const QString &_configFile)
         this->RemovingList.clear();
         this->SpaceCharList.clear();
         this->ZeroWidthSpaceCharList.clear();
-        return;
+        return false;
     }
 
     QFile ConfigFile(_configFile);
@@ -438,6 +438,7 @@ void Normalizer::init(const QString &_configFile)
                             this->SpaceCharList.size ()).arg(
                             this->ZeroWidthSpaceCharList.size ()).arg(
                             this->ReplacingTable.size()));
+    return true;
 }
 
 }

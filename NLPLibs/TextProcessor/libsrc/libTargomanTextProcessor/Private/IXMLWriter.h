@@ -28,9 +28,13 @@ class IXMLWriter
 {
 public:
     static IXMLWriter& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new IXMLWriter));}
-    void init(const QString &_configFile);
+    bool init(const QString &_configFile);
 
-    QString convert2IXML(const QString &_lang, const QString _inputPhrase, bool _interactive);
+    QString convert2IXML(const QString& _inStr,
+                         const QString& _lang = "",
+                         quint32 _lineNo = 0,
+                         bool _interactive = false,
+                         bool _useSpellCorrecter = true);
 
 private:
     QString markByRegex(const QString &_phrase,

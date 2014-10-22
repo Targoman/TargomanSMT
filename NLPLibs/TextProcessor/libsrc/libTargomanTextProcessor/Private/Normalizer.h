@@ -46,7 +46,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_END
 class Normalizer
 {
 public:
-    void init(const QString& _configFile);
+    bool init(const QString& _configFile);
     static Normalizer& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new Normalizer));}
 
     QString normalize(const QChar& _char,

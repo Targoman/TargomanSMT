@@ -52,10 +52,17 @@ extern QString ActorUUID;
 class TextProcessor
 {
 public:
+    struct stuConfigs{
+        QString NormalizationFile;
+        QString AbbreviationsFile;
+        QHash<QString, QVariantHash> SpellCorrector;
+    };
+
+public:
     static inline const TextProcessor& instance(){
         return *(Q_LIKELY(Instance) ? Instance : (Instance = new TextProcessor));}
 
-    bool init(const QString& _configFile) const;
+    bool init(const stuConfigs &_configs) const;
 
     QString text2IXML(const QString& _inStr,
                       const QString& _lang = "",
@@ -68,7 +75,7 @@ public:
     QString ixml2Text(const QString& _ixml) const;
     QString richIXML2Text(const QString& _ixml) const;
 
-    QString normalizeText(const QString _input, const QString& _lang = "") const;
+    QString normalizeText(const QString _input,  bool _interactive = false, const QString& _lang = "") const;
 
 private:
     TextProcessor();

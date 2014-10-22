@@ -21,6 +21,8 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
+IXMLWriter* IXMLWriter::Instance = NULL;
+
 #define TGMN_SUFFIXES "t|ll|ve|s|m|re|d"
 
 IXMLWriter::IXMLWriter()
@@ -97,7 +99,7 @@ IXMLWriter::IXMLWriter()
     this->RxPersianNumber = QRegExp(QString::fromUtf8("([\u0600-\u06ff])(\\d+)"));
 }
 
-void IXMLWriter::init(const QString &_configFile)
+bool IXMLWriter::init(const QString &_configFile)
 {
     QString AbbreviationDetectionRegex =
             QString::fromUtf8("\\b(Mr\\.");
@@ -119,15 +121,18 @@ void IXMLWriter::init(const QString &_configFile)
 
     //        this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=[^\\w]|$)");
     this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=\\b)");
+    return true;
 }
 
-QString IXMLWriter::convert2IXML(const QString& _lang, const QString _inputPhrase, bool _interactive)
+QString IXMLWriter::convert2IXML(const QString &_inStr,
+                                 const QString& _lang,
+                                 quint32 _lineNo,
+                                 bool _interactive,
+                                 bool _useSpellCorrecter)
 {
-    quint32 LineNo = 1;
     QString InputPhrase, OutputPhrase;
-    InputPhrase += _inputPhrase;
+    InputPhrase += _inStr;
 
-    TargomanLogDebug(5,"ConvertToIXML Process Started");
     TargomanDebug(7,"[ORG] "<<InputPhrase);
 
     //Normalize
@@ -140,7 +145,7 @@ QString IXMLWriter::convert2IXML(const QString& _lang, const QString _inputPhras
                         InputPhrase.at(i),
                         ((i + 1) < InputPhrase.size() ? InputPhrase.at(i+1) : QChar('\n')),
                         _interactive,
-                        LineNo,
+                        _lineNo,
                         InputPhrase,
                         i));
     }
@@ -207,7 +212,7 @@ QString IXMLWriter::convert2IXML(const QString& _lang, const QString _inputPhras
 
     InputPhrase = OutputPhrase;
     OutputPhrase.clear();
-    foreach (const QChar& Char, _inputPhrase){
+    foreach (const QChar& Char, _inStr){
         if (Char.isPunct() ||
                 Char == '`' ||
                 Char == '<' ||
@@ -221,7 +226,8 @@ QString IXMLWriter::convert2IXML(const QString& _lang, const QString _inputPhras
     }
     TargomanDebug(7,"[TKN] "<<OutputPhrase);
 
-    OutputPhrase = SpellCorrector::instance().process(_lang, OutputPhrase, _interactive);
+    if (_useSpellCorrecter)
+        OutputPhrase = SpellCorrector::instance().process(_lang, OutputPhrase, _interactive);
 
     InputPhrase = OutputPhrase;
     OutputPhrase.clear();
@@ -265,10 +271,10 @@ QString IXMLWriter::convert2IXML(const QString& _lang, const QString _inputPhras
         OutputPhrase.append(" ");
     }
     OutputPhrase.truncate(OutputPhrase.size() - 2);
-    TargomanDebug(7,"[FINAL] "<<OutputPhrase.replace("  "," ").replace("  "," ").trimmed());
+    OutputPhrase = Normalizer::instance().fullTrim(OutputPhrase.replace("  "," ").replace("  "," "));
+    TargomanDebug(7,"[ALL-TAGS] "<<OutputPhrase);
 
-    TargomanLogDebug(5,"ConvertToIXML Process Finished");
-    return Normalizer::instance().fullTrim(OutputPhrase);
+    return OutputPhrase;
 }
 
 QString IXMLWriter::markByRegex(const QString &_phrase,
