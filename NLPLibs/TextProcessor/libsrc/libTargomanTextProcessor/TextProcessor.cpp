@@ -33,6 +33,7 @@ TextProcessor::TextProcessor()
  */
 bool TextProcessor::init(const QString &_configFile) const
 {
+    return true;
 }
 
 /**

@@ -14,6 +14,11 @@ HEADERS += \
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
+    testNormalizer.cpp \
+    testText2IXML.cpp \
+    testIXML2Text.cpp \
+    testText2RichIXML.cpp \
+    testRichIXML2Text.cpp \
     UnitTest.cpp
 
 ################################################################################

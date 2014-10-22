@@ -10,24 +10,10 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef UNITTEST_H
-#define UNITTEST_H
+#include "UnitTest.h"
 
-#include <QtTest/QtTest>
-
-#include "libTargomanTextProcessor/TextProcessor.h"
-
-class UnitTest: public QObject
+void UnitTest::text2RichIXML()
 {
-    Q_OBJECT
+}
 
-private slots:
-    void initTestCase();
-    void normalizeText();
-    void text2IXML();
-    void ixml2Text();
-    void text2RichIXML();
-    void richIXML2Text();
-};
 
-#endif // UNITTEST_H
