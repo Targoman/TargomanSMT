@@ -10,12 +10,13 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "SpellCorrector.h"
 #include <iostream>
 #include <QRegExp>
-
+#include <QTextStream>
 #include <QFile>
 #include <QStringList>
+
+#include "SpellCorrector.h"
 
 /****************************/
 #include "SpellCheckers/clsPersianSpellCorrector.h"
@@ -140,6 +141,86 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
     }while(Output.trimmed() != FinalPhrase.trimmed());
 
     return Output;
+}
+
+/**************************************************************************************************/
+bool intfSpellCorrector::init(const QVariantHash _settings)
+{
+    this->AutoCorrectFile = _settings.value(this->Lang + "ConfigPath").toString();
+    if (this->AutoCorrectFile.isEmpty())
+        throw exSpellCorrecter(this->Lang + "ConfigPath not provided for initialization");
+
+    QFile ConfigFile(this->AutoCorrectFile);
+    ConfigFile.open(QIODevice::ReadOnly);
+    if(!ConfigFile.isReadable ())
+        throw exSpellCorrecter("Unable to open file: <"+this->AutoCorrectFile+">.");
+
+    QTextStream ConfigStream(&ConfigFile);
+    ConfigStream.setCodec("UTF-8");
+
+    QString ConfigLine;
+    int CommentIndex = -1;
+    int LineNumber = 0;
+    bool IsEOF = false;
+
+    while (!ConfigStream.atEnd() && !IsEOF)
+    {
+        ConfigLine = ConfigStream.readLine().trimmed();
+        LineNumber++;
+        if (ConfigLine.startsWith("##") || ConfigLine.trimmed().isEmpty())
+            continue;
+
+        if ((CommentIndex = ConfigLine.indexOf("##")) >= 0)
+            ConfigLine.truncate(CommentIndex);
+
+        ConfigLine = ConfigLine.trimmed();
+
+        stuConfigStep ConfigStep;
+
+        if (ConfigLine.startsWith("[") && ConfigLine.endsWith("]")){
+            if (ConfigLine == "[EOF]")
+                IsEOF = true;
+            else{
+                ConfigStep = this->ConfigSteps.value(ConfigLine.mid(1,ConfigLine.size() - 2));
+                if (ConfigStep.KeyValStorage == NULL)
+                    throw exSpellCorrecter("Invalid step definition in ");
+            }
+            continue;
+        }
+
+        if (ConfigLine.startsWith("NEW "))
+            ConfigLine.remove(0, 4);
+
+        if (ConfigStep.IsKeyVal){
+            QStringList Pair = ConfigLine.split('=');
+            if (Pair.size() == 2){
+                QString Key = Normalizer::instance().normalize(Pair[0]);
+                QString Val = Normalizer::instance().normalize(Pair[1]);
+                ConfigStep.KeyValStorage->insert(Key, Val);
+                this->MaxAutoCorrectTokens = qMax(this->MaxAutoCorrectTokens,
+                                                  Key.split(" ", QString::SkipEmptyParts).size());
+            }
+            else {
+                throw exSpellCorrecter(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
+            }
+        }else{
+            ConfigStep.ListStorage->insert(Normalizer::instance().normalize(ConfigLine));
+        }
+    }
+
+    if (!IsEOF)
+        throw exSpellCorrecter("Invalid Normalization file as EOF section not found");
+
+    TargomanLogInfo(5, this->Lang + " Config file loaded:");
+    foreach (const QString& Step, this->ConfigSteps.keys())
+        if (this->ConfigSteps.value(Step).IsKeyVal){
+            TargomanLogInfo(5, "\t\t" + Step + ": " + this->ConfigSteps.value(Step).KeyValStorage->size() + " Entries");
+        }else{
+            TargomanLogInfo(5, "\t\t" + Step + ": " + this->ConfigSteps.value(Step).ListStorage->size() + " Entries");
+        }
+
+    this->MaxAutoCorrectTokens = qMax(4, this->MaxAutoCorrectTokens);
+    return this->postInit(_settings);
 }
 
 }

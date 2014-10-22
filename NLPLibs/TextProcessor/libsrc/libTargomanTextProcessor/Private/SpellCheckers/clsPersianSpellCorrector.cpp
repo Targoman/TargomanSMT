@@ -13,7 +13,6 @@
 #include <QStringList>
 
 #include "clsPersianSpellCorrector.h"
-#include "libTargomanTextProcessor/Private/Normalizer.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -23,35 +22,39 @@ const QString PERSIAN_Mi         = QString::fromUtf8("می");
 const QString PERSIAN_Nemi       = QString::fromUtf8("نمی");
 const QString PERSIAN_Tar        = QString::fromUtf8("تر");
 const QString PERSIAN_Tarin      = QString::fromUtf8("ترین");
-const QString PERSIAN_Ha         = QString::fromUtf8("ها");
 const QString PERSIAN_Ba         = QString::fromUtf8("با");
 const QString PERSIAN_Na         = QString::fromUtf8("نا");
 const QString PERSIAN_Bi         = QString::fromUtf8("بی");
 const QString PERSIAN_HeYe       = QString::fromUtf8("ه‌ی");
 const QString PERSIAN_He         = QString::fromUtf8("ه");
-const QString PERSIAN_Ye         = QString::fromUtf8("ی");
-const QString PERSIAN_Aneh       = QString::fromUtf8("انه");
 const QString PERSIAN_An         = QString::fromUtf8("ان");
-const QString PERSIAN_Bood       = QString::fromUtf8("بود");
-
 
 clsPersianSpellCorrector::clsPersianSpellCorrector()
 {
+    this->Lang                  = "Persian";
+    this->ConfigSteps.insert("AutoCorrectTerms",stuConfigStep(&this->AutoCorrectTerms));
+    this->ConfigSteps.insert("StartWith_Bi_Ba",stuConfigStep(&this->CanStartWithBi_Ba));
+    this->ConfigSteps.insert("StartWith_Na",stuConfigStep(&this->CanStartWithNa));
+    this->ConfigSteps.insert("Space2ZWNJ",stuConfigStep(&this->Space2ZWNJ));
+    this->ConfigSteps.insert("Nouns",stuConfigStep(&this->Nouns));
+    this->ConfigSteps.insert("Adjectives",stuConfigStep(&this->Adjectives));
+    this->ConfigSteps.insert("VerbStemPresent",stuConfigStep(&this->VerbStemPresent));
+    this->ConfigSteps.insert("VerbStemPast",stuConfigStep(&this->VerbStemPast));
+
     this->RxInteractiveChars    = QRegExp(QString::fromUtf8("[ؤئإأآ]"));
     this->RxEndPresentImperfect = QRegExp(QString::fromUtf8(".*(م|ی|د|یم|ید|ند)$"));
-    this->RxEndPastImperfect         = QRegExp(QString::fromUtf8(".*(م|ی|یم|ید|ند)$"));
-    this->RxVerbPerfect      = QRegExp(QString::fromUtf8("(ام|ای|است|ایم|اید|اند)$"));
-    this->RxEndVerbPerfect   = QRegExp(".*" + this->RxVerbPerfect.pattern());
+    this->RxEndPastImperfect    = QRegExp(QString::fromUtf8(".*(م|ی|یم|ید|ند)$"));
+    this->RxVerbPerfect         = QRegExp(QString::fromUtf8("(ام|ای|است|ایم|اید|اند)$"));
+    this->RxEndVerbPerfect      = QRegExp(".*" + this->RxVerbPerfect.pattern());
     this->RxHa                  = QRegExp(QString::fromUtf8("ها)ی|یم|یت|یش|یمان|یتان|یشان(?"));
     this->RxAn                  = QRegExp(QString::fromUtf8("ان)ی|م|ت|ش|مان|تان|شان(?"));
     this->RxEndWithHa           = QRegExp(".*" + this->RxHa.pattern() + "$");
     this->RxEndWithAn           = QRegExp(".*" + this->RxAn.pattern() + "$");
 }
 
-bool clsPersianSpellCorrector::init(const QVariantHash _settings)
+bool clsPersianSpellCorrector::postInit(const QVariantHash _settings)
 {
-    //TODO Load from file and set     MaxAutoCorrectTokens
-    this->MaxAutoCorrectTokens = qMax((size_t)4, this->MaxAutoCorrectTokens);
+    Q_UNUSED(_settings)
     return true;
 }
 
@@ -257,16 +260,19 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
 
 QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QString _postfix)
 {
+    //افعال حال : می‌خورم
     QString Buffer = _postfix;
     Buffer.remove(this->RxEndPresentImperfect);
     if(this->VerbStemPresent.contains(Normalizer::fullTrim(Buffer)))
         return Normalizer::instance().normalize(_prefix + ARABIC_ZWNJ + _postfix);
 
+    //افعال ماضی : می‌خوردم
     Buffer = _postfix;
     Buffer.remove(this->RxEndPastImperfect);
     if(this->VerbStemPast.contains(Normalizer::fullTrim(Buffer)))
         return Normalizer::instance().normalize(_prefix + ARABIC_ZWNJ + _postfix);
 
+    //افعال ماضی  نقلی و استمراری : می‌خورده‌ام
     Buffer = _postfix;
     Buffer.remove(this->RxEndVerbPerfect);
     if (Buffer.size()){
@@ -274,6 +280,15 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
         if(this->VerbStemPresent.contains(Normalizer::fullTrim(Buffer)))
             return Normalizer::instance().normalize(_prefix + ARABIC_ZWNJ + _postfix);
     }
+
+    //افعال ماضی بعید : می‌خورده بودم و می‌خورده باشم
+    Buffer = _postfix;
+    if (Buffer.endsWith(PERSIAN_He)){
+        Buffer.remove(Buffer.length() - 1, 1);
+        if(this->VerbStemPast.contains(Normalizer::fullTrim(Buffer)))
+            return Normalizer::instance().normalize(_prefix + ARABIC_ZWNJ + _postfix);
+    }
+
     return "";
 }
 

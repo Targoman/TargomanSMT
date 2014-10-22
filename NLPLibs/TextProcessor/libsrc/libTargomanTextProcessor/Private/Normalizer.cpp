@@ -364,8 +364,6 @@ void Normalizer::init(const QString &_configFile)
     enuDicType::Type DicStep = enuDicType::Unknown;
     bool IsEOF = false;
 
-    QStringList ShorteningQuotes;
-
     while (!ConfigStream.atEnd() && !IsEOF)
     {
         ConfigLine = ConfigStream.readLine().trimmed();

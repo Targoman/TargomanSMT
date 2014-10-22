@@ -25,7 +25,7 @@ class clsPersianSpellCorrector : public intfSpellCorrector
 {
 public:
     clsPersianSpellCorrector();
-    bool init(const QVariantHash _settings);
+    bool postInit(const QVariantHash _settings);
     QString process(const QStringList& _tokens);
     bool canBeCheckedInteractive(const QString &_inputWord) const;
     void storeAutoCorrectTerm(const QString& _from, const QString& _to);
