@@ -27,22 +27,31 @@ public:
     clsPersianSpellCorrector();
     bool init(const QVariantHash _settings);
     QString process(const QStringList& _tokens);
-    bool canBeCheckedInteractive(const QString &_inputWord);
+    bool canBeCheckedInteractive(const QString &_inputWord) const;
+    void storeAutoCorrectTerm(const QString& _from, const QString& _to);
 
 private:
-    QString processStartingWithBi_Ba_Na(const QSet<QString>& _set, const QString& _prefix, const QString& Buffer);
+    QString processStartingWithBi_Ba_Na(const QSet<QString>& _set, const QString& _prefix, const QString& _postfix);
+    QString processVerbs(const QString& _prefix, const QString _postfix);
+
 private:
-    QSet<QString>            CanAppendHa;
-    QSet<QString>            CanAppendTar_Tarin;
-    QSet<QString>            CanStartWithMi_Nemi;
+    QSet<QString>            Nouns;
+    QSet<QString>            Adjectives;
     QSet<QString>            CanStartWithBi_Ba;
     QSet<QString>            CanStartWithNa;
-    QSet<QString>            RemoveSpaces;
+    QSet<QString>            Space2ZWNJ;
+    QSet<QString>            VerbStemPresent;
+    QSet<QString>            VerbStemPast;
 
     QRegExp                  RxInteractiveChars;
-    QRegExp                  RxVerbFinisher;
+    QRegExp                  RxEndPresentImperfect;
+    QRegExp                  RxEndPastImperfect;
+    QRegExp                  RxEndVerbPerfect;
+    QRegExp                  RxVerbPerfect;
     QRegExp                  RxHa;
     QRegExp                  RxEndWithHa;
+    QRegExp                  RxAn;
+    QRegExp                  RxEndWithAn;
 
 };
 

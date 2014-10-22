@@ -288,7 +288,7 @@ QString greek2Ascii(uint _ucs4){
     if (_ucs4 == 0x1F59 || _ucs4 == 0x1F5B || _ucs4 == 0x1F5D || _ucs4 == 0x1F5F ||
             (_ucs4 >= 0x1FE8 && _ucs4 <= 0x1FEB))
         return "Y";
-    return "";
+    return QChar(_ucs4);
 }
 
 QString cyrillic2Ascii(uint _ucs4){
@@ -365,7 +365,7 @@ QString cyrillic2Ascii(uint _ucs4){
         return "h";
     if (_ucs4 >= 0xA640 && _ucs4 <= 0xA643)
         return "Z";
-    return "";
+    return QChar(_ucs4);
 }
 
 QString armenina2Ascii(uint _ucs4){
@@ -386,7 +386,7 @@ QString armenina2Ascii(uint _ucs4){
         return "st";
     if (_ucs4 == 0xFB06)
         return "st";
-    return "";
+    return QChar(_ucs4);
 }
 
 const ScriptBasedNormalizer ScriptBasedNormalizers[]={

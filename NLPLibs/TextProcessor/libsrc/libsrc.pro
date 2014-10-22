@@ -49,3 +49,6 @@ build_static {
 QMAKE_POST_LINK += mkdir -p $$BaseLibraryIncludeFolder/lib$$ProjectName;
 QMAKE_POST_LINK += cp -vf lib$$ProjectName/*.h lib$$ProjectName/*.hpp $$BaseLibraryIncludeFolder/lib$$ProjectName 2>/dev/null|| : ;
 
+OTHER_FILES += \
+    conf/PersianSpellCorrector.conf
+

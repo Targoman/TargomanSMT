@@ -4,7 +4,7 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
@@ -61,82 +61,84 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
     if (!Processor)
         return _inputStr;
 
-    QString Output;
-    QString Phrase = _inputStr;
-    for (uint i=1; i< Processor->maxAutoCorrectTokens(); ++i){
-        QString Normalized;
-        QStringList Tokens = Phrase.trimmed().replace("  "," ").replace("  "," ").split(" ", QString::SkipEmptyParts);
-        QStringList MultiWordBuffer;
-
+    QString Output = _inputStr;
+    QString FinalPhrase;
+    QString Phrase;
+    QString Normalized;
+    QStringList Tokens;
+    QStringList MultiWordBuffer;
+    /**/
+    //Correct all single words
+    do{
+        Phrase = Output;
         Output.clear();
-
-        for (uint i=1; i< Processor->maxAutoCorrectTokens(); ++i){
-            Tokens.append("");
-        }
-
+        Tokens = Phrase.trimmed().replace("  "," ").replace("  "," ").split(" ", QString::SkipEmptyParts);
         foreach(const QString& Token, Tokens){
-            Normalized =  Processor->AutoCorrectTerms.value(Token);
+            Normalized =  Processor->process(Token);
             if (Normalized.size())
-                MultiWordBuffer.append(Normalized);
-            else{
-                if (_interactive && Processor->canBeCheckedInteractive(Token)){
-                    std::cout<<"What to do with: <"<<Token.toUtf8().constData()<<">"<<std::endl;
-                    bool ValidSelection=false;
-                    while (!ValidSelection)
+                Output += Normalized + " ";
+            if (_interactive && Processor->canBeCheckedInteractive(Token)){
+                std::cout<<"What to do with: <"<<Token.toUtf8().constData()<<">"<<std::endl;
+                bool ValidSelection=false;
+                while (!ValidSelection)
+                {
+                    std::cout<<"Press: (1: accept, 2: Normalize to)"<<std::endl;
+                    QString Result = QChar((char)std::cin.get());
+                    switch(Result.toInt ())
                     {
-                        std::cout<<"Press: (1: accept, 2: Normalize to)"<<std::endl;
-                        QString Result = QChar((char)std::cin.get());
-                        switch(Result.toInt ())
-                        {
-                        case 1:
-                        {
-                            Processor->AutoCorrectTerms.insert(Token,Token);
-                            QFile File(Processor->autoCorrectFile());
-                            File.copy(Processor->autoCorrectFile() + ".back");
-                            File.open(QFile::Append);
-                            File.write((Token + '\t' + Token).toUtf8());
-                            ValidSelection = true;
-                            break;
-                        }
-                        case 2:
-                        {
-                            std::string Buffer;
+                    case 1:
+                    {
+                        Processor->storeAutoCorrectTerm(Token,Token);
+                        ValidSelection = true;
+                        break;
+                    }
+                    case 2:
+                    {
+                        std::string Buffer;
 
-                            std::cout<<"Normalize: <"<<Token.toUtf8().constData()<<"> to:"<<std::endl;
-                            std::cin >>Buffer;
-                            Processor->AutoCorrectTerms.insert(Token,QString::fromUtf8(Buffer.c_str()));
-                            QFile File(Processor->autoCorrectFile());
-                            File.copy(Processor->autoCorrectFile() + ".back");
-                            File.open(QFile::Append);
-                            File.write((Token + '\t' + QString::fromUtf8(Buffer.c_str())).toUtf8());
-                            ValidSelection = true;
-                            break;
-                        }
-                        default:
-                            std::cout<<"Invalid Selection."<<std::endl;
-                            break;
+                        std::cout<<"Normalize: <"<<Token.toUtf8().constData()<<"> to:"<<std::endl;
+                        std::cin >>Buffer;
+                        Processor->storeAutoCorrectTerm(Token,QString::fromUtf8(Buffer.c_str()));
+                        ValidSelection = true;
+                        break;
+                    }
+                    default:
+                        std::cout<<"Invalid Selection."<<std::endl;
+                        break;
+                    }
+                }
+            }else
+                Output += Token + " ";
+        }
+    }while(Output.trimmed() != Phrase.trimmed());
+
+    //Process Phrase starting to convert all bi-tokens then tri-tokens, so on until there are no more changes
+    //Re-process whole phrase until there are no more changes
+    do{
+        FinalPhrase = Output;
+        for (size_t MaxTokens=2; MaxTokens< Processor->maxAutoCorrectTokens(); ++MaxTokens){
+            do{
+                Phrase = FinalPhrase;
+                Output.clear();
+                Tokens = Phrase.trimmed().replace("  "," ").replace("  "," ").split(" ", QString::SkipEmptyParts);
+                for(size_t FromTokenIndex=0; FromTokenIndex<=Tokens.size() - MaxTokens; FromTokenIndex++){
+                    for (size_t i=0; i<MaxTokens; i++)
+                        MultiWordBuffer.append(Tokens.at(FromTokenIndex+i));
+                    Normalized = Processor->process(MultiWordBuffer);
+                    if (Normalized.size()){
+                        Output += Normalized;
+                        if (Normalized.split(" ").size() >= (int)MaxTokens){
+                            Tokens.removeAt(FromTokenIndex);
+                            foreach(const QString& MidTokens, Normalized.split(" ", QString::SkipEmptyParts))
+                                Tokens.insert(FromTokenIndex,MidTokens);
+                            FromTokenIndex--; // As Token at FromTokenIndex has changed so reprocess it
                         }
                     }
-                }else
-                    MultiWordBuffer.append(Token);
-            }
-
-            for( int i= 2; i <= MultiWordBuffer.size(); i++){
-                QString Normalized = Processor->process(MultiWordBuffer.mid(0, i));
-                if (Normalized.size()){
-                    MultiWordBuffer[i-1] = Normalized;
-                    for (int j = 0; j<i-1 ; j++)
-                        MultiWordBuffer.takeFirst();
                 }
-            }
-
-            if (MultiWordBuffer.size() >= Processor->maxAutoCorrectTokens()){
-                Output.append(" ");
-                Output.append(MultiWordBuffer.takeFirst());
-            }
+            }while(Output.trimmed() != Phrase.trimmed());
         }
-        Phrase = Output;
-    }
+    }while(Output.trimmed() != FinalPhrase.trimmed());
+
     return Output;
 }
 

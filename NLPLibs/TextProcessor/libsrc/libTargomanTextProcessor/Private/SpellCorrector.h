@@ -31,20 +31,23 @@ public:
     intfSpellCorrector(){this->Active = false;}
     virtual ~intfSpellCorrector(){}
 
-    inline bool active(){return this->Active;}
-    inline QString& autoCorrectFile(){return this->AutoCorrectFile;}
-    inline uint maxAutoCorrectTokens(){return this->MaxAutoCorrectTokens;}
+    inline bool active() const {return this->Active;}
+    inline const QHash<QString, QString>&  autoCorrectTerms(){return this->AutoCorrectTerms;}
+    inline size_t maxAutoCorrectTokens(){return this->MaxAutoCorrectTokens;}
 
 public:
     virtual bool init(const QVariantHash _settings) = 0;
     virtual QString process(const QStringList& _tokens) = 0;
-    virtual bool canBeCheckedInteractive(const QString& _inputWord) = 0;
+    virtual bool canBeCheckedInteractive(const QString& _inputWord) const = 0;
+    virtual void storeAutoCorrectTerm(const QString& _from, const QString& _to) = 0;
 
-public:
-    QHash<QString, QString>  AutoCorrectTerms;
+    virtual QString process(const QString& _token){
+        return this->AutoCorrectTerms.value(_token);
+    }
 
 protected:
-    uint  MaxAutoCorrectTokens;
+    QHash<QString, QString>  AutoCorrectTerms;
+    size_t  MaxAutoCorrectTokens;
     QString AutoCorrectFile;
     bool Active;
 };
