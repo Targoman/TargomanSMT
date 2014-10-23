@@ -40,12 +40,10 @@ TextProcessor::TextProcessor()
  */
 bool TextProcessor::init(const stuConfigs& _configs) const
 {
-    if (Normalizer::instance().init(_configs.NormalizationFile) &&
-            SpellCorrector::instance().init(_configs.SpellCorrector) &&
-            IXMLWriter::instance().init(_configs.AbbreviationsFile))
-        return false;
-    else
-        return false;
+    Normalizer::instance().init(_configs.NormalizationFile);
+    SpellCorrector::instance().init(_configs.SpellCorrector);
+    IXMLWriter::instance().init(_configs.AbbreviationsFile);
+    return true;
 }
 
 /**
@@ -65,19 +63,24 @@ QString TextProcessor::text2IXML(const QString &_inStr,
 {
     TargomanLogDebug(5,"ConvertToIXML Process Started");
 
-    if(ISO639isValid(_lang.toAscii().constData()) == false)
+    const char* LangCode = ISO639getAlpha2(_lang.toAscii().constData());
+
+    if(!LangCode || strlen(LangCode) == 0)
         throw exTextProcessor("Invalid language code. It must be in ISO639 format");
 
     QString IXML = IXMLWriter::instance().convert2IXML(
                 _inStr,
-                ISO639getAlpha3B(_lang.toAscii().constData()),
+                LangCode,
                 _lineNo,
                 _interactive,
                 _useSpellCorrecter);
 
-   /* foreach(const QString& Tag, _removingTags)
-        IXML.remove("<" + Tag + ">").remove("</"+Tag+">");*/
-    TargomanDebug(7, "[NO-TAGS]"<<IXML);
+    foreach(enuTextTags::Type Tag, _removingTags)
+        IXML.remove(
+                    QString("<%1>").arg(enuTextTags::toStr(Tag))).remove(
+                    QString("</%1>").arg(enuTextTags::toStr(Tag)));
+
+    TargomanDebug(7, "[REM-TAGS]"<<IXML);
     TargomanLogDebug(5,"ConvertToIXML Process Finished");
     return IXML;
 }
@@ -91,10 +94,12 @@ QString TextProcessor::text2RichIXML(const QString &_inStr, const QString &_lang
 {
     TargomanLogDebug(5,"ConvertToRichIXML Process Started");
 
-    if(ISO639isValid(_lang.toAscii().constData()) == false)
+    const char* LangCode = ISO639getAlpha2(_lang.toAscii().constData());
+
+    if(!LangCode || strlen(LangCode) == 0)
         throw exTextProcessor("Invalid language code. It must be in ISO639 format");
 
-    QString IXML = IXMLWriter::instance().convert2IXML(_inStr, ISO639getAlpha3B(_lang.toAscii().constData()));
+    QString IXML = IXMLWriter::instance().convert2IXML(_inStr, LangCode);
 
     //TODO convert tags to rich tags
 
@@ -124,18 +129,21 @@ QString TextProcessor::richIXML2Text(const QString &_ixml) const
 }
 
 /**
- * @brief TextProcessor::normalizeText
- * @param _input
- * @return
+ * @brief TextProcessor::normalizeText Normalizes based on normalization rules. It will also correct miss-spells if
+ *        _lang is provided
+ * @param _input Input phrase to be normalized
+ * @param _interactive In interactive mode new entries can be learnt
+ * @param _lang An ISO639 Language code. If provided input phrase will be spell checked
+ * @return Normalized phrase
  */
 QString TextProcessor::normalizeText(const QString _input, bool _interactive, const QString &_lang) const
 {
     QString Output = Normalizer::instance().normalize(_input, _interactive);
     if (_lang.size()){
-        if(ISO639isValid(_lang.toAscii().constData()) == false)
+        const char* LangCode = ISO639getAlpha2(_lang.toAscii().constData());
+        if(!LangCode || strlen(LangCode) == 0)
             throw exTextProcessor("Invalid language code. It must be in ISO639 format");
-        Output =
-                SpellCorrector::instance().process(ISO639getAlpha3B(_lang.toAscii().constData()), Output, _interactive);
+        Output = SpellCorrector::instance().process(LangCode, Output, _interactive);
     }
 
     return Output;
