@@ -4,7 +4,7 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
@@ -105,9 +105,16 @@ QString Normalizer::normalize(const QChar &_char,
     if (DiacriticIndex >= 0)
         return this->NormalizedDiacritics.at(DiacriticIndex);
 
-    //Accept Currency characters
-    if (Char.category() == QChar::Symbol_Currency)
+    //Accept Currency, Math and special symbol characters
+    if (Char.category() == QChar::Symbol_Currency ||
+            Char.category() == QChar::Symbol_Math ||
+            Char.category() == QChar::Symbol_Other)
         return this->LastChar = Char;
+
+    //Convert all special forms of quote and dquote to ASCII
+    if (Char.category() == QChar::Punctuation_InitialQuote ||
+        Char.category() == QChar::Punctuation_FinalQuote)
+        return this->LastChar = '"';
 
     //Accept characters defined as white
     if (this->WhiteList.contains (Char))
@@ -139,20 +146,24 @@ QString Normalizer::normalize(const QChar &_char,
 
     //Remove all special control characters and character modifiers
     if (Char.category() == QChar::Letter_Modifier ||
-        Char.category() == QChar::Symbol_Modifier ||
-        Char.category() == QChar::Other_NotAssigned ||
+        Char.category() == QChar::Symbol_Modifier)
+        return this->LastChar = QChar();
+
+    if (Char.category() == QChar::Other_NotAssigned ||
         Char.category() == QChar::Other_PrivateUse ||
         Char.category() == QChar::Mark_NonSpacing ||
         Char.category() == QChar::Other_Surrogate)
-        return "";
+        return this->LastChar = SYMBOL_REMOVED;
 
     enuUnicodeCharScripts::Type CharacterScript = (enuUnicodeCharScripts::Type)QUnicodeTables::script(Char.unicode());
 
     //Check if there are sepcial normalizers
     if (ScriptBasedNormalizers[CharacterScript]){
         QString Normalized = ScriptBasedNormalizers[CharacterScript](Char.unicode());
-        if (Normalized.size())
+        if (Normalized.size()){
+            this->LastChar = Normalized.at(Normalized.size() - 1);
             return Normalized;
+        }
     }
 
     if(_interactive){
@@ -168,7 +179,7 @@ QString Normalizer::normalize(const QChar &_char,
         bool ValidSelection=false;
         while (!ValidSelection)
         {
-            std::cout<<"Press: (1: delete, 2: Accept, 3: Normalize, 4: Add as Space, 5: Add as ZWNJ...)"<<std::endl;
+            std::cout<<"Press: (1: delete, 2: Accept, 3: Normalize, 4: Add as Space, 5: Add as ZWNJ, 6: Not Sure...)"<<std::endl;
             QString Result = QChar((char)std::cin.get());
             switch(Result.toInt ())
             {
@@ -192,6 +203,10 @@ QString Normalizer::normalize(const QChar &_char,
                 this->add2Configs (enuDicType::ZeroWidthSpaceCharacters, Char);
                 ValidSelection = true;
                 break;
+            case 6:
+                this->add2Configs (enuDicType::NotSure, Char);
+                ValidSelection = true;
+                break;
             case 3:
             {
                 std::string Buffer;
@@ -208,7 +223,7 @@ QString Normalizer::normalize(const QChar &_char,
                     continue;
 
                 if (TempBuffer.size() > 1){
-                    qCritical("Invalid normalization character. Modify config file manually");
+                    qCritical("Invalid normalization character. Modify config file manually to insert multi-char modifiers");
                     continue;
                 }
                 this->ReplacingTable.insert(Char,TempBuffer.at(0));
@@ -217,7 +232,6 @@ QString Normalizer::normalize(const QChar &_char,
                 break;
             }
             default:
-            //    qCritical("Invalid Selection.");
                 break;
             }
         }
@@ -275,6 +289,8 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
                 SectionFound=true;
             else if(SectionFound && DicStep != _type){
                 switch(_type){
+                case enuDicType::NotSure:
+                    ConfigFileOut.write(("NEW " + this->char2Str(_originalChar) + "\n").toUtf8());
                 case enuDicType::WhiteList:
                 case enuDicType::RemovingCharcters:
                 case enuDicType::SpaceCharacters:
@@ -323,7 +339,7 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
 QString Normalizer::char2Str(const QChar &_char)
 {
     if ((_char.isLetterOrNumber() || _char.toAscii() == _char) && _char != '=')
-        return _char;
+        return _char + QString(" ##<0x%1>").arg(QString::number(_char.unicode(),16).toAscii().toUpper().constData());
     else
         return QString("<0x%1>").arg(QString::number(_char.unicode(),16).toAscii().toUpper().constData());
 }
@@ -338,25 +354,17 @@ QChar Normalizer::str2QChar(QString _str, quint16 _line)
         throw exNormalizer(("Invalid normalization character at line "+ QString::number(_line)+": <" + _str + ">"));
 }
 
-bool Normalizer::init(const QString &_configFile)
+void Normalizer::init(const QString &_configFile)
 {
-    if (_configFile.isEmpty()){
-        this->ReplacingTable.clear();
-        this->WhiteList.clear();
-        this->RemovingList.clear();
-        this->SpaceCharList.clear();
-        this->ZeroWidthSpaceCharList.clear();
-        return false;
-    }
+    this->ConfigFile = _configFile;
 
-    QFile ConfigFile(_configFile);
+    QFile ConfigFile(this->ConfigFile);
     ConfigFile.open(QIODevice::ReadOnly);
     if(!ConfigFile.isReadable ())
         throw exNormalizer("Unable to open normalization file.");
 
     QTextStream ConfigStream(&ConfigFile);
     ConfigStream.setCodec("UTF-8");
-    this->ConfigFile = _configFile;
 
     QString ConfigLine;
     int CommentIndex = -1;
@@ -438,7 +446,6 @@ bool Normalizer::init(const QString &_configFile)
                             this->SpaceCharList.size ()).arg(
                             this->ZeroWidthSpaceCharList.size ()).arg(
                             this->ReplacingTable.size()));
-    return true;
 }
 
 }

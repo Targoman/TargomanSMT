@@ -33,13 +33,12 @@ SpellCorrector::SpellCorrector()
     this->Processors.insert("fa", new clsPersianSpellCorrector);
 }
 
-bool SpellCorrector::init(const QHash<QString, QVariantHash>& _settings)
+void SpellCorrector::init(const QHash<QString, QVariantHash>& _settings)
 {
     foreach(const QString& Lang, _settings.keys()){
         intfSpellCorrector* SpellChecker = this->Processors.value(Lang);
         if (SpellChecker){
-            if (SpellChecker->init(_settings.value(Lang)) == false)
-                return false;
+            SpellChecker->init(_settings.value(Lang));
         }else{
             TargomanLogWarn(5, QString("Spell Corrector for %1(%2) is not available").arg(
                                 Lang).arg(ISO639getName(Lang.toAscii().constData())));
@@ -52,8 +51,6 @@ bool SpellCorrector::init(const QHash<QString, QVariantHash>& _settings)
             this->Processors[Lang] = NULL;
         }
     }
-
-    return true;
 }
 
 QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, bool _interactive)

@@ -17,8 +17,8 @@
 #include <QVariantHash>
 #include "ISO639.h" //From https://github.com/softnhard/ISO639
 
-#include "libTargomanTextProcessor/TextProcessor.h"
-#include "libTargomanTextProcessor/Private/Normalizer.h"
+#include "../TextProcessor.h"
+#include "../Private/Normalizer.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -86,7 +86,7 @@ public:
     static SpellCorrector& instance() {return Q_LIKELY(Instance) ? *Instance : *(Instance = new SpellCorrector);}
 
     QString process(const QString& _lang, const QString& _inputStr, bool _interactive);
-    bool init(const QHash<QString, QVariantHash> &_settings);
+    void init(const QHash<QString, QVariantHash> &_settings);
 
 private:
     SpellCorrector();

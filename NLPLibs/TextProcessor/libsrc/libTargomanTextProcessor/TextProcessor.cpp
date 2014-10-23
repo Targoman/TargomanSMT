@@ -116,6 +116,7 @@ QString TextProcessor::text2RichIXML(const QString &_inStr, const QString &_lang
 QString TextProcessor::ixml2Text(const QString &_ixml) const
 {
     //TODO detokenize
+    return "";
 }
 
 /**
@@ -126,6 +127,7 @@ QString TextProcessor::ixml2Text(const QString &_ixml) const
 QString TextProcessor::richIXML2Text(const QString &_ixml) const
 {
     //TODO detokenize
+    return "";
 }
 
 /**

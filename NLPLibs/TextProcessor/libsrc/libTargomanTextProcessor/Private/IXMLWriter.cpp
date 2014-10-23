@@ -99,7 +99,7 @@ IXMLWriter::IXMLWriter()
     this->RxPersianNumber = QRegExp(QString::fromUtf8("([\u0600-\u06ff])(\\d+)"));
 }
 
-bool IXMLWriter::init(const QString &_configFile)
+void IXMLWriter::init(const QString &_configFile)
 {
     QString AbbreviationDetectionRegex =
             QString::fromUtf8("\\b(Mr\\.");
@@ -121,7 +121,6 @@ bool IXMLWriter::init(const QString &_configFile)
 
     //        this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=[^\\w]|$)");
     this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=\\b)");
-    return true;
 }
 
 QString IXMLWriter::convert2IXML(const QString &_inStr,
@@ -162,6 +161,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     QStringList LstNumberRight;
     QStringList LstSuffixes;
     QStringList LstOrderedItem;
+    QStringList LstSymbols;
 
     TargomanDebug(7,"[NRM] "<<OutputPhrase);
     OutputPhrase.replace("&amp;", " & ").replace("&gt;", " > ").replace("&lt;", " < ");
@@ -224,6 +224,23 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
         else
             OutputPhrase.append(Char);
     }
+
+    QStringList Tokens = InputPhrase.split(" ",QString::SkipEmptyParts);
+    for (int i=0; i<Tokens.size(); i++) {
+        bool IsSymbol = true;
+        foreach (const QChar& Ch, Tokens[i])
+            if (Ch.category() != QChar::Symbol_Modifier &&
+                    Ch.category() != QChar::Symbol_Math &&
+                    Ch.category() != QChar::Symbol_Other){
+                IsSymbol = false;
+                break;
+            }
+        if (IsSymbol){
+            LstSymbols.append(Tokens[i]);
+            Tokens[i] == " TGMNSYM ";
+        }
+    }
+
     TargomanDebug(7,"[TKN] "<<OutputPhrase);
 
     if (_useSpellCorrecter)
@@ -233,31 +250,33 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     OutputPhrase.clear();
     foreach (const QString& Token, InputPhrase.split(" ",QString::SkipEmptyParts)) {
         if(Token == "TGMNEML")
-            OutputPhrase.append(" <email>"+LstEmail.takeFirst()+"</email> ");
+            replaceTag(OutputPhrase, enuTextTags::Email, LstEmail.takeFirst());
         else if(Token == "TGMNURL")
-            OutputPhrase.append(" <url>"+LstURL.takeFirst()+"</url> ");
+            replaceTag(OutputPhrase, enuTextTags::URL, LstURL.takeFirst());
         else if(Token == "TGMNABD")
-            OutputPhrase.append(" <abbr>"+LstAbbr[0].takeFirst()+"</abbr> ");
+            replaceTag(OutputPhrase, enuTextTags::Abbreviation, LstAbbr[0].takeFirst());
         else if(Token == "TGMNABR")
-            OutputPhrase.append(" <abbr>"+LstAbbr[1].takeFirst()+"</abbr> ");
+            replaceTag(OutputPhrase, enuTextTags::Abbreviation, LstAbbr[1].takeFirst());
         else if(Token == "TGMNABS")
-            OutputPhrase.append(" <abbr>"+LstAbbr[2].takeFirst()+"</abbr> ");
+            replaceTag(OutputPhrase, enuTextTags::Abbreviation, LstAbbr[2].takeFirst());
         else if(Token == "TGMNMDT")
-            OutputPhrase.append(QString::fromUtf8("…"));
+            OutputPhrase.append(MULTI_DOT);
         else if(Token == "TGMNDAT")
-            OutputPhrase.append(" <date>"+LstDate.takeFirst()+"</date> ");
-        else if(Token == "TGMNORD")
-            OutputPhrase.append(" <ord>"+LstOrdinal.takeFirst()+"</ord> ");
+            replaceTag(OutputPhrase, enuTextTags::Date, LstDate.takeFirst());
         else if(Token == "TGMNTIM")
-            OutputPhrase.append(" <time>"+LstTime.takeFirst()+"</time> ");
+            replaceTag(OutputPhrase, enuTextTags::Time, LstTime.takeFirst());
+        else if(Token == "TGMNORD")
+            replaceTag(OutputPhrase, enuTextTags::Ordinals, LstOrdinal.takeFirst());
         else if(Token == "TGMNSNM")
-            OutputPhrase.append(" <snum>"+LstSpecialNumber.takeFirst() + "</snum> ");
+            replaceTag(OutputPhrase, enuTextTags::SpecialNumber, LstSpecialNumber.takeFirst());
         else if(Token == "TGMNNUL")
-            OutputPhrase.append(" <num>"+LstNumberLeft.takeFirst()+"</num> ");
+            replaceTag(OutputPhrase, enuTextTags::Number, LstNumberLeft.takeFirst());
         else if(Token == "TGMNNUR")
-            OutputPhrase.append(" <num>"+LstNumberRight.takeFirst()+"</num> ");
+            replaceTag(OutputPhrase, enuTextTags::Number, LstNumberRight.takeFirst());
         else if(Token == "TGMNOLI")
-            OutputPhrase.append(" <oli>"+LstOrderedItem.takeFirst()+"</oli> ");
+            replaceTag(OutputPhrase, enuTextTags::OrderedListItem, LstOrderedItem.takeFirst());
+        else if(Token == "TGMNSYM")
+            replaceTag(OutputPhrase, enuTextTags::Symbol, LstSymbols.takeFirst());
         else if(Token == "TGMNSFX")
             OutputPhrase.append(LstSuffixes.takeFirst());
         else if(Token == "<")

@@ -25,6 +25,11 @@ SOURCES += libID.cpp \
     libTargomanTextProcessor/Private/SpellCheckers/clsPersianSpellCorrector.cpp \
     libTargomanTextProcessor/Private/IXMLWriter.cpp
 
+OTHER_FILES += \
+    conf/PersianSpellCorrector.conf \
+    conf/Abbreviations.tbl \
+    conf/Normalization.conf
+
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 ################################################################################
@@ -50,7 +55,6 @@ build_static {
 
 QMAKE_POST_LINK += mkdir -p $$BaseLibraryIncludeFolder/lib$$ProjectName;
 QMAKE_POST_LINK += cp -vf lib$$ProjectName/*.h lib$$ProjectName/*.hpp $$BaseLibraryIncludeFolder/lib$$ProjectName 2>/dev/null|| : ;
+QMAKE_POST_LINK += cp -vf conf/* $$BaseConfigFolder/ 2>/dev/null|| : ;
 
-OTHER_FILES += \
-    conf/PersianSpellCorrector.conf
 

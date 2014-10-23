@@ -4,7 +4,7 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
@@ -31,7 +31,8 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuTextTags)
     OrderedListItem,
     Time,
     Date,
-    Ordinals
+    Ordinals,
+    Symbol
 TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "num",
     "nums",
@@ -41,7 +42,8 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "oli",
     "time",
     "date",
-    "ord"
+    "ord",
+    "sym"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTextProcessor, Targoman::Common::exTargomanBase);

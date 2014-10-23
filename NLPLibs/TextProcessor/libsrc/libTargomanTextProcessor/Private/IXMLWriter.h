@@ -16,7 +16,7 @@
 #include <QTextStream>
 #include <QRegExp>
 
-#include "libTargomanTextProcessor/TextProcessor.h"
+#include "../TextProcessor.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -28,7 +28,7 @@ class IXMLWriter
 {
 public:
     static IXMLWriter& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new IXMLWriter));}
-    bool init(const QString &_configFile);
+    void init(const QString &_configFile);
 
     QString convert2IXML(const QString& _inStr,
                          const QString& _lang = "",
@@ -42,6 +42,11 @@ private:
                         const QString &_mark,
                         QStringList *_listOfMatches,
                         quint8 _capID = 0);
+
+    inline void replaceTag(QString& _output, enuTextTags::Type _type, const QString& _value){
+        _output.append(QString("<%1>%2</%1>").arg(enuTextTags::toStr(_type)).arg(_value));
+    }
+
 
 private:
     IXMLWriter();

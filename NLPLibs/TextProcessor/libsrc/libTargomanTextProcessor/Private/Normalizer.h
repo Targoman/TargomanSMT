@@ -17,7 +17,7 @@
 #include <QSet>
 #include <QStringList>
 
-#include "libTargomanTextProcessor/TextProcessor.h"
+#include "../TextProcessor.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -31,6 +31,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuDicType)
     RemovingCharcters,
     SpaceCharacters,
     ZeroWidthSpaceCharacters,
+    NotSure,
     EndOfFile
 TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "WhiteList",
@@ -38,15 +39,18 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "RemovingCharacters",
     "SpaceCharacters",
     "ZeroWidthSpaceCharacters",
+    "NotSure",
     "EOF"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
-#define ARABIC_ZWNJ  QChar(0x200C)
+#define ARABIC_ZWNJ     QChar(0x200C)
+#define MULTI_DOT       QString::fromUtf8("…")
+#define SYMBOL_REMOVED  QChar(0x2205)
 
 class Normalizer
 {
 public:
-    bool init(const QString& _configFile);
+    void init(const QString& _configFile);
     static Normalizer& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new Normalizer));}
 
     QString normalize(const QChar& _char,
