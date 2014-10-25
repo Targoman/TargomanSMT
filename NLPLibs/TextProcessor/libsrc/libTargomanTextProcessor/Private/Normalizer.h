@@ -64,7 +64,7 @@ public:
 
     QString normalize(const QString& _string, bool _interactive = false);
 
-    void updateBinTable(const QString& _binFilePath);
+    void updateBinTable(const QString& _binFilePath, bool _interactive = false);
 
     static QString fullTrim(const QString& _str) { return _str.trimmed().remove(ARABIC_ZWNJ);}
 
@@ -78,7 +78,7 @@ private:
 private:
     static Normalizer*      Instance;
     QHash<QChar,QString>    ReplacingTable;
-    QVariantHash            BinTable;
+    QList<QVariant>         BinTable;
     QSet<QChar>             WhiteList;
     QSet<QChar>             RemovingList;
     QSet<QChar>             SpaceCharList;

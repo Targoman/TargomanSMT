@@ -15,6 +15,9 @@
 #include "libTargomanTextProcessor/Private/Normalizer.h"
 #include "libTargomanTextProcessor/Private/Unicode.hpp"
 using namespace Targoman::NLPLibs::Private;
+#include "libTargomanCommon/Logger.h"
+using namespace Targoman::Common;
+
 #include <QChar>
 #include <QDebug>
 #include <QString>
@@ -27,10 +30,30 @@ int main(int _argc, char *_argv[])
     Q_UNUSED(_argc)
     Q_UNUSED(_argv)
 
-    try{
+   try{
+        QString ActorUUID;
+
+        TARGOMAN_REGISTER_ACTOR("testLibCommon");
+        OUTPUT_SETTINGS_DEBUG.set(10,true,true,true);
+        OUTPUT_SETTINGS_ERROR.set(10,true,true,true);
+        OUTPUT_SETTINGS_WARNING.set(10,true,true,true);
+        OUTPUT_SETTINGS_INFO.set(10,true,true,true);
+        OUTPUT_SETTINGS_HAPPY.set(10,true,true,true);
+        Targoman::Common::Logger::instance().init("log.log");
+        Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = true;
+
+
         Targoman::NLPLibs::Private::Normalizer::instance().init("../conf/Normalization.conf");
 
-        for (int i=0x27B1; i<=0xFFFF; i++){
+        Targoman::NLPLibs::Private::Normalizer::instance().updateBinTable("/tmp/n.txt");
+
+
+        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/n.txt",true);
+
+        qDebug()<<QString::fromUtf8("ｐ = P? :")<<Targoman::NLPLibs::Private::Normalizer::instance().normalize(QString::fromUtf8("ｐ"));
+
+
+/*        for (int i=0x27B1; i<=0xFFFF; i++){
             QChar C = QChar(i);
             QString Normalized = Targoman::NLPLibs::Private::Normalizer::instance().normalize(C,QChar(),true,0,"",0);
 
@@ -47,10 +70,11 @@ int main(int _argc, char *_argv[])
                             ((Normalized == C) ?
                                  "INTACT" :
                                  QString("{%1}").arg(Normalized))).toUtf8().constData()<<std::endl;
-        }
-    }catch(exNormalizer &e){
+        }/**/
+    }catch(Targoman::Common::exTargomanBase &e){
         qDebug()<<e.what();
     }
+    return 0;
 }
 
 

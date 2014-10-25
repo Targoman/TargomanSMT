@@ -14,7 +14,9 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QSettings>
 #include <iostream>
+#include <QCryptographicHash>
 
 #include "Unicode.hpp"
 
@@ -86,7 +88,7 @@ QString Normalizer::normalize(const QChar &_char,
     ////                        Using Binary Table                           ///
     ////////////////////////////////////////////////////////////////////////////
     if (this->BinaryMode){
-        QString Normalized = this->BinTable.value(Char).toString();
+        QString Normalized = this->BinTable.at(Char.unicode()).toString();
         if (Normalized.size()){
             this->LastChar = Normalized.at(Normalized.size() - 1);
             if (Normalized.size() > 1)
@@ -374,7 +376,7 @@ QList<QChar> Normalizer::str2QChar(QString _str, quint16 _line, bool _allowRange
         if(_allowRange){
             uint RangeStart = _str.split("-").first().replace("<0x","").replace(">","").toUInt(NULL,16);
             uint RangeEnd = _str.split("-").last().replace("<0x","").replace(">","").toUInt(NULL,16);
-            for (int i=RangeStart; i<=RangeEnd;i++)
+            for (uint i=RangeStart; i<=RangeEnd;i++)
                 Chars.append(QChar(i));
         }else
             throw exNormalizer(("Invalid normalization character at line "+ QString::number(_line)+": <" + _str + ">"));
@@ -389,9 +391,26 @@ QList<QChar> Normalizer::str2QChar(QString _str, quint16 _line, bool _allowRange
 void Normalizer::init(const QString &_configFile, bool _binaryMode)
 {
     this->ConfigFile = _configFile;
+    this->BinaryMode = _binaryMode;
 
     if (_binaryMode){
-        //loadBinaryFile;
+        QFile BinFile(_configFile);
+        BinFile.open(QFile::ReadOnly);
+        if (!BinFile.isReadable())
+            throw exNormalizer("Unable to open " + _configFile + " for reading");
+
+        TargomanInlineInfo(5, "Reading Normalization Bin File...");
+        QByteArray MD5 = BinFile.read(32);
+
+        QByteArray Buffer = BinFile.readAll();
+        if (QCryptographicHash::hash(Buffer, QCryptographicHash::Md5).toHex() != MD5){
+            TargomanFinishInlineInfo(TARGOMAN_COLOR_ERROR, "Corrupted");
+            throw exNormalizer("Seems taht binary table is corrupted");
+        }
+
+        QDataStream Stream(&Buffer, QIODevice::ReadOnly);
+        Stream>>this->BinTable;
+        TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, "Loaded");
         return;
     }
 
@@ -497,8 +516,38 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
                             this->ReplacingTable.size()));
 }
 
-void Normalizer::updateBinTable(const QString &_binFilePath)
+void Normalizer::updateBinTable(const QString &_binFilePath, bool _interactive)
 {
+    if (this->BinaryMode)
+        throw exNormalizer("Unable to update binary file whn working in binary mode.");
+
+    QFile BinFile(_binFilePath);
+    BinFile.open(QFile::WriteOnly);
+    if (!BinFile.isWritable())
+        throw exNormalizer("Unable to open " + _binFilePath + " for writing");
+
+    TargomanInlineInfo(5, "Creating Map...");
+
+    QList<QVariant> Map;
+    Map.append(SYMBOL_REMOVED);
+    QChar Char;
+    for (int i=1; i<=0xFFFF; i++){
+        Char = QChar(i);
+        Map.append(this->normalize(Char, QChar(),_interactive,-1,"NO_PHRASE",0));
+    }
+    TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, "Done");
+    TargomanInlineInfo(5, "Writing to disk...");
+    QByteArray Buffer;
+    QDataStream OutStream(&Buffer, QIODevice::WriteOnly);
+    OutStream<<Map;
+
+
+    BinFile.write(QCryptographicHash::hash(Buffer, QCryptographicHash::Md5).toHex());
+    BinFile.write(Buffer);
+
+    TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, "Done");
+
+    TargomanLogHappy(5, "Normalization binTable written to" + _binFilePath);
 }
 
 }

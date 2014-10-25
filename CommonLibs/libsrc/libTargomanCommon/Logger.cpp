@@ -21,6 +21,7 @@
 
 #include "Logger.h"
 #include "Private/Logger_p.h"
+#include "exTargomanBase.h"
 
 namespace Targoman {
 namespace Common {
@@ -44,7 +45,7 @@ bool Logger::init(const QString &_fileName,
                   bool _show)
 {
     qRegisterMetaType<Targoman::Common::enuLogType::Type>("Targoman::Common::enuLogType::Type");
-    this->pPrivate->LogFile.setFileName(_fileName);
+    this->pPrivate->LogFile.setFileName(_fileName.size() ? _fileName : "/dev/null");
     this->pPrivate->LogSettings[enuLogType::Debug] = _logSettings.value(enuLogType::Debug);
     this->pPrivate->LogSettings[enuLogType::Error] = _logSettings.value(enuLogType::Error);
     this->pPrivate->LogSettings[enuLogType::Warning] = _logSettings.value(enuLogType::Warning);
@@ -75,18 +76,20 @@ void Logger::write(const QString &_actorID,
     LogMessage+= QString("[%1]").arg(enuLogType::toStr(_type));
     LogMessage += "[" + QString::number(_level) + "]";
 
-    LogMessage += QString("[%1] ").arg(Actor.isEmpty() ? "N/A" : Actor);
+    LogMessage += QString("[%1] ").arg(Actor.isEmpty() ? "LOG" : Actor);
 
     if (_newLine)
         LogMessage += _message+"\n";
 
+
     QMutexLocker Locker(&this->pPrivate->mxLog);
-    if (!this->pPrivate->LogFile.isOpen() ||
-            !this->pPrivate->LogFile.isWritable())
-        this->pPrivate->open();
+    if (this->pPrivate->LogFile.fileName().size()){
+        if (!this->pPrivate->LogFile.isOpen() ||
+                !this->pPrivate->LogFile.isWritable())
+            this->pPrivate->open();
 
-    this->pPrivate->LogFile.write(LogMessage);
-
+        this->pPrivate->LogFile.write(LogMessage);
+    }
     switch(_type){
     case enuLogType::Debug:
         fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_DEBUG, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
@@ -107,8 +110,10 @@ void Logger::write(const QString &_actorID,
         break;
     }
 
-    this->pPrivate->LogFile.flush();
-    this->pPrivate->rotateLog();
+    if (this->pPrivate->LogFile.fileName().size()){
+        this->pPrivate->LogFile.flush();
+        this->pPrivate->rotateLog();
+    }
     Locker.unlock();
     emit this->sigLogAdded(QDateTime().currentDateTime(), _actorID, _type, _level, _message);
 }
@@ -186,7 +191,7 @@ bool Private::LoggerPrivate::open()
     return true;
 }
 
-void Targoman::Common::Private::LoggerPrivate::rotateLog()
+void Private::LoggerPrivate::rotateLog()
 {
     if (((quint64)this->LogFile.size() > this->MaxFileSize) ) {
         TargomanDebug(7, "Rotating Logs");
@@ -196,7 +201,7 @@ void Targoman::Common::Private::LoggerPrivate::rotateLog()
 #ifdef Q_OS_UNIX
         QProcess::startDetached("gzip",QStringList(NewFileName));
 #else
-        //TODO Compressing files on OSs other than linux is not yet implemented
+        throw exTargomanNotImplemented("Compressing files on OSs other than linux is not yet implemented");
 #endif
     }
 }
