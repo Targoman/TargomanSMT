@@ -213,10 +213,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     InputPhrase = OutputPhrase;
     OutputPhrase.clear();
     foreach (const QChar& Char, _inStr){
-        if (Char.isPunct() ||
-                Char == '`' ||
-                Char == '<' ||
-                Char == '>'){
+        if (Char.isLetterOrNumber() == false){
             OutputPhrase.append(' ');
             OutputPhrase.append(Char);
             OutputPhrase.append(' ');

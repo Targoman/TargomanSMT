@@ -4,7 +4,7 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
@@ -528,18 +528,18 @@ void initUnicodeNormalizers(){
     ///        http://www.unicode.org/charts/PDF/U0530.pdf        ///
     ///        http://www.unicode.org/charts/PDF/UFB00.pdf        ///
     /////////////////////////////////////////////////////////////////
-    UN_Cyrillic.insert(0xFB00,"ff");
+    UN_Latin.insert(0xFB00,"ff");
 
-    UN_Cyrillic.insert(0xFB01,"fi");
+    UN_Latin.insert(0xFB01,"fi");
 
-    UN_Cyrillic.insert(0xFB02,"fl");
+    UN_Latin.insert(0xFB02,"fl");
 
-    UN_Cyrillic.insert(0xFB03,"ffi");
+    UN_Latin.insert(0xFB03,"ffi");
 
-    UN_Cyrillic.insert(0xFB04,"ffl");
+    UN_Latin.insert(0xFB04,"ffl");
 
-    UN_Cyrillic.insert(0xFB05,"st");
-    UN_Cyrillic.insert(0xFB06,"st");
+    UN_Latin.insert(0xFB05,"st");
+    UN_Latin.insert(0xFB06,"st");
 
     /////////////////////////////////////////////////////////////////
     ///                        Latin                              ///
@@ -1169,6 +1169,12 @@ void initUnicodeNormalizers(){
     UN_Latin.insert(0x2C7E, "S");
     UN_Latin.insert(0x2C7F, "Z");
 
+    UN_Latin.insert(0xFFE0, QString::fromUtf8("¢"));
+    UN_Latin.insert(0xFFE1, QString::fromUtf8("£"));
+
+    UN_Latin.insert(0xFFE5, QString::fromUtf8("¥"));
+    UN_Latin.insert(0xFFE6, QString::fromUtf8("₩"));
+
 
     /////////////////////////////////////////////////////////////////
     ///                          Arabic                           ///
@@ -1178,10 +1184,25 @@ void initUnicodeNormalizers(){
     ///        http://www.unicode.org/charts/PDF/UFB50.pdf        ///
     ///        http://www.unicode.org/charts/PDF/UFE70.pdf        ///
     /////////////////////////////////////////////////////////////////
+    UN_Arabic.insert(0xFE81,QString::fromUtf8("آ"));
+
+    UN_Arabic.insert(0xFE8D,QString::fromUtf8("ا"));
+    UN_Arabic.insert(0xFE8E,QString::fromUtf8("ا"));
+
     UN_Arabic.insert(0x672,QString::fromUtf8("أ"));
     UN_Arabic.insert(0x675,QString::fromUtf8("أ"));
+    UN_Arabic.insert(0xFB50,QString::fromUtf8("أ"));
+    UN_Arabic.insert(0xFB51,QString::fromUtf8("أ"));
+    UN_Arabic.insert(0xFE83,QString::fromUtf8("أ"));
+    UN_Arabic.insert(0xFE84,QString::fromUtf8("أ"));
 
     UN_Arabic.insert(0x673,QString::fromUtf8("إ"));
+    UN_Arabic.insert(0x673,QString::fromUtf8("إ"));
+    UN_Arabic.insert(0x673,QString::fromUtf8("إ"));
+    UN_Arabic.insert(0xFE87,QString::fromUtf8("إ"));
+    UN_Arabic.insert(0xFE88,QString::fromUtf8("إ"));
+
+    UN_Arabic.insert(0xFE82,QString::fromUtf8("ا"));
 
     UN_Arabic.insert(0x66E,QString::fromUtf8("ب"));
     UN_Arabic.insert(0x67B,QString::fromUtf8("ب"));
@@ -1191,21 +1212,79 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x754,QString::fromUtf8("ب"));
     UN_Arabic.insert(0x755,QString::fromUtf8("ب"));
     UN_Arabic.insert(0x756,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFB52,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFB53,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFB54,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFB55,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFE8F,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFE90,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFE91,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFE92,QString::fromUtf8("ب"));
+
+    UN_Arabic.insert(0xFB56,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB57,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB58,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB59,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB5A,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB5B,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB5C,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB5D,QString::fromUtf8("پ"));
 
     UN_Arabic.insert(0x679,QString::fromUtf8("ت"));
     UN_Arabic.insert(0x67A,QString::fromUtf8("ت"));
     UN_Arabic.insert(0x67C,QString::fromUtf8("ت"));
     UN_Arabic.insert(0x67F,QString::fromUtf8("ت"));
     UN_Arabic.insert(0x753,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB5E,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB5F,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB60,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB61,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB62,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB63,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB64,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB65,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB66,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB67,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB68,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB69,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFE95,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFE96,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFE97,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFE98,QString::fromUtf8("ت"));
 
     UN_Arabic.insert(0x67D,QString::fromUtf8("ث"));
     UN_Arabic.insert(0x751,QString::fromUtf8("ث"));
+    UN_Arabic.insert(0xFE99,QString::fromUtf8("ث"));
+    UN_Arabic.insert(0xFE9A,QString::fromUtf8("ث"));
+    UN_Arabic.insert(0xFE9B,QString::fromUtf8("ث"));
+    UN_Arabic.insert(0xFE9C,QString::fromUtf8("ث"));
 
     UN_Arabic.insert(0x683,QString::fromUtf8("ج"));
     UN_Arabic.insert(0x684,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB72,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB73,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB74,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB75,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB76,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB77,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB78,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFE9D,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFE9E,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFE9F,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFEA0,QString::fromUtf8("ج"));
 
     UN_Arabic.insert(0x687,QString::fromUtf8("چ"));
     UN_Arabic.insert(0x6BF,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB78,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB79,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB7A,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB7B,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB7C,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB7D,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB7E,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB7F,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB80,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB81,QString::fromUtf8("چ"));
 
     UN_Arabic.insert(0x681,QString::fromUtf8("ح"));
     UN_Arabic.insert(0x682,QString::fromUtf8("ح"));
@@ -1214,6 +1293,15 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x758,QString::fromUtf8("ح"));
     UN_Arabic.insert(0x76D,QString::fromUtf8("ح"));
     UN_Arabic.insert(0x76E,QString::fromUtf8("ح"));
+    UN_Arabic.insert(0xFEA1,QString::fromUtf8("ح"));
+    UN_Arabic.insert(0xFEA2,QString::fromUtf8("ح"));
+    UN_Arabic.insert(0xFEA3,QString::fromUtf8("ح"));
+    UN_Arabic.insert(0xFEA4,QString::fromUtf8("ح"));
+
+    UN_Arabic.insert(0xFEA5,QString::fromUtf8("خ"));
+    UN_Arabic.insert(0xFEA6,QString::fromUtf8("خ"));
+    UN_Arabic.insert(0xFEA7,QString::fromUtf8("خ"));
+    UN_Arabic.insert(0xFEA8,QString::fromUtf8("خ"));
 
     UN_Arabic.insert(0x688,QString::fromUtf8("د"));
     UN_Arabic.insert(0x689,QString::fromUtf8("د"));
@@ -1226,8 +1314,21 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6EE,QString::fromUtf8("د"));
     UN_Arabic.insert(0x759,QString::fromUtf8("د"));
     UN_Arabic.insert(0x75A,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFB82,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFB83,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFB84,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFB85,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFB86,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFB87,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFB88,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFB89,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFEA9,QString::fromUtf8("د"));
+    UN_Arabic.insert(0xFEAA,QString::fromUtf8("د"));
 
     UN_Arabic.insert(0x68C,QString::fromUtf8("ذ"));
+    UN_Arabic.insert(0xFC5B,QString::fromUtf8("ذ"));
+    UN_Arabic.insert(0xFEAB,QString::fromUtf8("ذ"));
+    UN_Arabic.insert(0xFEAC,QString::fromUtf8("ذ"));
 
     UN_Arabic.insert(0x691,QString::fromUtf8("ر"));
     UN_Arabic.insert(0x692,QString::fromUtf8("ر"));
@@ -1237,34 +1338,76 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x696,QString::fromUtf8("ر"));
     UN_Arabic.insert(0x6EF,QString::fromUtf8("ر"));
     UN_Arabic.insert(0x75B,QString::fromUtf8("ر"));
+    UN_Arabic.insert(0xFB8C,QString::fromUtf8("ر"));
+    UN_Arabic.insert(0xFB8D,QString::fromUtf8("ر"));
+    UN_Arabic.insert(0xFC5C,QString::fromUtf8("ر"));
+    UN_Arabic.insert(0xFEAD,QString::fromUtf8("ر"));
+    UN_Arabic.insert(0xFEAE,QString::fromUtf8("ر"));
 
     UN_Arabic.insert(0x697,QString::fromUtf8("ز"));
     UN_Arabic.insert(0x76B,QString::fromUtf8("ز"));
     UN_Arabic.insert(0x76C,QString::fromUtf8("ز"));
+    UN_Arabic.insert(0xFEAF,QString::fromUtf8("ز"));
+    UN_Arabic.insert(0xFEB0,QString::fromUtf8("ز"));
 
     UN_Arabic.insert(0x699,QString::fromUtf8("ژ"));
+    UN_Arabic.insert(0xFB8A,QString::fromUtf8("ژ"));
+    UN_Arabic.insert(0xFB8B,QString::fromUtf8("ژ"));
 
     UN_Arabic.insert(0x69A,QString::fromUtf8("س"));
     UN_Arabic.insert(0x69B,QString::fromUtf8("س"));
     UN_Arabic.insert(0x75C,QString::fromUtf8("س"));
     UN_Arabic.insert(0x76C,QString::fromUtf8("س"));
+    UN_Arabic.insert(0xFEB1,QString::fromUtf8("س"));
+    UN_Arabic.insert(0xFEB2,QString::fromUtf8("س"));
+    UN_Arabic.insert(0xFEB3,QString::fromUtf8("س"));
+    UN_Arabic.insert(0xFEB4,QString::fromUtf8("س"));
 
     UN_Arabic.insert(0x69C,QString::fromUtf8("ش"));
     UN_Arabic.insert(0x6FA,QString::fromUtf8("ش"));
+    UN_Arabic.insert(0xFEB5,QString::fromUtf8("ش"));
+    UN_Arabic.insert(0xFEB6,QString::fromUtf8("ش"));
+    UN_Arabic.insert(0xFEB7,QString::fromUtf8("ش"));
+    UN_Arabic.insert(0xFEB8,QString::fromUtf8("ش"));
 
     UN_Arabic.insert(0x69D,QString::fromUtf8("ص"));
     UN_Arabic.insert(0x69E,QString::fromUtf8("ص"));
+    UN_Arabic.insert(0xFEB9,QString::fromUtf8("ص"));
+    UN_Arabic.insert(0xFEBA,QString::fromUtf8("ص"));
+    UN_Arabic.insert(0xFEBB,QString::fromUtf8("ص"));
+    UN_Arabic.insert(0xFEBC,QString::fromUtf8("ص"));
 
     UN_Arabic.insert(0x6FB,QString::fromUtf8("ض"));
+    UN_Arabic.insert(0xFEBD,QString::fromUtf8("ض"));
+    UN_Arabic.insert(0xFEBE,QString::fromUtf8("ض"));
+    UN_Arabic.insert(0xFEBF,QString::fromUtf8("ض"));
+    UN_Arabic.insert(0xFEC0,QString::fromUtf8("ض"));
 
     UN_Arabic.insert(0x69F,QString::fromUtf8("ط"));
+    UN_Arabic.insert(0xFEC1,QString::fromUtf8("ط"));
+    UN_Arabic.insert(0xFEC2,QString::fromUtf8("ط"));
+    UN_Arabic.insert(0xFEC3,QString::fromUtf8("ط"));
+    UN_Arabic.insert(0xFEC4,QString::fromUtf8("ط"));
+
+    UN_Arabic.insert(0xFEC5,QString::fromUtf8("ظ"));
+    UN_Arabic.insert(0xFEC6,QString::fromUtf8("ظ"));
+    UN_Arabic.insert(0xFEC7,QString::fromUtf8("ظ"));
+    UN_Arabic.insert(0xFEC8,QString::fromUtf8("ظ"));
 
     UN_Arabic.insert(0x6A0,QString::fromUtf8("ع"));
     UN_Arabic.insert(0x75D,QString::fromUtf8("ع"));
     UN_Arabic.insert(0x75E,QString::fromUtf8("ع"));
     UN_Arabic.insert(0x75F,QString::fromUtf8("ع"));
+    UN_Arabic.insert(0xFEC9,QString::fromUtf8("ع"));
+    UN_Arabic.insert(0xFECA,QString::fromUtf8("ع"));
+    UN_Arabic.insert(0xFECB,QString::fromUtf8("ع"));
+    UN_Arabic.insert(0xFECC,QString::fromUtf8("ع"));
 
     UN_Arabic.insert(0x6FC,QString::fromUtf8("غ"));
+    UN_Arabic.insert(0xFECD,QString::fromUtf8("غ"));
+    UN_Arabic.insert(0xFECE,QString::fromUtf8("غ"));
+    UN_Arabic.insert(0xFECF,QString::fromUtf8("غ"));
+    UN_Arabic.insert(0xFED0,QString::fromUtf8("غ"));
 
     UN_Arabic.insert(0x6A1,QString::fromUtf8("ف"));
     UN_Arabic.insert(0x6A2,QString::fromUtf8("ف"));
@@ -1274,10 +1417,26 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6A6,QString::fromUtf8("ف"));
     UN_Arabic.insert(0x760,QString::fromUtf8("ف"));
     UN_Arabic.insert(0x761,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB6A,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB6B,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB6C,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB6D,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB6E,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB6F,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB70,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB71,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFED1,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFED2,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFED3,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFED4,QString::fromUtf8("ف"));
 
     UN_Arabic.insert(0x66F,QString::fromUtf8("ق"));
     UN_Arabic.insert(0x6A7,QString::fromUtf8("ق"));
     UN_Arabic.insert(0x6A8,QString::fromUtf8("ق"));
+    UN_Arabic.insert(0xFED5,QString::fromUtf8("ق"));
+    UN_Arabic.insert(0xFED6,QString::fromUtf8("ق"));
+    UN_Arabic.insert(0xFED7,QString::fromUtf8("ق"));
+    UN_Arabic.insert(0xFED8,QString::fromUtf8("ق"));
 
     UN_Arabic.insert(0x643,QString::fromUtf8("ک"));
     UN_Arabic.insert(0x63B,QString::fromUtf8("ک"));
@@ -1292,22 +1451,54 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x763,QString::fromUtf8("ک"));
     UN_Arabic.insert(0x764,QString::fromUtf8("ک"));
     UN_Arabic.insert(0x76F,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFB8E,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFB8F,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFB90,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFB91,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFBD3,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFBD4,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFBD5,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFBD6,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFED9,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFEDA,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFEDB,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFEDC,QString::fromUtf8("ک"));
 
     UN_Arabic.insert(0x6B0,QString::fromUtf8("گ"));
     UN_Arabic.insert(0x6B1,QString::fromUtf8("گ"));
     UN_Arabic.insert(0x6B2,QString::fromUtf8("گ"));
     UN_Arabic.insert(0x6B3,QString::fromUtf8("گ"));
     UN_Arabic.insert(0x6B4,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB92,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB93,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB94,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB95,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB96,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB97,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB98,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB99,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB9A,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB9B,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB9C,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB9D,QString::fromUtf8("گ"));
 
     UN_Arabic.insert(0x6B5,QString::fromUtf8("ل"));
     UN_Arabic.insert(0x6B6,QString::fromUtf8("ل"));
     UN_Arabic.insert(0x6B7,QString::fromUtf8("ل"));
     UN_Arabic.insert(0x6B8,QString::fromUtf8("ل"));
     UN_Arabic.insert(0x76A,QString::fromUtf8("ل"));
+    UN_Arabic.insert(0xFEDD,QString::fromUtf8("ل"));
+    UN_Arabic.insert(0xFEDE,QString::fromUtf8("ل"));
+    UN_Arabic.insert(0xFEDF,QString::fromUtf8("ل"));
+    UN_Arabic.insert(0xFEE0,QString::fromUtf8("ل"));
 
     UN_Arabic.insert(0x6FE,QString::fromUtf8("م"));
     UN_Arabic.insert(0x765,QString::fromUtf8("م"));
     UN_Arabic.insert(0x766,QString::fromUtf8("م"));
+    UN_Arabic.insert(0xFEE1,QString::fromUtf8("م"));
+    UN_Arabic.insert(0xFEE2,QString::fromUtf8("م"));
+    UN_Arabic.insert(0xFEE3,QString::fromUtf8("م"));
+    UN_Arabic.insert(0xFEE4,QString::fromUtf8("م"));
 
     UN_Arabic.insert(0x6B9,QString::fromUtf8("ن"));
     UN_Arabic.insert(0x6BA,QString::fromUtf8("ن"));
@@ -1317,9 +1508,32 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x767,QString::fromUtf8("ن"));
     UN_Arabic.insert(0x768,QString::fromUtf8("ن"));
     UN_Arabic.insert(0x769,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFB9E,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFB9F,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFB9E,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFB9F,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFBA0,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFBA1,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFBA2,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFBA3,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFEE5,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFEE6,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFEE7,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFEE8,QString::fromUtf8("ن"));
 
     UN_Arabic.insert(0x676,QString::fromUtf8("ؤ"));
     UN_Arabic.insert(0x677,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBD7,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBD8,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBD9,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBDA,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBDB,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBDC,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBDD,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBDE,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFBDF,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFE85,QString::fromUtf8("ؤ"));
+    UN_Arabic.insert(0xFE86,QString::fromUtf8("ؤ"));
 
     UN_Arabic.insert(0x6C4,QString::fromUtf8("و"));
     UN_Arabic.insert(0x6C5,QString::fromUtf8("و"));
@@ -1330,6 +1544,12 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6CA,QString::fromUtf8("و"));
     UN_Arabic.insert(0x6CB,QString::fromUtf8("و"));
     UN_Arabic.insert(0x6CF,QString::fromUtf8("و"));
+    UN_Arabic.insert(0xFBE0,QString::fromUtf8("و"));
+    UN_Arabic.insert(0xFBE1,QString::fromUtf8("و"));
+    UN_Arabic.insert(0xFBE2,QString::fromUtf8("و"));
+    UN_Arabic.insert(0xFBE3,QString::fromUtf8("و"));
+    UN_Arabic.insert(0xFEED,QString::fromUtf8("و"));
+    UN_Arabic.insert(0xFEEE,QString::fromUtf8("و"));
 
     UN_Arabic.insert(0x6BE,QString::fromUtf8("ه"));
     UN_Arabic.insert(0x6FF,QString::fromUtf8("ه"));
@@ -1338,6 +1558,23 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6C2,QString::fromUtf8("ه"));
     UN_Arabic.insert(0x6C3,QString::fromUtf8("ه"));
     UN_Arabic.insert(0x6D5,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBA4,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBA5,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBA6,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBA7,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBA8,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBA9,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBAA,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBAB,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBAC,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBAD,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFE93,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFE94,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFEE9,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFEEA,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFEEB,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFEEC,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFEED,QString::fromUtf8("ه"));
 
     UN_Arabic.insert(0x620,QString::fromUtf8("ی"));
     UN_Arabic.insert(0x63D,QString::fromUtf8("ی"));
@@ -1353,6 +1590,535 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6D1,QString::fromUtf8("ی"));
     UN_Arabic.insert(0x6D2,QString::fromUtf8("ی"));
     UN_Arabic.insert(0x6D3,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBAE,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBAF,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBB0,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBB1,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBE4,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBE5,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBE6,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBE7,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBFC,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBFD,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBFE,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBFF,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFEEF,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFEF0,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFEF1,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFEF2,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFEF3,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFEF4,QString::fromUtf8("ی"));
+
+    UN_Arabic.insert(0xFBE8,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBE9,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBEA,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBEB,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBEC,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBED,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBEE,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBEF,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF0,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF1,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF2,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF3,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF4,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF5,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF6,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF7,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF8,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBF9,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBFA,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBFB,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBFC,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFBFD,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFC5D,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFE89,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFE8A,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFE8B,QString::fromUtf8("ئ"));
+    UN_Arabic.insert(0xFE8C,QString::fromUtf8("ئ"));
+
+    UN_Arabic.insert(0xFEF5,QString::fromUtf8("لا"));
+    UN_Arabic.insert(0xFEF6,QString::fromUtf8("لا"));
+    UN_Arabic.insert(0xFEFB,QString::fromUtf8("لا"));
+    UN_Arabic.insert(0xFEFC,QString::fromUtf8("لا"));
+
+    UN_Arabic.insert(0xFEF7,QString::fromUtf8("لأ"));
+    UN_Arabic.insert(0xFEF8,QString::fromUtf8("لأ"));
+
+    UN_Arabic.insert(0xFEF9,QString::fromUtf8("لإ"));
+    UN_Arabic.insert(0xFEFA,QString::fromUtf8("لإ"));
+
+
+    UN_Arabic.insert(0xFC00,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC01,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC02,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC03,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC04,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC05,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC06,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC07,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC08,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC09,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC0A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC0B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC0C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC0D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC0E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC0F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC10,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC11,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC12,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC13,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC14,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC15,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC16,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC17,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC18,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC19,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC1A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC1B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC1C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC1D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC1E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC1F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC20,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC21,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC22,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC23,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC24,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC25,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC26,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC27,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC28,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC29,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC2A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC2B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC2C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC2D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC2E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC2F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC30,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC31,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC32,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC33,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC34,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC35,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC36,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC37,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC38,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC39,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC3A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC3B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC3C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC3D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC3E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC3F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC40,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC41,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC42,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC43,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC44,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC45,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC46,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC47,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC48,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC49,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC4A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC4B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC4C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC4D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC4E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC4F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC50,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC51,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC52,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC53,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC54,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC55,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC56,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC57,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC58,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC59,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC5A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+
+    UN_Arabic.insert(0xFC64,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC65,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC66,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC67,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC68,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC69,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC6A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC6B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC6C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC6D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC6E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC6F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC70,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC71,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC72,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC73,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC74,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC75,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC76,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC77,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC78,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC79,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC7A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC7B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC7C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC7D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC7E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC7F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC80,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC81,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC82,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC83,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC84,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC85,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC86,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC87,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC88,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC89,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC8A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC8B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC8C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC8D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC8E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC8F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC90,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC91,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC92,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC93,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC94,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC95,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC96,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC97,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC98,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC99,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC9A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC9B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC9C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC9D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC9E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFC9F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCA9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCAA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCAB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCAC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCAD,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCAE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCAF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCB9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCBA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCBB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCBC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCBD,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCBE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCBF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCC9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCCA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCCB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCCC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCCD,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCCE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCCF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCD9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCDA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCDB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCDC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCDD,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCDE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCDF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCE9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCEA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCEB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCEC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCED,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCEE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCEF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCF9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCFA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCFB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCFC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCFD,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCFE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFCFF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD00,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD01,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD02,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD03,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD04,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD05,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD06,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD07,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD08,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD09,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD0A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD0B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD0C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD0D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD0E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD0F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD10,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD11,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD12,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD13,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD14,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD15,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD16,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD17,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD18,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD19,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD1A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD1B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD1C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD1D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD1E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD1F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD20,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD21,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD22,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD23,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD24,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD25,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD26,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD27,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD28,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD29,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD2A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD2B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD2C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD2D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD2E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD2F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD30,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD31,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD32,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD33,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD34,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD35,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD36,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD37,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD38,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD39,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD3A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD3B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD3C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD3D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+
+    UN_Arabic.insert(0xFD40,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD41,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD42,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD43,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD44,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD45,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD46,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD47,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD48,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD49,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD4A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD4B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD4C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD4D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD4E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD4F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD50,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD51,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD52,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD53,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD54,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD55,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD56,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD57,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD58,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD59,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD5A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD5B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD5C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD5D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD5E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD5F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD60,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD61,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD62,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD63,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD64,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD65,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD66,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD67,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD68,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD69,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD6A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD6B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD6C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD6D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD6E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD6F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD70,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD71,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD72,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD73,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD74,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD75,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD76,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD77,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD78,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD79,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD7A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD7B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD7C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD7D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD7E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD7F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD80,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD81,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD82,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD83,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD84,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD85,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD86,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD87,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD88,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD89,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD8A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD8B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD8C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD8D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD8E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD8F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD90,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD91,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD92,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD93,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD94,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD95,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD96,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD97,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD98,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD99,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD9A,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD9B,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD9C,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD9D,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD9E,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFD9F,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDA9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDAA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDAB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDAC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDAD,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDAE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDAF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDB9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDBA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDBB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDBC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDBD,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDBE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDBF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC0,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC1,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC2,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC3,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC4,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC5,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC6,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC7,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC8,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDC9,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDCA,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDCB,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDCC,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDCD,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDCE,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+    UN_Arabic.insert(0xFDCF,QString::fromUtf8("MIXED_ARABIC_LETTERS"));
+
+    UN_Arabic.insert(0xFDF0,QString::fromUtf8("صلی"));
+    UN_Arabic.insert(0xFDF1,QString::fromUtf8("قلی"));
+    UN_Arabic.insert(0xFDF2,QString::fromUtf8("الله"));
+    UN_Arabic.insert(0xFDF3,QString::fromUtf8("اکبر"));
+    UN_Arabic.insert(0xFDF4,QString::fromUtf8("محمد"));
+    UN_Arabic.insert(0xFDF5,QString::fromUtf8("صلی"));
+    UN_Arabic.insert(0xFDF6,QString::fromUtf8("رسول"));
+    UN_Arabic.insert(0xFDF7,QString::fromUtf8("علیه"));
+    UN_Arabic.insert(0xFDF8,QString::fromUtf8("وسلم"));
+    UN_Arabic.insert(0xFDF9,QString::fromUtf8("صلی"));
+    UN_Arabic.insert(0xFDFA,QString::fromUtf8("صلی الله علیه و سلم"));
+    UN_Arabic.insert(0xFDFB,QString::fromUtf8("جل جلاله"));
+
+    UN_Arabic.insert(0xFDFD,QString::fromUtf8("سم"));
 
 
     UN_Arabic.insert(0x6DD,QString(QChar(0x2205))); // SYMBOL_REMOVED
@@ -1393,11 +2159,27 @@ QString latin2Ascii(uint _ucs4){
     ///@ref HIRGANA & KATANKA & Bopomofo
     if ((_ucs4>=0x3041 && _ucs4 <=0x312F) ||
         (_ucs4>=0x31A0 && _ucs4<=0x31BF) ||
+        (_ucs4>=0xFF65 && _ucs4<=0xFFDC) ||
+        (_ucs4>=0x31A0 && _ucs4<=0x31BF) ||
         (_ucs4>=0x31F0 && _ucs4<=0x31FF))
         return QString(QChar(_ucs4));
 
     ///@ref CJK
-    if (_ucs4>=0x3400 && _ucs4 <=0x9FFF)
+    if ((_ucs4>=0x3400 && _ucs4 <=0x9FFF) ||
+        (_ucs4>=0xF900 && _ucs4 <=0xFAFF) ||
+        (_ucs4>=0xFE30 && _ucs4 <=0xFE4F))
+        return QString(QChar(_ucs4));
+
+    ///@ref Yi Syllables
+    if (_ucs4>=0xA000 && _ucs4 <=0xA48F)
+        return QString(QChar(_ucs4));
+
+    ///@ref Syloti Nagri
+    if (_ucs4>=0xA800 && _ucs4 <=0xA82F)
+        return QString(QChar(_ucs4));
+
+    ///@ref Syloti Nagri
+    if (_ucs4>=0xA840 && _ucs4 <=0xA87F)
         return QString(QChar(_ucs4));
 
     if(UN_Latin.contains(_ucs4))
