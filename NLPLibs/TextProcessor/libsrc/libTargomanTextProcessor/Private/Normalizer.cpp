@@ -25,18 +25,9 @@ namespace Private {
 
 Normalizer* Normalizer::Instance = NULL;
 
-
-const QString DIACRITIC_CHARS =
-        QString::fromUtf8("ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ");
-
 Normalizer::Normalizer()
 {
-    this->NormalizedDiacritics<<"S"<<"OE"<<"Z"<<"s"<<"oe"<<"z"<<"Y"<<"Y"<<"u"<<"A"<<"A"<<"A"<<"A"<<"A"<<"A"<<"AE"<<
-                                "C"<<"E"<<"E"<<"E"<<"E"<<"I"<<"I"<<"I"<<"I"<<"D"<<"N"<<"O"<<"O"<<"O"<<"O"<<"O"<<"O"<<
-                                "U"<<"U"<<"U"<<"U"<<"Y"<<"s"<<"a"<<"a"<<"a"<<"a"<<"a"<<"a"<<"ae"<<"c"<<"e"<<"e"<<"e"<<
-                                "e"<<"i"<<"i"<<"i"<<"i"<<"o"<<"n"<<"o"<<"o"<<"o"<<"o"<<"o"<<"o"<<"u"<<"u"<<"u"<<"u"<<
-                                "y"<<"y";
-
+    initUnicodeNormalizers();
 }
 
 QString Normalizer::normalize(const QChar &_char,
@@ -44,19 +35,14 @@ QString Normalizer::normalize(const QChar &_char,
                               bool _interactive,
                               quint32 _line,
                               const QString &_phrase,
-                              size_t _charPos)
+                              size_t _charPos,
+                              bool _skipRecheck)
 {
     QChar Char = _char;
-    //Special characters
-    if (Char == '\t' ||
-        Char == QChar(0xFFFF) ||
-        Char == QChar(0x7F))
-        return " ";
 
-    //Digits must be converted to ascii
-    if (Char.isDigit())
-            return this->LastChar = QChar(Char.digitValue() + '0');
-
+    ////////////////////////////////////////////////////////////////////////////
+    ////                    Multi Char Normalizers                           ///
+    ////////////////////////////////////////////////////////////////////////////
     //Remove extra non-breaking space after non-joinable characters and before space
     if (Char == ARABIC_ZWNJ && (
                 this->LastChar.joining() == QChar::Right ||
@@ -96,20 +82,41 @@ QString Normalizer::normalize(const QChar &_char,
                 Char == QChar(0xC2B7)))
         return this->LastChar = '.';
 
+    ////////////////////////////////////////////////////////////////////////////
+    ////                        Using Binary Table                           ///
+    ////////////////////////////////////////////////////////////////////////////
+    if (this->BinaryMode){
+        QString Normalized = this->BinTable.value(Char).toString();
+        if (Normalized.size()){
+            this->LastChar = Normalized.at(Normalized.size() - 1);
+            if (Normalized.size() > 1)
+                return Normalized;
+            else if (_skipRecheck)
+                return Normalized;
+            else
+                return this->normalize(this->LastChar = Normalized.at(0),
+                                       _nextChar, true, _line, _phrase, _charPos, true);
+        }else
+            return "";
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    ////                       Single Char Normalizers                       ///
+    ////////////////////////////////////////////////////////////////////////////
+
+    //Special characters
+    if (Char == '\t' ||
+        Char == QChar(0xFFFF) ||
+        Char == QChar(0x7F))
+        return " ";
+
+    //Digits must be converted to ascii
+    if (Char.isDigit())
+            return this->LastChar = QChar(Char.digitValue() + '0');
+
     //Convert TitleCase to UpperCase
     if (Char.isTitleCase())
         Char = Char.toUpper();
-
-    //Convert marked diacritic characters to their correspondent ASCII strings
-    int DiacriticIndex = DIACRITIC_CHARS.indexOf(Char);
-    if (DiacriticIndex >= 0)
-        return this->NormalizedDiacritics.at(DiacriticIndex);
-
-    //Accept Currency, Math and special symbol characters
-    if (Char.category() == QChar::Symbol_Currency ||
-            Char.category() == QChar::Symbol_Math ||
-            Char.category() == QChar::Symbol_Other)
-        return this->LastChar = Char;
 
     //Convert all special forms of quote and dquote to ASCII
     if (Char.category() == QChar::Punctuation_InitialQuote ||
@@ -146,14 +153,19 @@ QString Normalizer::normalize(const QChar &_char,
 
     //Remove all special control characters and character modifiers
     if (Char.category() == QChar::Letter_Modifier ||
-        Char.category() == QChar::Symbol_Modifier)
-        return this->LastChar = QChar();
+        Char.category() == QChar::Mark_NonSpacing ||
+        Char.category() == QChar::Symbol_Modifier){
+        this->LastChar = QChar();
+        return "";
+    }
 
     if (Char.category() == QChar::Other_NotAssigned ||
         Char.category() == QChar::Other_PrivateUse ||
-        Char.category() == QChar::Mark_NonSpacing ||
         Char.category() == QChar::Other_Surrogate)
         return this->LastChar = SYMBOL_REMOVED;
+
+    if (_skipRecheck)
+        return Char;
 
     enuUnicodeCharScripts::Type CharacterScript = (enuUnicodeCharScripts::Type)QUnicodeTables::script(Char.unicode());
 
@@ -162,9 +174,19 @@ QString Normalizer::normalize(const QChar &_char,
         QString Normalized = ScriptBasedNormalizers[CharacterScript](Char.unicode());
         if (Normalized.size()){
             this->LastChar = Normalized.at(Normalized.size() - 1);
-            return Normalized;
+            if (Normalized.size() > 1)
+                return Normalized;
+            else
+                return this->normalize(this->LastChar = Normalized.at(0),
+                                       _nextChar, false, _line, _phrase, _charPos, true);
         }
     }
+
+    //Accept Currency, Math and special symbol characters
+    if (Char.category() == QChar::Symbol_Currency ||
+            Char.category() == QChar::Symbol_Math ||
+            Char.category() == QChar::Symbol_Other)
+        return this->LastChar = Char;
 
     if(_interactive){
         std::cout<<"Character <"<<QString(Char).toUtf8().constData()<<">(0x";
@@ -297,29 +319,29 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
                 case enuDicType::ZeroWidthSpaceCharacters:
                 {
                     QString ToBeWritten = this->char2Str(_originalChar);
-                    if (ToBeWritten.startsWith("<0x"))
-                        ConfigFileOut.write(QString("NEW %1 ## {%2} [%3][%4]\n").arg(
-                                         ToBeWritten).arg(
-                                         _originalChar).arg(
-                                         QCHAR_UNICOE_CATEGORIES[_originalChar.category()]).arg(
-                                         enuUnicodeCharScripts::toStr(
-                                            (enuUnicodeCharScripts::Type)
-                                        QUnicodeTables::script(_originalChar.unicode()))).toUtf8());
-                    else
-                        ConfigFileOut.write(("NEW " + ToBeWritten + "\n").toUtf8());
+                    ConfigFileOut.write(QString("NEW %1 ## %2 [%3][%4]\n").arg(
+                                     ToBeWritten).arg(
+                                     ToBeWritten.startsWith("<0x") ?
+                                                QString("{%1}").arg(_originalChar) :
+                                                this->char2Str(_originalChar, true)).arg(
+                                     QCHAR_UNICOE_CATEGORIES[_originalChar.category()]).arg(
+                                     enuUnicodeCharScripts::toStr(
+                                        (enuUnicodeCharScripts::Type)
+                                    QUnicodeTables::script(_originalChar.unicode()))).toUtf8());
                 }
                     break;
                 case enuDicType::ReplacingCharacter:
                 {
                     QString ToBeWrittenKey = this->char2Str(_originalChar);
                     QString ToBeWrittenVal = this->char2Str(_replacement);
-                    if (ToBeWrittenKey.startsWith("<0x") || ToBeWrittenVal.startsWith("<0x"))
-                        ConfigFileOut.write(QString("NEW %1 = %2 ## {%3} ==> {%4}\n").arg(
-                                         ToBeWrittenKey, ToBeWrittenVal).arg(
-                                         _originalChar).arg(
-                                         _replacement).toUtf8());
-                    else
-                        ConfigFileOut.write(QString("NEW %1 = %2\n").arg(ToBeWrittenKey, ToBeWrittenVal).toUtf8());
+                    ConfigFileOut.write(QString("NEW %1 = %2 ## %3 ==> %4\n").arg(
+                                     ToBeWrittenKey, ToBeWrittenVal).arg(
+                                            ToBeWrittenKey.startsWith("<0x") ?
+                                                QString("{%1}").arg(_originalChar) :
+                                                this->char2Str(_originalChar, true)).arg(
+                                            ToBeWrittenVal.startsWith("<0x") ?
+                                                QString("{%1}").arg(_replacement) :
+                                                this->char2Str(_replacement, true)).toUtf8());
                 }
                     break;
                 default:
@@ -331,32 +353,47 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
         ConfigFileOut.write (DataLine + "\n");
     }
 
-
     ConfigFileIn.close ();
     ConfigFileOut.close ();
 }
 
-QString Normalizer::char2Str(const QChar &_char)
+QString Normalizer::char2Str(const QChar &_char, bool _hexForced)
 {
-    if ((_char.isLetterOrNumber() || _char.toAscii() == _char) && _char != '=')
-        return _char + QString(" ##<0x%1>").arg(QString::number(_char.unicode(),16).toAscii().toUpper().constData());
+    if (!_hexForced && (_char.isLetterOrNumber() || _char.toAscii() == _char) && _char != '=')
+        return _char;
     else
         return QString("<0x%1>").arg(QString::number(_char.unicode(),16).toAscii().toUpper().constData());
 }
 
-QChar Normalizer::str2QChar(QString _str, quint16 _line)
+QList<QChar> Normalizer::str2QChar(QString _str, quint16 _line, bool _allowRange)
 {
+    QList<QChar> Chars;
     if (_str.size() == 1)
-        return _str.at(0);
-    else if (_str.contains(QRegExp("<0[xX][0-9a-fA-F]+>")))
-        return QChar(_str.replace("<0x","").replace(">","").toUInt(NULL, 16));
+        Chars.append(_str.at(0));
+    else if (_str.contains(QRegExp("<0[x][0-9a-fA-F]+>-<0[x][0-9a-fA-F]+>"))){
+        if(_allowRange){
+            uint RangeStart = _str.split("-").first().replace("<0x","").replace(">","").toUInt(NULL,16);
+            uint RangeEnd = _str.split("-").last().replace("<0x","").replace(">","").toUInt(NULL,16);
+            for (int i=RangeStart; i<=RangeEnd;i++)
+                Chars.append(QChar(i));
+        }else
+            throw exNormalizer(("Invalid normalization character at line "+ QString::number(_line)+": <" + _str + ">"));
+    }else if (_str.contains(QRegExp("<0[x][0-9a-fA-F]+>")))
+        Chars.append(QChar(_str.replace("<0x","").replace(">","").toUInt(NULL, 16)));
     else
         throw exNormalizer(("Invalid normalization character at line "+ QString::number(_line)+": <" + _str + ">"));
+
+    return Chars;
 }
 
-void Normalizer::init(const QString &_configFile)
+void Normalizer::init(const QString &_configFile, bool _binaryMode)
 {
     this->ConfigFile = _configFile;
+
+    if (_binaryMode){
+        //loadBinaryFile;
+        return;
+    }
 
     QFile ConfigFile(this->ConfigFile);
     ConfigFile.open(QIODevice::ReadOnly);
@@ -401,17 +438,20 @@ void Normalizer::init(const QString &_configFile)
         {
         case enuDicType::WhiteList:
             StrList = ConfigLine.split(" ", QString::SkipEmptyParts);
-            foreach (const QString& CharStr, StrList)
-                this->WhiteList.insert(this->str2QChar(CharStr, LineNumber));
+            foreach (const QString& CharStr, StrList){
+                QList<QChar> Chars = this->str2QChar(CharStr, LineNumber);
+                foreach (const QChar& Ch, Chars)
+                    this->WhiteList.insert(Ch);
+            }
             break;
         case enuDicType::ReplacingCharacter:
             {
                 QStringList Pair = ConfigLine.split('=');
                 if (Pair.size() == 2)
                     this->ReplacingTable.insert(
-                            this->str2QChar(Pair[0].trimmed(), LineNumber),
+                            this->str2QChar(Pair[0].trimmed(), LineNumber, false).first(),
                         Pair[1].trimmed().size() > 1 && Pair[1].trimmed().startsWith("<") ==false ?
-                            Pair[1].trimmed() : str2QChar(Pair[1].trimmed(), LineNumber));
+                            Pair[1].trimmed() : str2QChar(Pair[1].trimmed(), LineNumber, false).first());
                 else {
                     throw exNormalizer(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
                 }
@@ -419,18 +459,27 @@ void Normalizer::init(const QString &_configFile)
             break;
         case enuDicType::RemovingCharcters:
             StrList = ConfigLine.split(" ", QString::SkipEmptyParts);
-            foreach (const QString& CharStr, StrList)
-                this->RemovingList.insert (this->str2QChar(CharStr,LineNumber));
+            foreach (const QString& CharStr, StrList){
+                QList<QChar> Chars = this->str2QChar(CharStr, LineNumber);
+                foreach (const QChar& Ch, Chars)
+                    this->RemovingList.insert(Ch);
+            }
             break;
         case enuDicType::SpaceCharacters:
             StrList = ConfigLine.split(" ", QString::SkipEmptyParts);
-            foreach (const QString& CharStr, StrList)
-                this->SpaceCharList.insert (this->str2QChar(CharStr,LineNumber));
+            foreach (const QString& CharStr, StrList){
+                QList<QChar> Chars = this->str2QChar(CharStr, LineNumber);
+                foreach (const QChar& Ch, Chars)
+                    this->SpaceCharList.insert(Ch);
+            }
             break;
         case enuDicType::ZeroWidthSpaceCharacters:
             StrList = ConfigLine.split(" ", QString::SkipEmptyParts);
-            foreach (const QString& CharStr, StrList)
-                this->ZeroWidthSpaceCharList.insert (this->str2QChar(CharStr,LineNumber));
+            foreach (const QString& CharStr, StrList){
+                QList<QChar> Chars = this->str2QChar(CharStr, LineNumber);
+                foreach (const QChar& Ch, Chars)
+                    this->ZeroWidthSpaceCharList.insert(Ch);
+            }
             break;
         default:
             continue;
@@ -448,6 +497,12 @@ void Normalizer::init(const QString &_configFile)
                             this->ReplacingTable.size()));
 }
 
+void Normalizer::updateBinTable(const QString &_binFilePath)
+{
+}
+
 }
 }
+
+
 }

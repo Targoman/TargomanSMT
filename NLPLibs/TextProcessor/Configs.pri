@@ -40,7 +40,6 @@ include ($$ProjectConfig)
 for(Project, ProjectDependencies) {
   for(Path, FullDependencySearchPaths):isEmpty( Found ) {
       message(Looking for $$Project in $$Path/)
-        system(pwd)
       exists($$Path/lib$$Project*) {
         Found = "TRUE"
         message(-------------> $$Project Found!!!)

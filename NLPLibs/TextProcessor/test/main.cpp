@@ -30,11 +30,11 @@ int main(int _argc, char *_argv[])
     try{
         Targoman::NLPLibs::Private::Normalizer::instance().init("../conf/Normalization.conf");
 
-        for (int i=1; i<=0xFFFF; i++){
+        for (int i=0x27B1; i<=0xFFFF; i++){
             QChar C = QChar(i);
             QString Normalized = Targoman::NLPLibs::Private::Normalizer::instance().normalize(C,QChar(),true,0,"",0);
 
-            std::cerr<<QString("<0x%1>\t{%2}\t[%3]\t[%4]\t==>\t{%6}").arg(
+            std::cerr<<QString("<0x%1>\t{%2}\t[%3]\t[%4]\t==>\t%6").arg(
                            QString::number(C.unicode(),16).toAscii().toUpper().constData()).arg(
                            ((C.isLetterOrNumber() || C.toAscii() == C)) ?
                                QString(C) : "N/A").arg(
@@ -42,7 +42,11 @@ int main(int _argc, char *_argv[])
                         enuUnicodeCharScripts::toStr(
                             (enuUnicodeCharScripts::Type)
                             QUnicodeTables::script(C.unicode()))).arg(
-                        Normalized).toUtf8().constData()<<std::endl;
+                        Normalized.isEmpty() ?
+                            "REMOVED" :
+                            ((Normalized == C) ?
+                                 "INTACT" :
+                                 QString("{%1}").arg(Normalized))).toUtf8().constData()<<std::endl;
         }
     }catch(exNormalizer &e){
         qDebug()<<e.what();
