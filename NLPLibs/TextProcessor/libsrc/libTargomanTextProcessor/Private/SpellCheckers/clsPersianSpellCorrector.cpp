@@ -40,16 +40,19 @@ clsPersianSpellCorrector::clsPersianSpellCorrector()
     this->ConfigSteps.insert("Adjectives",stuConfigStep(&this->Adjectives));
     this->ConfigSteps.insert("VerbStemPresent",stuConfigStep(&this->VerbStemPresent));
     this->ConfigSteps.insert("VerbStemPast",stuConfigStep(&this->VerbStemPast));
+    this->ConfigSteps.insert("HamzeAllowed",stuConfigStep(&this->HamzeAllowed));
 
     this->RxInteractiveChars    = QRegExp(QString::fromUtf8("[ؤئإأآ]"));
-    this->RxEndPresentImperfect = QRegExp(QString::fromUtf8(".*(م|ی|د|یم|ید|ند)$"));
-    this->RxEndPastImperfect    = QRegExp(QString::fromUtf8(".*(م|ی|یم|ید|ند)$"));
+    this->RxPresentImperfect = QRegExp(QString::fromUtf8("(م|ی|د|یم|ید|ند)$"));
+    this->RxPastImperfect    = QRegExp(QString::fromUtf8("(م|ی|یم|ید|ند)$"));
     this->RxVerbPerfect         = QRegExp(QString::fromUtf8("(ام|ای|است|ایم|اید|اند)$"));
-    this->RxEndVerbPerfect      = QRegExp(".*" + this->RxVerbPerfect.pattern());
     this->RxHa                  = QRegExp(QString::fromUtf8("ها)ی|یم|یت|یش|یمان|یتان|یشان(?"));
     this->RxAn                  = QRegExp(QString::fromUtf8("ان)ی|م|ت|ش|مان|تان|شان(?"));
     this->RxEndWithHa           = QRegExp(".*" + this->RxHa.pattern() + "$");
     this->RxEndWithAn           = QRegExp(".*" + this->RxAn.pattern() + "$");
+    this->RxEndPresentImperfect = QRegExp(".*" + this->RxPresentImperfect.pattern());
+    this->RxEndPastImperfect    = QRegExp(".*" + this->RxPastImperfect.pattern());
+    this->RxEndVerbPerfect      = QRegExp(".*" + this->RxVerbPerfect.pattern());
 }
 
 bool clsPersianSpellCorrector::postInit(const QVariantHash _settings)
@@ -65,6 +68,9 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
     Buffer = this->AutoCorrectTerms.value(_tokens.join(" "));
     if (Buffer.size())
         return Normalizer::instance().normalize(Buffer);
+
+    if (this->Space2ZWNJ.contains(_tokens.join(" ")))
+        return Normalizer::instance().normalize(_tokens.join(ARABIC_ZWNJ));
 
     switch(_tokens.size()){
     case 1:
@@ -184,7 +190,11 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
 
 bool clsPersianSpellCorrector::canBeCheckedInteractive(const QString &_inputWord) const
 {
-    return _inputWord.contains(this->RxInteractiveChars);
+    return _inputWord.contains(this->RxInteractiveChars) &&
+            this->HamzeAllowed.contains(_inputWord) == false &&
+            this->Nouns.contains(_inputWord) == false &&
+            this->Adjectives.contains(_inputWord)  == false &&
+            this->AutoCorrectTerms.values().contains(_inputWord) == false;
 }
 
 void clsPersianSpellCorrector::storeAutoCorrectTerm(const QString &_from, const QString &_to)
@@ -262,19 +272,19 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
 {
     //افعال حال : می‌خورم
     QString Buffer = _postfix;
-    Buffer.remove(this->RxEndPresentImperfect);
+    Buffer.remove(this->RxPresentImperfect);
     if(this->VerbStemPresent.contains(Normalizer::fullTrim(Buffer)))
         return Normalizer::instance().normalize(_prefix + ARABIC_ZWNJ + _postfix);
 
     //افعال ماضی : می‌خوردم
     Buffer = _postfix;
-    Buffer.remove(this->RxEndPastImperfect);
+    Buffer.remove(this->RxPastImperfect);
     if(this->VerbStemPast.contains(Normalizer::fullTrim(Buffer)))
         return Normalizer::instance().normalize(_prefix + ARABIC_ZWNJ + _postfix);
 
     //افعال ماضی  نقلی و استمراری : می‌خورده‌ام
     Buffer = _postfix;
-    Buffer.remove(this->RxEndVerbPerfect);
+    Buffer.remove(this->RxVerbPerfect);
     if (Buffer.size()){
         Buffer.remove(Buffer.size() - 1,1); // remove final "He" from stem
         if(this->VerbStemPresent.contains(Normalizer::fullTrim(Buffer)))

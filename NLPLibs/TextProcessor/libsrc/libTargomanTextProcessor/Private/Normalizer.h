@@ -62,7 +62,7 @@ public:
                       size_t _charPos,
                       bool _skipRecheck = false);
 
-    QString normalize(const QString& _string, bool _interactive = false);
+    QString normalize(const QString& _string, qint32 _line = -1, bool _interactive = false);
 
     void updateBinTable(const QString& _binFilePath, bool _interactive = false);
 

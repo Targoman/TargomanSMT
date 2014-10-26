@@ -42,9 +42,12 @@ private:
     QSet<QString>            Space2ZWNJ;
     QSet<QString>            VerbStemPresent;
     QSet<QString>            VerbStemPast;
+    QSet<QString>            HamzeAllowed;
 
     QRegExp                  RxInteractiveChars;
+    QRegExp                  RxPresentImperfect;
     QRegExp                  RxEndPresentImperfect;
+    QRegExp                  RxPastImperfect;
     QRegExp                  RxEndPastImperfect;
     QRegExp                  RxEndVerbPerfect;
     QRegExp                  RxVerbPerfect;

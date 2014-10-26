@@ -14,11 +14,14 @@
 
 #include "libTargomanTextProcessor/Private/Normalizer.h"
 #include "libTargomanTextProcessor/Private/Unicode.hpp"
+#include "libTargomanTextProcessor/Private/SpellCorrector.h"
 using namespace Targoman::NLPLibs::Private;
 #include "libTargomanCommon/Logger.h"
 using namespace Targoman::Common;
 
 #include <QChar>
+#include <QFile>
+#include <QTextStream>
 #include <QDebug>
 #include <QString>
 #include <iostream>
@@ -34,25 +37,57 @@ int main(int _argc, char *_argv[])
         QString ActorUUID;
 
         TARGOMAN_REGISTER_ACTOR("testLibCommon");
-        OUTPUT_SETTINGS_DEBUG.set(10,true,true,true);
-        OUTPUT_SETTINGS_ERROR.set(10,true,true,true);
-        OUTPUT_SETTINGS_WARNING.set(10,true,true,true);
-        OUTPUT_SETTINGS_INFO.set(10,true,true,true);
-        OUTPUT_SETTINGS_HAPPY.set(10,true,true,true);
+        OUTPUT_SETTINGS_DEBUG.set(10,true);
+        OUTPUT_SETTINGS_ERROR.set(10,true);
+        OUTPUT_SETTINGS_WARNING.set(10,true);
+        OUTPUT_SETTINGS_INFO.set(10,true);
+        OUTPUT_SETTINGS_HAPPY.set(10,true);
         Targoman::Common::Logger::instance().init("log.log");
-        Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = true;
+        //Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = true;
 
+        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin", true);
+
+         QHash<QString, QVariantHash> SpellConfig;
+         QVariantHash PersianSpellCorrector;
+         PersianSpellCorrector.insert("ConfigPath", "../conf/PersianSpellCorrector.conf");
+         PersianSpellCorrector.insert("Active", true);
+         SpellConfig.insert("fa", PersianSpellCorrector);
+            Targoman::NLPLibs::Private::SpellCorrector::instance().init(SpellConfig);
+
+
+        QFile SampleFile("/tmp/persian.txt");
+        QTextStream Stream(&SampleFile);
+        Stream.setCodec("UTF-8");
+        SampleFile.open(QFile::ReadOnly);
+
+        if (SampleFile.isReadable() == false)
+            throw exSpellCorrecter("Unable to open" + SampleFile.fileName());
+
+        quint32 Line=0;
+        while (!Stream.atEnd()){
+            Line++;
+            TargomanDebug(1,"*******************************************************************************")
+            QString Line = Stream.readLine();
+            TargomanDebug(1, "[ORG]"<<Line);
+            Line = Targoman::NLPLibs::Private::Normalizer::instance().normalize(Line);
+            TargomanDebug(1, "[NRM]"<<Line);
+            Line = Targoman::NLPLibs::Private::SpellCorrector::instance().process("fa",Line,true);
+            TargomanDebug(1, "[FNL]"<<Line);
+            break;
+        }
+        /**/
+/*
 
         Targoman::NLPLibs::Private::Normalizer::instance().init("../conf/Normalization.conf");
 
-        Targoman::NLPLibs::Private::Normalizer::instance().updateBinTable("/tmp/n.txt");
+        Targoman::NLPLibs::Private::Normalizer::instance().updateBinTable("/tmp/Normalization.bin");
 
 
-        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/n.txt",true);
+        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin",true);
 
         qDebug()<<QString::fromUtf8("ｐ = P? :")<<Targoman::NLPLibs::Private::Normalizer::instance().normalize(QString::fromUtf8("ｐ"));
 
-
+/**/
 /*        for (int i=0x27B1; i<=0xFFFF; i++){
             QChar C = QChar(i);
             QString Normalized = Targoman::NLPLibs::Private::Normalizer::instance().normalize(C,QChar(),true,0,"",0);

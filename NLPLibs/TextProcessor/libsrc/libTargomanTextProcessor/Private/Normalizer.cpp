@@ -84,6 +84,8 @@ QString Normalizer::normalize(const QChar &_char,
                 Char == QChar(0xC2B7)))
         return this->LastChar = '.';
 
+    //Convert ئ to ی when no other character
+    //Convert أ to ا when no other character
     ////////////////////////////////////////////////////////////////////////////
     ////                        Using Binary Table                           ///
     ////////////////////////////////////////////////////////////////////////////
@@ -265,7 +267,7 @@ QString Normalizer::normalize(const QChar &_char,
         return Char;
 }
 
-QString Normalizer::normalize(const QString &_string, bool _interactive)
+QString Normalizer::normalize(const QString &_string, qint32 _line, bool _interactive)
 {
     QString Normalized;
     for (int i=0; i<_string.size(); i++){
@@ -273,7 +275,7 @@ QString Normalizer::normalize(const QString &_string, bool _interactive)
                     this->normalize(_string.at(i),
                                     ((i + 1) < _string.size() ? _string.at(i+1) : QChar('\n')),
                                     _interactive,
-                                    0,
+                                    _line,
                                     _string,
                                     i));
     }
