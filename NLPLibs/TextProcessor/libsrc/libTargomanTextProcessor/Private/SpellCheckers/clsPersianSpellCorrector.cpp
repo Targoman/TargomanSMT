@@ -170,6 +170,8 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
 
 bool clsPersianSpellCorrector::canBeCheckedInteractive(const QString &_inputWord) const
 {
+    return false; //Temporarily ignored
+
     return _inputWord.contains(this->RxInteractiveChars) &&
             this->HamzeAllowed.contains(_inputWord) == false &&
             this->Nouns.contains(_inputWord) == false &&
