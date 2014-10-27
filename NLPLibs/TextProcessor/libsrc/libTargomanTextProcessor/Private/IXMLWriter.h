@@ -34,7 +34,7 @@ public:
                          const QString& _lang = "",
                          quint32 _lineNo = 0,
                          bool _interactive = false,
-                         bool _useSpellCorrecter = true);
+                         bool _useSpellCorrector = true);
 
 private:
     QString markByRegex(const QString &_phrase,

@@ -45,14 +45,27 @@ int main(int _argc, char *_argv[])
         Targoman::Common::Logger::instance().init("log.log");
         //Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = true;
 
+/*        QRegExp RxHa                  = QRegExp(QString::fromUtf8("ها(ی|یم|یت|یش|یمان|یتان|یشان)?"));
+        QRegExp RxEndWithHa           = QRegExp(".*" + RxHa.pattern() + "$");
+
+        TargomanDebug(1,"\n"<<RxHa.pattern()<<"\n"<<RxEndWithHa.pattern());
+        QString Str = QString::fromUtf8("ها");
+        TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
+        Str = QString::fromUtf8("های");
+        TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
+        Str = QString::fromUtf8("پاهایشان");
+        TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
+        Str = QString::fromUtf8("هان");
+        TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
+        exit(1);
+*/
         Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin", true);
 
          QHash<QString, QVariantHash> SpellConfig;
          QVariantHash PersianSpellCorrector;
-         PersianSpellCorrector.insert("ConfigPath", "../conf/PersianSpellCorrector.conf");
-         PersianSpellCorrector.insert("Active", true);
+         //PersianSpellCorrector.insert("Active", false);
          SpellConfig.insert("fa", PersianSpellCorrector);
-            Targoman::NLPLibs::Private::SpellCorrector::instance().init(SpellConfig);
+         Targoman::NLPLibs::Private::SpellCorrector::instance().init("../conf/SpellCorrectors/",SpellConfig);
 
 
         QFile SampleFile("/tmp/persian.txt");
@@ -61,19 +74,18 @@ int main(int _argc, char *_argv[])
         SampleFile.open(QFile::ReadOnly);
 
         if (SampleFile.isReadable() == false)
-            throw exSpellCorrecter("Unable to open" + SampleFile.fileName());
+            throw exSpellCorrector("Unable to open" + SampleFile.fileName());
 
         quint32 Line=0;
         while (!Stream.atEnd()){
             Line++;
             TargomanDebug(1,"*******************************************************************************")
             QString Line = Stream.readLine();
-            TargomanDebug(1, "[ORG]"<<Line);
+            TargomanDebug(1, "[ORG]\n"<<Line);
             Line = Targoman::NLPLibs::Private::Normalizer::instance().normalize(Line);
-            TargomanDebug(1, "[NRM]"<<Line);
-            Line = Targoman::NLPLibs::Private::SpellCorrector::instance().process("fa",Line,true);
-            TargomanDebug(1, "[FNL]"<<Line);
-            break;
+           // TargomanDebug(1, "[NRM]\n"<<Line);
+            Line = Targoman::NLPLibs::Private::SpellCorrector::instance().process("fa",Line,false);
+            TargomanDebug(1, "[FNL]\n"<<Line);
         }
         /**/
 /*

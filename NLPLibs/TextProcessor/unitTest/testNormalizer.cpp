@@ -15,6 +15,31 @@
 #include "libTargomanTextProcessor/TextProcessor.h"
 using namespace Targoman::NLPLibs;
 
+#define VERIFY_NORMALIZE(_lang, _check, _desired) \
+    Targoman::NLPLibs::TextProcessor::instance().normalizeText(QString::fromUtf8(_check), false, _lang) == \
+        QString::fromUtf8(_desired)
+
 void UnitTest::normalizeText()
 {
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "",
+    ""
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "",
+    ""
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "",
+    ""
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "",
+    ""
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "",
+    ""
+    ));
+
 }

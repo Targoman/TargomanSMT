@@ -84,24 +84,56 @@ QString Normalizer::normalize(const QChar &_char,
                 Char == QChar(0xC2B7)))
         return this->LastChar = '.';
 
-    //Convert ئ to ی when no other character
-    //Convert أ to ا when no other character
+    if (Char == ARABIC_YE_HAMZA && (
+                _nextChar.isSpace() ||
+                _nextChar.isSymbol() ||
+                _nextChar.isDigit() ||
+                _nextChar.isPunct() ||
+                _nextChar.isNull()))
+        return this->LastChar = ARABIC_YE;
+
+    if ((Char == ARABIC_ALEF_HAMZA_DOWN || Char == ARABIC_ALEF_HAMZA_UP) && (
+                _nextChar.isSpace() ||
+                _nextChar.isSymbol() ||
+                _nextChar.isDigit() ||
+                _nextChar.isPunct() ||
+                _nextChar.isNull()))
+        return this->LastChar = ARABIC_ALEF;
+
     ////////////////////////////////////////////////////////////////////////////
     ////                        Using Binary Table                           ///
     ////////////////////////////////////////////////////////////////////////////
     if (this->BinaryMode){
-        QString Normalized = this->BinTable.at(Char.unicode()).toString();
+        QString Normalized;
+        if (Char == ARABIC_ZWNJ ||
+            Char == QChar(0x202c) ||
+            Char == QChar(0x202b) ||
+            Char == QChar(0x066C) ||
+            Char == QChar(0xCB99) ||
+            Char == QChar(0xC2B7))
+            Normalized = Char;
+        else
+            Normalized = this->BinTable.at(Char.unicode()).toString();
+
         if (Normalized.size()){
-            this->LastChar = Normalized.at(Normalized.size() - 1);
-            if (Normalized.size() > 1)
+            if (Normalized.size() > 1){
                 return Normalized;
-            else if (_skipRecheck)
+                this->LastChar = Normalized.at(Normalized.size() - 1);
+            }
+            else if (_skipRecheck){
+                this->LastChar = Normalized.at(Normalized.size() - 1);
                 return Normalized;
-            else
-                return this->normalize(this->LastChar = Normalized.at(0),
+            }else{
+                Normalized  = this->normalize(Normalized.at(0),
                                        _nextChar, true, _line, _phrase, _charPos, true);
-        }else
+                uint unicode = Normalized.at(0).unicode();
+
+                return Normalized;
+            }
+        }else{
+            this->LastChar = QChar();
             return "";
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -110,13 +142,13 @@ QString Normalizer::normalize(const QChar &_char,
 
     //Special characters
     if (Char == '\t' ||
-        Char == QChar(0xFFFF) ||
-        Char == QChar(0x7F))
+            Char == QChar(0xFFFF) ||
+            Char == QChar(0x7F))
         return " ";
 
     //Digits must be converted to ascii
     if (Char.isDigit())
-            return this->LastChar = QChar(Char.digitValue() + '0');
+        return this->LastChar = QChar(Char.digitValue() + '0');
 
     //Convert TitleCase to UpperCase
     if (Char.isTitleCase())
@@ -124,7 +156,7 @@ QString Normalizer::normalize(const QChar &_char,
 
     //Convert all special forms of quote and dquote to ASCII
     if (Char.category() == QChar::Punctuation_InitialQuote ||
-        Char.category() == QChar::Punctuation_FinalQuote)
+            Char.category() == QChar::Punctuation_FinalQuote)
         return this->LastChar = '"';
 
     //Accept characters defined as white
@@ -157,15 +189,15 @@ QString Normalizer::normalize(const QChar &_char,
 
     //Remove all special control characters and character modifiers
     if (Char.category() == QChar::Letter_Modifier ||
-        Char.category() == QChar::Mark_NonSpacing ||
-        Char.category() == QChar::Symbol_Modifier){
+            Char.category() == QChar::Mark_NonSpacing ||
+            Char.category() == QChar::Symbol_Modifier){
         this->LastChar = QChar();
         return "";
     }
 
     if (Char.category() == QChar::Other_NotAssigned ||
-        Char.category() == QChar::Other_PrivateUse ||
-        Char.category() == QChar::Other_Surrogate)
+            Char.category() == QChar::Other_PrivateUse ||
+            Char.category() == QChar::Other_Surrogate)
         return this->LastChar = SYMBOL_REMOVED;
 
     if (_skipRecheck)
@@ -270,6 +302,7 @@ QString Normalizer::normalize(const QChar &_char,
 QString Normalizer::normalize(const QString &_string, qint32 _line, bool _interactive)
 {
     QString Normalized;
+    this->LastChar = QChar();
     for (int i=0; i<_string.size(); i++){
         Normalized.append(
                     this->normalize(_string.at(i),
@@ -324,13 +357,13 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
                 {
                     QString ToBeWritten = this->char2Str(_originalChar);
                     ConfigFileOut.write(QString("NEW %1 ## %2 [%3][%4]\n").arg(
-                                     ToBeWritten).arg(
-                                     ToBeWritten.startsWith("<0x") ?
+                                            ToBeWritten).arg(
+                                            ToBeWritten.startsWith("<0x") ?
                                                 QString("{%1}").arg(_originalChar) :
                                                 this->char2Str(_originalChar, true)).arg(
-                                     QCHAR_UNICOE_CATEGORIES[_originalChar.category()]).arg(
-                                     enuUnicodeCharScripts::toStr(
-                                        (enuUnicodeCharScripts::Type)
+                                            QCHAR_UNICOE_CATEGORIES[_originalChar.category()]).arg(
+                                enuUnicodeCharScripts::toStr(
+                                    (enuUnicodeCharScripts::Type)
                                     QUnicodeTables::script(_originalChar.unicode()))).toUtf8());
                 }
                     break;
@@ -339,7 +372,7 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
                     QString ToBeWrittenKey = this->char2Str(_originalChar);
                     QString ToBeWrittenVal = this->char2Str(_replacement);
                     ConfigFileOut.write(QString("NEW %1 = %2 ## %3 ==> %4\n").arg(
-                                     ToBeWrittenKey, ToBeWrittenVal).arg(
+                                            ToBeWrittenKey, ToBeWrittenVal).arg(
                                             ToBeWrittenKey.startsWith("<0x") ?
                                                 QString("{%1}").arg(_originalChar) :
                                                 this->char2Str(_originalChar, true)).arg(
@@ -466,17 +499,17 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
             }
             break;
         case enuDicType::ReplacingCharacter:
-            {
-                QStringList Pair = ConfigLine.split('=');
-                if (Pair.size() == 2)
-                    this->ReplacingTable.insert(
-                            this->str2QChar(Pair[0].trimmed(), LineNumber, false).first(),
-                        Pair[1].trimmed().size() > 1 && Pair[1].trimmed().startsWith("<") ==false ?
-                            Pair[1].trimmed() : str2QChar(Pair[1].trimmed(), LineNumber, false).first());
-                else {
-                    throw exNormalizer(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
-                }
+        {
+            QStringList Pair = ConfigLine.split('=');
+            if (Pair.size() == 2)
+                this->ReplacingTable.insert(
+                        this->str2QChar(Pair[0].trimmed(), LineNumber, false).first(),
+                    Pair[1].trimmed().size() > 1 && Pair[1].trimmed().startsWith("<") ==false ?
+                        Pair[1].trimmed() : str2QChar(Pair[1].trimmed(), LineNumber, false).first());
+            else {
+                throw exNormalizer(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
             }
+        }
             break;
         case enuDicType::RemovingCharcters:
             StrList = ConfigLine.split(" ", QString::SkipEmptyParts);
@@ -511,11 +544,11 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
         throw exNormalizer("Invalid Normalization file as EOF section not found");
 
     TargomanLogInfo(5,QString("Normalization Table has (%1 WHT/ %2 BLK/ %3 SPC/ %4 NBS/ %5 RPL)").arg(
-                            this->WhiteList.size()).arg(
-                            this->RemovingList.size ()).arg(
-                            this->SpaceCharList.size ()).arg(
-                            this->ZeroWidthSpaceCharList.size ()).arg(
-                            this->ReplacingTable.size()));
+                        this->WhiteList.size()).arg(
+                        this->RemovingList.size ()).arg(
+                        this->SpaceCharList.size ()).arg(
+                        this->ZeroWidthSpaceCharList.size ()).arg(
+                        this->ReplacingTable.size()));
 }
 
 void Normalizer::updateBinTable(const QString &_binFilePath, bool _interactive)
@@ -552,8 +585,34 @@ void Normalizer::updateBinTable(const QString &_binFilePath, bool _interactive)
     TargomanLogHappy(5, "Normalization binTable written to" + _binFilePath);
 }
 
+QString Normalizer::fullTrim(const QString &_str)
+{
+    QString Normalized;
+
+    for (int i=0; i<_str.trimmed().size(); i++){
+        //Remove extra non-breaking space after non-joinable characters and before space
+        if (_str.at(i) == ARABIC_ZWNJ && ((i>0 &&(
+                                              _str.at(i-1).joining() == QChar::Right ||
+                                              _str.at(i-1).joining() == QChar::OtherJoining ||
+                                              _str.at(i-1).isSpace() ||
+                                              _str.at(i-1).isSymbol() ||
+                                              _str.at(i-1).isDigit()||
+                                              _str.at(i-1).isPunct()))
+                                          ||  i == 0
+                                          ||  i == _str.size() - 1
+                                          || (i+1 < _str.size() &&(
+                                                  _str.at(i+1).isSpace() ||
+                                                  _str.at(i+1).isSymbol() ||
+                                                  _str.at(i+1).isDigit() ||
+                                                  _str.at(i+1).isPunct() ||
+                                                  _str.at(i+1).isNull()))))
+            continue;
+        else
+            Normalized+=_str.at(i);
+    }
+    return Normalized;
+}
+}
 }
 }
 
-
-}

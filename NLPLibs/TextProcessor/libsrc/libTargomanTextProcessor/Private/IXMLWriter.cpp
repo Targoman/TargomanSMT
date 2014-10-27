@@ -127,7 +127,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
                                  const QString& _lang,
                                  quint32 _lineNo,
                                  bool _interactive,
-                                 bool _useSpellCorrecter)
+                                 bool _useSpellCorrector)
 {
     QString InputPhrase, OutputPhrase;
     InputPhrase += _inStr;
@@ -240,7 +240,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
 
     TargomanDebug(7,"[TKN] "<<OutputPhrase);
 
-    if (_useSpellCorrecter)
+    if (_useSpellCorrector)
         OutputPhrase = SpellCorrector::instance().process(_lang, OutputPhrase, _interactive);
 
     InputPhrase = OutputPhrase;

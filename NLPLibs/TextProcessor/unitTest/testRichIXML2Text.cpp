@@ -12,6 +12,9 @@
 
 #include "UnitTest.h"
 
+#include "libTargomanTextProcessor/TextProcessor.h"
+using namespace Targoman::NLPLibs;
+
 void UnitTest::richIXML2Text()
 {
 }

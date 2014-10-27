@@ -33,6 +33,8 @@ public:
 private:
     QString processStartingWithBi_Ba_Na(const QSet<QString>& _set, const QString& _prefix, const QString& _postfix);
     QString processVerbs(const QString& _prefix, const QString _postfix);
+    QString processHa(const QString& _prefix, const QString& _complexWord, const QString& _postfix);
+    QString processTar_Tarin(const QString& _prefix, const QString& _complexWord, const QString& _postfix);
 
 private:
     QSet<QString>            Nouns;
@@ -55,7 +57,8 @@ private:
     QRegExp                  RxEndWithHa;
     QRegExp                  RxAn;
     QRegExp                  RxEndWithAn;
-
+    QRegExp                  RxPossesive;
+    QRegExp                  RxEndWithPossesive;
 };
 
 }

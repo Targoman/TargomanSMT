@@ -24,29 +24,32 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exSpellCorrecter, exTextProcessor);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exSpellCorrector, exTextProcessor);
 
 class intfSpellCorrector
 {
 protected:
-    struct stuConfigStep{
+    struct stuConfigType{
+        QString Name;
         bool    IsKeyVal;
         union{
             QHash<QString, QString>* KeyValStorage;
             QSet<QString>*           ListStorage;
         };
 
-        stuConfigStep(QHash<QString, QString>* _storage){
+        stuConfigType(const QString& _name, QHash<QString, QString>* _storage){
+            this->Name = _name;
             this->IsKeyVal = true;
             this->KeyValStorage = _storage;
         }
 
-        stuConfigStep(QSet<QString>* _storage){
+        stuConfigType(const QString& _name, QSet<QString>* _storage){
+            this->Name = _name;
             this->IsKeyVal = false;
             this->ListStorage = _storage;
         }
 
-        stuConfigStep(){
+        stuConfigType(){
             this->KeyValStorage = NULL;
         }
     };
@@ -57,8 +60,8 @@ public:
 
     inline bool active() const {return this->Active;}
     inline const QHash<QString, QString>&  autoCorrectTerms(){return this->AutoCorrectTerms;}
-    inline size_t maxAutoCorrectTokens(){return this->MaxAutoCorrectTokens;}
-    bool init(const QVariantHash _settings);
+    inline int maxAutoCorrectTokens(){return this->MaxAutoCorrectTokens;}
+    bool init(const QString &_baseConfigPath, const QVariantHash _settings);
 
     virtual QString process(const QStringList& _tokens) = 0;
     virtual bool canBeCheckedInteractive(const QString& _inputWord) const = 0;
@@ -73,7 +76,7 @@ protected:
 
 protected:
     QHash<QString, QString>           AutoCorrectTerms;
-    QHash<QString, stuConfigStep>     ConfigSteps;
+    QList<stuConfigType>              ConfigTypes;
     int  MaxAutoCorrectTokens;
     QString AutoCorrectFile;
     bool Active;
@@ -86,7 +89,7 @@ public:
     static SpellCorrector& instance() {return Q_LIKELY(Instance) ? *Instance : *(Instance = new SpellCorrector);}
 
     QString process(const QString& _lang, const QString& _inputStr, bool _interactive);
-    void init(const QHash<QString, QVariantHash> &_settings);
+    void init(const QString& _baseConfigPath, const QHash<QString, QVariantHash> &_settings);
 
 private:
     SpellCorrector();

@@ -33,12 +33,12 @@ SpellCorrector::SpellCorrector()
     this->Processors.insert("fa", new clsPersianSpellCorrector);
 }
 
-void SpellCorrector::init(const QHash<QString, QVariantHash>& _settings)
+void SpellCorrector::init(const QString& _baseConfigPath, const QHash<QString, QVariantHash>& _settings)
 {
     foreach(const QString& Lang, _settings.keys()){
-        intfSpellCorrector* SpellChecker = this->Processors.value(Lang);
-        if (SpellChecker){
-            SpellChecker->init(_settings.value(Lang));
+        intfSpellCorrector* SpellCorrector = this->Processors.value(Lang);
+        if (SpellCorrector){
+            SpellCorrector->init(_baseConfigPath, _settings.value(Lang));
         }else{
             TargomanLogWarn(5, QString("Spell Corrector for %1(%2) is not available").arg(
                                 Lang).arg(ISO639getName(Lang.toAscii().constData())));
@@ -116,31 +116,44 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
     //Re-process whole phrase until there are no more changes
     do{
         FinalPhrase = Output;
-        for (size_t MaxTokens=2; MaxTokens< Processor->maxAutoCorrectTokens(); ++MaxTokens){
+        for (int MaxTokens=2; MaxTokens< Processor->maxAutoCorrectTokens(); ++MaxTokens){
             do{
                 Phrase = Output;
-                Output.clear();
                 Tokens = Phrase.trimmed().replace("  "," ").replace("  "," ").split(" ", QString::SkipEmptyParts);
-                for(size_t FromTokenIndex=0; FromTokenIndex<=Tokens.size() - MaxTokens; FromTokenIndex++){
+                if (Tokens.size() < MaxTokens)
+                    continue;
+                Output.clear();
+
+                bool HasRemaining = true;
+                for(int FromTokenIndex=0; FromTokenIndex<=Tokens.size() - MaxTokens ; FromTokenIndex++){
+                    HasRemaining = true;
                     MultiWordBuffer.clear();
-                    for (size_t i=0; i<MaxTokens; i++)
-                        MultiWordBuffer.append(Tokens.at(FromTokenIndex+i));
+                    for (int i=0; i<MaxTokens; i++)
+                        if ((FromTokenIndex + i) < Tokens.size())
+                            MultiWordBuffer.append(Tokens.at(FromTokenIndex+i));
+
+                    if (MultiWordBuffer.size() < MaxTokens - 1)
+                        continue;
 
                     Normalized = Processor->process(MultiWordBuffer);
                     if (Normalized.size()){
                         Output += Normalized + " ";
-                        if (Normalized.split(" ").size() >= (int)MaxTokens){
+                        if (Normalized.split(" ").size() >= MaxTokens){
                             Tokens.removeAt(
                                         FromTokenIndex);
                             foreach(const QString& MidTokens, Normalized.split(" ", QString::SkipEmptyParts))
                                 Tokens.insert(FromTokenIndex,MidTokens);
                             FromTokenIndex--; // As Token at FromTokenIndex has changed so reprocess it
-                        }else
-                            ++FromTokenIndex;
+                        }else{
+                            FromTokenIndex+=MaxTokens - 1;
+                            if(FromTokenIndex + 1 == Tokens.size())
+                                HasRemaining = false;
+                        }
                     }else
                         Output += MultiWordBuffer.takeFirst() + " ";
                 }
-                Output += ((QStringList)Tokens.mid(Tokens.size()-MaxTokens + 1)).join(" ");
+                if (HasRemaining)
+                    Output += ((QStringList)Tokens.mid(Tokens.size()-MaxTokens + 1)).join(" ");
             }while(Output.trimmed() != Phrase.trimmed());
         }
     }while(Output.trimmed() != FinalPhrase.trimmed());
@@ -149,83 +162,66 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
 }
 
 /**************************************************************************************************/
-bool intfSpellCorrector::init(const QVariantHash _settings)
+bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash _settings)
 {
-    this->AutoCorrectFile = _settings.value("ConfigPath").toString();
-    if (this->AutoCorrectFile.isEmpty())
-        throw exSpellCorrecter(this->Lang + "ConfigPath not provided for initialization");
+    this->Active = _settings.value("Active",true).toBool();
+    TargomanInlineInfo(5, "Loading " + this->Lang + " Config file...");
 
-    this->Active = _settings.value("Active").toBool();
+    this->MaxAutoCorrectTokens = 0;
+    foreach (const stuConfigType& Config, this->ConfigTypes){
+        QString ConfigFilePath = _baseConfigPath + "/" + this->Lang + "/" + Config.Name + ".tbl";
+        QFile ConfigFile(ConfigFilePath);
+        ConfigFile.open(QIODevice::ReadOnly);
+        if(!ConfigFile.isReadable ())
+            throw exSpellCorrector("Unable to open file: <"+ConfigFilePath+">.");
 
-    QFile ConfigFile(this->AutoCorrectFile);
-    ConfigFile.open(QIODevice::ReadOnly);
-    if(!ConfigFile.isReadable ())
-        throw exSpellCorrecter("Unable to open file: <"+this->AutoCorrectFile+">.");
+        QTextStream ConfigStream(&ConfigFile);
+        ConfigStream.setCodec("UTF-8");
+        QString ConfigLine;
+        int CommentIndex = -1;
+        int LineNumber = 0;
 
-    QTextStream ConfigStream(&ConfigFile);
-    ConfigStream.setCodec("UTF-8");
+        while (!ConfigStream.atEnd())
+        {
+            ConfigLine = ConfigStream.readLine().trimmed();
+            LineNumber++;
+            if (ConfigLine.startsWith("##") || ConfigLine.trimmed().isEmpty())
+                continue;
 
-    QString ConfigLine;
-    int CommentIndex = -1;
-    int LineNumber = 0;
-    bool IsEOF = false;
-    stuConfigStep ConfigStep;
+            if ((CommentIndex = ConfigLine.indexOf("##")) >= 0)
+                ConfigLine.truncate(CommentIndex);
 
-    while (!ConfigStream.atEnd() && !IsEOF)
-    {
-        ConfigLine = ConfigStream.readLine().trimmed();
-        LineNumber++;
-        if (ConfigLine.startsWith("##") || ConfigLine.trimmed().isEmpty())
-            continue;
+            ConfigLine = ConfigLine.trimmed();
 
-        if ((CommentIndex = ConfigLine.indexOf("##")) >= 0)
-            ConfigLine.truncate(CommentIndex);
+            if (ConfigLine.startsWith("NEW "))
+                ConfigLine.remove(0, 4);
 
-        ConfigLine = ConfigLine.trimmed();
+            if (Config.IsKeyVal){
+                QStringList Pair = ConfigLine.split('=');
+                if (Pair.size() == 2){
+                    QString Key = Normalizer::instance().normalize(Pair[0].trimmed());
+                    QString Val = Normalizer::instance().normalize(Pair[1].trimmed());
+                    Config.KeyValStorage->insert(Key, Val);
+                    this->MaxAutoCorrectTokens = qMax(this->MaxAutoCorrectTokens,
+                                                      Key.split(" ", QString::SkipEmptyParts).size());
+                }
+                else {
+                    throw exSpellCorrector(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
+                }
+            }else
+                Config.ListStorage->insert(Normalizer::instance().normalize(ConfigLine.trimmed()));
 
-        if (ConfigLine.startsWith("[") && ConfigLine.endsWith("]")){
-            if (ConfigLine == "[EOF]")
-                IsEOF = true;
-            else{
-                ConfigStep = this->ConfigSteps.value(ConfigLine.mid(1,ConfigLine.size() - 2));
-                if (ConfigStep.KeyValStorage == NULL)
-                    throw exSpellCorrecter("Invalid step definition in ");
-            }
-            continue;
-        }
-
-        if (ConfigLine.startsWith("NEW "))
-            ConfigLine.remove(0, 4);
-
-        if (ConfigStep.IsKeyVal){
-            QStringList Pair = ConfigLine.split('=');
-            if (Pair.size() == 2){
-                QString Key = Normalizer::instance().normalize(Pair[0].trimmed());
-                QString Val = Normalizer::instance().normalize(Pair[1].trimmed());
-                ConfigStep.KeyValStorage->insert(Key, Val);
-                this->MaxAutoCorrectTokens = qMax(this->MaxAutoCorrectTokens,
-                                                  Key.split(" ", QString::SkipEmptyParts).size());
-            }
-            else {
-                throw exSpellCorrecter(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
-            }
-        }else{
-            QString N = Normalizer::instance().normalize(ConfigLine);
-            ConfigStep.ListStorage->insert(Normalizer::instance().normalize(ConfigLine.trimmed()));
         }
     }
 
-    if (!IsEOF)
-        throw exSpellCorrecter("Invalid SpellCorrecter file as EOF section not found");
-
-    TargomanInfo(5, this->Lang + " Config file loaded:");
-    foreach (const QString& Step, this->ConfigSteps.keys())
-        if (this->ConfigSteps.value(Step).IsKeyVal){
-            TargomanInfo(5, "\t" + Step + ": " +
-                            QString::number(this->ConfigSteps.value(Step).KeyValStorage->size()) + " Entries");
+    TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, this->Lang + "Loaded");
+    foreach (const stuConfigType& Config, this->ConfigTypes)
+        if (Config.IsKeyVal){
+            TargomanInfo(5, "\t" + Config.Name + ": " +
+                         QString::number(Config.KeyValStorage->size()) + " Entries");
         }else{
-            TargomanInfo(5, "\t" + Step + ": " +
-                            QString::number(this->ConfigSteps.value(Step).ListStorage->size()) + " Entries");
+            TargomanInfo(5, "\t" + Config.Name + ": " +
+                         QString::number(Config.ListStorage->size()) + " Entries");
         }
 
     this->MaxAutoCorrectTokens = qMax(4, this->MaxAutoCorrectTokens);

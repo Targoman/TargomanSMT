@@ -57,7 +57,8 @@ public:
     struct stuConfigs{
         QString NormalizationFile;
         QString AbbreviationsFile;
-        QHash<QString, QVariantHash> SpellCorrector;
+        QString SpellCorrectorBaseConfigPath;
+        QHash<QString, QVariantHash> SpellCorrectorLanguageBasedConfigs;
     };
 
 public:
@@ -70,7 +71,7 @@ public:
                       const QString& _lang = "",
                       quint32 _lineNo = 0,
                       bool _interactive = true,
-                      bool _useSpellCorrecter = true,
+                      bool _useSpellCorrector = true,
                       QList<enuTextTags::Type> _removingTags = QList<enuTextTags::Type>()) const;
     QString text2RichIXML(const QString& _inStr, const QString& _lang = "") const;
 

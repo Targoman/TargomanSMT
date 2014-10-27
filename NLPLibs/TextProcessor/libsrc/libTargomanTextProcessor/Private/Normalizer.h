@@ -44,7 +44,13 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "EOF"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
-#define ARABIC_ZWNJ     QChar(0x200C)
+#define ARABIC_ZWNJ                QChar(0x200C)
+#define ARABIC_YE                  QChar(0x06CC)
+#define ARABIC_YE_HAMZA            QChar(0x0626)
+#define ARABIC_ALEF_HAMZA_DOWN     QChar(0x0625)
+#define ARABIC_ALEF_HAMZA_UP       QChar(0x0622)
+#define ARABIC_ALEF                QChar(0x0627)
+
 #define MULTI_DOT       QString::fromUtf8("…")
 #define SYMBOL_REMOVED  QChar(0x2205)
 
@@ -66,7 +72,7 @@ public:
 
     void updateBinTable(const QString& _binFilePath, bool _interactive = false);
 
-    static QString fullTrim(const QString& _str) { return _str.trimmed().remove(ARABIC_ZWNJ);}
+    static QString fullTrim(const QString& _str);
 
 
 private:

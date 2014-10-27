@@ -41,7 +41,7 @@ TextProcessor::TextProcessor()
 bool TextProcessor::init(const stuConfigs& _configs) const
 {
     Normalizer::instance().init(_configs.NormalizationFile);
-    SpellCorrector::instance().init(_configs.SpellCorrector);
+    SpellCorrector::instance().init(_configs.SpellCorrectorBaseConfigPath, _configs.SpellCorrectorLanguageBasedConfigs);
     IXMLWriter::instance().init(_configs.AbbreviationsFile);
     return true;
 }
@@ -50,7 +50,7 @@ bool TextProcessor::init(const stuConfigs& _configs) const
  * @brief TextProcessor::text2IXML
  * @param _inStr
  * @param _interactive
- * @param _useSpellCorrecter
+ * @param _useSpellCorrector
  * @param _removingTags
  * @return
  */
@@ -58,7 +58,7 @@ QString TextProcessor::text2IXML(const QString &_inStr,
                                  const QString& _lang,
                                  quint32 _lineNo,
                                  bool _interactive,
-                                 bool _useSpellCorrecter,
+                                 bool _useSpellCorrector,
                                  QList<enuTextTags::Type> _removingTags) const
 {
     TargomanLogDebug(5,"ConvertToIXML Process Started");
@@ -73,7 +73,7 @@ QString TextProcessor::text2IXML(const QString &_inStr,
                 LangCode,
                 _lineNo,
                 _interactive,
-                _useSpellCorrecter);
+                _useSpellCorrector);
 
     foreach(enuTextTags::Type Tag, _removingTags)
         IXML.remove(
