@@ -118,3 +118,7 @@ defineTest(addSubdirs) {
     export (SUBDIRS)
 }
 
+HEADERS +=
+
+SOURCES +=
+

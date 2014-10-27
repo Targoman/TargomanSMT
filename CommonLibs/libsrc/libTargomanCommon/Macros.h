@@ -14,6 +14,7 @@
 #define TARGOMAN_DEFINITIONS_MACROS_H_
 
 #include <string>
+#include <cstring>
 
 /********************************************************************************************
   Environmet detection macros
