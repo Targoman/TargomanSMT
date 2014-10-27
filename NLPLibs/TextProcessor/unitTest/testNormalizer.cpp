@@ -22,8 +22,8 @@ using namespace Targoman::NLPLibs;
 void UnitTest::normalizeText()
 {
     QVERIFY(VERIFY_NORMALIZE("fa",
-    "",
-    ""
+    "من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند",
+    "من با دم خود می‌گفتم که بامعرفت‌ترین‌هایشان هم نارفیق بوده‌اند"
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "",

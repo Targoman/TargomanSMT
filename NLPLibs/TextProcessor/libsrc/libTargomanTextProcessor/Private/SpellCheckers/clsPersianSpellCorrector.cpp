@@ -50,7 +50,7 @@ clsPersianSpellCorrector::clsPersianSpellCorrector()
     this->RxVerbPerfect         = QRegExp(QString::fromUtf8("(ام|ای|است|ایم|اید|اند)$"));
     this->RxHa                  = QRegExp(QString::fromUtf8("ها(یی?|یم|یت|یش|یمان|یتان|یشان)?$"));
     this->RxAn                  = QRegExp(QString::fromUtf8("ی?ان(ی|م|ت|ش|مان|تان|شان)?$"));
-    this->RxPossesive           = QRegExp(QString::fromUtf8("([ای]?م|[ای]?ت|[ای]?ش|مان|تان|شان)$"));
+    this->RxPossesive           = QRegExp(QString::fromUtf8("[ای]?(م|ت|ش|مان|تان|شان)$"));
     this->RxEndWithHa           = QRegExp(".*" + this->RxHa.pattern());
     this->RxEndWithAn           = QRegExp(".*" + this->RxAn.pattern());
     this->RxEndPresentImperfect = QRegExp(".*" + this->RxPresentImperfect.pattern());
@@ -100,7 +100,9 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
             return Buffer;
     }
 
-    if(ComplexWord.startsWith(PERSIAN_Bi)){
+    if(ComplexWord.startsWith(PERSIAN_Bi) ||
+       ComplexWord.startsWith(PERSIAN_Ba) ||
+       ComplexWord.startsWith(PERSIAN_Na)){
         //جداسازی «بی» چسبیده به صفت
         Buffer = ComplexWord;
         Prefix = Buffer.mid(0,2);
@@ -190,12 +192,11 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
                                                               const QString &_prefix,
                                                               const QString &_postfix)
 {
-    QString Buffer = _postfix;
+    QString Buffer = Normalizer::sidesTrim(_postfix);
     QString Postfix = Buffer;
     Buffer = Normalizer::sidesTrim(Buffer);
     if (RxEndWithHa.exactMatch(Buffer) ||
             RxEndWithAn.exactMatch(Buffer)){
-        //الحاق «با» و «بی» چسبیده به صفت و ترکیبات «نا» جمع
         Buffer.remove(RxHa); //Remove combinations of Ha
         Postfix.remove(0,  Buffer.length());
         if(Postfix.isEmpty()){
@@ -231,9 +232,7 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
     if (_prefix == PERSIAN_Na){
         if (this->CanStartWithNa.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
-    }
-
-    if (this->CanStartWithBi_Ba.contains(Buffer))
+    }else if (this->CanStartWithBi_Ba.contains(Buffer))
         return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
 
     return "";
@@ -241,8 +240,7 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
 
 QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QString _postfix)
 {
-    //افعال حال : می‌خورم
-    QString Buffer = _postfix;
+    QString Buffer = Normalizer::sidesTrim(_postfix);
     QString Postfix = Buffer;
     Buffer = Normalizer::sidesTrim(Buffer.remove(this->RxPresentImperfect));
 
@@ -290,7 +288,7 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
 
 QString clsPersianSpellCorrector::processHa(const QString &_prefix, const QString &_complexWord, const QString &_postfix)
 {
-    QString Buffer = _complexWord;
+    QString Buffer = Normalizer::sidesTrim(_complexWord);
     QString Postfix = Buffer;
     Buffer.remove(this->RxHa);
     Postfix.remove(0, Buffer.length());
@@ -302,7 +300,6 @@ QString clsPersianSpellCorrector::processHa(const QString &_prefix, const QStrin
     }
     if(Postfix.size()){
         Buffer = Normalizer::sidesTrim(Buffer);
-        //جداسازی ترکیبات «ها» در صورت وجود
         if (this->Nouns.contains(Buffer) ||
                 this->Adjectives.contains(Buffer))
             return Normalizer::fullTrim(_prefix + Buffer + ARABIC_ZWNJ + Postfix + ARABIC_ZWNJ + _postfix);
@@ -319,7 +316,7 @@ QString clsPersianSpellCorrector::processTar_Tarin(const QString& _prefix,
                                                    const QString& _complexWord,
                                                    const QString& _postfix)
 {
-    QString Buffer = _complexWord;
+    QString Buffer = Normalizer::sidesTrim(_complexWord);
     QString Type;
     if (Buffer.endsWith(PERSIAN_Tar)){
         Buffer.truncate(Buffer.size() - 2);
