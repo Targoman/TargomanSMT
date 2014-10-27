@@ -26,6 +26,8 @@ for(CurrPath, LookUps) {
       break()
   }
 }
+DependencySearchPaths +=$$BaseOutput/out/lib
+INCLUDEPATH+=$$BaseOutput/out/include
 
 !exists($$ProjectConfig){
 error("***** $$ProjectName: Unable to find Configuration file $$ProjectConfig ***** ")
@@ -33,4 +35,29 @@ error("***** $$ProjectName: Unable to find Configuration file $$ProjectConfig **
 
 include ($$ProjectConfig)
 
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
+
+for(Project, ProjectDependencies) {
+  for(Path, FullDependencySearchPaths):isEmpty( Found ) {
+      message(Looking for $$Project in $$Path/)
+      exists($$Path/lib$$Project*) {
+        Found = "TRUE"
+        message(-------------> $$Project Found!!!)
+      }
+      message("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-")
+  }
+  isEmpty( Found ) {
+    message("***********************************************************************************************")
+    message("!!!!!! $$ProjectName Depends on $$Project but not found ")
+    message("***********************************************************************************************")
+    error("")
+  }
+  Found = ""
+}
+
+
+for(Library, ProjectDependencies):LIBS += -l$$Library
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
+
 INCLUDEPATH+=$$BaseLibraryIncludeFolder
+
