@@ -82,7 +82,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
         ComplexWord += _tokens.at(i) + ARABIC_ZWNJ;
     }
 
-    ComplexWord = Normalizer::fullTrim(ComplexWord);
+    ComplexWord.truncate(ComplexWord.size() - 1);
 
     if(ComplexWord.endsWith(PERSIAN_HeYe))
         return ComplexWord.mid(0, ComplexWord.length() - 2);
@@ -116,7 +116,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
         Postfix = Buffer;
         Buffer.remove(RxVerbPerfect);
         Postfix.remove(0, Buffer.length());
-        Buffer = Normalizer::fullTrim(Buffer);
+        Buffer = Normalizer::sidesTrim(Buffer);
         if(Postfix.size()){
             if(Buffer.endsWith(PERSIAN_He) &&
                     this->VerbStemPast.contains(Buffer.mid(0, Buffer.size() - 1)))
@@ -128,7 +128,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
         if (ComplexWord.endsWith(PERSIAN_AlefYe)){
             Buffer = ComplexWord;
             Buffer.truncate(Buffer.size() - 2);
-            Buffer = Normalizer::fullTrim(Buffer);
+            Buffer = Normalizer::sidesTrim(Buffer);
             if (Buffer.endsWith(PERSIAN_He) && (
                         this->Adjectives.contains(Buffer) ||
                         this->Nouns.contains(Buffer)) &&
@@ -146,10 +146,11 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
     Postfix = Buffer;
     Buffer.remove(this->RxPossesive);
     Postfix.remove(0, Buffer.length());
+    Buffer = Normalizer::sidesTrim(Buffer);
     if(Postfix.size()){
         //جداسازی ضمیر مالکیت مفرد
-        if (this->Nouns.contains(Normalizer::fullTrim(Buffer)) ||
-                this->Adjectives.contains(Normalizer::fullTrim(Buffer)))
+        if (this->Nouns.contains(Buffer) ||
+            this->Adjectives.contains(Buffer))
             return Normalizer::fullTrim(Buffer + ARABIC_ZWNJ + Postfix);
 
         QString NewBuffer = this->processHa("", Buffer, Postfix);
@@ -191,8 +192,9 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
 {
     QString Buffer = _postfix;
     QString Postfix = Buffer;
-    if (RxEndWithHa.exactMatch(Normalizer::fullTrim(Buffer)) ||
-            RxEndWithAn.exactMatch(Normalizer::fullTrim(Buffer))){
+    Buffer = Normalizer::sidesTrim(Buffer);
+    if (RxEndWithHa.exactMatch(Buffer) ||
+            RxEndWithAn.exactMatch(Buffer)){
         //الحاق «با» و «بی» چسبیده به صفت و ترکیبات «نا» جمع
         Buffer.remove(RxHa); //Remove combinations of Ha
         Postfix.remove(0,  Buffer.length());
@@ -203,8 +205,9 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
             Postfix.remove(0, Buffer.length());
         }
 
+        Buffer = Normalizer::sidesTrim(Buffer);
         if (Postfix.size() &&
-                _set.contains(Normalizer::fullTrim(Buffer)))
+                _set.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_ZWNJ + Postfix);
 
         Buffer = this->processTar_Tarin(_prefix + ARABIC_ZWNJ, Buffer, Postfix);
@@ -216,16 +219,21 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
     if(Buffer.size())
         return Buffer;
 
-    Buffer = _postfix;
+    Buffer = Normalizer::sidesTrim(_postfix);
     if (Buffer.endsWith(ARABIC_YE)){
         //نکره صفت
         Buffer.truncate(Buffer.size() - 1);
-        if (this->CanStartWithBi_Ba.contains(Normalizer::fullTrim(Buffer)))
+        if (this->CanStartWithBi_Ba.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_YE);
-    }else if (_prefix == PERSIAN_Na){
-        if (this->CanStartWithNa.contains(Normalizer::fullTrim(_postfix)))
+    }
+
+    Buffer = Normalizer::sidesTrim(_postfix);
+    if (_prefix == PERSIAN_Na){
+        if (this->CanStartWithNa.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
-    }else if (this->CanStartWithBi_Ba.contains(Normalizer::fullTrim(_postfix)))
+    }
+
+    if (this->CanStartWithBi_Ba.contains(Buffer))
         return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
 
     return "";
@@ -236,26 +244,27 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
     //افعال حال : می‌خورم
     QString Buffer = _postfix;
     QString Postfix = Buffer;
-    Buffer.remove(this->RxPresentImperfect);
-    if(this->VerbStemPresent.contains(Normalizer::fullTrim(Buffer)))
+    Buffer = Normalizer::sidesTrim(Buffer.remove(this->RxPresentImperfect));
+
+    if(this->VerbStemPresent.contains(Buffer))
         return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
-    Postfix.remove(0,Buffer.size());
+    Postfix = Normalizer::sidesTrim(Postfix.remove(0,Buffer.size()));
     if (Postfix.size() && Postfix.startsWith(PERSIAN_Noon)){
-        Buffer.append(PERSIAN_Noon);
-        if(this->VerbStemPresent.contains(Normalizer::fullTrim(Buffer)))
+        Buffer = Normalizer::sidesTrim(Buffer.append(PERSIAN_Noon));
+        if(this->VerbStemPresent.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
     }
 
     //افعال ماضی : می‌خوردم
     Buffer = Postfix = _postfix;
-    Buffer.remove(this->RxPastImperfect);
-    if(this->VerbStemPast.contains(Normalizer::fullTrim(Buffer)))
+    Buffer = Normalizer::sidesTrim(Buffer.remove(this->RxPastImperfect));
+    if(this->VerbStemPast.contains(Buffer))
         return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
 
     Postfix.remove(0,Buffer.size());
     if (Postfix.size() && Postfix.startsWith(PERSIAN_Noon)){
-        Buffer.append(PERSIAN_Noon);
-        if(this->VerbStemPast.contains(Normalizer::fullTrim(Buffer)))
+        Buffer = Normalizer::sidesTrim(Buffer.append(PERSIAN_Noon));
+        if(this->VerbStemPast.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
     }
 
@@ -263,16 +272,16 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
     Buffer = Postfix = _postfix;
     Buffer.remove(this->RxVerbPerfect);
     if (Buffer.size()){
-        Buffer.remove(Buffer.size() - 1,1); // remove final "He" from stem
-        if(this->VerbStemPresent.contains(Normalizer::fullTrim(Buffer)))
+        Buffer = Normalizer::sidesTrim(Buffer.remove(Buffer.size() - 1,1)); // remove final "He" from stem
+        if(this->VerbStemPresent.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
     }
 
     //افعال ماضی بعید : می‌خورده بودم و می‌خورده باشم
     Buffer = _postfix;
     if (Buffer.endsWith(PERSIAN_He)){
-        Buffer.remove(Buffer.length() - 1, 1);
-        if(this->VerbStemPast.contains(Normalizer::fullTrim(Buffer)))
+        Buffer = Normalizer::sidesTrim(Buffer.remove(Buffer.length() - 1, 1));
+        if(this->VerbStemPast.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
     }
 
@@ -292,10 +301,10 @@ QString clsPersianSpellCorrector::processHa(const QString &_prefix, const QStrin
         Postfix.remove(0, Buffer.length());
     }
     if(Postfix.size()){
-        Buffer = Normalizer::fullTrim(Buffer);
+        Buffer = Normalizer::sidesTrim(Buffer);
         //جداسازی ترکیبات «ها» در صورت وجود
         if (this->Nouns.contains(Buffer) ||
-                this->Adjectives.contains(Normalizer::fullTrim(Buffer)))
+                this->Adjectives.contains(Buffer))
             return Normalizer::fullTrim(_prefix + Buffer + ARABIC_ZWNJ + Postfix + ARABIC_ZWNJ + _postfix);
 
         if (Buffer.endsWith(PERSIAN_He) && this->VerbStemPast.contains(Buffer.mid(0,Buffer.size() - 1)))
@@ -323,7 +332,7 @@ QString clsPersianSpellCorrector::processTar_Tarin(const QString& _prefix,
         return "";
 
 
-    Buffer = Normalizer::fullTrim(Buffer);
+    Buffer = Normalizer::sidesTrim(Buffer);
     if (this->Adjectives.contains(Buffer))
         return Normalizer::fullTrim(_prefix + Buffer + ARABIC_ZWNJ +
                                     Type + ARABIC_ZWNJ + _postfix);

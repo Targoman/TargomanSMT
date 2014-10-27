@@ -73,6 +73,16 @@ public:
     void updateBinTable(const QString& _binFilePath, bool _interactive = false);
 
     static QString fullTrim(const QString& _str);
+    static QString sidesTrim(const QString& _str){
+        QString Trimmed = _str.trimmed();
+        if (Trimmed.isEmpty())
+            return "";
+        if(_str.at(Trimmed.size() - 1) == ARABIC_ZWNJ)
+            Trimmed.truncate(Trimmed.size() - 1);
+        if(_str.at(0) == ARABIC_ZWNJ)
+            Trimmed = Trimmed.remove(0,1);
+        return Trimmed.trimmed();
+    }
 
 
 private:
