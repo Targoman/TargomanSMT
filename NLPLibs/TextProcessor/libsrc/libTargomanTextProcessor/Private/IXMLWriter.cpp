@@ -14,9 +14,6 @@
 #include <QFile>
 #include "IXMLWriter.h"
 
-#include "Normalizer.h"
-#include "SpellCorrector.h"
-
 namespace Targoman {
 namespace NLPLibs {
 namespace Private {
@@ -25,7 +22,9 @@ IXMLWriter* IXMLWriter::Instance = NULL;
 
 #define TGMN_SUFFIXES "t|ll|ve|s|m|re|d"
 
-IXMLWriter::IXMLWriter()
+IXMLWriter::IXMLWriter() :
+    NormalizerInstance(Normalizer::instance()),
+    SpellCorrectorInstance(this->SpellCorrectorInstance)
 {
     // Email detection
     this->RxEmail = QRegExp("([A-Za-z0-9._%+-][A-Za-z0-9._%+-]*@[A-Za-z0-9.-][A-Za-z0-9.-]*\\.[A-Za-z]{2,4})");
@@ -140,7 +139,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
 
     for (int i=0; i<InputPhrase.size(); i++){
         OutputPhrase.append(
-                    Normalizer::instance().normalize(
+                    this->NormalizerInstance.normalize(
                         InputPhrase.at(i),
                         ((i + 1) < InputPhrase.size() ? InputPhrase.at(i+1) : QChar('\n')),
                         _interactive,
@@ -241,7 +240,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     TargomanDebug(7,"[TKN] "<<OutputPhrase);
 
     if (_useSpellCorrector)
-        OutputPhrase = SpellCorrector::instance().process(_lang, OutputPhrase, _interactive);
+        OutputPhrase = this->SpellCorrectorInstance.process(_lang, OutputPhrase, _interactive);
 
     InputPhrase = OutputPhrase;
     OutputPhrase.clear();
@@ -287,7 +286,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
         OutputPhrase.append(" ");
     }
     OutputPhrase.truncate(OutputPhrase.size() - 2);
-    OutputPhrase = Normalizer::instance().fullTrim(OutputPhrase.replace("  "," ").replace("  "," "));
+    OutputPhrase = this->NormalizerInstance.fullTrim(OutputPhrase.replace("  "," ").replace("  "," "));
     TargomanDebug(7,"[ALL-TAGS] "<<OutputPhrase);
 
     return OutputPhrase;

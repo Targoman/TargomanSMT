@@ -77,6 +77,8 @@ public:
 
 private:
     Normalizer();
+    Q_DISABLE_COPY(Normalizer)
+
     void add2Configs(enuDicType::Type _type, QChar _originalChar, QChar _replacement = QChar());
     QString char2Str(const QChar &_char, bool _hexForced = false);
     QList<QChar> str2QChar(QString _str, quint16 _line, bool _allowRange = true);

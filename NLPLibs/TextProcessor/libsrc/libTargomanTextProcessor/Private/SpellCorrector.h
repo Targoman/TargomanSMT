@@ -55,7 +55,7 @@ protected:
     };
 
 public:
-    intfSpellCorrector(){this->Active = false;}
+    intfSpellCorrector();
     virtual ~intfSpellCorrector(){}
 
     inline bool active() const {return this->Active;}
@@ -81,6 +81,8 @@ protected:
     QString AutoCorrectFile;
     bool Active;
     QString Lang;
+
+    Normalizer& NormalizerInstance; // Faster access to normalizer class
 };
 
 class SpellCorrector
@@ -93,10 +95,12 @@ public:
 
 private:
     SpellCorrector();
+    Q_DISABLE_COPY(SpellCorrector)
 
 private:
     QHash<QString, intfSpellCorrector*> Processors;
     static SpellCorrector* Instance;
+    Normalizer& NormalizerInstance; // Faster access to normalizer class
 };
 
 }

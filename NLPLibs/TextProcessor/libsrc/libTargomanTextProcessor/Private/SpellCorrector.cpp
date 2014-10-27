@@ -28,7 +28,8 @@ namespace Private {
 
 SpellCorrector* SpellCorrector::Instance = NULL;
 
-SpellCorrector::SpellCorrector()
+SpellCorrector::SpellCorrector():
+    NormalizerInstance(this->NormalizerInstance)
 {
     this->Processors.insert("fa", new clsPersianSpellCorrector);
 }
@@ -162,6 +163,12 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
 }
 
 /**************************************************************************************************/
+intfSpellCorrector::intfSpellCorrector() :
+    NormalizerInstance(Normalizer::instance())
+{
+    this->Active = true;
+}
+
 bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash _settings)
 {
     this->Active = _settings.value("Active",true).toBool();
@@ -199,8 +206,8 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
             if (Config.IsKeyVal){
                 QStringList Pair = ConfigLine.split('=');
                 if (Pair.size() == 2){
-                    QString Key = Normalizer::instance().normalize(Pair[0].trimmed());
-                    QString Val = Normalizer::instance().normalize(Pair[1].trimmed());
+                    QString Key = this->NormalizerInstance.normalize(Pair[0].trimmed());
+                    QString Val = this->NormalizerInstance.normalize(Pair[1].trimmed());
                     Config.KeyValStorage->insert(Key, Val);
                     this->MaxAutoCorrectTokens = qMax(this->MaxAutoCorrectTokens,
                                                       Key.split(" ", QString::SkipEmptyParts).size());
@@ -209,7 +216,7 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
                     throw exSpellCorrector(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
                 }
             }else
-                Config.ListStorage->insert(Normalizer::instance().normalize(ConfigLine.trimmed()));
+                Config.ListStorage->insert(this->NormalizerInstance.normalize(ConfigLine.trimmed()));
 
         }
     }

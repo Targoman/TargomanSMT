@@ -82,9 +82,10 @@ public:
 
 private:
     TextProcessor();
-
+    Q_DISABLE_COPY(TextProcessor)
 private:
     static TextProcessor* Instance;
+
 };
 
 }

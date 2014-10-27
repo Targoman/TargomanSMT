@@ -17,6 +17,8 @@
 #include <QRegExp>
 
 #include "../TextProcessor.h"
+#include "Normalizer.h"
+#include "SpellCorrector.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -50,6 +52,8 @@ private:
 
 private:
     IXMLWriter();
+    Q_DISABLE_COPY(IXMLWriter)
+
 
 private:
     static IXMLWriter*      Instance;
@@ -83,6 +87,9 @@ private:
     QRegExp RxLatinPersian;
     QRegExp RxNumberValidator;
     QRegExp RxURLValidator;
+
+    Normalizer& NormalizerInstance;
+    SpellCorrector& SpellCorrectorInstance;
 };
 
 }
