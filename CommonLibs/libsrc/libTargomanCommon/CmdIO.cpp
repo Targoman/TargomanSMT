@@ -54,32 +54,13 @@ void dummyPrintLoadedLibs()
 
 void printLoadedLibs()
 {
-    if (OUTPUT_SETTINGS_DEBUG.canBeShown(5) == false)
+    if (TARGOMAN_IO_SETTINGS.Debug.canBeShown(5) == false)
         return;
 
     dl_iterate_phdr(targomanLinkedLibrariesCallback, NULL);
 }
 
-void silent()
-{
-    OUTPUT_SETTINGS_DEBUG.setLevel(0);
-    OUTPUT_SETTINGS_HAPPY.setLevel(0);
-    OUTPUT_SETTINGS_INFO.setLevel(0);
-    OUTPUT_SETTINGS_WARNING.setLevel(0);
-    OUTPUT_SETTINGS_NORMAL.setLevel(0);
-
-//    OUTPUT_SETTINGS_ERROR.setLevel(0); //Error outputs must not be silented
-}
-
-bool OUTPUT_SETTINGS_SHOWCOLORED = false;
-bool OUTPUT_SETTINGS_ALSO_LOG = false;
-
-clsOutputSettings OUTPUT_SETTINGS_DEBUG;
-clsOutputSettings OUTPUT_SETTINGS_INFO;
-clsOutputSettings OUTPUT_SETTINGS_WARNING;
-clsOutputSettings OUTPUT_SETTINGS_HAPPY;
-clsOutputSettings OUTPUT_SETTINGS_ERROR;
-clsOutputSettings OUTPUT_SETTINGS_NORMAL;
+clsIOSettings TARGOMAN_IO_SETTINGS;
 
 
 }

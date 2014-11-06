@@ -147,7 +147,7 @@ const QHash<QString, QString> &Logger::actors()
 }
 Logger::~Logger()
 {
-    //It is defined to duppress error on QScoppedPointer
+    //It is defined to suppress error on QScoppedPointer
 }
 
 void Logger::setActive(bool _state)

@@ -90,28 +90,19 @@ int main(int argc, char *argv[])
   QString ActorUUID;
 
   TARGOMAN_REGISTER_ACTOR("testLibCommon");
-  OUTPUT_SETTINGS_DEBUG.set(10,true,true,true,true);
-  OUTPUT_SETTINGS_ERROR.set(10,true,true,true,true);
-  OUTPUT_SETTINGS_WARNING.set(10,true,true,true,true);
-  OUTPUT_SETTINGS_INFO.set(10,true,true,true,true);
-  OUTPUT_SETTINGS_HAPPY.set(10,true,true,true,true);
+  TARGOMAN_IO_SETTINGS.setFull();
   Targoman::Common::Logger::instance().init("log.log");
 
-  Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = false;
+  Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored = false;
   checkOutput();
-  Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = true;
+  Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored = true;
   checkOutput();
-  Targoman::Common::silent();
+  Targoman::Common::TARGOMAN_IO_SETTINGS.setSilent();
   qDebug("************************* Silented");
   checkOutput();
   qDebug("************************* After Silence");
 
-  OUTPUT_SETTINGS_DEBUG.set(5,true);
-  OUTPUT_SETTINGS_ERROR.set(5,true);
-  OUTPUT_SETTINGS_WARNING.set(5,true);
-  OUTPUT_SETTINGS_INFO.set(5,true);
-  OUTPUT_SETTINGS_HAPPY.set(5,true);
-  OUTPUT_SETTINGS_NORMAL.set(5,true);
+  TARGOMAN_IO_SETTINGS.setDefault(5, 5);
 
   checkOutput();
 

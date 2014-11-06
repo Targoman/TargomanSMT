@@ -37,13 +37,7 @@ int main(int _argc, char *_argv[])
         QString ActorUUID;
 
         TARGOMAN_REGISTER_ACTOR("testLibCommon");
-        OUTPUT_SETTINGS_DEBUG.set(10,true);
-        OUTPUT_SETTINGS_ERROR.set(10,true);
-        OUTPUT_SETTINGS_WARNING.set(10,true);
-        OUTPUT_SETTINGS_INFO.set(10,true);
-        OUTPUT_SETTINGS_HAPPY.set(10,true);
         Targoman::Common::Logger::instance().init("log.log");
-        //Targoman::Common::OUTPUT_SETTINGS_SHOWCOLORED = true;
 
 /*        QRegExp RxHa                  = QRegExp(QString::fromUtf8("ها(ی|یم|یت|یش|یمان|یتان|یشان)?"));
         QRegExp RxEndWithHa           = QRegExp(".*" + RxHa.pattern() + "$");

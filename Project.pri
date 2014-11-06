@@ -54,12 +54,14 @@ LibIncludeFolderPattern = ./include
 BinFolderPattern        = ./bin
 BuildFolderPattern      = ./build
 TestBinFolder           = ./test
+UnitTestBinFolder       = ./unitTest
 ConfigFolderPattern     = ./conf
 
 BaseLibraryFolder        = $$BaseOutput/out/$$LibFolderPattern
 BaseLibraryIncludeFolder = $$BaseOutput/out/$$LibIncludeFolderPattern
 BaseBinFolder            = $$BaseOutput/out/$$BinFolderPattern
 BaseTestBinFolder        = $$BaseOutput/out/$$TestBinFolder
+BaseUnitTestBinFolder    = $$BaseOutput/out/$$UnitTestBinFolder
 BaseBuildFolder          = $$BaseOutput/out/$$BuildFolderPattern/$$ProjectName
 BaseConfigFolder         = $$BaseOutput/out/$$ConfigFolderPattern
 

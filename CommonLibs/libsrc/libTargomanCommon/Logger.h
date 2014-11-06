@@ -4,7 +4,7 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
@@ -54,8 +54,9 @@ namespace Private {
  * @enum   enuLogType An enum defining all the valid Log Types
  * @value  Info
  * @value  Warning
- * @value Error
- * @value Debug
+ * @value  Error
+ * @value  Debug
+ * @value  Happy
  **/
 TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuLogType)
     Info,

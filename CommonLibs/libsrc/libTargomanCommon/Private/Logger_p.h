@@ -17,7 +17,7 @@
 #include <QHash>
 #include <QMutex>
 
-#include "libTargomanCommon/Logger.h"
+#include "../Logger.h"
 
 namespace Targoman {
 namespace Common {

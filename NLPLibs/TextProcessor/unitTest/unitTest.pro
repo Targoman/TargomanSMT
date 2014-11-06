@@ -33,7 +33,7 @@ include ($$ConfigFile)
 TEMPLATE = app
 CONFIG += qtestlib
 TARGET = unitTest_$$ProjectName
-DESTDIR = $$BaseTestBinFolder
+DESTDIR = $$BaseUnitTestBinFolder
 OBJECTS_DIR = $$BaseBuildFolder/obj
 MOC_DIR = $$BaseBuildFolder/moc
 INCLUDEPATH += $$BasePath/libsrc
