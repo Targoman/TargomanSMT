@@ -28,7 +28,7 @@ public:
     inline void add2Vocab(const QString& _word){
         this->Vocab->addWord(_word);
     }
-
+    virtual void setUnknownWordDefaults(LogP_t _prob, LogP_t _backoff)=0;
     virtual void  insert(const NGram_t& _ngram, float _prob, float _backoff) = 0;
     virtual LogP_t lookupNGram(const NGram_t &_ngram, quint8& _foundedGram) const = 0;
 

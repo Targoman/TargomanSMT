@@ -29,8 +29,8 @@ public:
     clsLMSentenceScorer(const clsLanguageModel& _lm);
     ~clsLMSentenceScorer();
 
-    LogP_t wordProb(const QString& _word, quint8 &_foundedGram);
-    LogP_t wordProb(const WordIndex_t &_wordIndex, quint8 &_foundedGram);
+    Targoman::Common::LogP_t wordProb(const QString& _word, quint8 &_foundedGram);
+    Targoman::Common::LogP_t wordProb(const Targoman::Common::WordIndex_t &_wordIndex, quint8 &_foundedGram);
 
 private:
     QScopedPointer<Private::clsLMSentenceScorerPrivate> pPrivate;

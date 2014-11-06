@@ -6,25 +6,23 @@
  * download it from http://targoman.com/License.txt
  *
  *************************************************************************/
-/**
+ /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
-#define TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
-#include <QHash>
-#include "../Definitions.h"
+#ifndef TARGOMAN_DEFINITIONS_TYPES_H
+#define TARGOMAN_DEFINITIONS_TYPES_H
+
+#include <QtCore>
 
 namespace Targoman {
-namespace NLPLibs {
-namespace Private {
+namespace Common {
 
-typedef QList<Targoman::Common::WordIndex_t> NGram_t;
+typedef float LogP_t;
+typedef qint32 WordIndex_t;
+typedef union { float AsFloat; quint32 AsUInt32; } FloatEncoded_t;
 
 }
 }
-}
 
-uint qHash(const Targoman::NLPLibs::Private::NGram_t & _ngram);
-
-#endif // TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
+#endif // TARGOMAN_DEFINITIONS_TYPES_H

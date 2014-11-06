@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 //also would consider higher looking
     quint8 Gram;
     foreach (const QString& Word, Sentence.split(" ")){
-        LogP_t Prob = SS.wordProb(Word, Gram);
+        Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
         qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
     }
 }

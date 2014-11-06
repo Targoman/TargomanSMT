@@ -15,6 +15,7 @@
 
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Macros.h"
+#include "libTargomanCommon/Types.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -41,51 +42,47 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "QuantArrayTrie"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
-#ifdef TARGOMAN_ARCHITECTURE_64
-typedef qint64 WordIndex_t;
-#else
-typedef qint32 WordIndex_t;
-#endif
-
 //Definitions for special string in ARPA file
 const QString LM_UNKNOWN_WORD = "<unk>";
 const QString LM_BEGIN_SENTENCE = "<s>";
 const QString LM_END_SENTENCE = "</s>";
 
 //Fast access to special predefined words indexes
-extern WordIndex_t LM_UNKNOWN_WINDEX;
-extern WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
-extern WordIndex_t LM_END_SENTENCE_WINDEX;
+extern Targoman::Common::WordIndex_t LM_UNKNOWN_WINDEX;
+extern Targoman::Common::WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
+extern Targoman::Common::WordIndex_t LM_END_SENTENCE_WINDEX;
 
 static void dummy(){
+    //Dummy method to supress Compiler warning
     Q_UNUSED(dummy);
     Q_UNUSED(LM_UNKNOWN_WINDEX);
     Q_UNUSED(LM_BEGIN_SENTENCE_WINDEX);
     Q_UNUSED(LM_END_SENTENCE_WINDEX);
 }
+
 //This constant is used to quickly check whether input file is valid ARPA plain text file or not.
 //Total lenght of an ARPA must be less than indicated number
 const quint16   LM_MAX_VALID_ARPA_LINE = 1000;
 //Maximum order supported by LM
 const quint8    LM_MAX_ORDER = 6;
 
-#ifndef LogP_t
-typedef float LogP_t;
-#endif
-
-extern const LogP_t LogP_Zero;            /* log(0) = -Infinity */
-extern const LogP_t LogP_Inf;             /* log(Inf) = Infinity */
-extern const LogP_t LogP_One;             /* log(1) = 0 */
-
 struct stuLMConfigs
 {
+    struct{
+        Targoman::Common::LogP_t Prob;
+        Targoman::Common::LogP_t Backoff;
+    }UnknownWordDefault;
 
+    stuLMConfigs(){
+        this->UnknownWordDefault.Prob = 0;
+        this->UnknownWordDefault.Backoff = 0;
+    }
 };
 
 struct stuLMResult{
-    LogP_t  Prob;
+    Targoman::Common::LogP_t  Prob;
     quint8  NGram;
-    inline stuLMResult(LogP_t _prob, quint8 _ngram){
+    inline stuLMResult(Targoman::Common::LogP_t _prob, quint8 _ngram){
         this->NGram = _ngram;
         this->Prob = _prob;
     }

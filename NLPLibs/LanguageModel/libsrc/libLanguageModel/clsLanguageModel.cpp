@@ -11,7 +11,6 @@
   @author Behrooz Vedadian <vedadian@aut.ac.ir>
  */
 
-#include <cmath>
 
 #include "clsLanguageModel.h"
 #include "Private/clsLanguageModel_p.h"
@@ -25,11 +24,6 @@ namespace Targoman {
 namespace NLPLibs {
 
 using namespace Private;
-//////////////////////////////////
-const LogP_t LogP_Zero = -HUGE_VAL;            /* log(0) = -Infinity */
-const LogP_t LogP_Inf  = HUGE_VAL;             /* log(Inf) = Infinity */
-const LogP_t LogP_One  = 0.0;                  /* log(1) = 0 */
-//////////////////////////////////
 
 clsLanguageModel::clsLanguageModel() :
     pPrivate(new clsLanguageModelPrivate)
@@ -47,6 +41,7 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
 
     }else{
         this->pPrivate->Model = new clsProbingModel(new clsVocab);
+        this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob, _configs.UnknownWordDefault.Backoff);
         this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model);
     }
     return this->pPrivate->Order;

@@ -18,6 +18,7 @@
 #include <QStringList>
 
 #include "libTargomanCommon/Macros.h"
+#include "libTargomanCommon/FastOperations.hpp"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -111,6 +112,7 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                 if (Count < NGramCounts.value(NGramOrder))
                     throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
                             NGramOrder).arg(NGramCounts.value(NGramOrder)));
+
                 NGramOrder = Line.split("-").first().remove(0,1).toInt(&IsOK);
                 if (!IsOK || NGramOrder < 2)
                     throw exARPAManager(QString("Invalid ARPA file as invalid gram section is found at line: %1").arg(Line));
@@ -135,10 +137,14 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                 Prob=LineParts.first().toFloat(&IsOK);
                 if (!IsOK)
                     throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(Line));
+                if (Targoman::Common::isPositiveFloat(Prob))
+                    throw exARPAManager(QString("Invalid Positive probability at line: %1").arg(Line));
 
                 Backoff = LineParts.size() > 2 ? LineParts.last().toFloat(&IsOK) : 0;
                 if (!IsOK)
                     throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(Line));
+                if (Backoff >= 0)
+                    throw exARPAManager(QString("Invalid Positive backoff at line: %1").arg(Line));
 
                 //TODO error checking
                 NGram.clear();

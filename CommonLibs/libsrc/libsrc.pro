@@ -15,7 +15,9 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/CmdIO.h \
     libTargomanCommon/Logger.h \
     libTargomanCommon/Private/Logger_p.h \
-    libTargomanCommon/BitManager.hpp
+    libTargomanCommon/FastOperations.hpp \
+    libTargomanCommon/Constants.h \
+    libTargomanCommon/Types.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -23,7 +25,8 @@ SOURCES += \
     libTargomanCommon/clsSafeCoreApplication.cpp \
     libTargomanCommon/CmdIO.cpp \
     libTargomanCommon/Logger.cpp \
-    libID.cpp
+    libID.cpp \
+    libTargomanCommon/Constants.cpp
 
 OTHER_FILES +=
 

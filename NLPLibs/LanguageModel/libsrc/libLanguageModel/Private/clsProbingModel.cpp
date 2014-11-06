@@ -11,9 +11,11 @@
   @author Behrooz Vedadian <vedadian@aut.ac.ir>
  */
 
+#include "libTargomanCommon/Constants.h"
 #include "clsProbingModel.h"
 #include "../Definitions.h"
 
+using namespace Targoman::Common;
 namespace Targoman {
 namespace NLPLibs {
 namespace Private {
@@ -22,13 +24,16 @@ clsProbingModel::clsProbingModel(clsVocab *_vocab) : clsBaseModel(enuMemoryModel
 {
 }
 
+void clsProbingModel::setUnknownWordDefaults(LogP_t _prob, LogP_t _backoff)
+{
+    QList<WordIndex_t> NGram;
+    NGram.append(LM_UNKNOWN_WINDEX);
+    this->insert(NGram, _prob, _backoff);
+}
+
 void clsProbingModel::insert(const NGram_t&_ngram, float _prob, float _backoff)
 {
     this->LMData.insert(_ngram, stuProbAndBackoffWeights(_prob, _backoff));
-    if (_ngram.size() == 1 && _ngram.at(0) == LM_UNKNOWN_WINDEX){
-        this->UnknownWeights.Backoff = _backoff;
-        this->UnknownWeights.Prob = _prob;
-    }
 }
 
 LogP_t clsProbingModel::lookupNGram(const NGram_t &_ngram, quint8& _foundedGram) const
@@ -36,7 +41,7 @@ LogP_t clsProbingModel::lookupNGram(const NGram_t &_ngram, quint8& _foundedGram)
     Q_ASSERT(_ngram.size());
 
     stuProbAndBackoffWeights PB;
-    LogP_t      Backoff = LogP_One;
+    LogP_t      Backoff = Constants::LogP_One;
     NGram_t NGram = _ngram;
 
     while (true){
@@ -47,7 +52,7 @@ LogP_t clsProbingModel::lookupNGram(const NGram_t &_ngram, quint8& _foundedGram)
         }
         if (NGram.size() == 1){
             _foundedGram = 0;
-            return LogP_Zero;
+            return Constants::LogP_Zero;
         }
 
         PB = this->LMData.value(NGram.mid(0, NGram.size() - 1));

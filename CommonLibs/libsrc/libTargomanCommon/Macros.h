@@ -158,5 +158,6 @@ namespace _name { enum Type { Unknown = -1,
  ********************************************************************************************/
 #define fastToLower(c)  ((c >= 'A' && c <= 'Z') ? c + 0x20 : c)
 #define fastToUpper(c)  ((c >= 'a' && c <= 'z') ? c - 0x20 : c)
+#define BIG_CONSTANT(x) (x##LLU)
 
 #endif /* TARGOMAN_DEFINITIONS_MACROS_H_ */

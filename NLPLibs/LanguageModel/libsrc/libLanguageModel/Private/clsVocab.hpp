@@ -18,6 +18,8 @@
 #include <QStringList>
 #include "../Definitions.h"
 
+using namespace Targoman::Common;
+
 namespace Targoman {
 namespace NLPLibs {
 namespace Private {
