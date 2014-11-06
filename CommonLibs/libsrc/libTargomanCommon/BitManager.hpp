@@ -10,8 +10,20 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "UnitTest.h"
+#ifndef TARGOMAN_COMMON_BITMANAGER_HPP
+#define TARGOMAN_COMMON_BITMANAGER_HPP
+
+#include <QtCore>
+
+namespace Targoman {
+namespace Common {
+
+typedef union { float AsFloat; quint32 AsUInt32; } FloatEncoded_t;
+
+const quint32 INT32_SIGN_BIT  = 0x80000000;
+
+}
+}
 
 
-QTEST_MAIN(UnitTest)
-
+#endif // TARGOMAN_COMMON_BITMANAGER_HPP

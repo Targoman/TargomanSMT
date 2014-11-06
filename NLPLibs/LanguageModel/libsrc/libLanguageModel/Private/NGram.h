@@ -10,17 +10,21 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef UNITTEST_H
-#define UNITTEST_H
+#ifndef TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
+#define TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
+#include <QHash>
+#include "../Definitions.h"
 
-#include <QtTest/QtTest>
+namespace Targoman {
+namespace NLPLibs {
+namespace Private {
 
-class UnitTest: public QObject
-{
-    Q_OBJECT
+typedef QList<WordIndex_t> NGram_t;
 
-private slots:
+}
+}
+}
 
-};
+uint qHash(const Targoman::NLPLibs::Private::NGram_t & _key);
 
-#endif // UNITTEST_H
+#endif // TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H

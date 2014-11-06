@@ -60,7 +60,7 @@ BaseLibraryFolder        = $$BaseOutput/out/$$LibFolderPattern
 BaseLibraryIncludeFolder = $$BaseOutput/out/$$LibIncludeFolderPattern
 BaseBinFolder            = $$BaseOutput/out/$$BinFolderPattern
 BaseTestBinFolder        = $$BaseOutput/out/$$TestBinFolder
-BaseBuildFolder          = $$BaseOutput/out/$$BuildFolderPattern
+BaseBuildFolder          = $$BaseOutput/out/$$BuildFolderPattern/$$ProjectName
 BaseConfigFolder         = $$BaseOutput/out/$$ConfigFolderPattern
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-

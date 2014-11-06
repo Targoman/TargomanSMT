@@ -75,7 +75,8 @@
 
 #define TARGOMAN_MACRO_ARG_FIRST(_arg, ...) _arg
 #define TARGOMAN_MACRO_ARG_REST(_arg, ...) __VA_ARGS__
-
+// Following definition is used in complex templates where a template is instantiating other templates which needs comma
+#define TARGOMAN_VIRTUAL_COMMA() ,
 /********************************************************************************************
  * Predefined functions. This macro must be included in all libraries.
  ********************************************************************************************/
