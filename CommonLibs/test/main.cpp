@@ -15,8 +15,10 @@
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 #include "libTargomanCommon/Macros.h"
+#include "libTargomanCommon/clsCmdProgressBar.h"
 
 #include <iostream>
+#include <unistd.h>
 
 using namespace Targoman::Common;
 
@@ -133,6 +135,12 @@ int main(int argc, char *argv[])
     TargomanError(" %s", qPrintable(e.what()));
   }catch (exTargomanBase& e){
     TargomanError(" %s", qPrintable(e.what()));
+  }
+
+  clsCmdProgressBar PB("Test Progress", 10000);
+  for (int i=0; i< 10001; i++){
+      PB.setValue(i);
+      usleep(1000);
   }
 /**/
   //  return a.exec();*/

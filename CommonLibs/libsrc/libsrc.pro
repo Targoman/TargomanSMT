@@ -17,7 +17,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Private/Logger_p.h \
     libTargomanCommon/FastOperations.hpp \
     libTargomanCommon/Constants.h \
-    libTargomanCommon/Types.h
+    libTargomanCommon/Types.h \
+    libTargomanCommon/clsCmdProgressBar.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -26,7 +27,8 @@ SOURCES += \
     libTargomanCommon/CmdIO.cpp \
     libTargomanCommon/Logger.cpp \
     libID.cpp \
-    libTargomanCommon/Constants.cpp
+    libTargomanCommon/Constants.cpp \
+    libTargomanCommon/clsCmdProgressBar.cpp
 
 OTHER_FILES +=
 

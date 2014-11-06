@@ -13,7 +13,9 @@
 #ifndef TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
 #define TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
 #include <QHash>
+#include <QFile>
 #include "../Definitions.h"
+
 #ifdef LM_USE_GOOGLE_SPARSE_HASH
 #include <google/sparse_hash_map>
 #endif
@@ -35,6 +37,8 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
+TARGOMAN_ADD_EXCEPTION_HANDLER(exNgramManager, exLanguageModel);
+
 // see benchmarks http://attractivechaos.wordpress.com/2008/10/07/another-look-at-my-old-benchmark/
 // and http://attractivechaos.wordpress.com/2008/08/28/comparison-of-hash-table-libraries/
 template <class Weights_t> class tmplNGramHashTable
@@ -47,6 +51,11 @@ private:
             return qHash(_key);
         }
     };
+/*    class clsValueSerializer{
+    public:
+
+    };*/
+
     typedef google::sparse_hash_map<NGram_t, Weights_t, clsHasher> GSHM_t;
 #endif
 
@@ -69,6 +78,24 @@ public:
 #else
         return this->HashTable.value(_ngram);
 #endif
+    }
+
+    inline void writeBinary(const QString& _filePath){
+        QFile File(_filePath);
+        if (!File.open(QFile::WriteOnly))
+            throw exNgramManager("Unable to open file: <" + _filePath + "> for WRITING");
+#ifdef LM_USE_GOOGLE_SPARSE_HASH
+        //this->HashTable.serialize()
+#else
+
+#endif
+    }
+
+    inline void loadBinary(const QString& _filePath){
+        QFile File(_filePath);
+        if (!File.open(QFile::ReadOnly))
+            throw exNgramManager("Unable to open file: <" + _filePath + "> for READING");
+
     }
 
 private:

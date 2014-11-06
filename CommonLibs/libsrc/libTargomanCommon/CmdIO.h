@@ -161,7 +161,7 @@ void printLoadedLibs();
 #define TARGOMAN_COLOR_HAPPY    (Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored ? TARGOMAN_COLOR_GREEN : "" )
 
 /********************************************************************************************
- * Debugging Macros
+ * Output Macros
  ********************************************************************************************/
 #if TARGOMAN_SHOW_DEBUG
     #if TARGOMAN_DEBUG_PROCESS_LINE
@@ -309,6 +309,5 @@ void printLoadedLibs();
 #else
     #define TargomanHappy(_happyLevel,...) {}
 #endif
-
 
 #endif /* TARGOMAN_COMMON_CMDIO_H_ */
