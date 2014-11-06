@@ -33,12 +33,7 @@ public:
     LogP_t lookupNGram(const NGram_t &_ngram, quint8& _foundedGram) const;
 
 private:
-    // see benchmarks http://attractivechaos.wordpress.com/2008/10/07/another-look-at-my-old-benchmark/
-    // and http://attractivechaos.wordpress.com/2008/08/28/comparison-of-hash-table-libraries/
-#ifdef LM_USE_CMPH
-#else
-    QHash<NGram_t, stuProbAndBackoffWeights> LMData; // Choose other hashing mechanism
-#endif
+    tmplNGramHashTable<stuProbAndBackoffWeights> LMData;
     stuProbAndBackoffWeights    UnknownWeights;
 };
 

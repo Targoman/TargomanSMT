@@ -67,8 +67,10 @@ uint qHash(const Targoman::NLPLibs::Private::NGram_t &_ngram)
     Hash *= 0xc2b2ae35;
     Hash ^= Hash >> 16;
 #else
-    for (int i=0; i<_key.size(); i++)
-        Hash+=_key.at(i) * Targoman::NLPLibs::Private::PrimeNumbers[i%15];
+    for (int i=0; i<_key.size(); i++){
+        Hash += _key.at(i) * Targoman::NLPLibs::Private::PrimeNumbers[14 - (_key.at(i) % 15)];
+        Hash ^= _key.at(i) * Targoman::NLPLibs::Private::PrimeNumbers[_key.at(i) % 7];
+    }
 #endif
     return Hash;
 }
