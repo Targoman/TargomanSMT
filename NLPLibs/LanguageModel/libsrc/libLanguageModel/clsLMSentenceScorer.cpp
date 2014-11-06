@@ -4,10 +4,11 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
- @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author Behrooz Vedadian <vedadian@aut.ac.ir>
  */
 
 #include "clsLMSentenceScorer.h"
@@ -29,22 +30,22 @@ clsLMSentenceScorer::~clsLMSentenceScorer()
     //Just to suppress Compiler error when using QScopped Poiter
 }
 
-float clsLMSentenceScorer::wordProb(const QString &_word)
+LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
 {
-    return this->wordProb(this->pPrivate->LM.getIndex(_word));
+    return this->wordProb(this->pPrivate->LM.getIndex(_word), _foundedGram);
 }
 
-float clsLMSentenceScorer::wordProb(const WordIndex_t& _wordIndex)
+LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t& _wordIndex, quint8& _foundedGram)
 {
     if (Q_UNLIKELY(this->pPrivate->History.isEmpty())){
-        for(int i=0; i<this->pPrivate->LM.order(); i++){
             this->pPrivate->History.append(LM_BEGIN_SENTENCE_WINDEX);
-        }
+    }else if (Q_LIKELY(this->pPrivate->History.size() >= this->pPrivate->LM.order())){
+        this->pPrivate->History.removeFirst();
     }
-    this->pPrivate->History.removeFirst();
+
     this->pPrivate->History.append(_wordIndex);
 
-    return this->pPrivate->LM.lookupNGram(this->pPrivate->History);
+    return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);
 }
 
 }

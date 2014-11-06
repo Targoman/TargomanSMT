@@ -7,7 +7,8 @@
  *
  *************************************************************************/
 /**
- @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author Behrooz Vedadian <vedadian@aut.ac.ir>
  */
 
 #include <cmath>
@@ -66,16 +67,16 @@ WordIndex_t clsLanguageModel::getIndex(const QString &_word) const
     return this->pPrivate->Model->vocab().getIndex(_word);
 }
 
-LogP_t clsLanguageModel::lookupNGram(QList<WordIndex_t> &_ngram) const
+LogP_t clsLanguageModel::lookupNGram(QList<WordIndex_t> &_ngram, quint8& _foundedGram) const
 {
-    return this->pPrivate->Model->lookupNGram(_ngram);
+    return this->pPrivate->Model->lookupNGram(_ngram, _foundedGram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //Defined here initialized in Private/Vocab.hpp
-/*WordIndex_t LM_UNKNOWN_WINDEX;
+WordIndex_t LM_UNKNOWN_WINDEX;
 WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
-WordIndex_t LM_END_SENTENCE_WINDEX;*/
+WordIndex_t LM_END_SENTENCE_WINDEX;
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 Private::clsLanguageModelPrivate::clsLanguageModelPrivate()

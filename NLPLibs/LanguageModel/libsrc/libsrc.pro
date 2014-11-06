@@ -17,7 +17,6 @@ HEADERS += \
     libLanguageModel/clsLMSentenceScorer.h \
     libLanguageModel/Private/clsVocab.hpp \
     libLanguageModel/Private/clsLMSentenceScorer_p.h \
-    libLanguageModel/Private/OLD_Values.hpp \
     libLanguageModel/Private/clsProbingModel.h \
     libLanguageModel/Private/clsBaseModel.hpp \
     libLanguageModel/Private/WeightStructs.hpp \

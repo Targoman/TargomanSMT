@@ -53,9 +53,9 @@ const QString LM_BEGIN_SENTENCE = "<s>";
 const QString LM_END_SENTENCE = "</s>";
 
 //Fast access to special predefined words indexes
-static WordIndex_t LM_UNKNOWN_WINDEX;
-static WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
-static WordIndex_t LM_END_SENTENCE_WINDEX;
+extern WordIndex_t LM_UNKNOWN_WINDEX;
+extern WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
+extern WordIndex_t LM_END_SENTENCE_WINDEX;
 
 static void dummy(){
     Q_UNUSED(dummy);
@@ -80,6 +80,15 @@ extern const LogP_t LogP_One;             /* log(1) = 0 */
 struct stuLMConfigs
 {
 
+};
+
+struct stuLMResult{
+    LogP_t  Prob;
+    quint8  NGram;
+    inline stuLMResult(LogP_t _prob, quint8 _ngram){
+        this->NGram = _ngram;
+        this->Prob = _prob;
+    }
 };
 
 }

@@ -142,8 +142,8 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
 
                 //TODO error checking
                 NGram.clear();
-                foreach(const QString& Word, LineParts.mid(1, LineParts.size() -
-                                                           (LineParts.size() > 2 ? 2 : 1))){
+                foreach(const QString& Word, ((QStringList)LineParts.mid(1, LineParts.size() -
+                                                           (LineParts.size() > 2 ? 2 : 1))).join(" ").split(" ")){
                     NGram.append(_model->vocab().getIndex(Word));
                 }
 

@@ -15,6 +15,8 @@
 #include "libLanguageModel/clsLMSentenceScorer.h"
 
 #include <QDebug>
+#include <QStringList>
+
 
 using namespace Targoman::NLPLibs;
 
@@ -24,10 +26,13 @@ int main(int argc, char *argv[])
     qDebug()<<"Order = "<<LM.init("./test.arpa");
 
     clsLMSentenceScorer SS(LM);
-    QString Sentence = "i would look beyond";
+    QString Sentence = "i would look beyond also would consider higher looking";
 //also would consider higher looking
-    foreach (const QString& Word, Sentence)
-        qDebug()<<"Prob ["<<Word<<"]:"<<SS.wordProb(Word);
+    quint8 Gram;
+    foreach (const QString& Word, Sentence.split(" ")){
+        LogP_t Prob = SS.wordProb(Word, Gram);
+        qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
+    }
 }
 
 

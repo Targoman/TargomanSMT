@@ -7,7 +7,8 @@
  *
  *************************************************************************/
 /**
- @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author Behrooz Vedadian <vedadian@aut.ac.ir>
  */
 
 #ifndef TARGOMAN_NLPLIBS_PRIVATE_CLSVOCAB_HPP
@@ -47,7 +48,7 @@ public:
 
         this->Words.append(_word);
         this->WordIndexes.insert(_word, this->Words.size() - 1);
-        return this->Words.size();
+        return this->Words.size() - 1;
     }
 
 private:

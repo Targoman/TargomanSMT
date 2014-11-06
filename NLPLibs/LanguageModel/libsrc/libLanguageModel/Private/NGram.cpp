@@ -4,7 +4,7 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
@@ -16,15 +16,7 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-const uint PrimeNumbers[] = {
-    13,
-    23,
-    17,
-    31,
-    35,
-    11,
-    13
-};
+const uint PrimeNumbers[] = { 11, 59, 17, 47, 23, 29, 31, 37, 41, 43, 19, 53, 13 };
 
 }
 }

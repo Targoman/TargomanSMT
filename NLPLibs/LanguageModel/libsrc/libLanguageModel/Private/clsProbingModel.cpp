@@ -4,10 +4,11 @@
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
  * download it from http://targoman.com/License.txt
- * 
+ *
  *************************************************************************/
 /**
- @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author Behrooz Vedadian <vedadian@aut.ac.ir>
  */
 
 #include "clsProbingModel.h"
@@ -30,24 +31,28 @@ void clsProbingModel::insert(const NGram_t&_ngram, float _prob, float _backoff)
     }
 }
 
-float clsProbingModel::lookupNGram(NGram_t &_ngram) const
+LogP_t clsProbingModel::lookupNGram(const NGram_t &_ngram, quint8& _foundedGram) const
 {
     Q_ASSERT(_ngram.size());
 
     stuProbAndBackoffWeights PB;
     LogP_t      Backoff = LogP_One;
+    NGram_t NGram = _ngram;
 
     while (true){
-
-        PB = this->LMData.value(_ngram);
-        if (PB.Prob)
+        PB = this->LMData.value(NGram);
+        if (PB.Prob){
+            _foundedGram = NGram.size();
             return Backoff + PB.Prob;
-        if (_ngram.size() == 1)
+        }
+        if (NGram.size() == 1){
+            _foundedGram = 0;
             return LogP_Zero;
+        }
 
-        PB = this->LMData.value(_ngram.mid(0, _ngram.size() - 1));
+        PB = this->LMData.value(NGram.mid(0, NGram.size() - 1));
         Backoff += PB.Backoff;
-        _ngram.removeFirst();
+        NGram.removeFirst();
     }
 }
 

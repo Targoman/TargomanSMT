@@ -7,7 +7,8 @@
  *
  *************************************************************************/
 /**
- @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+  @author Behrooz Vedadian <vedadian@aut.ac.ir>
  */
 
 #ifndef TARGOMAN_NLPLIBS_CLSLANGUAGEMODEL_H
@@ -36,7 +37,8 @@ public:
 
     quint8  order() const;
     WordIndex_t getIndex(const QString& _word) const;
-    LogP_t lookupNGram(QList<WordIndex_t> &_ngram) const ;
+
+    LogP_t lookupNGram(QList<WordIndex_t> &_ngram, quint8& _foundedGram) const ;
 
 
 private:
