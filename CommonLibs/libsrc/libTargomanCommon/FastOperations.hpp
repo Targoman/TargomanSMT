@@ -38,6 +38,18 @@ inline quint64 rotl64 ( quint32 x, qint8 r )
   return (x << r) | (x >> (64 - r));
 }
 
+inline std::string& trimStdString(std::string& _str){
+    std::string::size_type first = _str.find_first_not_of(" \n\t\r");
+    if( first == std::string::npos) {
+      _str.clear();
+    }
+    else {
+      std::string::size_type last = _str.find_last_not_of(" \n\t\r"); /// must succeed
+      _str=_str.substr( first, last - first + 1);
+    }
+    return _str;
+}
+
 }
 }
 

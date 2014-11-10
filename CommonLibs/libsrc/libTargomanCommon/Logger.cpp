@@ -11,7 +11,6 @@
  */
 
 #include <QDateTime>
-#include <QtConcurrentRun>
 #include <QProcess>
 #include <QUuid>
 #include <QFile>

@@ -11,6 +11,9 @@
  */
 
 #include "libTargomanCommon/Macros.h"
+#include "libTargomanCommon/CmdIO.h"
+#include "libTargomanCommon/Types.h"
+#include "libTargomanCommon/FastOperations.hpp"
 
 //Macro used to export Library information
 TARGOMAN_LIBRARY_VERSION

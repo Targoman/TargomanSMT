@@ -13,7 +13,7 @@
 #ifndef TARGOMAN_DEFINITIONS_exTargomanBASE_HPP_
 #define TARGOMAN_DEFINITIONS_exTargomanBASE_HPP_
 
-#include <qtconcurrentexception.h>
+#include <QException>
 #include <QString>
 
 #include "libTargomanCommon/CmdIO.h"
@@ -28,14 +28,14 @@ namespace Common {
     class _name : public _base{\
     public: _name (const QString& _message = "", int _line = 0) : \
             _base (_message, _line){ \
-    this->Message.append(" >;"TARGOMAN_M2STR(_name));\
+    this->Message.append(" >;" TARGOMAN_M2STR(_name));\
     }}
 
 /**
  * @exception exTargomanBase
  * @brief Base Exception Class. All the classes will raise an exception inherited from this
  */
-class exTargomanBase: public QtConcurrent::Exception
+class exTargomanBase: public QException
 {
   public:
     /**
@@ -48,7 +48,7 @@ class exTargomanBase: public QtConcurrent::Exception
     ~exTargomanBase() throw ();
 
     void raise() const;
-    QtConcurrent::Exception* clone();
+    QException* clone();
     /**
      * @brief A method to show Exception message
      *

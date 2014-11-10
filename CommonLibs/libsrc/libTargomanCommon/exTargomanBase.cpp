@@ -27,7 +27,7 @@ void exTargomanBase::raise() const
     throw *this;
 }
 
-QtConcurrent::Exception* exTargomanBase::clone()
+QException *exTargomanBase::clone()
 {
     return new exTargomanBase(*this);
 }
