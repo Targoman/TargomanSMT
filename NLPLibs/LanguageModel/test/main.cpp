@@ -23,8 +23,11 @@ using namespace Targoman::NLPLibs;
 int main(int argc, char *argv[])
 {
     clsLanguageModel LM;
+    try {
+	    TargomanDebug(5, "Initialization started.");
     qDebug()<<"Order = "<<LM.init("./test.arpa");
-
+	    TargomanDebug(5, "Initialization finished.");
+    qDebug()<<"Order = "<<LM.init("./test.arpa");
     clsLMSentenceScorer SS(LM);
     QString Sentence = "i would look beyond also would consider higher looking";
 //also would consider higher looking
@@ -32,6 +35,10 @@ int main(int argc, char *argv[])
     foreach (const QString& Word, Sentence.split(" ")){
         Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
         qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
+    }
+    }
+    catch(Targoman::Common::exTargomanBase& e) {
+	    qDebug() << e.what();
     }
 }
 

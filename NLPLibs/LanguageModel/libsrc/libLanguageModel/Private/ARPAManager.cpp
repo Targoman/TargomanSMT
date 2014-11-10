@@ -49,8 +49,8 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
     QString       Line;
     QStringList   LineParts;
     enuParseState::Type ParseState = enuParseState::Looking4Start;
-    quint8        NGramOrder, Count, MaxGram = 0;
-    quint32       LineNo = 0;
+    quint8        NGramOrder, MaxGram = 0;
+    quint32       LineNo = 0, Count;
     float         Prob, Backoff;
     bool          IsOK;
     QMap<quint8, quint32> NGramCounts;
@@ -80,15 +80,17 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                                             Line));
                 NGramOrder = LineParts.first().remove("ngram").trimmed().toUInt(&IsOK);
                 if (!IsOK || NGramOrder == 0)
-                    throw exARPAManager(QString("Invalid ARPA NGram Description at line: %1").arg(Line));
+                    throw exARPAManager(QString("Invalid ARPA NGram Description at line: %1").arg(LineNo));
                 if (NGramOrder > LM_MAX_ORDER)
                     throw exARPAManager(QString("NGram Order grater than %1 is not supported").arg(LM_MAX_ORDER));
 
-                Count = LineParts.last().trimmed().toUInt(&IsOK);
+		Count = LineParts.last().trimmed().toUInt(&IsOK);
+
                 if (!IsOK)
-                    throw exARPAManager(QString("Invalid ARPA NGram Description at line: %1").arg(Line));
+                    throw exARPAManager(QString("Invalid ARPA NGram Description at line: %1").arg(LineNo));
 
                 NGramCounts.insert(NGramOrder, Count);
+		
                 MaxGram = qMax(MaxGram, NGramOrder);
             }else if (Line.startsWith("\\") && Line.endsWith("-grams:")){
                 NGramOrder = Line.split("-").first().remove(0,1).toInt(&IsOK);
@@ -115,7 +117,7 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
 
                 NGramOrder = Line.split("-").first().remove(0,1).toInt(&IsOK);
                 if (!IsOK || NGramOrder < 2)
-                    throw exARPAManager(QString("Invalid ARPA file as invalid gram section is found at line: %1").arg(Line));
+                    throw exARPAManager(QString("Invalid ARPA file as invalid gram section is found at line: %1").arg(LineNo));
                 Count = 0;
             }else if (Line == "\\end\\"){
                 if (Count < NGramCounts.value(NGramOrder))
@@ -126,7 +128,7 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                 LineParts = Line.trimmed().split("\t", QString::SkipEmptyParts);
 
                 if (LineParts.size() < 2)
-                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(Line));
+                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(LineNo));
 
                 if (NGramOrder == 1 &&
                         LineParts.at(1) != LM_UNKNOWN_WORD &&
@@ -136,24 +138,29 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
 
                 Prob=LineParts.first().toFloat(&IsOK);
                 if (!IsOK)
-                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(Line));
+                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(LineNo));
                 if (Targoman::Common::isPositiveFloat(Prob))
-                    throw exARPAManager(QString("Invalid Positive probability at line: %1").arg(Line));
+                    throw exARPAManager(QString("Invalid Positive probability at line: %1").arg(LineNo));
 
                 Backoff = LineParts.size() > 2 ? LineParts.last().toFloat(&IsOK) : 0;
                 if (!IsOK)
-                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(Line));
-                if (Backoff >= 0)
-                    throw exARPAManager(QString("Invalid Positive backoff at line: %1").arg(Line));
+                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(LineNo));
+                // As SRILM and KenLM both accept positive backoff values, it seems that this backoff value
+		// does not correspond to what is called a "backoff" in NLP literature directly.
+		/*
+		if (Backoff > 0)
+                    throw exARPAManager(QString("Invalid Positive backoff at line: %1").arg(LineNo));
+		*/
 
-                //TODO error checking
-                NGram.clear();
+                /*
+		NGram.clear();
                 foreach(const QString& Word, ((QStringList)LineParts.mid(1, LineParts.size() -
                                                            (LineParts.size() > 2 ? 2 : 1))).join(" ").split(" ")){
                     NGram.append(_model->vocab().getIndex(Word));
                 }
 
                 _model->insert(NGram, Prob, Backoff);
+		*/
 
                 Count++;
                 if (Count > NGramCounts.value(NGramOrder))
