@@ -16,6 +16,7 @@
 #include "libTargomanCommon/CmdIO.h"
 #include "libLanguageModel/clsLanguageModel.h"
 #include "libLanguageModel/clsLMSentenceScorer.h"
+#include <google/dense_hash_map>
 
 #include <fstream>
 #include <ctime>

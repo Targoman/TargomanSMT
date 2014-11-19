@@ -215,6 +215,7 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
 /*                if (Count > NGramCounts.value(NGramOrder))
                     throw exARPAManager(QString("There are more Items specified for Ngram=%1 than specified: %2").arg(
                                             NGramOrder).arg(NGramCounts.value(NGramOrder)));*/
+                qDebug()<<"**********************************> "<<LineString.c_str();
                 Prob = fastASCII2Float(LineString.c_str(), Pos);
 
                 EndOfNGram = LineString.c_str() + Pos;
@@ -229,10 +230,12 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                     strcmp(StartOfNGram, LM_UNKNOWN_WORD) &&
                     strcmp(StartOfNGram, LM_BEGIN_SENTENCE) &&
                     strcmp(StartOfNGram, LM_END_SENTENCE)){
-                    _model->add2Vocab(StartOfNGram);
+                    qDebug()<<"Add vocab: '"<<StartOfNGram<<"' ---> "<<
+                    _model->add2Vocab(std::string(StartOfNGram));
                 }
                 //NGram[0] = 1;
-                NGram[0] =(_model->vocab().getIndex(StartOfNGram));
+                NGram[0] =(_model->vocab().getIndex(std::string(StartOfNGram)));
+                qDebug()<<"Add NGram: '"<<StartOfNGram<<"'--->"<<NGram[0];
                 for (int i=1; i<NGramOrder; ++i){
                     skip2NonSpace(++EndOfNGram);
                     if (!*EndOfNGram)
@@ -244,7 +247,8 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                     skip2Space(EndOfNGram);
                     *((char*)EndOfNGram) = '\0';
                     //NGram[i] = 1;
-                    NGram[i] = (_model->vocab().getIndex(StartOfNGram));
+                    NGram[i] = (_model->vocab().getIndex(std::string(StartOfNGram)));
+                    qDebug()<<"Add NGram: '"<<StartOfNGram<<"' --->"<<NGram[i];
                 }
                 if (EndOfNGram - LineString.c_str() < LineString.size()){
                     StartOfBackoff = EndOfNGram+1;

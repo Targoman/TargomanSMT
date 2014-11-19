@@ -28,8 +28,8 @@ public:
 /*    inline void add2Vocab(const QString& _word){
         this->Vocab->addWord(_word);
     }*/
-    inline void add2Vocab(const char* _word){
-        this->Vocab->addWord(_word);
+    inline WordIndex_t add2Vocab(const std::string& _word){
+        return this->Vocab->addWord(_word);
     }
 
     virtual void setUnknownWordDefaults(LogP_t _prob, LogP_t _backoff)=0;
