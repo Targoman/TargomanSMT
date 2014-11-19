@@ -25,7 +25,7 @@ public:
 
 public:
     const clsLanguageModel& LM;
-    QList<WordIndex_t> History;
+    QVector<WordIndex_t> History;
 };
 
 }

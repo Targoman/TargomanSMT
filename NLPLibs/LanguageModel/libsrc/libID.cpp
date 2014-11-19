@@ -12,6 +12,7 @@
 
 #include "libTargomanCommon/Macros.h"
 
+
 //Macro used to export Library information
 TARGOMAN_LIBRARY_VERSION
 

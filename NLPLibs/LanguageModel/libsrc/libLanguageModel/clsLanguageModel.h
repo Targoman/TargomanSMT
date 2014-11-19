@@ -36,9 +36,9 @@ public:
     void convertBinary(enuMemoryModel::Type _model, const QString& _binFilePath);
 
     quint8  order() const;
-    Targoman::Common::WordIndex_t getIndex(const QString& _word) const;
+    Targoman::Common::WordIndex_t getIndex(const char *_word) const;
 
-    Targoman::Common::LogP_t lookupNGram(QList<Targoman::Common::WordIndex_t> &_ngram, quint8& _foundedGram) const ;
+    Targoman::Common::LogP_t lookupNGram(QVector<Targoman::Common::WordIndex_t> &_ngram, quint8& _foundedGram) const ;
 
 
 private:

@@ -43,9 +43,9 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
 //Definitions for special string in ARPA file
-const QString LM_UNKNOWN_WORD = "<unk>";
-const QString LM_BEGIN_SENTENCE = "<s>";
-const QString LM_END_SENTENCE = "</s>";
+extern const char* LM_UNKNOWN_WORD;
+extern const char* LM_BEGIN_SENTENCE;
+extern const char* LM_END_SENTENCE;
 
 //Fast access to special predefined words indexes
 extern Targoman::Common::WordIndex_t LM_UNKNOWN_WINDEX;

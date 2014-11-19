@@ -24,7 +24,7 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-typedef QList<Targoman::Common::WordIndex_t> NGram_t;
+typedef QVector<Targoman::Common::WordIndex_t> NGram_t;
 
 }
 }

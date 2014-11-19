@@ -40,7 +40,7 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
     if (this->pPrivate->isBinary(_filePath)){
 
     }else{
-        this->pPrivate->Model = new clsProbingModel(new clsVocab);
+        this->pPrivate->Model = new clsProbingModel(new clsVocab());
         this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob, _configs.UnknownWordDefault.Backoff);
         this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model);
     }
@@ -49,7 +49,8 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
 
 void clsLanguageModel::convertBinary(enuMemoryModel::Type _model, const QString &_binFilePath)
 {
-
+    Q_UNUSED(_model);
+    Q_UNUSED(_binFilePath);
 }
 
 quint8 clsLanguageModel::order() const
@@ -57,17 +58,26 @@ quint8 clsLanguageModel::order() const
     return this->pPrivate->Order;
 }
 
-WordIndex_t clsLanguageModel::getIndex(const QString &_word) const
+/*WordIndex_t clsLanguageModel::getIndex(const QString &_word) const
+{
+    return this->pPrivate->Model->vocab().getIndex(_word);
+}*/
+WordIndex_t clsLanguageModel::getIndex(const char* _word) const
 {
     return this->pPrivate->Model->vocab().getIndex(_word);
 }
 
-LogP_t clsLanguageModel::lookupNGram(QList<WordIndex_t> &_ngram, quint8& _foundedGram) const
+
+LogP_t clsLanguageModel::lookupNGram(QVector<WordIndex_t> &_ngram, quint8& _foundedGram) const
 {
     return this->pPrivate->Model->lookupNGram(_ngram, _foundedGram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+const char* LM_UNKNOWN_WORD = "<unk>";
+const char* LM_BEGIN_SENTENCE = "<s>";
+const char* LM_END_SENTENCE = "</s>";
+
 //Defined here initialized in Private/Vocab.hpp
 WordIndex_t LM_UNKNOWN_WINDEX;
 WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
@@ -80,6 +90,7 @@ Private::clsLanguageModelPrivate::clsLanguageModelPrivate()
 
 bool clsLanguageModelPrivate::isBinary(const QString &_file)
 {
+    Q_UNUSED(_file)
     return false;
 }
 

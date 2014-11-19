@@ -26,7 +26,7 @@ clsProbingModel::clsProbingModel(clsVocab *_vocab) : clsBaseModel(enuMemoryModel
 
 void clsProbingModel::setUnknownWordDefaults(LogP_t _prob, LogP_t _backoff)
 {
-    QList<WordIndex_t> NGram;
+    NGram_t NGram;
     NGram.append(LM_UNKNOWN_WINDEX);
     this->insert(NGram, _prob, _backoff);
 }

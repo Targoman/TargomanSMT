@@ -30,9 +30,14 @@ clsLMSentenceScorer::~clsLMSentenceScorer()
     //Just to suppress Compiler error when using QScopped Poiter
 }
 
+void clsLMSentenceScorer::reset()
+{
+    this->pPrivate->History.clear();
+}
+
 LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
 {
-    return this->wordProb(this->pPrivate->LM.getIndex(_word), _foundedGram);
+    return this->wordProb(this->pPrivate->LM.getIndex(_word.toUtf8().constData()), _foundedGram);
 }
 
 LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t& _wordIndex, quint8& _foundedGram)

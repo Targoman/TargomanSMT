@@ -12,11 +12,15 @@
 
 #include "ARPAManager.h"
 
-#include <QFile>
-#include <QTextStream>
 #include <QString>
 #include <QStringList>
+#include <QVector>
 
+#include <fstream>
+#include <sstream>
+
+#include "libTargomanCommon/clsCmdProgressBar.h"
+#include "libTargomanCommon/Logger.h"
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/FastOperations.hpp"
 
@@ -32,49 +36,120 @@ TARGOMAN_DEFINE_ENUM_END
 
 ARPAManager* ARPAManager::Instance = NULL;
 
+QString ActorUUID;
+
 ARPAManager::ARPAManager()
 {
+    TARGOMAN_REGISTER_ACTOR("LM::ARPAManager");
 }
 
+#define white_space(c) ((c) == ' ' || (c) == '\t')
+#define valid_digit(c) ((c) >= '0' && (c) <= '9')
+
+inline float fastASCII2Float (const char *pFloatString, size_t& _lastPos)
+{
+    qint64 IntValue, Scale = 1;
+    qint16 Sign;
+    const char*  StartOfString = pFloatString;
+
+    Sign = 1;
+    if (*pFloatString == '-') {
+        Sign = -1;
+        ++pFloatString;
+    } else if (*pFloatString == '+') {
+        ++pFloatString;
+    }
+
+    // Get digits before decimal point or exponent, if any.
+    for (IntValue = 0; valid_digit(*pFloatString); ++pFloatString) {
+        IntValue = IntValue * 10 + (*pFloatString - '0');
+    }
+
+    // Get digits after decimal point, if any.
+    if (*pFloatString == '.') {
+        pFloatString += 1;
+        while (valid_digit(*pFloatString) && Scale < 10000000L) {
+            IntValue = IntValue * 10 + (*pFloatString - '0');
+            Scale*=10;
+            ++pFloatString;
+        }
+    }
+
+    _lastPos = pFloatString - StartOfString;
+    // Return signed and scaled floating point result.
+    return ((float)(Sign * IntValue))/(float)Scale;
+}
+
+inline const char* skip2NonSpace(const char*& _str){
+    while(*_str)
+        if(*_str == ' ' || *_str == '\t' || *_str == '\r' || *_str == '\n')
+            _str++;
+        else
+            return _str;
+    return _str;
+}
+
+inline const char* skip2Space(const char*& _str){
+    while(*_str)
+        if(*_str == ' ' || *_str == '\t' || *_str == '\r' || *_str == '\n')
+            return _str;
+        else
+            _str++;
+    return _str;
+}
 quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
 {
-    QFile ARPAFile(_file);
-    QTextStream ARPAStream(&ARPAFile);
-    ARPAStream.setCodec("UTF-8");
-    ARPAFile.open(QFile::ReadOnly);
+    TargomanLogInfo(5, "Loading ARPA File: " + _file);
 
-    if (ARPAFile.isReadable() == false)
+    std::ifstream File(_file.toUtf8().constData());
+    if (File.is_open() == false)
         throw exARPAManager("Unable to open ARPA File: " + _file);
 
-    QString       Line;
-    QStringList   LineParts;
-    enuParseState::Type ParseState = enuParseState::Looking4Start;
+    std::string LineString;
+    std::stringstream LineStream;
+
     quint8        NGramOrder, MaxGram = 0;
-    quint32       LineNo = 0, Count;
+    quint32       LineNo = 0, Count = 0;
     float         Prob, Backoff;
     bool          IsOK;
+    enuParseState::Type ParseState = enuParseState::Looking4Start;
     QMap<quint8, quint32> NGramCounts;
-    QList<WordIndex_t> NGram;
+    size_t Dummy;
+    size_t Pos,SpacePos;
+    const char* StartOfNGram, *EndOfNGram, *StartOfBackoff;
+  //  Targoman::Common::clsCmdProgressBar ProgressBar;
+    NGram_t NGram;
 
-    while (!ARPAStream.atEnd()){
+    /*   QString       Line;
+    QStringList   LineParts;
+*/
+
+
+    while (std::getline(File, LineString)) {
         LineNo++;
-        Line = ARPAStream.readLine(LM_MAX_VALID_ARPA_LINE).trimmed();
-        if (Line.size() == LM_MAX_VALID_ARPA_LINE)
+
+        if (LineString.size() == LM_MAX_VALID_ARPA_LINE)
             throw exARPAManager(QString("Invalid ARPA file as line <%1> is longer than: %2 characters").arg(
                                     LineNo).arg(
                                     LM_MAX_VALID_ARPA_LINE));
 
-        if (Line.isEmpty() || Line.startsWith("#"))
+        //LineString = Targoman::Common::fastTrimStdString(LineString);
+
+        Targoman::Common::fastTrimStdString(LineString);
+
+        if (LineString.empty() || LineString.at(0) == '#')
             continue;
 
         switch (ParseState) {
         case enuParseState::Looking4Start:
-            if (Line=="\\data\\")
+            if (LineString=="\\data\\")
                 ParseState = enuParseState::Started;
             break;
         case enuParseState::Started:
+        {
+            QString Line = QString::fromStdString(LineString);
             if (Line.startsWith("ngram")){
-                LineParts = Line.split("=", QString::SkipEmptyParts);
+                QStringList LineParts = Line.split("=", QString::SkipEmptyParts);
                 if (LineParts.size() != 2)
                     throw exARPAManager(QString("Invalid ARPA file as it has invalid Ngram count Def. at line: %1").arg(
                                             Line));
@@ -84,15 +159,15 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                 if (NGramOrder > LM_MAX_ORDER)
                     throw exARPAManager(QString("NGram Order grater than %1 is not supported").arg(LM_MAX_ORDER));
 
-		Count = LineParts.last().trimmed().toUInt(&IsOK);
+                Count = LineParts.last().trimmed().toUInt(&IsOK);
 
                 if (!IsOK)
                     throw exARPAManager(QString("Invalid ARPA NGram Description at line: %1").arg(LineNo));
 
                 NGramCounts.insert(NGramOrder, Count);
-		
+
                 MaxGram = qMax(MaxGram, NGramOrder);
-            }else if (Line.startsWith("\\") && Line.endsWith("-grams:")){
+            }else if (Line.startsWith('\\') && Line.endsWith("-grams:")){
                 NGramOrder = Line.split("-").first().remove(0,1).toInt(&IsOK);
                 if (!IsOK || NGramOrder != 1)
                     throw exARPAManager("Invalid ARPA file as it has been started with greater order NGram than 1");
@@ -103,75 +178,90 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                                                 i).arg(MaxGram));
                 }
 
-                //TODO check for overflow on unigram
-
+                //ProgressBar.reset("Loading 1 Gram Items",NGramCounts.value(1));
                 ParseState = enuParseState::NGram;
+                NGram.resize(1);
                 Count = 0;
-            }
+            }else
+                throw exARPAManager(QString("Invalid Identifier at line: %1").arg(LineNo));
             break;
+        }
         case enuParseState::NGram:
-            if (Line.startsWith("\\") && Line.endsWith("-grams:")){
-                if (Count < NGramCounts.value(NGramOrder))
-                    throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
-                            NGramOrder).arg(NGramCounts.value(NGramOrder)));
+            Count++;
 
-                NGramOrder = Line.split("-").first().remove(0,1).toInt(&IsOK);
-                if (!IsOK || NGramOrder < 2)
-                    throw exARPAManager(QString("Invalid ARPA file as invalid gram section is found at line: %1").arg(LineNo));
-                Count = 0;
-            }else if (Line == "\\end\\"){
-                if (Count < NGramCounts.value(NGramOrder))
-                    throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
-                            NGramOrder).arg(NGramCounts.value(NGramOrder)));
-                return MaxGram;
+            if (LineString.at(0) == '\\'){
+                QString Line = QString::fromStdString(LineString);
+                if (Line.endsWith("-grams:")){
+                    if (Count < NGramCounts.value(NGramOrder))
+                        throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
+                                                NGramOrder).arg(NGramCounts.value(NGramOrder)));
+
+                    NGramOrder = Line.split("-").first().remove(0,1).toInt(&IsOK);
+                    if (!IsOK || NGramOrder < 2)
+                        throw exARPAManager(QString("Invalid ARPA file as invalid gram section is found at line: %1").arg(LineNo));
+                    Count = 0;
+                    NGram.resize(NGramOrder);
+                    //ProgressBar.reset(QString("Loading %1 Gram Items").arg(NGramOrder),NGramCounts.value(NGramOrder));
+                }else if (Line == "\\end\\"){
+                    if (Count < NGramCounts.value(NGramOrder))
+                        throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
+                                                NGramOrder).arg(NGramCounts.value(NGramOrder)));
+                    TargomanLogInfo(5, "ARPA File Loaded");
+                    return MaxGram;
+                }else
+                    throw exARPAManager(QString("Invalid Tag at Line: %1").arg(LineNo));
             }else{
-                LineParts = Line.trimmed().split("\t", QString::SkipEmptyParts);
+                Count++;
+/*                if (Count > NGramCounts.value(NGramOrder))
+                    throw exARPAManager(QString("There are more Items specified for Ngram=%1 than specified: %2").arg(
+                                            NGramOrder).arg(NGramCounts.value(NGramOrder)));*/
+                Prob = fastASCII2Float(LineString.c_str(), Pos);
 
-                if (LineParts.size() < 2)
-                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(LineNo));
+                EndOfNGram = LineString.c_str() + Pos;
+                skip2NonSpace(EndOfNGram);
+                StartOfNGram = EndOfNGram;
+                if (!*EndOfNGram)
+                    throw exARPAManager(QString("Invalid count of Tokens 1 vs 0"));
+                skip2Space(EndOfNGram);
+                *((char*)EndOfNGram) = '\0';
 
                 if (NGramOrder == 1 &&
-                        LineParts.at(1) != LM_UNKNOWN_WORD &&
-                        LineParts.at(1) != LM_BEGIN_SENTENCE &&
-                        LineParts.at(1) != LM_END_SENTENCE)
-                    _model->add2Vocab(LineParts.at(1));
-
-                Prob=LineParts.first().toFloat(&IsOK);
-                if (!IsOK)
-                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(LineNo));
-                if (Targoman::Common::isPositiveFloat(Prob))
-                    throw exARPAManager(QString("Invalid Positive probability at line: %1").arg(LineNo));
-
-                Backoff = LineParts.size() > 2 ? LineParts.last().toFloat(&IsOK) : 0;
-                if (!IsOK)
-                    throw exARPAManager(QString("Invalid ARPA Info at line: %1").arg(LineNo));
-                // As SRILM and KenLM both accept positive backoff values, it seems that this backoff value
-		// does not correspond to what is called a "backoff" in NLP literature directly.
-		/*
-		if (Backoff > 0)
-                    throw exARPAManager(QString("Invalid Positive backoff at line: %1").arg(LineNo));
-		*/
-
-                /*
-		NGram.clear();
-                foreach(const QString& Word, ((QStringList)LineParts.mid(1, LineParts.size() -
-                                                           (LineParts.size() > 2 ? 2 : 1))).join(" ").split(" ")){
-                    NGram.append(_model->vocab().getIndex(Word));
+                    strcmp(StartOfNGram, LM_UNKNOWN_WORD) &&
+                    strcmp(StartOfNGram, LM_BEGIN_SENTENCE) &&
+                    strcmp(StartOfNGram, LM_END_SENTENCE)){
+                    _model->add2Vocab(StartOfNGram);
                 }
+                //NGram[0] = 1;
+                NGram[0] =(_model->vocab().getIndex(StartOfNGram));
+                for (int i=1; i<NGramOrder; ++i){
+                    skip2NonSpace(++EndOfNGram);
+                    if (!*EndOfNGram)
+                        throw exARPAManager(QString("Invalid count of Tokens %1 vs %2 at line: %3").arg(
+                                                i).arg(
+                                                NGramOrder).arg(
+                                                LineNo));
+                    StartOfNGram = EndOfNGram;
+                    skip2Space(EndOfNGram);
+                    *((char*)EndOfNGram) = '\0';
+                    //NGram[i] = 1;
+                    NGram[i] = (_model->vocab().getIndex(StartOfNGram));
+                }
+                if (EndOfNGram - LineString.c_str() < LineString.size()){
+                    StartOfBackoff = EndOfNGram+1;
+                    skip2NonSpace(StartOfBackoff);
+                    Backoff = fastASCII2Float(StartOfBackoff, Dummy);
+                }else
+                    Backoff = 0;
+                if (Prob >=0)
+                    throw exARPAManager(QString("Invalid Positive backoff at line: %1").arg(LineNo));
 
                 _model->insert(NGram, Prob, Backoff);
-		*/
-
-                Count++;
-                if (Count > NGramCounts.value(NGramOrder))
-                    throw exARPAManager(QString("There are more Items specified for Ngram=%1 than specified: %2").arg(
-                            NGramOrder).arg(NGramCounts.value(NGramOrder)));
             }
-            break;
         default:
             break;
         }
     }
+    TargomanLogInfo(5, "ARPA File Loaded");
 
     return MaxGram;
 }

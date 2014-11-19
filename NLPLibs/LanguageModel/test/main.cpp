@@ -10,13 +10,15 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
+#include <QDebug>
+#include <QStringList>
+
 #include "libTargomanCommon/CmdIO.h"
 #include "libLanguageModel/clsLanguageModel.h"
 #include "libLanguageModel/clsLMSentenceScorer.h"
 
-#include <QDebug>
-#include <QStringList>
-
+#include <fstream>
+#include <ctime>
 
 using namespace Targoman::NLPLibs;
 
@@ -24,21 +26,41 @@ int main(int argc, char *argv[])
 {
     clsLanguageModel LM;
     try {
-	    TargomanDebug(5, "Initialization started.");
-    qDebug()<<"Order = "<<LM.init("./test.arpa");
-	    TargomanDebug(5, "Initialization finished.");
-    qDebug()<<"Order = "<<LM.init("./test.arpa");
-    clsLMSentenceScorer SS(LM);
-    QString Sentence = "i would look beyond also would consider higher looking";
-//also would consider higher looking
-    quint8 Gram;
-    foreach (const QString& Word, Sentence.split(" ")){
-        Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
-        qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
-    }
+        qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "./test.arpa");
+        clsLMSentenceScorer SS(LM);
+        QString Sentence = "i would look beyond also would consider higher looking";
+
+        quint8 Gram;
+        foreach (const QString& Word, Sentence.split(" ")){
+            Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+            qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
+        }
+        return 0;
+        std::ifstream File;
+        File.open("./test");
+        std::string LineString;
+        QList<float> Times;
+        if (File.is_open()){
+            while (std::getline(File, LineString)) {
+                quint8 Gram;
+                SS.reset();
+                foreach (const QString& Word, QString::fromStdString(LineString).split(" ", QString::SkipEmptyParts)){
+                    clock_t start = std::clock();
+                    Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+                    Times.append((std::clock() - start)/(float)CLOCKS_PER_SEC);
+
+                    qDebug()<<Times.last()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
+                }
+                qDebug()<<"###########################33";
+            }
+            float SumTime = 0;
+            foreach (float Time, Times)
+                SumTime += Time;
+            qDebug()<<"Average = "<<SumTime / (float)Times.size();
+        }
     }
     catch(Targoman::Common::exTargomanBase& e) {
-	    qDebug() << e.what();
+        qDebug() << e.what();
     }
 }
 
