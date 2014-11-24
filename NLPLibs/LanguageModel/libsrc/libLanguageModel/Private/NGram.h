@@ -12,30 +12,120 @@
 
 #ifndef TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
 #define TARGOMAN_NLPLIBS_PRIVATE_CLSNGRAM_H
-#include <QHash>
 #include <QFile>
 #include "../Definitions.h"
-
-#ifdef LM_USE_GOOGLE_SPARSE_HASH
-#include <google/sparse_hash_map>
-#endif
 
 namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-typedef QVector<Targoman::Common::WordIndex_t> NGram_t;
+typedef quint64 Hash_t;
+
+typedef std::vector<std::string> NGram_t;
 
 }
 }
 }
 
 //Overloading QHash hash methods in order to support NGram_t
-uint qHash(const Targoman::NLPLibs::Private::NGram_t & _ngram);
+//uint qHash(const Targoman::NLPLibs::Private::NGram_t & _ngram, _gram);
 
 namespace Targoman {
 namespace NLPLibs {
 namespace Private {
+
+/**********************************************************************************/
+
+static const int HashKeys[]={29,71,113,173,229,31,73,127,179,37,79,131,181,41,83,137};
+/*http://planetmath.org/goodhashtableprimes*/
+static const quint32 PrimeNumbers[]={
+    53,
+    97,
+    193,
+    389,
+    769,
+    1543,
+    3079,
+    6151,
+    12289,
+    24593,
+    49157,
+    98317,
+    196613,
+    393241,
+    786433,
+    1572869,
+    3145739,
+    6291469,
+    12582917,
+    25165843
+};
+
+class TargomanHasher
+{
+public:
+
+
+
+public:
+    static Hash_t hash(const void* _buff, size_t _len, int _level){
+        static const Hash_t Const1 = 0xcc9e2d51;
+        static const Hash_t Const2 = 0x1b873593;
+        static const Hash_t Round1 = 15;
+        static const Hash_t Round2 = 13;
+        static const Hash_t M = 5;
+        static const Hash_t Const3 = 0xe6546b64;
+
+        Hash_t Hash = HashKeys[_level];
+
+        const int nblocks = _len / 4;
+        const quint32 *blocks = (const quint32 *) _buff;
+        int i;
+        for (i = 0; i < nblocks; i++) {
+            Hash_t Buffer = blocks[i];
+            Buffer *= Const1;
+            Buffer = (Buffer << Round1) | (Buffer >> (32 - Round1));
+            Buffer *= Const2;
+
+            Hash ^= Buffer;
+            Hash = ((Hash << Round2) | (Hash >> (32 - Round2))) * M + Const3;
+        }
+
+        const uint8_t *tail = (const uint8_t *) (_buff + nblocks * 4);
+        Hash_t Buffer = 0;
+
+        switch (_len & 3) {
+        case 3:
+            Buffer ^= tail[2] << 16;
+        case 2:
+            Buffer ^= tail[1] << 8;
+        case 1:
+            Buffer ^= tail[0];
+
+            Buffer *= Const1;
+            Buffer = (Buffer << Round1) | (Buffer >> (32 - Round1));
+            Buffer *= Const2;
+            Hash ^= Buffer;
+        }
+
+        Hash ^= _len;
+        Hash ^= (Hash >> 16);
+        Hash *= 0x85ebca6b;
+        Hash ^= (Hash >> 13);
+        Hash *= 0xc2b2ae35;
+        Hash ^= (Hash >> 16);
+
+        return Hash;
+    }
+
+    static inline Hash_t hashVal(const void* _buff, size_t _len, int _level)
+    {return hash(_buff, _len, _level) + 1;}
+    static inline Hash_t hashLoc(const void* _buff, size_t _len, int _level, Hash_t _maxtable)
+    {return (hash(_buff, _len, _level) % _maxtable) + 1;}
+};
+
+/**********************************************************************************/
+
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exNgramManager, exLanguageModel);
 
@@ -44,40 +134,14 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exNgramManager, exLanguageModel);
 template <class Weights_t> class tmplNGramHashTable
 {
 private:
-#ifdef LM_USE_GOOGLE_SPARSE_HASH
-    class clsHasher{
-    public :
-        uint operator()(const NGram_t& _key) const{
-            return qHash(_key);
-        }
-    };
-/*    class clsValueSerializer{
-    public:
-
-    };*/
-
-    typedef google::sparse_hash_map<NGram_t, Weights_t, clsHasher> GSHM_t;
-#endif
 
 public:
-    inline void insert(NGram_t _ngram, Weights_t _weights){
-#ifdef LM_USE_GOOGLE_SPARSE_HASH
-        this->HashTable[_ngram] = _weights;
-#else
-        this->HashTable.insert(_ngram, _weights);
-#endif
+ /*   inline void insert(NGram_t _ngram, Weights_t _weights){
+  //      this->HashTable.insert(_ngram, _weights);
     }
 
     inline Weights_t value(NGram_t _ngram) const{
-#ifdef LM_USE_GOOGLE_SPARSE_HASH
-        typename GSHM_t::const_iterator Iter = this->HashTable.find(_ngram);
-        if (Iter != this->HashTable.end())
-            return Iter->second;
-        else
-            return Weights_t();
-#else
-        return this->HashTable.value(_ngram);
-#endif
+//        return this->HashTable.value(_ngram);
     }
 
     inline void writeBinary(const QString& _filePath){
@@ -99,11 +163,8 @@ public:
     }
 
 private:
-#ifdef LM_USE_GOOGLE_SPARSE_HASH
-    GSHM_t HashTable;
-#else
-    QHash<NGram_t, Weights_t> HashTable;
-#endif
+   //  HashTable;*/
+
 };
 
 }

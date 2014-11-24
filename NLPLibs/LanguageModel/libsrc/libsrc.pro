@@ -15,7 +15,6 @@ HEADERS += \
     libLanguageModel/Private/clsLanguageModel_p.h \
     libLanguageModel/Private/ARPAManager.h \
     libLanguageModel/clsLMSentenceScorer.h \
-    libLanguageModel/Private/clsVocab.hpp \
     libLanguageModel/Private/clsLMSentenceScorer_p.h \
     libLanguageModel/Private/clsProbingModel.h \
     libLanguageModel/Private/clsBaseModel.hpp \

@@ -19,6 +19,7 @@
 /// Different Language Models
 #include "Private/clsProbingModel.h"
 
+using namespace Targoman::Common;
 
 namespace Targoman {
 namespace NLPLibs {
@@ -40,9 +41,10 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
     if (this->pPrivate->isBinary(_filePath)){
 
     }else{
-        this->pPrivate->Model = new clsProbingModel(new clsVocab());
-        this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob, _configs.UnknownWordDefault.Backoff);
+        this->pPrivate->Model = new clsProbingModel(/*new clsVocab()*/);
         this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model);
+//@TODO check if Unknown is not set
+        this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob, _configs.UnknownWordDefault.Backoff);
     }
     return this->pPrivate->Order;
 }
@@ -64,11 +66,11 @@ quint8 clsLanguageModel::order() const
 }*/
 WordIndex_t clsLanguageModel::getIndex(const char* _word) const
 {
-    return this->pPrivate->Model->vocab().getIndex(_word);
+    //return this->pPrivate->Model->vocab().getIndex(_word);
 }
 
 
-LogP_t clsLanguageModel::lookupNGram(QVector<WordIndex_t> &_ngram, quint8& _foundedGram) const
+LogP_t clsLanguageModel::lookupNGram(const QStringList & _ngram, quint8& _foundedGram) const
 {
     return this->pPrivate->Model->lookupNGram(_ngram, _foundedGram);
 }

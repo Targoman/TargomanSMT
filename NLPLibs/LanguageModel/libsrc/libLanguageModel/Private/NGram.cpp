@@ -25,14 +25,13 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-const uint PrimeNumbers[] = { 13, 5, 53, 17, 25, 19, 31, 37, 41, 43, 19, 53, 11, 3, 7 };
-
+//static const uint PrimeNumbers[] = { 13, 5, 53, 17, 25, 19, 31, 37, 41, 43, 19, 53, 11, 3, 7 };
 
 }
 }
 }
 
-uint qHash(const Targoman::NLPLibs::Private::NGram_t &_ngram)
+/*uint qHash(const Targoman::NLPLibs::Private::NGram_t &_ngram)
 {
     uint Hash = 0;
 #ifdef LM_USE_MURMUR_HASH
@@ -67,13 +66,13 @@ uint qHash(const Targoman::NLPLibs::Private::NGram_t &_ngram)
     Hash *= 0xc2b2ae35;
     Hash ^= Hash >> 16;
 #else
-    for (int i=0; i<_ngram.size(); i++){
+    /*for (int i=0; i<_ngram.size(); i++){
         Hash += _ngram.at(i) * Targoman::NLPLibs::Private::PrimeNumbers[14 - (_ngram.at(i) % 15)];
         Hash ^= _ngram.at(i) * Targoman::NLPLibs::Private::PrimeNumbers[_ngram.at(i) % 7];
     }
 #endif
     return Hash;
-}
+}*/
 
 
 

@@ -12,13 +12,14 @@
  */
 
 #include "clsLMSentenceScorer.h"
-#include "Private/clsVocab.hpp"
+//#include "Private/clsVocab.hpp"
 #include "Private/clsLMSentenceScorer_p.h"
 
 namespace Targoman {
 namespace NLPLibs {
 
 using namespace Private;
+using namespace Targoman::Common;
 
 clsLMSentenceScorer::clsLMSentenceScorer(const clsLanguageModel &_lm) :
     pPrivate(new clsLMSentenceScorerPrivate(_lm))
@@ -37,12 +38,22 @@ void clsLMSentenceScorer::reset()
 
 LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
 {
-    return this->wordProb(this->pPrivate->LM.getIndex(_word.toUtf8().constData()), _foundedGram);
+        if (Q_UNLIKELY(this->pPrivate->History.isEmpty())){
+                this->pPrivate->History.append(LM_BEGIN_SENTENCE);
+        }else if (Q_LIKELY(this->pPrivate->History.size() >= this->pPrivate->LM.order())){
+            this->pPrivate->History.removeFirst();
+        }
+
+        this->pPrivate->History.append(_word);
+
+        return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);
+
+    //return this->wordProb(this->pPrivate->LM.getIndex(_word.toUtf8().constData()), _foundedGram);
 }
 
 LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t& _wordIndex, quint8& _foundedGram)
 {
-    if (Q_UNLIKELY(this->pPrivate->History.isEmpty())){
+/*    if (Q_UNLIKELY(this->pPrivate->History.isEmpty())){
             this->pPrivate->History.append(LM_BEGIN_SENTENCE_WINDEX);
     }else if (Q_LIKELY(this->pPrivate->History.size() >= this->pPrivate->LM.order())){
         this->pPrivate->History.removeFirst();
@@ -50,7 +61,8 @@ LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t& _wordIndex, quint8& _fou
 
     this->pPrivate->History.append(_wordIndex);
 
-    return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);
+    return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);*/
+    return 0;
 }
 
 }

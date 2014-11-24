@@ -38,7 +38,7 @@ public:
     quint8  order() const;
     Targoman::Common::WordIndex_t getIndex(const char *_word) const;
 
-    Targoman::Common::LogP_t lookupNGram(QVector<Targoman::Common::WordIndex_t> &_ngram, quint8& _foundedGram) const ;
+    Targoman::Common::LogP_t lookupNGram(const QStringList &_ngram, quint8& _foundedGram) const ;
 
 
 private:

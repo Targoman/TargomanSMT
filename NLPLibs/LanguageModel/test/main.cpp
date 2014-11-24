@@ -29,7 +29,8 @@ int main(int argc, char *argv[])
     try {
         qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "./test.arpa");
         clsLMSentenceScorer SS(LM);
-        QString Sentence = "i would look beyond also would consider higher looking";
+        QString Sentence =
+                QStringLiteral("ارتباط او با سپاه پاسداران انقلاب اسلامی او را در مرکز زنجیرهای از ترور و جنایت قرار داده که دنیا را در برگرفته است .");
 
         quint8 Gram;
         foreach (const QString& Word, Sentence.split(" ")){

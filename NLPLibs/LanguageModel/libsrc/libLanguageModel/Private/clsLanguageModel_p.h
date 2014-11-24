@@ -15,7 +15,6 @@
 
 #include "libTargomanCommon/Macros.h"
 #include "../clsLanguageModel.h"
-#include "clsVocab.hpp"
 #include "clsBaseModel.hpp"
 
 namespace Targoman {
