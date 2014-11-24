@@ -18,7 +18,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/FastOperations.hpp \
     libTargomanCommon/Constants.h \
     libTargomanCommon/Types.h \
-    libTargomanCommon/clsCmdProgressBar.h
+    libTargomanCommon/clsCmdProgressBar.h \
+    libTargomanCommon/HashFunctions.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

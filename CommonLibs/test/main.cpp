@@ -16,6 +16,7 @@
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/clsCmdProgressBar.h"
+#include "libTargomanCommon/HashFunctions.h"
 
 #include <iostream>
 #include <unistd.h>
@@ -137,11 +138,23 @@ int main(int argc, char *argv[])
     TargomanError(" %s", qPrintable(e.what()));
   }
 
+  QString Test = "this is a test";
+  TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),1));
+  TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),2));
+  TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),1));
+
+  TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1));
+  TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),2));
+  TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1));
+  TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1192));
+
   clsCmdProgressBar PB("Test Progress", 10000);
   for (int i=0; i< 10001; i++){
       PB.setValue(i);
-      usleep(1000);
+      usleep(500);
   }
+
+  return 0;
 /**/
   //  return a.exec();*/
 }
