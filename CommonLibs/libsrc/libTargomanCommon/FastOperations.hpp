@@ -38,15 +38,87 @@ inline quint64 rotl64 ( quint32 x, qint8 r )
   return (x << r) | (x >> (64 - r));
 }
 
-inline std::string& trimStdString(std::string& _str){
-    std::string::size_type first = _str.find_first_not_of(" \n\t\r");
-    if( first == std::string::npos) {
-      _str.clear();
+inline std::string& fastTrimStdString(std::string& _str){
+    const char* StrPtr = _str.c_str();
+    char* EndStr = (char*)StrPtr + _str.size();
+
+    while(*StrPtr){
+        if(*StrPtr == ' ' ||
+           *StrPtr == '\t' ||
+           *StrPtr == '\r' ||
+           *StrPtr == '\n')
+            StrPtr++;
+        else
+            break;
     }
-    else {
-      std::string::size_type last = _str.find_last_not_of(" \n\t\r"); /// must succeed
-      _str=_str.substr( first, last - first + 1);
+    while(*EndStr){
+        if(*StrPtr == ' ' ||
+           *StrPtr == '\t' ||
+           *StrPtr == '\r' ||
+           *StrPtr == '\n')
+            EndStr--;
+        else{
+            *(EndStr+1) = '\0';
+            break;
+        }
     }
+    return _str = StrPtr;
+}
+
+#define IS_WHITE_SPACE(c) ((c) == ' ' || (c) == '\t')
+#define IS_VALID_DIGIT(c) ((c) >= '0' && (c) <= '9')
+
+inline float fastASCII2Float (const char *pFloatString, size_t& _lastPos)
+{
+    qint64 IntValue, Scale = 1;
+    qint16 Sign;
+    const char*  StartOfString = pFloatString;
+
+    Sign = 1;
+    if (*pFloatString == '-') {
+        Sign = -1;
+        ++pFloatString;
+    } else if (*pFloatString == '+') {
+        ++pFloatString;
+    }
+
+    // Get digits before decimal point or exponent, if any.
+    for (IntValue = 0; IS_VALID_DIGIT(*pFloatString); ++pFloatString) {
+        IntValue = IntValue * 10 + (*pFloatString - '0');
+    }
+
+    // Get digits after decimal point, if any.
+    if (*pFloatString == '.') {
+        pFloatString += 1;
+        while (IS_VALID_DIGIT(*pFloatString)) {
+            if (Scale < 10000000L){
+                IntValue = IntValue * 10 + (*pFloatString - '0');
+                Scale*=10;
+            }
+            ++pFloatString;
+        }
+    }
+
+    _lastPos = pFloatString - StartOfString;
+    // Return signed and scaled floating point result.
+    return ((float)(Sign * IntValue))/(float)Scale;
+}
+
+inline const char* fastSkip2NonSpace(const char*& _str){
+    while(*_str)
+        if(*_str == ' ' || *_str == '\t' || *_str == '\r' || *_str == '\n')
+            _str++;
+        else
+            return _str;
+    return _str;
+}
+
+inline const char* fastSkip2Space(const char*& _str){
+    while(*_str)
+        if(*_str == ' ' || *_str == '\t' || *_str == '\r' || *_str == '\n')
+            return _str;
+        else
+            _str++;
     return _str;
 }
 

@@ -21,13 +21,16 @@ namespace Common {
 class clsCmdProgressBar
 {
 public:
+    clsCmdProgressBar();
     clsCmdProgressBar(const QString& _message, quint32 _maximum);
     void setValue(quint32 _value);
+    void reset(const QString& _message, quint32 _maximum);
 
 private:
     quint32 Maximum;
     QString Message;
     qint8   LastProgressValue;
+    bool    Reseted;
 };
 
 }

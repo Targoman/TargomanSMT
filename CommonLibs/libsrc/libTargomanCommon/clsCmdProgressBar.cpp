@@ -20,36 +20,54 @@ using namespace std;
 namespace Targoman {
 namespace Common {
 
+Targoman::Common::clsCmdProgressBar::clsCmdProgressBar()
+{
+    this->reset("NOT-INITIALIZED", 1);
+}
+
 clsCmdProgressBar::clsCmdProgressBar(const QString &_message, quint32 _maximum)
 {
-    this->Maximum = _maximum;
-    this->LastProgressValue = -1;
-    this->Message = _message;
-    this->setValue(0);
+    this->reset(_message, _maximum);
 }
 
 void clsCmdProgressBar::setValue(quint32 _value)
 {
-
     if (TARGOMAN_IO_SETTINGS.Info.canBeShown(3) == false)
         return;
 
-    struct winsize w;
-    ioctl(1, TIOCGWINSZ, &w);
-    quint16 ProgressBarMaxWidth = w.ws_col - this->Message.size() - 10;
+    if (this->Reseted){
+        this->Reseted = false;
+        cout<<endl;
+    }
 
     if (_value >= this->Maximum){
-        cout<<(this->Message + " [100%][" + QString(ProgressBarMaxWidth,'#') + "]").toUtf8().constData()<<endl;
+        struct winsize w;
+        ioctl(1, TIOCGWINSZ, &w);
+        quint16 ProgressBarMaxWidth = w.ws_col - this->Message.size() - 20;
+        cout<<(this->Message + QString(" [%1][100%][").arg(_value) +
+               QString(ProgressBarMaxWidth,'#') + "]").toUtf8().constData()<<endl;
     }else {
-        quint16 ProgressVal = ((double)_value / (double)this->Maximum) * 1000;
-        if (true || this->LastProgressValue != ProgressVal){
-            cout<<(this->Message + QString(" [%1%][%2]\r").arg(
-                       ProgressVal/10,3).arg(
-                       QString(ProgressVal*ProgressBarMaxWidth/1000, '#'),-ProgressBarMaxWidth)
+        quint16 ProgressVal = ((double)_value / (double)this->Maximum) * 100;
+        if (this->LastProgressValue != ProgressVal){
+            struct winsize w;
+            ioctl(1, TIOCGWINSZ, &w);
+            quint16 ProgressBarMaxWidth = w.ws_col - this->Message.size() - 20;
+            cout<<(this->Message + QString(" [%1][%2%][%3]\r").arg(_value).arg(
+                       ProgressVal,3).arg(
+                       QString(ProgressVal*(ProgressBarMaxWidth)/100, '#'),-ProgressBarMaxWidth)
                    ).toUtf8().constData()<<flush;
             this->LastProgressValue = ProgressVal;
         }
     }
+}
+
+void clsCmdProgressBar::reset(const QString &_message, quint32 _maximum)
+{
+    this->Reseted = true;
+    this->Maximum = _maximum;
+    this->LastProgressValue = -1;
+    this->Message = _message;
+    this->setValue(0);
 }
 
 }
