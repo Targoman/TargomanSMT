@@ -19,10 +19,10 @@
 namespace Targoman {
 namespace Common {
 
-static const int HashKeys[]={29,71,113,173,229,31,73,127,179,37,79,131,181,41,83,137};
-static const int HashKeysCount = sizeof(HashKeys) / sizeof(int);
+static const int TargomanHashKeys[]={29,71,113,173,229,31,73,127,179,37,79,131,181,41,83,137};
+static const int TargomanHashKeysCount = sizeof(TargomanHashKeys) / sizeof(int);
 /*http://planetmath.org/goodhashtableprimes*/
-static const quint32 GoodHashPrimeNumbers[]={
+static const quint32 TargomanGoodHashTableSizes[]={
     53,
     97,
     193,
@@ -52,11 +52,11 @@ static const quint32 GoodHashPrimeNumbers[]={
 class HashFunctions
 {
 public:
-    static quint64 murmurHash64(const void* _buff, size_t _len, int _level){
+    static quint64 murmurHash64(const void* _buff, size_t _len, int _level = 0){
         const quint64 Constant1 = 0xc6a4a7935bd1e995LLU;
         const int Remain1 = 47;
 
-        quint64 Hash = HashKeys[_level % HashKeysCount] ^ (_len * Constant1);
+        quint64 Hash = TargomanHashKeys[_level % TargomanHashKeysCount] ^ (_len * Constant1);
 
         const quint64 * Data = (const quint64 *)_buff;
         const quint64 * End = (_len >> 3) + Data;
@@ -94,7 +94,7 @@ public:
         return Hash;
     }
 
-    static quint32 murmurHash32(const void* _buff, size_t _len, int _level)
+    static quint32 murmurHash32(const void* _buff, size_t _len, int _level = 0)
     {
         static const quint32 Const1 = 0xcc9e2d51;
         static const quint32 Const2 = 0x1b873593;
@@ -103,7 +103,7 @@ public:
         static const quint32 M = 5;
         static const quint32 Const3 = 0xe6546b64;
 
-        quint32 Hash = HashKeys[_level % HashKeysCount];
+        quint32 Hash = TargomanHashKeys[_level % TargomanHashKeysCount];
 
         const int BlockCount = _len / 4;
         const quint32 *Blocks = (const quint32 *) _buff;
