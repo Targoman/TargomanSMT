@@ -203,7 +203,7 @@ QString Normalizer::normalize(const QChar &_char,
     if (_skipRecheck)
         return Char;
 
-    enuUnicodeCharScripts::Type CharacterScript = (enuUnicodeCharScripts::Type)QUnicodeTables::script(Char.unicode());
+    enuUnicodeCharScripts::Type CharacterScript = (enuUnicodeCharScripts::Type)Char.script();
 
     //Check if there are sepcial normalizers
     if (ScriptBasedNormalizers[CharacterScript]){
@@ -226,13 +226,13 @@ QString Normalizer::normalize(const QChar &_char,
 
     if(_interactive){
         std::cout<<"Character <"<<QString(Char).toUtf8().constData()<<">(0x";
-        std::cout<<QString::number(Char.unicode(),16).toUpper().toAscii().constData();
+        std::cout<<QString::number(Char.unicode(),16).toUpper().toLatin1().constData();
         std::cout<<")["<<QCHAR_UNICOE_CATEGORIES[Char.category()]<<"] [";
         std::cout<<enuUnicodeCharScripts::toStr(CharacterScript);
         std::cout<<"]could not be found in any list. What to do?"<<std::endl;
         std::cout<<"Line: "<<_line<<": "<<std::endl;
         std::cout<<_phrase.toUtf8().constData()<<std::endl;
-        std::cout<<QString(_charPos-1, '-').toAscii().constData()<<"^"<<std::endl;
+        std::cout<<QString(_charPos-1, '-').toLatin1().constData()<<"^"<<std::endl;
 
         bool ValidSelection=false;
         while (!ValidSelection)
@@ -270,7 +270,7 @@ QString Normalizer::normalize(const QChar &_char,
                 std::string Buffer;
 
                 std::cout<<"Normalize <"<<QString(Char).toUtf8().constData()<<">(0x";
-                std::cout<<QString::number(Char.unicode(),16).toUpper().toAscii().constData();
+                std::cout<<QString::number(Char.unicode(),16).toUpper().toLatin1().constData();
                 std::cout<<")["<<QCHAR_UNICOE_CATEGORIES[Char.category()]<<"] [";
                 std::cout<<enuUnicodeCharScripts::toStr(CharacterScript);
                 std::cout<<"] to: "<<std::endl;
@@ -364,7 +364,7 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
                                             QCHAR_UNICOE_CATEGORIES[_originalChar.category()]).arg(
                                 enuUnicodeCharScripts::toStr(
                                     (enuUnicodeCharScripts::Type)
-                                    QUnicodeTables::script(_originalChar.unicode()))).toUtf8());
+                                    _originalChar.script())).toUtf8());
                 }
                     break;
                 case enuDicType::ReplacingCharacter:
@@ -396,10 +396,10 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
 
 QString Normalizer::char2Str(const QChar &_char, bool _hexForced)
 {
-    if (!_hexForced && (_char.isLetterOrNumber() || _char.toAscii() == _char) && _char != '=')
+    if (!_hexForced && (_char.isLetterOrNumber() || _char.toLatin1() == _char) && _char != '=')
         return _char;
     else
-        return QString("<0x%1>").arg(QString::number(_char.unicode(),16).toAscii().toUpper().constData());
+        return QString("<0x%1>").arg(QString::number(_char.unicode(),16).toLatin1().toUpper().constData());
 }
 
 QList<QChar> Normalizer::str2QChar(QString _str, quint16 _line, bool _allowRange)
@@ -476,7 +476,7 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
         ConfigLine = ConfigLine.trimmed();
 
         if (ConfigLine.startsWith("[") && ConfigLine.endsWith("]")){
-            DicStep = enuDicType::toEnum(ConfigLine.mid(1,ConfigLine.size() - 2).toAscii().constData());
+            DicStep = enuDicType::toEnum(ConfigLine.mid(1,ConfigLine.size() - 2).toLatin1().constData());
             if (DicStep == enuDicType::Unknown)
                 throw exNormalizer(QString("Invalid Dic Type at line: %1").arg(LineNumber));
             else if (DicStep == enuDicType::EndOfFile)

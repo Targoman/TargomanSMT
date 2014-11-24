@@ -19,11 +19,12 @@
 #include "Normalizer.h"
 
 //A hack to use script method from unicodeTales in Qt core
-QT_BEGIN_NAMESPACE
+/*QT_BEGIN_NAMESPACE
 namespace QUnicodeTables {
     extern int script(uint _ucs4);
 }
 QT_END_NAMESPACE
+*/
 
 namespace Targoman {
 namespace NLPLibs {

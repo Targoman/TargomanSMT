@@ -13,7 +13,7 @@
 #include "UnitTest.h"
 
 #define VERIFY_IXML2TXT(_check, _desired) \
-    Targoman::NLPLibs::TextProcessor::instance().ixml2Text(QString::fromUtf8(_check)) == QString::fromUtf8(_desired)
+    Targoman::NLPLibs::TextProcessor::instance().ixml2Text(QStringLiteral(_check)) == QStringLiteral(_desired)
 
 void UnitTest::ixml2Text()
 {

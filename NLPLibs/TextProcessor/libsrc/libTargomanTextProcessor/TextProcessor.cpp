@@ -63,7 +63,7 @@ QString TextProcessor::text2IXML(const QString &_inStr,
 {
     TargomanLogDebug(5,"ConvertToIXML Process Started");
 
-    const char* LangCode = ISO639getAlpha2(_lang.toAscii().constData());
+    const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
 
     if(!LangCode || strlen(LangCode) == 0)
         throw exTextProcessor("Invalid language code. It must be in ISO639 format");
@@ -94,7 +94,7 @@ QString TextProcessor::text2RichIXML(const QString &_inStr, const QString &_lang
 {
     TargomanLogDebug(5,"ConvertToRichIXML Process Started");
 
-    const char* LangCode = ISO639getAlpha2(_lang.toAscii().constData());
+    const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
 
     if(!LangCode || strlen(LangCode) == 0)
         throw exTextProcessor("Invalid language code. It must be in ISO639 format");
@@ -142,7 +142,7 @@ QString TextProcessor::normalizeText(const QString _input, bool _interactive, co
 {
     QString Output = Normalizer::instance().normalize(_input, _interactive);
     if (_lang.size()){
-        const char* LangCode = ISO639getAlpha2(_lang.toAscii().constData());
+        const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
         if(!LangCode || strlen(LangCode) == 0)
             throw exTextProcessor("Invalid language code. It must be in ISO639 format");
         Output = SpellCorrector::instance().process(LangCode, Output, _interactive);

@@ -51,7 +51,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_END
 #define ARABIC_ALEF_HAMZA_UP       QChar(0x0622)
 #define ARABIC_ALEF                QChar(0x0627)
 
-#define MULTI_DOT       QString::fromUtf8("…")
+#define MULTI_DOT       QStringLiteral("…")
 #define SYMBOL_REMOVED  QChar(0x2205)
 
 class Normalizer

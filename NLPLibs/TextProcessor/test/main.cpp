@@ -39,17 +39,17 @@ int main(int _argc, char *_argv[])
         TARGOMAN_REGISTER_ACTOR("testLibCommon");
         Targoman::Common::Logger::instance().init("log.log");
 
-/*        QRegExp RxHa                  = QRegExp(QString::fromUtf8("ها(ی|یم|یت|یش|یمان|یتان|یشان)?"));
+/*        QRegExp RxHa                  = QRegExp(QStringLiteral("ها(ی|یم|یت|یش|یمان|یتان|یشان)?"));
         QRegExp RxEndWithHa           = QRegExp(".*" + RxHa.pattern() + "$");
 
         TargomanDebug(1,"\n"<<RxHa.pattern()<<"\n"<<RxEndWithHa.pattern());
-        QString Str = QString::fromUtf8("ها");
+        QString Str = QStringLiteral("ها");
         TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
-        Str = QString::fromUtf8("های");
+        Str = QStringLiteral("های");
         TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
-        Str = QString::fromUtf8("پاهایشان");
+        Str = QStringLiteral("پاهایشان");
         TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
-        Str = QString::fromUtf8("هان");
+        Str = QStringLiteral("هان");
         TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
         exit(1);
 */
@@ -91,7 +91,7 @@ int main(int _argc, char *_argv[])
 
         Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin",true);
 
-        qDebug()<<QString::fromUtf8("ｐ = P? :")<<Targoman::NLPLibs::Private::Normalizer::instance().normalize(QString::fromUtf8("ｐ"));
+        qDebug()<<QStringLiteral("ｐ = P? :")<<Targoman::NLPLibs::Private::Normalizer::instance().normalize(QStringLiteral("ｐ"));
 
 /**/
 /*        for (int i=0x27B1; i<=0xFFFF; i++){

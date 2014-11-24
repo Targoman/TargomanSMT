@@ -18,18 +18,18 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-const QString PERSIAN_Mi         = QString::fromUtf8("می");
-const QString PERSIAN_Nemi       = QString::fromUtf8("نمی");
-const QString PERSIAN_Tar        = QString::fromUtf8("تر");
-const QString PERSIAN_Tarin      = QString::fromUtf8("ترین");
-const QString PERSIAN_Ba         = QString::fromUtf8("با");
-const QString PERSIAN_Na         = QString::fromUtf8("نا");
-const QString PERSIAN_Bi         = QString::fromUtf8("بی");
-const QString PERSIAN_HeYe       = QString::fromUtf8("ه‌ی");
-const QString PERSIAN_He         = QString::fromUtf8("ه");
-const QString PERSIAN_An         = QString::fromUtf8("ان");
-const QString PERSIAN_AlefYe     = QString::fromUtf8("ای");
-const QString PERSIAN_Noon       = QString::fromUtf8("ن");
+const QString PERSIAN_Mi         = QStringLiteral("می");
+const QString PERSIAN_Nemi       = QStringLiteral("نمی");
+const QString PERSIAN_Tar        = QStringLiteral("تر");
+const QString PERSIAN_Tarin      = QStringLiteral("ترین");
+const QString PERSIAN_Ba         = QStringLiteral("با");
+const QString PERSIAN_Na         = QStringLiteral("نا");
+const QString PERSIAN_Bi         = QStringLiteral("بی");
+const QString PERSIAN_HeYe       = QStringLiteral("ه‌ی");
+const QString PERSIAN_He         = QStringLiteral("ه");
+const QString PERSIAN_An         = QStringLiteral("ان");
+const QString PERSIAN_AlefYe     = QStringLiteral("ای");
+const QString PERSIAN_Noon       = QStringLiteral("ن");
 
 clsPersianSpellCorrector::clsPersianSpellCorrector()
 {
@@ -44,13 +44,13 @@ clsPersianSpellCorrector::clsPersianSpellCorrector()
     this->ConfigTypes.append(stuConfigType("VerbStemPast",&this->VerbStemPast));
     this->ConfigTypes.append(stuConfigType("HamzeOrMadAllowed",&this->HamzeAllowed));
 
-    this->RxInteractiveChars    = QRegExp(QString::fromUtf8("[ؤئإأآ]"));
-    this->RxPresentImperfect    = QRegExp(QString::fromUtf8("(م|ی|د|یم|ید|ند)$"));
-    this->RxPastImperfect       = QRegExp(QString::fromUtf8("(م|ی|یم|ید|ند)$"));
-    this->RxVerbPerfect         = QRegExp(QString::fromUtf8("(ام|ای|است|ایم|اید|اند)$"));
-    this->RxHa                  = QRegExp(QString::fromUtf8("ها(یی?|یم|یت|یش|یمان|یتان|یشان)?$"));
-    this->RxAn                  = QRegExp(QString::fromUtf8("ی?ان(ی|م|ت|ش|مان|تان|شان)?$"));
-    this->RxPossesive           = QRegExp(QString::fromUtf8("[ای]?(م|ت|ش|مان|تان|شان)$"));
+    this->RxInteractiveChars    = QRegExp(QStringLiteral("[ؤئإأآ]"));
+    this->RxPresentImperfect    = QRegExp(QStringLiteral("(م|ی|د|یم|ید|ند)$"));
+    this->RxPastImperfect       = QRegExp(QStringLiteral("(م|ی|یم|ید|ند)$"));
+    this->RxVerbPerfect         = QRegExp(QStringLiteral("(ام|ای|است|ایم|اید|اند)$"));
+    this->RxHa                  = QRegExp(QStringLiteral("ها(یی?|یم|یت|یش|یمان|یتان|یشان)?$"));
+    this->RxAn                  = QRegExp(QStringLiteral("ی?ان(ی|م|ت|ش|مان|تان|شان)?$"));
+    this->RxPossesive           = QRegExp(QStringLiteral("[ای]?(م|ت|ش|مان|تان|شان)$"));
     this->RxEndWithHa           = QRegExp(".*" + this->RxHa.pattern());
     this->RxEndWithAn           = QRegExp(".*" + this->RxAn.pattern());
     this->RxEndPresentImperfect = QRegExp(".*" + this->RxPresentImperfect.pattern());

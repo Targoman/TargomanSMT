@@ -29,7 +29,7 @@ IXMLWriter::IXMLWriter() :
     // Email detection
     this->RxEmail = QRegExp("([A-Za-z0-9._%+-][A-Za-z0-9._%+-]*@[A-Za-z0-9.-][A-Za-z0-9.-]*\\.[A-Za-z]{2,4})");
 
-    this->RxURL = QRegExp(QString::fromUtf8("(?:(?:https?|ftp)://)?"
+    this->RxURL = QRegExp(QStringLiteral("(?:(?:https?|ftp)://)?"
                                             "(?:(?!10(?:\\.\\d{1,3}){3})"
                                             //      "(?!127(?:\\.\\d{1,3}){3})"
                                             //      "(?!169\\.254(?:\\.\\d{1,3}){2})"
@@ -49,16 +49,16 @@ IXMLWriter::IXMLWriter() :
         this->RxAbbr = QRegExp("\\b([A-Z]\\.(?:[A-Z\\d]\\.)(?:[A-Z\\d]\\.)*)(?=[^\\w]|$)");
         this->RxAbbrDotless = QRegExp("\\b([A-Z]\\.[A-Z\\d](?:\\.[A-Z\\d])*)\\b");
 
-        this->RxMultiDots = QRegExp(QString::fromUtf8("(\\.\\.(\\.)*)"));
+        this->RxMultiDots = QRegExp(QStringLiteral("(\\.\\.(\\.)*)"));
     }
 
     // suffixes
-    this->RxSuffix = QRegExp(QString::fromUtf8("((?:'(?:%1))\\b)").arg(TGMN_SUFFIXES));
+    this->RxSuffix = QRegExp(QStringLiteral("((?:'(?:%1))\\b)").arg(TGMN_SUFFIXES));
 
     // Dates
-    this->RxDate = QRegExp(QString::fromUtf8("^$"));
+    this->RxDate = QRegExp(QStringLiteral("^$"));
     // Times
-    this->RxTime = QRegExp(QString::fromUtf8("^$"));
+    this->RxTime = QRegExp(QStringLiteral("^$"));
     // Numbers
     this->RxDashSeparator = QRegExp("(\\w)\\-(\\w)");
     this->RxUnderlineSeparator = QRegExp("(\\w)\\_(\\w)");
@@ -66,12 +66,12 @@ IXMLWriter::IXMLWriter() :
 
     //((?:(?:(?:\\b)(:num:))|(?:(?::num:)(?:\\b)))(?=([^\\.\\d]|\\.(?:[^\\d]|$))))
     this->RxNumberLeft = QRegExp("((?:(?:\\b)(" +
-                                 QString::fromUtf8("[\\+\\-]?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
+                                 QStringLiteral("[\\+\\-]?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
                                                    "[\\+\\-]?[0-9][0-9]*(?:\\.[0-9][0-9]*)?") +
                                  "))(?=([^\\.\\d]|\\.(?:[^\\d]|$))))");
 
     this->RxNumberRight = QRegExp("(?:([^a-zA-Z0-9])(" +
-                                  QString::fromUtf8("(?:[\\+\\-])?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
+                                  QStringLiteral("(?:[\\+\\-])?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
                                                     "(?:[\\+\\-])?[0-9][0-9]*(?:\\.[0-9][0-9]*)?") +
                                   +")(?:\\b))(?=([^\\.\\d]|\\.(?:[^\\d]|$)))");
 
@@ -79,7 +79,7 @@ IXMLWriter::IXMLWriter() :
             QRegExp("^[\\+\\-]?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
                     "[\\+\\-]?[0-9][0-9]*(?:\\.[0-9][0-9]*)?$");
 
-    this->RxNumbering = QRegExp(QString::fromUtf8("^((?:\\s)*(?:[\"'\\(\\[`])?(?:\\s)*"
+    this->RxNumbering = QRegExp(QStringLiteral("^((?:\\s)*(?:[\"'\\(\\[`])?(?:\\s)*"
                                                   "(?:(?:\\d+)|"
                                                   "(?:M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3}))|"
                                                   "(?:الف|[a-zA-Z]|[ابپتثجچهخدذرزژسشصضطظعغفقکگلمنوهی])"
@@ -93,15 +93,15 @@ IXMLWriter::IXMLWriter() :
                                                   ")"));
 
     this->RxOrdinalNumber = QRegExp("((?:\\b)(?:1st|2nd|3rd|\\d+th)(?:\\b))");
-    this->RxPersianLatin = QRegExp(QString::fromUtf8("([\u0600-\u06ff])(\\d+)?([a-zA-Z])"));
-    this->RxLatinPersian = QRegExp(QString::fromUtf8("([a-zA-Z])(\\d+)?([\u0600-\u06ff])"));
-    this->RxPersianNumber = QRegExp(QString::fromUtf8("([\u0600-\u06ff])(\\d+)"));
+    this->RxPersianLatin = QRegExp(QStringLiteral("([\u0600-\u06ff])(\\d+)?([a-zA-Z])"));
+    this->RxLatinPersian = QRegExp(QStringLiteral("([a-zA-Z])(\\d+)?([\u0600-\u06ff])"));
+    this->RxPersianNumber = QRegExp(QStringLiteral("([\u0600-\u06ff])(\\d+)"));
 }
 
 void IXMLWriter::init(const QString &_configFile)
 {
     QString AbbreviationDetectionRegex =
-            QString::fromUtf8("\\b(Mr\\.");
+            QStringLiteral("\\b(Mr\\.");
 
     QFile AbbrF(_configFile);
     AbbrF.open(QIODevice::ReadOnly);

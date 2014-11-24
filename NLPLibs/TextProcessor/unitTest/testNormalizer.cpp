@@ -16,8 +16,8 @@
 using namespace Targoman::NLPLibs;
 
 #define VERIFY_NORMALIZE(_lang, _check, _desired) \
-    Targoman::NLPLibs::TextProcessor::instance().normalizeText(QString::fromUtf8(_check), false, _lang) == \
-        QString::fromUtf8(_desired)
+    Targoman::NLPLibs::TextProcessor::instance().normalizeText(QStringLiteral(_check), false, _lang) == \
+        QStringLiteral(_desired)
 
 void UnitTest::normalizeText()
 {

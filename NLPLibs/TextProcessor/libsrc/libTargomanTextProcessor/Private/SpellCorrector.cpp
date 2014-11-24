@@ -42,13 +42,13 @@ void SpellCorrector::init(const QString& _baseConfigPath, const QHash<QString, Q
             SpellCorrector->init(_baseConfigPath, _settings.value(Lang));
         }else{
             TargomanLogWarn(5, QString("Spell Corrector for %1(%2) is not available").arg(
-                                Lang).arg(ISO639getName(Lang.toAscii().constData())));
+                                Lang).arg(ISO639getName(Lang.toLatin1().constData())));
         }
     }
 
     QString LangCode;
     foreach (const QString Lang, this->Processors.keys()){
-        LangCode = ISO639getAlpha2(Lang.toAscii().constData());
+        LangCode = ISO639getAlpha2(Lang.toLatin1().constData());
         if (this->Processors[Lang] && this->Processors[Lang]->active() == false){
             delete this->Processors[Lang];
             this->Processors[Lang] = NULL;
