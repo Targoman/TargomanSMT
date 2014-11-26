@@ -27,16 +27,19 @@ int main(int argc, char *argv[])
 {
     clsLanguageModel LM;
     try {
+        Targoman::Common::TARGOMAN_IO_SETTINGS.Info.setLevel(5);
         qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "./test.arpa");
         clsLMSentenceScorer SS(LM);
         QString Sentence =
-                QStringLiteral("ارتباط او با سپاه پاسداران انقلاب اسلامی او را در مرکز زنجیرهای از ترور و جنایت قرار داده که دنیا را در برگرفته است .");
+                QStringLiteral("ارتباط او با سپاه پاسسسداران انقلالللب اسلاملللللی اووووو را در مرکز زنجیققرهای از ترور و جنایت قرار داده که دنیا را در برگرفته است .");
 
         quint8 Gram;
         foreach (const QString& Word, Sentence.split(" ")){
             Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
             qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
         }
+        while(1);
+
         return 0;
         std::ifstream File;
         File.open("./test");

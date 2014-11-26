@@ -18,16 +18,14 @@ HEADERS += \
     libLanguageModel/Private/clsLMSentenceScorer_p.h \
     libLanguageModel/Private/clsProbingModel.h \
     libLanguageModel/Private/clsBaseModel.hpp \
-    libLanguageModel/Private/WeightStructs.hpp \
-    libLanguageModel/Private/NGram.h
+    libLanguageModel/Private/WeightStructs.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
     libLanguageModel/clsLanguageModel.cpp \
     libLanguageModel/Private/ARPAManager.cpp \
     libLanguageModel/clsLMSentenceScorer.cpp \
-    libLanguageModel/Private/clsProbingModel.cpp \
-    libLanguageModel/Private/NGram.cpp
+    libLanguageModel/Private/clsProbingModel.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

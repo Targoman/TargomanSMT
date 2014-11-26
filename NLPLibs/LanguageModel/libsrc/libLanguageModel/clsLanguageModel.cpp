@@ -41,9 +41,8 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
     if (this->pPrivate->isBinary(_filePath)){
 
     }else{
-        this->pPrivate->Model = new clsProbingModel(/*new clsVocab()*/);
+        this->pPrivate->Model = new clsProbingModel();
         this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model);
-//@TODO check if Unknown is not set
         this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob, _configs.UnknownWordDefault.Backoff);
     }
     return this->pPrivate->Order;
@@ -60,15 +59,10 @@ quint8 clsLanguageModel::order() const
     return this->pPrivate->Order;
 }
 
-/*WordIndex_t clsLanguageModel::getIndex(const QString &_word) const
+WordIndex_t clsLanguageModel::getID(const QString &_word) const
 {
-    return this->pPrivate->Model->vocab().getIndex(_word);
-}*/
-WordIndex_t clsLanguageModel::getIndex(const char* _word) const
-{
-    //return this->pPrivate->Model->vocab().getIndex(_word);
+    return this->pPrivate->Model->getID(_word.toUtf8().constData());
 }
-
 
 LogP_t clsLanguageModel::lookupNGram(const QStringList & _ngram, quint8& _foundedGram) const
 {

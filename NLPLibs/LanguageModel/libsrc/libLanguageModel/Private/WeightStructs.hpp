@@ -22,11 +22,13 @@ struct stuProb {
 };
 
 struct stuProbAndBackoffWeights {
+  quint64 ID;
   float Prob;
   float Backoff;
-  inline stuProbAndBackoffWeights(float _prob = 0, float _backoff = 0){
+  inline stuProbAndBackoffWeights(quint64 _id = 0, float _prob = 0, float _backoff = 0){
       this->Prob = _prob;
       this->Backoff = _backoff;
+      this->ID = _id;
   }
 };
 

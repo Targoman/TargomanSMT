@@ -13,15 +13,16 @@ Dependencies +=
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 CONFIG(debug, debug|release): DEFINES += TARGOMAN_SHOW_DEBUG=1
+CONFIG(release){
+    QMAKE_CXXFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS_RELEASE += -O3
+}
+
 DEFINES += TARGOMAN_DEBUG_PROCESS_LINE=1
 DEFINES += TARGOMAN_SHOW_WARNING=1
 DEFINES += TARGOMAN_SHOW_INFO=1
 DEFINES += TARGOMAN_SHOW_HAPPY=1
 DEFINES += TARGOMAN_SHOW_NORMAL=1
-
-DEFINES+=LM_USE_MURMUR_HASH
-DEFINES+=LM_USE_GOOGLE_SPARSE_HASH
-
 
 DEFINES += PROJ_VERSION=$$VERSION
 
@@ -50,6 +51,7 @@ message("****************************************************************** ")
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 QT += core
+QT -= gui
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 LibFolderPattern        = ./lib
@@ -123,7 +125,5 @@ defineTest(addSubdirs) {
     export (SUBDIRS)
 }
 
-HEADERS +=
-
-SOURCES +=
+QMAKE_CXXFLAGS += -std=c++11
 

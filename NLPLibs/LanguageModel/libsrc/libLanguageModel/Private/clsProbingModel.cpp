@@ -12,50 +12,55 @@
  */
 
 #include "libTargomanCommon/Constants.h"
+#include "libTargomanCommon/HashFunctions.h"
 #include "clsProbingModel.h"
 #include "../Definitions.h"
 
 using namespace Targoman::Common;
+
 namespace Targoman {
 namespace NLPLibs {
 namespace Private {
+const quint8 MAX_HASH_LEVEL = 32;
+typedef quint64 Hash_t;
 
-clsProbingModel::clsProbingModel(/*clsVocab *_vocab*/) : clsBaseModel(enuMemoryModel::Probing/*, _vocab*/)
+clsProbingModel::clsProbingModel() : clsBaseModel(enuMemoryModel::Probing)
 {
     this->SumLevels = 0;
 }
 
 void clsProbingModel::setUnknownWordDefaults(LogP_t _prob, LogP_t _backoff)
 {
-    /*NGram_t NGram;
-    NGram.append(LM_UNKNOWN_WINDEX);
-    this->insert(NGram, _prob, _backoff);*/
+    if (this->lookupNGram(LM_UNKNOWN_WORD).Prob == 0){
+        this->insert(LM_UNKNOWN_WORD, _prob, _backoff);
+    }
 }
 
 void clsProbingModel::insert(const char* _ngram, LogP_t _prob, LogP_t _backoff)
 {
     Hash_t HashLoc, HashValue;
     size_t NGramLen = strlen(_ngram);
-    HashLoc = (TargomanHasher::hashVal(_ngram, NGramLen, 0) % this->HashTableSize) + 1;;
-    for (quint8 HashLevel = 0; HashLevel< 16; ++HashLevel)
+    HashLoc = (HashFunctions::murmurHash64(_ngram, NGramLen, 0) % this->HashTableSize) + 1;;
+    for (quint8 HashLevel = 0; HashLevel< MAX_HASH_LEVEL; ++HashLevel)
     {
-        HashValue = TargomanHasher::hashVal(_ngram, NGramLen, HashLevel) ;
+        HashValue = HashFunctions::murmurHash64(_ngram, NGramLen, HashLevel) ;
 
         if (this->NGramHashTable[HashLoc].HashValueLevel){
-            if (this->NGramHashTable[HashLoc].hashValue() == HashValue & 0xFFFFFFFFFFFFFFE0LL &&
+            if (this->NGramHashTable[HashLoc].hashValue() == (HashValue & 0xFFFFFFFFFFFFFFC0LL) &&
                 this->NGramHashTable[HashLoc].hashLevel() == HashLevel)
-                throw exNgramManager(QString("Fatal Collision found on: %1 vs %5 (%2, %3, %4)").arg(
+                throw exLanguageModel(QString("Fatal Collision found on: %1 vs %5 (%2, %3, %4)").arg(
                                          _ngram).arg(
                                          HashLoc).arg(
                                          this->NGramHashTable[HashLoc].hashValue()).arg(
                                          HashLevel).arg(
-                                         this->NGramHashTable[HashLoc].Original.c_str()));
+                                         this->NGramHashTable[HashLoc].Original->c_str()));
             this->NGramHashTable[HashLoc].setContinues();
         }else{
-            this->NGramHashTable[HashLoc].HashValueLevel = (HashValue & 0xFFFFFFFFFFFFFFE0LL) + HashLevel;
-            this->NGramHashTable[HashLoc].Prob = _prob;
-            this->NGramHashTable[HashLoc].Backoff = _backoff;
-          //  this->NGramHashTable[HashLoc].Original = _ngram;
+            this->NGramHashTable[HashLoc].HashValueLevel = (HashValue & 0xFFFFFFFFFFFFFFC0LL) + HashLevel;
+            this->NGramHashTable[HashLoc].Prob      = _prob;
+            this->NGramHashTable[HashLoc].Backoff   = _backoff;
+//            this->NGramHashTable[HashLoc].Original  = new std::string;
+//            *this->NGramHashTable[HashLoc].Original = _ngram;
 
             this->MaxLevel = qMax(this->MaxLevel, ++HashLevel);
             this->SumLevels += HashLevel;
@@ -65,15 +70,16 @@ void clsProbingModel::insert(const char* _ngram, LogP_t _prob, LogP_t _backoff)
         HashLoc = (HashValue % this->HashTableSize) + 1;
     }
 
-    this->RemainingHashes.insert(_ngram, stuProbAndBackoffWeights(_prob,_backoff));
+    this->RemainingHashes.insert(_ngram,
+                                 stuProbAndBackoffWeights(this->RemainingHashes.size() + this->HashTableSize, _prob,_backoff));
 }
 
-void clsProbingModel::initHashTable(quint32 _maxNGramCount)
+void clsProbingModel::init(quint32 _maxNGramCount)
 {
     this->HashTableSize = 0;
-    for (int i =0; i< sizeof(PrimeNumbers)/sizeof(quint32) - 1; i++)
-        if (_maxNGramCount < PrimeNumbers[i]){
-            this->HashTableSize = PrimeNumbers[i+1];
+    for (size_t i =0; i< sizeof(TargomanGoodHashTableSizes)/sizeof(quint32) - 1; i++)
+        if (_maxNGramCount < TargomanGoodHashTableSizes[i]){
+            this->HashTableSize = TargomanGoodHashTableSizes[i+1];
             break;
         }
 
@@ -100,9 +106,10 @@ LogP_t clsProbingModel::lookupNGram(const QStringList& _ngram, quint8& _foundedG
 
     while (true){
         PB = this->lookupNGram(NGram.toUtf8().constData());
-        if (PB.Prob  != 0){
+        if (PB.ID != 0){
             Prob = PB.Prob;
             Backoff = Constants::LogP_One;
+            _foundedGram = CurrGram+1;
         }
 
         if (++CurrGram >= _ngram.size()){
@@ -111,11 +118,10 @@ LogP_t clsProbingModel::lookupNGram(const QStringList& _ngram, quint8& _foundedG
         NGram = ((QStringList)_ngram.mid(_ngram.size() - CurrGram - 1)).join(" ");
         NGram2 = ((QStringList)_ngram.mid(_ngram.size() - CurrGram - 1, CurrGram)).join(" ");
         PB = this->lookupNGram(NGram2.toUtf8().constData());
-        if (PB.Prob != 0){
+        if (PB.ID != 0){
             Backoff += PB.Backoff;
         }
     }
-    _foundedGram = CurrGram - 1;
     return Prob + Backoff;
 }
 
@@ -124,15 +130,16 @@ stuProbAndBackoffWeights clsProbingModel::lookupNGram(const char *_ngram) const
     Hash_t HashLoc, HashValue;
     size_t NGramLen = strlen(_ngram);
 
-    HashLoc = (TargomanHasher::hashVal(_ngram, NGramLen, 0) % this->HashTableSize) + 1;;
+    HashLoc = (HashFunctions::murmurHash64(_ngram, NGramLen, 0) % this->HashTableSize) + 1;;
 
-    for (quint8 HashLevel = 0; HashLevel< 16; HashLevel++)
+    for (quint8 HashLevel = 0; HashLevel< MAX_HASH_LEVEL; HashLevel++)
     {
-        HashValue = TargomanHasher::hashVal(_ngram, NGramLen, HashLevel);
+        HashValue = HashFunctions::murmurHash64(_ngram, NGramLen, HashLevel);
 
-        if (this->NGramHashTable[HashLoc].hashValue() == HashValue & 0xFFFFFFFFFFFFFFE0LL &&
+        if (this->NGramHashTable[HashLoc].hashValue() == (HashValue & 0xFFFFFFFFFFFFFFC0LL) &&
             this->NGramHashTable[HashLoc].hashLevel() == HashLevel)
             return stuProbAndBackoffWeights(
+                        HashLoc,
                         this->NGramHashTable[HashLoc].Prob,
                         this->NGramHashTable[HashLoc].Backoff);
         else if (!this->NGramHashTable[HashLoc].continues())

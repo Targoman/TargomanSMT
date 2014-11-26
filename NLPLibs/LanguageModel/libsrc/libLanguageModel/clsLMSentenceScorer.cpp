@@ -44,25 +44,12 @@ LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
             this->pPrivate->History.removeFirst();
         }
 
-        this->pPrivate->History.append(_word);
+        if (this->pPrivate->LM.getID(_word) == 0)
+            this->pPrivate->History.append(LM_UNKNOWN_WORD);
+        else
+            this->pPrivate->History.append(_word);
 
         return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);
-
-    //return this->wordProb(this->pPrivate->LM.getIndex(_word.toUtf8().constData()), _foundedGram);
-}
-
-LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t& _wordIndex, quint8& _foundedGram)
-{
-/*    if (Q_UNLIKELY(this->pPrivate->History.isEmpty())){
-            this->pPrivate->History.append(LM_BEGIN_SENTENCE_WINDEX);
-    }else if (Q_LIKELY(this->pPrivate->History.size() >= this->pPrivate->LM.order())){
-        this->pPrivate->History.removeFirst();
-    }
-
-    this->pPrivate->History.append(_wordIndex);
-
-    return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);*/
-    return 0;
 }
 
 }

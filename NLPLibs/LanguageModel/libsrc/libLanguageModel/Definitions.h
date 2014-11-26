@@ -47,19 +47,6 @@ extern const char* LM_UNKNOWN_WORD;
 extern const char* LM_BEGIN_SENTENCE;
 extern const char* LM_END_SENTENCE;
 
-//Fast access to special predefined words indexes
-extern Targoman::Common::WordIndex_t LM_UNKNOWN_WINDEX;
-extern Targoman::Common::WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
-extern Targoman::Common::WordIndex_t LM_END_SENTENCE_WINDEX;
-
-static void dummy(){
-    //Dummy method to supress Compiler warning
-    Q_UNUSED(dummy);
-    Q_UNUSED(LM_UNKNOWN_WINDEX);
-    Q_UNUSED(LM_BEGIN_SENTENCE_WINDEX);
-    Q_UNUSED(LM_END_SENTENCE_WINDEX);
-}
-
 //This constant is used to quickly check whether input file is valid ARPA plain text file or not.
 //Total lenght of an ARPA must be less than indicated number
 const quint16   LM_MAX_VALID_ARPA_LINE = 1000;

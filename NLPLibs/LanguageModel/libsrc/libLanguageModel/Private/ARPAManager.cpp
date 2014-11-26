@@ -61,7 +61,8 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
     enuParseState::Type ParseState = enuParseState::Looking4Start;
     QVector<quint32> NGramCounts;
     size_t Dummy;
-    size_t Pos,SpacePos;
+    size_t Pos;
+
     const char* StartOfNGram, *EndOfNGram, *StartOfBackoff;
     Targoman::Common::clsCmdProgressBar ProgressBar;
 
@@ -118,9 +119,9 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                                                 i).arg(MaxGram));
                     MaxItems += NGramCounts.value(i);
                 }
-                _model->initHashTable(MaxItems);
+                _model->init(MaxItems);
 
-                ProgressBar.reset("Loading 1 Gram Items",NGramCounts.value(1));
+                ProgressBar.reset("Loading 1-Gram Items",NGramCounts.value(1));
                 ParseState = enuParseState::NGram;
                 Count = 0;
             }else
@@ -139,13 +140,12 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                     if (!IsOK || NGramOrder < 2)
                         throw exARPAManager(QString("Invalid ARPA file as invalid gram section is found at line: %1").arg(LineNo));
                     Count = 0;
-                    ProgressBar.reset(QString("Loading %1 Gram Items").arg(NGramOrder),NGramCounts.value(NGramOrder));
+                    ProgressBar.reset(QString("Loading %1-Gram Items").arg(NGramOrder),NGramCounts.value(NGramOrder));
                 }else if (Line == "\\end\\"){
                     if (Count < NGramCounts.value(NGramOrder))
                         throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
                                                 NGramOrder).arg(NGramCounts.value(NGramOrder)));
-                    TargomanLogInfo(5, "ARPA File Loaded");
-                    _model->printStats();
+                    TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
 
                     return MaxGram;
                 }else
@@ -155,6 +155,8 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                     throw exARPAManager(QString("There are more Items specified for Ngram=%1 than specified: %2 vs %3").arg(
                                             NGramOrder).arg(Count).arg(NGramCounts.value(NGramOrder)));
                 Prob = Targoman::Common::fastASCII2Float(LineString.c_str(), Pos);
+                if (Prob > 0)
+                    throw exARPAManager(QString("Invalid positive probaility at line : %1").arg(LineNo));
 
                 EndOfNGram = LineString.c_str() + Pos;
                 Targoman::Common::fastSkip2NonSpace(EndOfNGram);
@@ -173,7 +175,7 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
                 }
                 *((char*)EndOfNGram) = '\0';
 
-                if (EndOfNGram - LineString.c_str() < LineString.size()){
+                if (EndOfNGram - LineString.c_str() < (qint64)LineString.size()){
                     StartOfBackoff = EndOfNGram+1;
                     Targoman::Common::fastSkip2NonSpace(StartOfBackoff);
                     Backoff = Targoman::Common::fastASCII2Float(StartOfBackoff, Dummy);
@@ -190,7 +192,7 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
             break;
         }
     }
-    TargomanLogInfo(5, "ARPA File Loaded");
+    TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
 
     return MaxGram;
 }
