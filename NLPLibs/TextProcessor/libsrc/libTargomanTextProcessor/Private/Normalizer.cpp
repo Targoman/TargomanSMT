@@ -104,6 +104,7 @@ QString Normalizer::normalize(const QChar &_char,
     ////                        Using Binary Table                           ///
     ////////////////////////////////////////////////////////////////////////////
     if (this->BinaryMode){
+        Q_ASSERT_X(this->BinTable.size(), "Initialized", "Seems that normalizer is not initialized");
         QString Normalized;
         if (Char == ARABIC_ZWNJ ||
             Char == QChar(0x202c) ||
@@ -126,7 +127,6 @@ QString Normalizer::normalize(const QChar &_char,
             }else{
                 Normalized  = this->normalize(Normalized.at(0),
                                        _nextChar, true, _line, _phrase, _charPos, true);
-                uint unicode = Normalized.at(0).unicode();
 
                 return Normalized;
             }

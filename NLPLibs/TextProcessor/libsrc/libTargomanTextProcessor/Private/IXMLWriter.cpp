@@ -24,7 +24,7 @@ IXMLWriter* IXMLWriter::Instance = NULL;
 
 IXMLWriter::IXMLWriter() :
     NormalizerInstance(Normalizer::instance()),
-    SpellCorrectorInstance(this->SpellCorrectorInstance)
+    SpellCorrectorInstance(SpellCorrector::instance())
 {
     // Email detection
     this->RxEmail = QRegExp("([A-Za-z0-9._%+-][A-Za-z0-9._%+-]*@[A-Za-z0-9.-][A-Za-z0-9.-]*\\.[A-Za-z]{2,4})");
@@ -162,11 +162,11 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     QStringList LstOrderedItem;
     QStringList LstSymbols;
 
-    TargomanDebug(7,"[NRM] "<<OutputPhrase);
+    TargomanDebug(7,"[NRM] |"<<OutputPhrase<<"|");
     OutputPhrase.replace("&amp;", " & ").replace("&gt;", " > ").replace("&lt;", " < ");
-    TargomanDebug(7,"[NR2] "<<OutputPhrase);
+    TargomanDebug(7,"[NR2] |"<<OutputPhrase<<"|");
     OutputPhrase.replace(this->RxNumbering, "\\1 ");
-    TargomanDebug(7,"[OLI] "<<OutputPhrase);
+    TargomanDebug(7,"[OLI] |"<<OutputPhrase<<"|");
     QStringList PhraseTokens = OutputPhrase.split(" ", QString::SkipEmptyParts);
     if (PhraseTokens.size() && this->RxNumbering.exactMatch(PhraseTokens.first())){
         if (this->RxNumberValidator.exactMatch(PhraseTokens.first())){
@@ -185,11 +185,11 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
         OutputPhrase = PhraseTokens.join(" ");
     }
     OutputPhrase.replace(this->RxPersianNumber, "\\1 \\2");
-    TargomanDebug(7,"[P2N] "<<OutputPhrase);
+    TargomanDebug(7,"[P2N] |"<<OutputPhrase<<"|");
     OutputPhrase.replace(this->RxPersianLatin, "\\1 \\2 \\3");
-    TargomanDebug(7,"[P2L] "<<OutputPhrase);
+    TargomanDebug(7,"[P2L] |"<<OutputPhrase<<"|");
     OutputPhrase.replace(this->RxLatinPersian, "\\1\\2  \\3");
-    TargomanDebug(7,"[L2P] "<<OutputPhrase);
+    TargomanDebug(7,"[L2P] |"<<OutputPhrase<<"|");
 
     OutputPhrase = this->markByRegex(OutputPhrase, this->RxEmail, "EML", &LstEmail);
     OutputPhrase = this->markByRegex(OutputPhrase, this->RxAbbr, "ABR", &LstAbbr[1]);
@@ -202,16 +202,16 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     OutputPhrase = this->markByRegex(OutputPhrase, this->RxOrdinalNumber, "ORD", &LstOrdinal);
     OutputPhrase = this->markByRegex(OutputPhrase, this->RxSpecialNumber, "SNM", &LstSpecialNumber);
     OutputPhrase.replace(this->RxDashSeparator, "\\1 - \\2");
-    TargomanDebug(7,"[DSH] "<<OutputPhrase);
+    TargomanDebug(7,"[DSH] |"<<OutputPhrase<<"|");
     OutputPhrase.replace(this->RxUnderlineSeparator, "\\1 _ \\2");
-    TargomanDebug(7,"[UND] "<<OutputPhrase);
+    TargomanDebug(7,"[UND] |"<<OutputPhrase<<"|");
     OutputPhrase = this->markByRegex(OutputPhrase, this->RxNumberRight,"NUR", &LstNumberRight, 2);
     OutputPhrase = this->markByRegex(OutputPhrase, this->RxNumberLeft, "NUL", &LstNumberLeft);
     OutputPhrase = this->markByRegex(OutputPhrase, this->RxSuffix, "SFX", &LstSuffixes);
 
     InputPhrase = OutputPhrase;
     OutputPhrase.clear();
-    foreach (const QChar& Char, _inStr){
+    foreach (const QChar& Char, InputPhrase){
         if (Char.isLetterOrNumber() == false){
             OutputPhrase.append(' ');
             OutputPhrase.append(Char);
@@ -221,7 +221,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
             OutputPhrase.append(Char);
     }
 
-    QStringList Tokens = InputPhrase.split(" ",QString::SkipEmptyParts);
+    QStringList Tokens = OutputPhrase.split(" ",QString::SkipEmptyParts);
     for (int i=0; i<Tokens.size(); i++) {
         bool IsSymbol = true;
         foreach (const QChar& Ch, Tokens[i])
@@ -237,7 +237,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
         }
     }
 
-    TargomanDebug(7,"[TKN] "<<OutputPhrase);
+    TargomanDebug(7,"[TKN] |"<<OutputPhrase<<"|");
 
     if (_useSpellCorrector)
         OutputPhrase = this->SpellCorrectorInstance.process(_lang, OutputPhrase, _interactive);
@@ -285,9 +285,9 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
             OutputPhrase.append(Token);
         OutputPhrase.append(" ");
     }
-    OutputPhrase.truncate(OutputPhrase.size() - 2);
+    OutputPhrase.truncate(OutputPhrase.size() - 1);
     OutputPhrase = this->NormalizerInstance.fullTrim(OutputPhrase.replace("  "," ").replace("  "," "));
-    TargomanDebug(7,"[ALL-TAGS] "<<OutputPhrase);
+    TargomanDebug(7,"[ALL-TAGS] |"<<OutputPhrase<<"|");
 
     return OutputPhrase;
 }
@@ -312,7 +312,7 @@ QString IXMLWriter::markByRegex(const QString &_phrase,
     }
     OutputPhrase += _phrase.mid(Start);
 
-    TargomanDebug(7,"["<<_mark<<"] "<<OutputPhrase);
+    TargomanDebug(7,"["<<_mark<<"] |"<<OutputPhrase<<"|");
     return OutputPhrase;
 }
 

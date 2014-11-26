@@ -49,16 +49,15 @@ void SpellCorrector::init(const QString& _baseConfigPath, const QHash<QString, Q
     QString LangCode;
     foreach (const QString Lang, this->Processors.keys()){
         LangCode = ISO639getAlpha2(Lang.toLatin1().constData());
-        if (this->Processors[Lang] && this->Processors[Lang]->active() == false){
-            delete this->Processors[Lang];
-            this->Processors[Lang] = NULL;
+        if (this->Processors.value(Lang, NULL) && this->Processors.value(Lang)->active() == false){
+            delete this->Processors.take(Lang);
         }
     }
 }
 
 QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, bool _interactive)
 {
-    intfSpellCorrector* Processor = this->Processors[_lang];
+    intfSpellCorrector* Processor = this->Processors.value(_lang, NULL);
     if (!Processor)
         return _inputStr;
 

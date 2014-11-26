@@ -13,7 +13,7 @@
 #include "UnitTest.h"
 
 #define VERIFY_TXT2IXML(_lang, _check, _desired) \
-    Targoman::NLPLibs::TextProcessor::instance().text2IXML(QStringLiteral(_check), _lang, 0, true, true) == \
+    Targoman::NLPLibs::TextProcessor::instance().text2IXML(QStringLiteral(_check), _lang, 0, false) == \
         QStringLiteral(_desired)
 
 void UnitTest::text2IXML()

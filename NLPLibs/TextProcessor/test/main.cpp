@@ -39,28 +39,29 @@ int main(int _argc, char *_argv[])
         TARGOMAN_REGISTER_ACTOR("testLibCommon");
         Targoman::Common::Logger::instance().init("log.log");
 
-/*        QRegExp RxHa                  = QRegExp(QStringLiteral("ها(ی|یم|یت|یش|یمان|یتان|یشان)?"));
-        QRegExp RxEndWithHa           = QRegExp(".*" + RxHa.pattern() + "$");
+        //Change below in order to silent
+        Targoman::Common::TARGOMAN_IO_SETTINGS.Debug.setLevel(8);
+        Targoman::Common::TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
 
-        TargomanDebug(1,"\n"<<RxHa.pattern()<<"\n"<<RxEndWithHa.pattern());
-        QString Str = QStringLiteral("ها");
-        TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
-        Str = QStringLiteral("های");
-        TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
-        Str = QStringLiteral("پاهایشان");
-        TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
-        Str = QStringLiteral("هان");
-        TargomanDebug(1,"\n"<<Str<<" "<<RxEndWithHa.exactMatch(Str));
-        exit(1);
-*/
-        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin", true);
+        Targoman::NLPLibs::TextProcessor::stuConfigs Configs;
+        Configs.NormalizationFile = "../conf/Normalization.conf";
+        Configs.AbbreviationsFile = "../conf/Normalization.conf";
+        Configs.SpellCorrectorBaseConfigPath = "../conf/SpellCorrectors";
+        QVariantHash PersianSpellCorrector;
+        PersianSpellCorrector.insert("Active", true);
+        Configs.SpellCorrectorLanguageBasedConfigs.insert("fa", PersianSpellCorrector);
+        Targoman::NLPLibs::TextProcessor::instance().init(Configs);
 
-         QHash<QString, QVariantHash> SpellConfig;
-         QVariantHash PersianSpellCorrector;
-         //PersianSpellCorrector.insert("Active", false);
-         SpellConfig.insert("fa", PersianSpellCorrector);
-         Targoman::NLPLibs::Private::SpellCorrector::instance().init("../conf/SpellCorrectors/",SpellConfig);
 
+
+//        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin", true);
+
+      //  qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+      //              QStringLiteral("من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند"), false, "fa");
+        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
+                    QStringLiteral("a -12asd"), "en", 0, true, true);
+
+        while(1);
 
         QFile SampleFile("/tmp/persian.txt");
         QTextStream Stream(&SampleFile);
@@ -77,7 +78,7 @@ int main(int _argc, char *_argv[])
             QString Line = Stream.readLine();
             TargomanDebug(1, "[ORG]\n"<<Line);
             Line = Targoman::NLPLibs::Private::Normalizer::instance().normalize(Line);
-           // TargomanDebug(1, "[NRM]\n"<<Line);
+            TargomanDebug(1, "[NRM]\n"<<Line);
             Line = Targoman::NLPLibs::Private::SpellCorrector::instance().process("fa",Line,false);
             TargomanDebug(1, "[FNL]\n"<<Line);
         }
@@ -112,6 +113,7 @@ int main(int _argc, char *_argv[])
                                  "INTACT" :
                                  QString("{%1}").arg(Normalized))).toUtf8().constData()<<std::endl;
         }/**/
+        while(1);
     }catch(Targoman::Common::exTargomanBase &e){
         qDebug()<<e.what();
     }
