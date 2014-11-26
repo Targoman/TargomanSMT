@@ -32,7 +32,7 @@ clsCmdProgressBar::clsCmdProgressBar(const QString &_message, quint32 _maximum)
 
 void clsCmdProgressBar::setValue(quint32 _value)
 {
-    if (TARGOMAN_IO_SETTINGS.Info.canBeShown(3) == false)
+    if (TARGOMAN_IO_SETTINGS.Info.canBeShown(6) == false)
         return;
 
     if (this->Reseted){

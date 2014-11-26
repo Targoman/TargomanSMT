@@ -19,7 +19,8 @@
 namespace Targoman {
 namespace Common {
 
-static const int TargomanHashKeys[]={29,71,113,173,229,31,73,127,179,37,79,131,181,41,83,137};
+static const int TargomanHashKeys[]={29,71,113,173,229,31,73,127,179,37,79,131,181,41,
+                                     83,137,53,11,13,17,19,107,521,607,1279,2203,2281,3217};
 static const int TargomanHashKeysCount = sizeof(TargomanHashKeys) / sizeof(int);
 /*http://planetmath.org/goodhashtableprimes*/
 static const quint32 TargomanGoodHashTableSizes[]={
@@ -42,7 +43,9 @@ static const quint32 TargomanGoodHashTableSizes[]={
     3145739,
     6291469,
     12582917,
+    20996011,
     25165843,
+    30402457,
     50331653,
     100663319,
     201326611,
@@ -56,7 +59,7 @@ public:
         const quint64 Constant1 = 0xc6a4a7935bd1e995LLU;
         const int Remain1 = 47;
 
-        quint64 Hash = TargomanHashKeys[_level % TargomanHashKeysCount] ^ (_len * Constant1);
+        quint64 Hash = TargomanHashKeys[_level % TargomanHashKeysCount] ^ ((_len + _level) * Constant1);
 
         const quint64 * Data = (const quint64 *)_buff;
         const quint64 * End = (_len >> 3) + Data;
