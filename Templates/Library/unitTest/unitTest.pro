@@ -26,9 +26,9 @@ error("**** libsrc: Unable to find Configuration file $$ConfigFile ****")
 include ($$ConfigFile)
 
 TEMPLATE = app
-CONFIG += qtestlib
+QT+=testlib
 TARGET = unitTest_$$ProjectName
-DESTDIR = $$BaseTestBinFolder
+DESTDIR = $$BaseUnitTestBinFolder
 OBJECTS_DIR = $$BaseBuildFolder/obj
 MOC_DIR = $$BaseBuildFolder/moc
 INCLUDEPATH += $$BasePath/libsrc

@@ -10,7 +10,7 @@ ProjectName="TargomanCommon"
 VERSION=0.0.1
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-ProjectDependencies+=
+ProjectDependencies+=TargomanCommon
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
