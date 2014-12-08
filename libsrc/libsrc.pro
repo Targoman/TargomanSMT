@@ -10,11 +10,17 @@ BasePath = ".."
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 HEADERS += \
-    libTargomanCore/Private/Comaptibility/MosesPhraseTable.h
+    libTargomanCore/Configurations.h \
+    libTargomanCore/Private/Input/clsInput.h \
+    libTargomanCore/Private/clsConfigurations_p.h \
+    libTargomanCore/Private/PhraseTable/clsMosesPTBinary.h \
+    libTargomanCore/Private/PhraseTable/intfPhraseTable.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
-    libTargomanCore/Private/Comaptibility/MosesPhraseTable.cpp
+    libTargomanCore/Configurations.cpp \
+    libTargomanCore/Private/Input/clsInput.cpp \
+    libTargomanCore/Private/PhraseTable/clsMosesPTBinary.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=
