@@ -10,13 +10,31 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef MOSESPHRASETABLE_H
-#define MOSESPHRASETABLE_H
+#ifndef TARGOMAN_CORE_PRIVATE_CLSCONFIGURATIONS_P_H
+#define TARGOMAN_CORE_PRIVATE_CLSCONFIGURATIONS_P_H
 
-class MosesPhraseTable
+#include <QHash>
+#include <QVariant>
+
+namespace Targoman {
+namespace Core {
+namespace Private {
+
+class clsConfigurationPrivate
 {
 public:
-    MosesPhraseTable();
+    struct stuConfigItem{
+        QVariant::Type Type;
+        QVariant        Value;
+    };
+
+    QHash<QString, stuConfigItem>    Configs;
+    bool Initialized;
+
 };
 
-#endif // MOSESPHRASETABLE_H
+
+}
+}
+}
+#endif // TARGOMAN_CORE_PRIVATE_CLSCONFIGURATIONS_P_H

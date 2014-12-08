@@ -10,8 +10,19 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "MosesPhraseTable.h"
+#include "clsInput.h"
 
-MosesPhraseTable::MosesPhraseTable()
+
+namespace Targoman {
+namespace Core {
+namespace Private {
+namespace Input {
+
+clsInput::clsInput()
 {
+}
+
+}
+}
+}
 }
