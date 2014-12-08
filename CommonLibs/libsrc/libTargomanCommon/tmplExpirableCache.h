@@ -28,7 +28,7 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
         {};
 
         tmplExpirableCache(){
-            if (this->MaxItems == 0 || )
+            if (this->MaxItems == 0)
                 throw exTargomanInvalidParameter("Max cache Items must be greater than zero");
             this->MaxItems = itmplMaxItems;
             this->TTL = itmplTTL;
@@ -107,4 +107,6 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
         quint32 MaxItems;
         quint32 TTL;
     };
+}
+}
 #endif // TARGOMAN_COMMON_TMPLEXPIRABLECACHE_H
