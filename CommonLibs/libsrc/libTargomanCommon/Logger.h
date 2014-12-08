@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_DEFINITIONS_LOGGER_H
-#define TARGOMAN_DEFINITIONS_LOGGER_H
+#ifndef TARGOMAN_COMMON_LOGGER_H
+#define TARGOMAN_COMMON_LOGGER_H
 
 #include <QObject>
 #include <QTime>
@@ -214,4 +214,4 @@ public:
 /* Below line will register enuLogType as a MetaType to be used in signals and slots */
 Q_DECLARE_METATYPE(Targoman::Common::enuLogType::Type)
 
-#endif // TARGOMAN_DEFINITIONS_LOGGER_H
+#endif // TARGOMAN_COMMON_LOGGER_H

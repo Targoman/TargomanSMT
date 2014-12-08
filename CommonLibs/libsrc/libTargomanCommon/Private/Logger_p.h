@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_DEFINITIONS_LOGGER_P_H
-#define TARGOMAN_DEFINITIONS_LOGGER_P_H
+#ifndef TARGOMAN_COMMON_LOGGER_P_H
+#define TARGOMAN_COMMON_LOGGER_P_H
 
 #include <QFile>
 #include <QHash>
@@ -43,4 +43,4 @@ public:
 }
 }
 
-#endif // TARGOMAN_DEFINITIONS_LOGGER_P_H
+#endif // TARGOMAN_COMMON_LOGGER_P_H

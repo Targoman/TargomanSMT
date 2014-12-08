@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_DEFINITIONS_TYPES_H
-#define TARGOMAN_DEFINITIONS_TYPES_H
+#ifndef TARGOMAN_COMMON_TYPES_H
+#define TARGOMAN_COMMON_TYPES_H
 
 #include <QtCore>
 
@@ -25,4 +25,4 @@ typedef union { float AsFloat; quint32 AsUInt32; } FloatEncoded_t;
 }
 }
 
-#endif // TARGOMAN_DEFINITIONS_TYPES_H
+#endif // TARGOMAN_COMMON_TYPES_H

@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_DEFINITIONS_CONSTANTS_H
-#define TARGOMAN_DEFINITIONS_CONSTANTS_H
+#ifndef TARGOMAN_COMMON_CONSTANTS_H
+#define TARGOMAN_COMMON_CONSTANTS_H
 
 #include "libTargomanCommon/Types.h"
 
@@ -29,4 +29,4 @@ struct Constants
 }
 }
 
-#endif // TARGOMAN_DEFINITIONS_CONSTANTS_H
+#endif // TARGOMAN_COMMON_CONSTANTS_H

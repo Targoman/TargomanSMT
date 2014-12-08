@@ -11,8 +11,8 @@
  */
 
 
-#ifndef TARGOMAN_DEFINITIONS_HASHFUNCTIONS_H
-#define TARGOMAN_DEFINITIONS_HASHFUNCTIONS_H
+#ifndef TARGOMAN_COMMON_HASHFUNCTIONS_H
+#define TARGOMAN_COMMON_HASHFUNCTIONS_H
 
 #include <QtCore>
 
@@ -55,6 +55,12 @@ static const quint32 TargomanGoodHashTableSizes[]={
 class HashFunctions
 {
 public:
+    // MurmurHash3, 64-bit versions, by Austin Appleby
+
+    // The same caveats as 32-bit MurmurHash2 apply here - beware of alignment
+    // and endian-ness issues if used across multiple platforms.
+    // 64-bit hash for 64-bit platforms
+
     static quint64 murmurHash64(const void* _buff, size_t _len, int _level = 0){
         const quint64 Constant1 = 0xc6a4a7935bd1e995LLU;
         const int Remain1 = 47;
@@ -97,6 +103,11 @@ public:
         return Hash;
     }
 
+    // MurmurHash3, 32-bit versions, by Austin Appleby
+
+    // The same caveats as 32-bit MurmurHash2 apply here - beware of alignment
+    // and endian-ness issues if used across multiple platforms.
+    // 32-bit hash for 32-bit platforms
     static quint32 murmurHash32(const void* _buff, size_t _len, int _level = 0)
     {
         static const quint32 Const1 = 0xcc9e2d51;
@@ -152,4 +163,4 @@ public:
 }
 }
 
-#endif // TARGOMAN_DEFINITIONS_HASHFUNCTIONS_H
+#endif // TARGOMAN_COMMON_HASHFUNCTIONS_H

@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_DEFINITIONS_exTargomanBASE_HPP_
-#define TARGOMAN_DEFINITIONS_exTargomanBASE_HPP_
+#ifndef TARGOMAN_COMMON_exTargomanBASE_HPP_
+#define TARGOMAN_COMMON_exTargomanBASE_HPP_
 
 #include <QException>
 #include <QString>
@@ -103,4 +103,4 @@ class exTargomanMustBeImplemented: public exTargomanNotImplemented
 }
 }
 
-#endif /* TARGOMAN_DEFINITIONS_EXTARGOMANBASE_HPP_ */
+#endif /* TARGOMAN_COMMON_EXTARGOMANBASE_HPP_ */

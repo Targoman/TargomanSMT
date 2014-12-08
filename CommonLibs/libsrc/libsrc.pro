@@ -19,7 +19,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Constants.h \
     libTargomanCommon/Types.h \
     libTargomanCommon/clsCmdProgressBar.h \
-    libTargomanCommon/HashFunctions.h
+    libTargomanCommon/HashFunctions.h \
+    libTargomanCommon/tmplExpirableCache.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

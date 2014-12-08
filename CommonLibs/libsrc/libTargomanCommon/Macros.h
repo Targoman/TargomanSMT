@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_DEFINITIONS_MACROS_H_
-#define TARGOMAN_DEFINITIONS_MACROS_H_
+#ifndef TARGOMAN_COMMON_MACROS_H_
+#define TARGOMAN_COMMON_MACROS_H_
 
 #include <string>
 #include <cstring>
@@ -160,4 +160,4 @@ namespace _name { enum Type { Unknown = -1,
 #define fastToUpper(c)  ((c >= 'a' && c <= 'z') ? c - 0x20 : c)
 #define BIG_CONSTANT(x) (x##LLU)
 
-#endif /* TARGOMAN_DEFINITIONS_MACROS_H_ */
+#endif /* TARGOMAN_COMMON_MACROS_H_ */
