@@ -14,13 +14,18 @@ HEADERS += \
     libTargomanCore/Private/Input/clsInput.h \
     libTargomanCore/Private/clsConfigurations_p.h \
     libTargomanCore/Private/PhraseTable/clsMosesPTBinary.h \
-    libTargomanCore/Private/PhraseTable/intfPhraseTable.hpp
+    libTargomanCore/Private/PhraseTable/intfPhraseTable.hpp \
+    libTargomanCore/Private/LexicalReordering/intfLexicalReordering.h \
+    libTargomanCore/Private/LexicalReordering/clsMosesLR.h \
+    libTargomanCore/Private/Input/clsToken.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
     libTargomanCore/Configurations.cpp \
     libTargomanCore/Private/Input/clsInput.cpp \
-    libTargomanCore/Private/PhraseTable/clsMosesPTBinary.cpp
+    libTargomanCore/Private/PhraseTable/clsMosesPTBinary.cpp \
+    libTargomanCore/Private/LexicalReordering/clsMosesLR.cpp \
+    libTargomanCore/Private/Input/clsToken.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

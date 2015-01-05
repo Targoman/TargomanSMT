@@ -10,7 +10,8 @@ ProjectName="TargomanCore"
 VERSION=0.0.1
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-ProjectDependencies+=TargomanCommon
+ProjectDependencies+=TargomanCommon \
+                     TargomanTextProcessor
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

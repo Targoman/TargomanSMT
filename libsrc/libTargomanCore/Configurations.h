@@ -26,7 +26,7 @@ class clsConfigurationPrivate;
 }
 
 const size_t DEFAULT_MAX_TRANS_OPT_CACHE_SIZE = 10000;
-
+typedef bool (*isValidConfig_t)(const QVariant& _value, QString& _errorMessageHolder);
 
 class Configurations
 {
@@ -35,9 +35,19 @@ public:
     static inline Configurations& instance(){
         return *(Q_LIKELY(Instance) ? Instance : (Instance = new Configurations));}
 
-    void init(quint8 _argc, const char** _argv);
+    void init(const QStringList &_arguments);
     QVariant getConfig(const QString& _key, const QVariant &_default = QVariant()) const;
-    void addConfig(const QString& _key, QVariant::Type _type, const QVariant& _defaultValue);
+    void addConfig(const QString& _key,
+                   QVariant::Type _type,
+                   const QVariant& _defaultValue = QVariant(),
+                   int             _valueCount   = 0,
+                   isValidConfig_t _validator  = NULL,
+                   const QString&  _shortSwitch  = "",
+                   const QString&  _longSwitch   = "",
+                   const QString&  _shortHelp    = "",
+                   const QString&  _longHelp     = "");
+
+    void save2File(const QString&  _fileName);
 
 private:
     Configurations();

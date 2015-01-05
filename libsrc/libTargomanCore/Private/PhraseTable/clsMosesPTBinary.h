@@ -30,9 +30,9 @@ public:
     void initializeForInput(Input::clsInput const& _source);
     void cleanUpAfterSentenceProcessing(Input::clsInput const& _source);
 
-    static void registerConfigs(const QString& _configPath){
+    /*static void registerConfigs(const QString& _configPath){
         intfPhraseTable::registerConfigs(_configPath + "/MosesPTBinary");
-    }
+    }*/
 
 };
 
