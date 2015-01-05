@@ -52,7 +52,6 @@ quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
         throw exARPAManager("Unable to open ARPA File: " + _file);
 
     std::string LineString;
-    std::stringstream LineStream;
 
     quint8        NGramOrder, MaxGram = 0;
     quint32       LineNo = 0, Count = 0;

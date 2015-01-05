@@ -59,7 +59,7 @@ public:
         this->TableLimit = Targoman::Core::gConfigs.getConfig("TableLimit").toUInt();
     }
 
-    static void registerConfigs(const QString& _configPath){
+    virtual void registerConfigs(const QString& _configPath){
         Targoman::Core::gConfigs.addConfig(_configPath + "/CacheSize" , QVariant::UInt  , (quint32)DEFAULT_MAX_TRANS_OPT_CACHE_SIZE);
         Targoman::Core::gConfigs.addConfig(_configPath + "/FilePath"  , QVariant::String, "");
         Targoman::Core::gConfigs.addConfig(_configPath + "/TableLimit", QVariant::UInt  , 20);

@@ -30,7 +30,16 @@ void clsMosesPTBinary::load()
 
 void clsMosesPTBinary::initializeForInput(const Input::clsInput &_source)
 {
-    //ReduceCache();
+    //ReduceCache(); // disabled as we are using our own cache implementation
+
+    /*vector<float> weight = staticData.GetWeights(this);
+    if(m_numScoreComponents!=weight.size()) {
+      std::stringstream strme;
+      UTIL_THROW2("ERROR: mismatch of number of scaling factors: " << weight.size()
+                  << " " << m_numScoreComponents);
+    }*/ //Temporarily ignored as seems to be unused
+
+
 
 }
 

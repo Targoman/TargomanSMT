@@ -15,6 +15,7 @@
 
 #include <QHash>
 #include <QVariant>
+#include "Configurations.h"
 
 namespace Targoman {
 namespace Core {
@@ -24,13 +25,19 @@ class clsConfigurationPrivate
 {
 public:
     struct stuConfigItem{
-        QVariant::Type Type;
+        QVariant::Type  Type;
         QVariant        Value;
+        quint8          ValCount;
+        QString         ShortSwitch;
+        QString         LongSwitch;
+        QString         ShortHelp;
+        QString         LongHelp;
+        isValidConfig_t fValidator;
     };
 
     QHash<QString, stuConfigItem>    Configs;
+    QString                          ConfigFilePath;
     bool Initialized;
-
 };
 
 

@@ -10,34 +10,34 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_INPUT_CLSINPUT_H
-#define TARGOMAN_CORE_PRIVATE_INPUT_CLSINPUT_H
+#ifndef TARGOMAN_CORE_PRIVATE_LEXICALREORDERING_CLSLEXICALREORDERING_H
+#define TARGOMAN_CORE_PRIVATE_LEXICALREORDERING_CLSLEXICALREORDERING_H
 
-#include <QList>
 #include "Configurations.h"
-#include "clsToken.h"
+#include "intfLexicalReordering.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace Input {
+namespace LexicalReordering {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
-
-class clsInput
+class clsMosesLR
 {
 public:
-    clsInput();
+    clsMosesLR();
 
-    void parsePlain(const QString& _inputStr, const QString& _lang = "");
-    void parseRichIXML(const QString& _inputIXML);
+    static void registerConfigs(const QString& _configPath = ""){
+        //intfLexicalReordering::registerConfigs(_configPath + "/MosesLR")
+    }
 
 private:
-    QList<clsToken> Tokens;
+    QString FilePath;
+    size_t  TableLimit;
 };
 
 }
 }
 }
 }
-#endif // TARGOMAN_CORE_PRIVATE_INPUT_CLSINPUT_H
+
+#endif // TARGOMAN_CORE_PRIVATE_LEXICALREORDERING_CLSLEXICALREORDERING_H

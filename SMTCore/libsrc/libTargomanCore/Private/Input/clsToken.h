@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -10,32 +10,24 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "libTargomanTextProcessor/TextProcessor.h"
-#include "clsInput.h"
+#ifndef TARGOMAN_CORE_PRIVATE_INPUT_CLSTOKEN_H
+#define TARGOMAN_CORE_PRIVATE_INPUT_CLSTOKEN_H
 
-using Targoman::NLPLibs::TextProcessor;
 
 namespace Targoman {
 namespace Core {
 namespace Private {
 namespace Input {
 
-clsInput::clsInput()
+class clsToken
 {
-
-}
-
-void clsInput::parsePlain(const QString &_inputStr, const QString& _lang)
-{
-    this->parseRichIXML(TextProcessor::instance().text2RichIXML(_inputStr, _lang));
-}
-
-void clsInput::parseRichIXML(const QString &_inputIXML)
-{
-
-}
+public:
+    clsToken();
+};
 
 }
 }
 }
 }
+
+#endif // TARGOMAN_CORE_PRIVATE_INPUT_CLSTOKEN_H
