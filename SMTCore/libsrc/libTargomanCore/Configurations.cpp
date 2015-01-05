@@ -27,11 +27,16 @@ using namespace Private;
 Configurations* Configurations::Instance = NULL;
 Configurations& gConfigs = Configurations::instance();
 
+
 Configurations::Configurations() :
     pPrivate(new Private::clsConfigurationPrivate)
 {
     this->pPrivate->Initialized = false;
 
+
+    this->addConfig("TextProcessor/Active", QVariant::Bool, true, 0,
+                    NULL,"","","",
+                    "Normalization File");
     this->addConfig("TextProcessor/NormalizationFile", QVariant::String, "", 1,
                     NULL,"","","",
                     "Normalization File");
@@ -153,6 +158,31 @@ void Configurations::init(const QStringList &_arguments)
             throw exConfiguration(ErrorMessage);
     }
 
+    //////////////////////////////////////////////////
+    /// Initialize external libraries
+    //////////////////////////////////////////////////
+    /// TODO: Move to engine
+    ///                Text Processor
+    /////////////////////////////////////////////////////
+    TextProcessor::stuConfigs TextProcessorConfigs;
+    TextProcessorConfigs.AbbreviationsFile = this->getConfig("TextProcessor/AbbreviationFile").toString();
+    TextProcessorConfigs.NormalizationFile = this->getConfig("TextProcessor/NormalizationFile").toString();
+    TextProcessorConfigs.SpellCorrectorBaseConfigPath =
+            this->getConfig("TextProcessor/SpellCorrectorBaseConfigPath").toString();
+
+    if (this->pPrivate->ConfigFilePath.size()){
+        QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
+        ConfigFile.beginGroup("TextProcessor/SpellCorrectorLanguageBasedConfigs");
+        foreach(const QString& Lang, ConfigFile.childGroups()){
+            ConfigFile.beginGroup(Lang);
+            foreach (const QString& Key, ConfigFile.allKeys())
+                TextProcessorConfigs.SpellCorrectorLanguageBasedConfigs[Lang].insert(Key, ConfigFile.value(Key));
+            ConfigFile.endGroup();
+        }
+        ConfigFile.endGroup();
+    }
+    TextProcessor::instance().init(TextProcessorConfigs);
+
     this->pPrivate->Initialized = true;
 }
 
@@ -178,7 +208,16 @@ void Configurations::addConfig(const QString&  _key,
                                const QString&  _shortHelp,
                                const QString&  _longHelp)
 {
-    //@TODO Check if default value has type as specified
+    this->pPrivate->Configs.insert(_key,clsConfigurationPrivate::stuConfigItem());
+    clsConfigurationPrivate::stuConfigItem& ConfigItem = this->pPrivate->Configs[_key];
+    ConfigItem.fValidator = _validator;
+    ConfigItem.LongHelp = _longHelp;
+    ConfigItem.LongSwitch = _longSwitch;
+    ConfigItem.ShortHelp = _shortHelp;
+    ConfigItem.ShortSwitch = _shortSwitch;
+    ConfigItem.Type = _type;
+    ConfigItem.ValCount = _valueCount;
+    ConfigItem.Value = _defaultValue;
 }
 
 void Configurations::save2File(const QString &_fileName)
