@@ -24,8 +24,7 @@ SOURCES += libID.cpp \
     libTargomanCore/Configurations.cpp \
     libTargomanCore/Private/Input/clsInput.cpp \
     libTargomanCore/Private/PhraseTable/clsMosesPTBinary.cpp \
-    libTargomanCore/Private/LexicalReordering/clsMosesLR.cpp \
-    libTargomanCore/Private/Input/clsToken.cpp
+    libTargomanCore/Private/LexicalReordering/clsMosesLR.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=
