@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -13,46 +13,26 @@
 #include <QCoreApplication>
 #include <QSettings>
 #include <QFileInfo>
-#include "Configurations.h"
-#include "libTargomanTextProcessor/TextProcessor.h"
-using Targoman::NLPLibs::TextProcessor;
-#include "Private/clsConfigurations_p.h"
-
+#include "Configuration.h"
+#include "Private/clsConfiguration_p.h"
 
 namespace Targoman {
-namespace Core {
+namespace Common {
 
-using namespace Private;
+Configuration* Configuration::Instance = NULL;
 
-Configurations* Configurations::Instance = NULL;
-Configurations& gConfigs = Configurations::instance();
-
-
-Configurations::Configurations() :
+Configuration::Configuration() :
     pPrivate(new Private::clsConfigurationPrivate)
 {
     this->pPrivate->Initialized = false;
-
-    this->addConfig("TextProcessor/NormalizationFile", QVariant::String, "", 1,
-                    NULL,"","","",
-                    "Normalization File");
-    this->addConfig("TextProcessor/AbbreviationFile", QVariant::String, "", 1,
-                    NULL,"","","",
-                    "Abbreviation List File");
-    this->addConfig("TextProcessor/SpellCorrectorBaseConfigPath", QVariant::String, "", 1,
-                    NULL,"","","",
-                    "Abbreviation List File");
-    this->addConfig("TextProcessor/SpellCorrectorLanguageBasedConfigs", QVariant::UserType, "", 1,
-                    NULL,"","","",
-                    "Special configs per language");
 }
 
-Configurations::~Configurations()
+Configuration::~Configuration()
 {
     //Defined just to suppress compiler error on QScoppedPointer
 }
 
-void Configurations::init(const QStringList &_arguments)
+void Configuration::init(const QStringList &_arguments)
 {
     QString ErrorMessage;
     //////////////////////////////////////////////////
@@ -90,23 +70,23 @@ void Configurations::init(const QStringList &_arguments)
                 bool Found = false;
                 while(BasePath.contains("/")){
                     BasePath.truncate(BasePath.lastIndexOf("/"));
-                    if (this->pPrivate->Configs.value(BasePath).Type == QVariant::UserType){
+                    /*if (this->pPrivate->Configs.value(BasePath).Type == QVariant::UserType){
                         Found = true;
                         break;
-                    }
+                    }*/
 
                 }
                 if (Found)
-                    continue;
+                    continue; // Continue to next key
                 else
                     throw exConfiguration("Configuration path <"+Key+"> is not registered");
             }
-            clsConfigurationPrivate::stuConfigItem& ConfigItem  = this->pPrivate->Configs[Key];
+            clsConfigurableAbstract* ConfigItem  = this->pPrivate->Configs[Key];
             QVariant Value = ConfigFile.value(Key);
-            if (ConfigItem.fValidator(Value, ErrorMessage) == false)
+            if (ConfigItem->validate(Value, ErrorMessage) == false)
                 throw exConfiguration(ErrorMessage);
             else
-                ConfigItem.Value = Value;
+                ConfigItem->setFromVariant(Value);
         }
     }
 
@@ -126,20 +106,20 @@ void Configurations::init(const QStringList &_arguments)
             for (auto ConfigItemIter = this->pPrivate->Configs.begin();
                  ConfigItemIter != this->pPrivate->Configs.end();
                  ConfigItemIter++){
-                if ((KeyIter->startsWith("--") && ConfigItemIter.value().LongSwitch == "--" + *KeyIter) ||
-                        ConfigItemIter.value().ShortSwitch == "-" + *KeyIter){
+                if ((KeyIter->startsWith("--") && ConfigItemIter.value()->longSwitch() == "--" + *KeyIter) ||
+                        ConfigItemIter.value()->shortSwitch() == "-" + *KeyIter){
                     QString Value;
-                    for (int i=0; i<ConfigItemIter.value().ValCount; i++){
+                    for (int i=0; i<ConfigItemIter.value()->argCount(); i++){
                         Value += *KeyIter + " ";
                         KeyIter++;
                         if (KeyIter == _arguments.end())
                             throw exConfiguration("Switch: <" +*KeyIter+ "> needs at least: " +
-                                                  ConfigItemIter.value().ValCount+ " arguments.");
+                                                  QString::number(ConfigItemIter.value()->argCount())+ " arguments.");
                     }
-                    if (ConfigItemIter.value().fValidator(Value.trimmed(), ErrorMessage) == false)
+                    if (ConfigItemIter.value()->validate(Value.trimmed(), ErrorMessage) == false)
                         throw exConfiguration(ErrorMessage);
                     else
-                        ConfigItemIter.value().Value = Value.trimmed();
+                        ConfigItemIter.value()->setFromVariant(Value.trimmed());
                 }
             }
         }else
@@ -149,8 +129,8 @@ void Configurations::init(const QStringList &_arguments)
     //////////////////////////////////////////////////
     ///validate all config items
     //////////////////////////////////////////////////
-    foreach (const clsConfigurationPrivate::stuConfigItem& ConfigItem, this->pPrivate->Configs.values()){
-        if (ConfigItem.fValidator(ConfigItem.Value, ErrorMessage) == false)
+    foreach (clsConfigurableAbstract* ConfigItem, this->pPrivate->Configs.values()){
+        if (ConfigItem->crossValidate(ErrorMessage) == false)
             throw exConfiguration(ErrorMessage);
     }
 
@@ -160,7 +140,7 @@ void Configurations::init(const QStringList &_arguments)
     /// TODO: Move to engine
     ///                Text Processor
     /////////////////////////////////////////////////////
-    {
+   /* {
         TextProcessor::stuConfigs TextProcessorConfigs;
         TextProcessorConfigs.AbbreviationsFile = this->getConfig("TextProcessor/AbbreviationFile").toString();
         TextProcessorConfigs.NormalizationFile = this->getConfig("TextProcessor/NormalizationFile").toString();
@@ -179,60 +159,48 @@ void Configurations::init(const QStringList &_arguments)
             ConfigFile.endGroup();
         }
         TextProcessor::instance().init(TextProcessorConfigs);
-    }
+    }*/
 
     this->pPrivate->Initialized = true;
 }
 
-QVariant Configurations::getConfig(const QString &_key, const QVariant& _default) const
+void Configuration::save2File(const QString &_fileName, bool _backup)
+{
+
+}
+
+void Configuration::addConfig(const QString _path, clsConfigurableAbstract *_item)
+{
+    if (this->pPrivate->Configs.contains(_path))
+        throw exConfiguration("Duplicate path key: " + _path);
+    this->pPrivate->Configs.insert(_path, _item);
+}
+
+QVariant Configuration::getConfig(const QString &_path, const QVariant& _default)
 {
     if (this->pPrivate->Initialized == false)
         throw exConfiguration("Configuration is not initialized yet.");
 
-    Private::clsConfigurationPrivate::stuConfigItem Item= this->pPrivate->Configs.value(_key);
-    if (Item.Value.isValid() == false)
-        return Item.Value;
+    clsConfigurableAbstract* Item= this->pPrivate->Configs.value(_path);
+    if (Item->toVariant().isValid() == false)
+        return Item->toVariant();
     else
         return _default;
 }
 
-void Configurations::save2File(const QString &_fileName)
+clsConfigurableAbstract::clsConfigurableAbstract(const QString &_configPath,
+                                                 const QString &_description,
+                                                 const QString &_shortSwitch,
+                                                 const QString &_shortHelp,
+                                                 const QString &_longSwitch)
 {
-    QSettings ConfigFile(_fileName,QSettings::IniFormat);
-    if (!ConfigFile.isWritable())
-        throw exConfiguration("unable to write configurations to: <" + _fileName+">");
+    this->Description = _description;
+    this->ShortSwitch = _shortSwitch;
+    this->LongSwitch = _longSwitch;
+    this->ShortHelp = _shortHelp;
 
-    foreach(const QString& Key, this->pPrivate->Configs.keys()){
-        ConfigFile.setValue(Key, this->pPrivate->Configs.value(Key).Value);
-    }
-
-    ConfigFile.sync();
+    Configuration::instance().addConfig(_configPath, this);
 }
-
-template <class Type_t>
-clsConfigurable::clsConfigurable(const QString&  _configPath,
-                    const QString&  _description,
-                    const Type_t&   _default,
-                    const int       _valueCount = 0,
-                    isValidConfig_t _validator = NULL,
-                    const QString&  _shortSwitch = "",
-                    const QString&  _shortHelp = "",
-                    const QString&  _LongSwitch = ""){
-
-    this->pPrivate->Configs.insert(_key,clsConfigurationPrivate::stuConfigItem());
-    clsConfigurationPrivate::stuConfigItem& ConfigItem = this->pPrivate->Configs[_key];
-    ConfigItem.fValidator = _validator;
-    ConfigItem.LongHelp = _longHelp;
-    ConfigItem.LongSwitch = _longSwitch;
-    ConfigItem.ShortHelp = _shortHelp;
-    ConfigItem.ShortSwitch = _shortSwitch;
-    ConfigItem.Type = _type;
-    ConfigItem.ValCount = _valueCount;
-    ConfigItem.Value = _defaultValue;
-}
-
-
 
 }
 }
-
