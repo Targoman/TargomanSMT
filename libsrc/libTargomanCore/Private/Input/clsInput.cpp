@@ -217,7 +217,6 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
 
 }
 
-
 void clsInput::clear()
 {
     while(this->Tokens.size())

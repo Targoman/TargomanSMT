@@ -28,6 +28,19 @@ class clsConfigurationPrivate;
 const size_t DEFAULT_MAX_TRANS_OPT_CACHE_SIZE = 10000;
 typedef bool (*isValidConfig_t)(const QVariant& _value, QString& _errorMessageHolder);
 
+template <class Type_t> class clsConfigurable
+{
+public:
+    clsConfigurable(const QString&  _configPath,
+                    const QString&  _description,
+                    const Type_t&   _default,
+                    const int       _valueCount = 0,
+                    isValidConfig_t _validator = NULL,
+                    const QString&  _shortSwitch = "",
+                    const QString&  _shortHelp = "",
+                    const QString&  _LongSwitch = "");
+};
+
 class Configurations
 {
 public:
@@ -37,7 +50,7 @@ public:
 
     void init(const QStringList &_arguments);
     QVariant getConfig(const QString& _key, const QVariant &_default = QVariant()) const;
-    void addConfig(const QString& _key,
+/*    void addConfig(const QString& _key,
                    QVariant::Type _type,
                    const QVariant& _defaultValue = QVariant(),
                    int             _valueCount   = 0,
@@ -45,7 +58,7 @@ public:
                    const QString&  _shortSwitch  = "",
                    const QString&  _longSwitch   = "",
                    const QString&  _shortHelp    = "",
-                   const QString&  _longHelp     = "");
+                   const QString&  _longHelp     = "");*/
 
     void save2File(const QString&  _fileName);
 

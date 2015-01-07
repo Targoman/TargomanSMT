@@ -196,28 +196,6 @@ QVariant Configurations::getConfig(const QString &_key, const QVariant& _default
         return _default;
 }
 
-void Configurations::addConfig(const QString&  _key,
-                               QVariant::Type  _type,
-                               const QVariant& _defaultValue,
-                               int             _valueCount,
-                               isValidConfig_t _validator,
-                               const QString&  _shortSwitch,
-                               const QString&  _longSwitch,
-                               const QString&  _shortHelp,
-                               const QString&  _longHelp)
-{
-    this->pPrivate->Configs.insert(_key,clsConfigurationPrivate::stuConfigItem());
-    clsConfigurationPrivate::stuConfigItem& ConfigItem = this->pPrivate->Configs[_key];
-    ConfigItem.fValidator = _validator;
-    ConfigItem.LongHelp = _longHelp;
-    ConfigItem.LongSwitch = _longSwitch;
-    ConfigItem.ShortHelp = _shortHelp;
-    ConfigItem.ShortSwitch = _shortSwitch;
-    ConfigItem.Type = _type;
-    ConfigItem.ValCount = _valueCount;
-    ConfigItem.Value = _defaultValue;
-}
-
 void Configurations::save2File(const QString &_fileName)
 {
     QSettings ConfigFile(_fileName,QSettings::IniFormat);
@@ -230,6 +208,30 @@ void Configurations::save2File(const QString &_fileName)
 
     ConfigFile.sync();
 }
+
+template <class Type_t>
+clsConfigurable::clsConfigurable(const QString&  _configPath,
+                    const QString&  _description,
+                    const Type_t&   _default,
+                    const int       _valueCount = 0,
+                    isValidConfig_t _validator = NULL,
+                    const QString&  _shortSwitch = "",
+                    const QString&  _shortHelp = "",
+                    const QString&  _LongSwitch = ""){
+
+    this->pPrivate->Configs.insert(_key,clsConfigurationPrivate::stuConfigItem());
+    clsConfigurationPrivate::stuConfigItem& ConfigItem = this->pPrivate->Configs[_key];
+    ConfigItem.fValidator = _validator;
+    ConfigItem.LongHelp = _longHelp;
+    ConfigItem.LongSwitch = _longSwitch;
+    ConfigItem.ShortHelp = _shortHelp;
+    ConfigItem.ShortSwitch = _shortSwitch;
+    ConfigItem.Type = _type;
+    ConfigItem.ValCount = _valueCount;
+    ConfigItem.Value = _defaultValue;
+}
+
+
 
 }
 }
