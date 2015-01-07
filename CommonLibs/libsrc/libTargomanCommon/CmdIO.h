@@ -74,10 +74,10 @@ public:
                     OutStr +=  QString(" %1 %2").arg(_file).arg(this->Details & 0xC0 ? ":" : "");
             if (this->Details & 0x40)
                     OutStr +=  QString(" %1 ").arg(_function);
-            OutStr += QString(":%1").arg(_line);
+            OutStr += QString(":%1").arg(_line) + " ]";
         }
 
-        return OutStr + " ]";
+        return OutStr;
     }
 
 private:

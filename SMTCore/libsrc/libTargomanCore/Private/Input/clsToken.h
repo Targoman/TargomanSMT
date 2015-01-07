@@ -14,6 +14,9 @@
 #define TARGOMAN_CORE_PRIVATE_INPUT_CLSTOKEN_H
 
 
+#include <QString>
+#include <QHash>
+
 namespace Targoman {
 namespace Core {
 namespace Private {
@@ -22,7 +25,16 @@ namespace Input {
 class clsToken
 {
 public:
-    clsToken();
+    clsToken(const QString& _value, const QString& _tagStr = "", const QHash<QString, QString>& _attrs = QHash<QString, QString>()){
+        this->Value = _value;
+        this->TagStr = _tagStr;
+        this->Attrs = _attrs;
+    }
+
+private:
+    QString Value;
+    QString TagStr;
+    QHash<QString, QString> Attrs;
 };
 
 }

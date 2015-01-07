@@ -90,7 +90,8 @@ QString TextProcessor::text2IXML(const QString &_inStr,
  * @param _inStr
  * @return
  */
-QString TextProcessor::text2RichIXML(const QString &_inStr, const QString &_lang) const
+QString TextProcessor::text2RichIXML(const QString &_inStr,
+                                     const QString &_lang) const
 {
     TargomanLogDebug(5,"ConvertToRichIXML Process Started");
 

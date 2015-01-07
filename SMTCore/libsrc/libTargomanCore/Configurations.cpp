@@ -33,10 +33,6 @@ Configurations::Configurations() :
 {
     this->pPrivate->Initialized = false;
 
-
-    this->addConfig("TextProcessor/Active", QVariant::Bool, true, 0,
-                    NULL,"","","",
-                    "Normalization File");
     this->addConfig("TextProcessor/NormalizationFile", QVariant::String, "", 1,
                     NULL,"","","",
                     "Normalization File");
@@ -164,24 +160,26 @@ void Configurations::init(const QStringList &_arguments)
     /// TODO: Move to engine
     ///                Text Processor
     /////////////////////////////////////////////////////
-    TextProcessor::stuConfigs TextProcessorConfigs;
-    TextProcessorConfigs.AbbreviationsFile = this->getConfig("TextProcessor/AbbreviationFile").toString();
-    TextProcessorConfigs.NormalizationFile = this->getConfig("TextProcessor/NormalizationFile").toString();
-    TextProcessorConfigs.SpellCorrectorBaseConfigPath =
-            this->getConfig("TextProcessor/SpellCorrectorBaseConfigPath").toString();
+    {
+        TextProcessor::stuConfigs TextProcessorConfigs;
+        TextProcessorConfigs.AbbreviationsFile = this->getConfig("TextProcessor/AbbreviationFile").toString();
+        TextProcessorConfigs.NormalizationFile = this->getConfig("TextProcessor/NormalizationFile").toString();
+        TextProcessorConfigs.SpellCorrectorBaseConfigPath =
+                this->getConfig("TextProcessor/SpellCorrectorBaseConfigPath").toString();
 
-    if (this->pPrivate->ConfigFilePath.size()){
-        QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
-        ConfigFile.beginGroup("TextProcessor/SpellCorrectorLanguageBasedConfigs");
-        foreach(const QString& Lang, ConfigFile.childGroups()){
-            ConfigFile.beginGroup(Lang);
-            foreach (const QString& Key, ConfigFile.allKeys())
-                TextProcessorConfigs.SpellCorrectorLanguageBasedConfigs[Lang].insert(Key, ConfigFile.value(Key));
+        if (this->pPrivate->ConfigFilePath.size()){
+            QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
+            ConfigFile.beginGroup("TextProcessor/SpellCorrectorLanguageBasedConfigs");
+            foreach(const QString& Lang, ConfigFile.childGroups()){
+                ConfigFile.beginGroup(Lang);
+                foreach (const QString& Key, ConfigFile.allKeys())
+                    TextProcessorConfigs.SpellCorrectorLanguageBasedConfigs[Lang].insert(Key, ConfigFile.value(Key));
+                ConfigFile.endGroup();
+            }
             ConfigFile.endGroup();
         }
-        ConfigFile.endGroup();
+        TextProcessor::instance().init(TextProcessorConfigs);
     }
-    TextProcessor::instance().init(TextProcessorConfigs);
 
     this->pPrivate->Initialized = true;
 }
