@@ -22,17 +22,21 @@ namespace Core {
 namespace Private {
 namespace Input {
 
+using namespace Common;
+
 QSet<QString>    clsInput::SpecialTags;
+clsConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
+                                           "User Defined valid XML tags. ",
+                                           ""); //TODO complete description
 
 clsInput::clsInput()
 {
-
 }
 
-void clsInput::init(const QString &_tags, const QString& _separator)
+void clsInput::init()
 {
-    if (_tags.size())
-        foreach(const QString& Tag, _tags.split(_separator))
+    if (UserDefinedTags.value().size())
+        foreach(const QString& Tag, UserDefinedTags.value().split(gConfigs.Separator.value()))
             SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));

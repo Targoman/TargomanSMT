@@ -11,7 +11,7 @@
  */
 
 #include "libTargomanCore/Private/Input/clsInput.h"
-#include "libTargomanCore/Configurations.h"
+#include "libTargomanCore/GlobalConfigs.h"
 #include "libTargomanCommon/Logger.h"
 #include <iostream>
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     //    Input.parseRichIXML("This <num a=\"ss\">is<num> a test .");
         Input.parseRichIXML("This <1num a=\"ss\">isnum> a test .");
 
-    }catch(exTargomanCore& e){
+    }catch(Targoman::Core::exTargomanCore& e){
         TargomanError(e.what());
     }
 

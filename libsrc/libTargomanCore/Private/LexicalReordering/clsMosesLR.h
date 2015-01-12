@@ -13,7 +13,6 @@
 #ifndef TARGOMAN_CORE_PRIVATE_LEXICALREORDERING_CLSLEXICALREORDERING_H
 #define TARGOMAN_CORE_PRIVATE_LEXICALREORDERING_CLSLEXICALREORDERING_H
 
-#include "Configurations.h"
 #include "intfLexicalReordering.h"
 
 namespace Targoman {

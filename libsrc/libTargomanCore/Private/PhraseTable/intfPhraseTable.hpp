@@ -13,7 +13,6 @@
 #ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFPHRASETABLE_H
 #define TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFPHRASETABLE_H
 
-#include "Configurations.h"
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/tmplExpirableCache.h"
 #include "Private/Input/clsInput.h"
@@ -54,15 +53,15 @@ public:
 
     //it was named SetParameter in moses
     virtual void init(){
-        this->CacheSize  = Targoman::Core::gConfigs.getConfig("CacheSize").toUInt();
+/*        this->CacheSize  = Targoman::Core::gConfigs.getConfig("CacheSize").toUInt();
         this->FilePath   = Targoman::Core::gConfigs.getConfig("FilePath").toString();
-        this->TableLimit = Targoman::Core::gConfigs.getConfig("TableLimit").toUInt();
+        this->TableLimit = Targoman::Core::gConfigs.getConfig("TableLimit").toUInt();*/
     }
 
     virtual void registerConfigs(const QString& _configPath){
-        Targoman::Core::gConfigs.addConfig(_configPath + "/CacheSize" , QVariant::UInt  , (quint32)DEFAULT_MAX_TRANS_OPT_CACHE_SIZE);
+        /*Targoman::Core::gConfigs.addConfig(_configPath + "/CacheSize" , QVariant::UInt  , (quint32)DEFAULT_MAX_TRANS_OPT_CACHE_SIZE);
         Targoman::Core::gConfigs.addConfig(_configPath + "/FilePath"  , QVariant::String, "");
-        Targoman::Core::gConfigs.addConfig(_configPath + "/TableLimit", QVariant::UInt  , 20);
+        Targoman::Core::gConfigs.addConfig(_configPath + "/TableLimit", QVariant::UInt  , 20);*/
     }
 
 protected:

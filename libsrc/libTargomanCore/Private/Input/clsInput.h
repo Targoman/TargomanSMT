@@ -15,7 +15,8 @@
 
 #include <QList>
 #include <QSet>
-#include "libTargomanCore/Configurations.h"
+
+#include "GlobalConfigs.h"
 
 namespace Targoman {
 namespace Core {
@@ -31,7 +32,8 @@ class clsInput
 public:
     clsInput();
 
-    static void init(const QString& _tags = "", const QString& _separator = "");
+
+    static void init();
 
     void parsePlain(const QString& _inputStr, const QString& _lang = "");
     void parseRichIXML(const QString& _inputIXML);
@@ -46,6 +48,9 @@ private:
 private:
     QList<clsToken*> Tokens;
     static QSet<QString>    SpecialTags;
+
+    //Configuration
+    static Targoman::Common::clsConfigurable<QString> UserDefinedTags;
 };
 
 }
