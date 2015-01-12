@@ -100,6 +100,16 @@ class exTargomanMustBeImplemented: public exTargomanNotImplemented
     exTargomanMustBeImplemented(const QString& _message = "", int _line = 0);
 };
 
+/**
+ * @exception exTargomanMustBeImplemented
+ * @brief Exception on Initialization of static members before Application start. This exception must not be subclassed
+ */
+class exTargomanInitialization: public exTargomanBase
+{
+  public:
+    exTargomanInitialization(const QString& _message = "", int _line = 0);
+};
+
 }
 }
 

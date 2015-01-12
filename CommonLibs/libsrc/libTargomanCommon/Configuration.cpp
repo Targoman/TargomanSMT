@@ -109,7 +109,7 @@ void Configuration::init(const QStringList &_arguments)
                 if ((KeyIter->startsWith("--") && ConfigItemIter.value()->longSwitch() == "--" + *KeyIter) ||
                         ConfigItemIter.value()->shortSwitch() == "-" + *KeyIter){
                     QString Value;
-                    for (int i=0; i<ConfigItemIter.value()->argCount(); i++){
+                    for (size_t i=0; i<ConfigItemIter.value()->argCount(); i++){
                         Value += *KeyIter + " ";
                         KeyIter++;
                         if (KeyIter == _arguments.end())
@@ -198,6 +198,7 @@ clsConfigurableAbstract::clsConfigurableAbstract(const QString &_configPath,
     this->ShortSwitch = _shortSwitch;
     this->LongSwitch = _longSwitch;
     this->ShortHelp = _shortHelp;
+    this->ConfigPath = _configPath;
 
     Configuration::instance().addConfig(_configPath, this);
 }

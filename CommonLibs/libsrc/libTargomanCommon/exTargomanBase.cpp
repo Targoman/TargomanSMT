@@ -11,6 +11,7 @@
  */
 
 #include "exTargomanBase.h"
+#include <iostream>
 
 namespace Targoman {
 namespace Common {
@@ -54,12 +55,20 @@ exTargomanNotImplemented::exTargomanNotImplemented(const QString& _message, int 
     exTargomanBase(_message, _line)
 {
     this->Message.append(">;exTargomanNotImplemented");
+    std::cerr<<this->Message.toUtf8().constData()<<std::endl;
 }
 
 exTargomanMustBeImplemented::exTargomanMustBeImplemented(const QString& _message, int _line) :
     exTargomanNotImplemented(_message, _line)
 {
     this->Message.append(">;exTargomanMustBeImplemented");
+}
+
+exTargomanInitialization::exTargomanInitialization(const QString& _message, int _line) :
+    exTargomanBase(_message, _line)
+{
+    this->Message.append(">;exTargomanInitialization");
+    std::cerr<<this->Message.toUtf8().constData()<<std::endl;
 }
 
 }

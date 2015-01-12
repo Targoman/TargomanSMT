@@ -17,11 +17,15 @@
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/clsCmdProgressBar.h"
 #include "libTargomanCommon/HashFunctions.h"
+#include "libTargomanCommon/Configuration.h"
 
 #include <iostream>
 #include <unistd.h>
 
 using namespace Targoman::Common;
+
+static clsConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
+
 
 class exSample: public exTargomanBase
 {
@@ -109,6 +113,8 @@ int main(int argc, char *argv[])
 
   checkOutput();
 
+
+  A.toVariant();
 
   clsSample Sample;
 
