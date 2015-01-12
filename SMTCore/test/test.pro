@@ -29,6 +29,7 @@ TARGET = test_$$ProjectName
 DESTDIR = $$BaseTestBinFolder
 OBJECTS_DIR = $$BaseBuildFolder/obj
 MOC_DIR = $$BaseBuildFolder/moc
-INCLUDEPATH += $$BasePath/libsrc
+INCLUDEPATH += $$BasePath/libsrc \
+               $$BasePath/libsrc/lib$$ProjectName \
 QMAKE_LIBDIR += $$BaseLibraryFolder
 LIBS += -l$$ProjectName

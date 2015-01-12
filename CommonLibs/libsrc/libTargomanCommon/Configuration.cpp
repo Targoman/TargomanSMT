@@ -203,5 +203,54 @@ clsConfigurableAbstract::clsConfigurableAbstract(const QString &_configPath,
     Configuration::instance().addConfig(_configPath, this);
 }
 
+#define _NUMERIC_CONFIGURABLE_IMPL(_name, _variantType, _type, _nextType, _min, _max) \
+    template <> \
+        bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage){ \
+            if (_value.canConvert(_variantType) == false) {\
+                _errorMessage = "Unable to convert" + _value.toString() + " to numeric."; \
+                return false;\
+            }else if (_value.value<_nextType>() > _max || _value.value<_nextType>() < _min ){ \
+                _errorMessage = QString("%1 values must be between (%2 : %3)").arg(_name).arg(_min).arg(_max); \
+                return false; \
+            }else return true; \
+        } \
+    template <> \
+        void clsConfigurable<_type>::setFromVariant(const QVariant& _value){ \
+            QString ErrorMessage; \
+            if (this->validate(_value, ErrorMessage)) this->Value = _value.value<_type>(); \
+            else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);\
+        }
+
+/***************************************************************************************/
+_NUMERIC_CONFIGURABLE_IMPL("qint8",QVariant::Int,qint8,qint16, CHAR_MIN,CHAR_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("qint16",QVariant::Int,qint16,qint32, SHRT_MIN,SHRT_MAX)
+#ifdef TARGOMAN_ARCHITECTURE_64
+_NUMERIC_CONFIGURABLE_IMPL("qint32",QVariant::Int,qint32,qint64, INT_MIN, INT_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("qint64",QVariant::Int,qint64,qint64, LONG_MIN,LONG_MAX)
+#else
+_NUMERIC_CONFIGURABLE_IMPL("qint32",QVariant::ULongLong,qint32,qint64, LONG_MIN, LONG_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("qint64",QVariant::ULongLong,qint64,qint64, LONG_LONG_MIN,LONG_LONG_MAX)
+#endif
+
+_NUMERIC_CONFIGURABLE_IMPL("quint8",QVariant::UInt,quint8,quint16, 0,CHAR_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("quint16",QVariant::UInt,quint16,quint32, 0,USHRT_MAX)
+#ifdef TARGOMAN_ARCHITECTURE_64
+_NUMERIC_CONFIGURABLE_IMPL("quint32",QVariant::ULongLong,quint32,quint64, 0, UINT_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("quint64",QVariant::ULongLong,quint64,quint64, 0,ULONG_MAX)
+#else
+_NUMERIC_CONFIGURABLE_IMPL("quint32",QVariant::ULongLong,quint32,quint64, 0, ULONG_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("quint64",QVariant::ULongLong,quint64,quint64, 0,ULONG_LONG_MAX)
+#endif
+
+_NUMERIC_CONFIGURABLE_IMPL("double",QVariant::Double,double,double, DBL_MIN, DBL_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("float",QVariant::Double, float,double, FLT_MIN,FLT_MAX)
+
+//////QString
+template <>
+    bool clsConfigurable<QString>::validate(const QVariant&, QString& ){ return true; }
+template <>
+    void clsConfigurable<QString>::setFromVariant(const QVariant& _value){ this->Value = _value.toString(); }
+
+
 }
 }

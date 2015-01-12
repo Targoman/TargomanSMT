@@ -12,12 +12,14 @@
 
 #ifndef TARGOMAN_CORE_PRIVATE_LEXICALREORDERING_INTFLEXICALREORDERING_H
 #define TARGOMAN_CORE_PRIVATE_LEXICALREORDERING_INTFLEXICALREORDERING_H
+
+#include "GlobalConfigs.h"
+
 namespace Targoman {
 namespace Core {
 namespace Private {
 namespace LexicalReordering {
 
-#include "Configurations.h"
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
 
