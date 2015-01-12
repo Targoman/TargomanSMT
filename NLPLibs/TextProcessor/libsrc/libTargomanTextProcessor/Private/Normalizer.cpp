@@ -22,6 +22,7 @@
 
 namespace Targoman {
 namespace NLPLibs {
+namespace TextProcessor_{
 namespace Private {
 
 
@@ -611,6 +612,8 @@ QString Normalizer::fullTrim(const QString &_str)
             Normalized+=_str.at(i);
     }
     return Normalized;
+}
+
 }
 }
 }

@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_NLPLIBS_PRIVATE_NORMALIZER_H
-#define TARGOMAN_NLPLIBS_PRIVATE_NORMALIZER_H
+#ifndef TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_NORMALIZER_H
+#define TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_NORMALIZER_H
 
 #include <QHash>
 #include <QSet>
@@ -22,6 +22,7 @@
 
 namespace Targoman {
 namespace NLPLibs {
+namespace TextProcessor_{
 namespace Private {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exNormalizer, exTextProcessor);
@@ -113,5 +114,6 @@ private:
 }
 }
 }
+}
 
-#endif // TARGOMAN_NLPLIBS_PRIVATE_NORMALIZER_H
+#endif // TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_NORMALIZER_H

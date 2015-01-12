@@ -66,6 +66,7 @@ public:
         return *(Q_LIKELY(Instance) ? Instance : (Instance = new TextProcessor));}
 
     bool init(const stuConfigs &_configs) const;
+    bool init(const QString _configFile = "");
 
     QString text2IXML(const QString& _inStr,
                       const QString& _lang = "",
@@ -85,7 +86,6 @@ private:
     Q_DISABLE_COPY(TextProcessor)
 private:
     static TextProcessor* Instance;
-
 };
 
 }

@@ -70,10 +70,10 @@ void Configuration::init(const QStringList &_arguments)
                 bool Found = false;
                 while(BasePath.contains("/")){
                     BasePath.truncate(BasePath.lastIndexOf("/"));
-                    /*if (this->pPrivate->Configs.value(BasePath).Type == QVariant::UserType){
+                    if (this->pPrivate->Configs.value(BasePath)->argCount() < 0){
                         Found = true;
                         break;
-                    }*/
+                    }
 
                 }
                 if (Found)
@@ -134,39 +134,12 @@ void Configuration::init(const QStringList &_arguments)
             throw exConfiguration(ErrorMessage);
     }
 
-    //////////////////////////////////////////////////
-    /// Initialize external libraries
-    //////////////////////////////////////////////////
-    /// TODO: Move to engine
-    ///                Text Processor
-    /////////////////////////////////////////////////////
-   /* {
-        TextProcessor::stuConfigs TextProcessorConfigs;
-        TextProcessorConfigs.AbbreviationsFile = this->getConfig("TextProcessor/AbbreviationFile").toString();
-        TextProcessorConfigs.NormalizationFile = this->getConfig("TextProcessor/NormalizationFile").toString();
-        TextProcessorConfigs.SpellCorrectorBaseConfigPath =
-                this->getConfig("TextProcessor/SpellCorrectorBaseConfigPath").toString();
-
-        if (this->pPrivate->ConfigFilePath.size()){
-            QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
-            ConfigFile.beginGroup("TextProcessor/SpellCorrectorLanguageBasedConfigs");
-            foreach(const QString& Lang, ConfigFile.childGroups()){
-                ConfigFile.beginGroup(Lang);
-                foreach (const QString& Key, ConfigFile.allKeys())
-                    TextProcessorConfigs.SpellCorrectorLanguageBasedConfigs[Lang].insert(Key, ConfigFile.value(Key));
-                ConfigFile.endGroup();
-            }
-            ConfigFile.endGroup();
-        }
-        TextProcessor::instance().init(TextProcessorConfigs);
-    }*/
-
     this->pPrivate->Initialized = true;
 }
 
 void Configuration::save2File(const QString &_fileName, bool _backup)
 {
-
+//TODO implement me
 }
 
 void Configuration::addConfig(const QString _path, clsConfigurableAbstract *_item)
@@ -199,6 +172,7 @@ clsConfigurableAbstract::clsConfigurableAbstract(const QString &_configPath,
     this->LongSwitch = _longSwitch;
     this->ShortHelp = _shortHelp;
     this->ConfigPath = _configPath;
+    this->ArgCount = this->ShortHelp.split(" ").size();
 
     Configuration::instance().addConfig(_configPath, this);
 }

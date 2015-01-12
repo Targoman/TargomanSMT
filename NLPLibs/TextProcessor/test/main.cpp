@@ -15,7 +15,7 @@
 #include "libTargomanTextProcessor/Private/Normalizer.h"
 #include "libTargomanTextProcessor/Private/Unicode.hpp"
 #include "libTargomanTextProcessor/Private/SpellCorrector.h"
-using namespace Targoman::NLPLibs::Private;
+using namespace Targoman::NLPLibs::TextProcessor_::Private;
 #include "libTargomanCommon/Logger.h"
 using namespace Targoman::Common;
 
@@ -77,9 +77,9 @@ int main(int _argc, char *_argv[])
             TargomanDebug(1,"*******************************************************************************")
             QString Line = Stream.readLine();
             TargomanDebug(1, "[ORG]\n"<<Line);
-            Line = Targoman::NLPLibs::Private::Normalizer::instance().normalize(Line);
+            Line = Targoman::NLPLibs::TextProcessor_::Private::Normalizer::instance().normalize(Line);
             TargomanDebug(1, "[NRM]\n"<<Line);
-            Line = Targoman::NLPLibs::Private::SpellCorrector::instance().process("fa",Line,false);
+            Line = Targoman::NLPLibs::TextProcessor_::Private::SpellCorrector::instance().process("fa",Line,false);
             TargomanDebug(1, "[FNL]\n"<<Line);
         }
         /**/

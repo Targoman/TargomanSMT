@@ -16,6 +16,7 @@
 
 namespace Targoman {
 namespace NLPLibs {
+namespace TextProcessor_{
 namespace Private {
 
 IXMLWriter* IXMLWriter::Instance = NULL;
@@ -316,6 +317,7 @@ QString IXMLWriter::markByRegex(const QString &_phrase,
     return OutputPhrase;
 }
 
+}
 }
 }
 }

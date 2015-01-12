@@ -24,6 +24,7 @@
 
 namespace Targoman {
 namespace NLPLibs {
+namespace TextProcessor_{
 namespace Private {
 
 SpellCorrector* SpellCorrector::Instance = NULL;
@@ -234,6 +235,7 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
     return this->postInit(_settings);
 }
 
+}
 }
 }
 }

@@ -15,7 +15,8 @@ HEADERS += \
     libTargomanTextProcessor/Private/Unicode.hpp \
     libTargomanTextProcessor/Private/SpellCheckers/clsPersianSpellCorrector.h \
     libTargomanTextProcessor/Private/IXMLWriter.h \
-    libTargomanTextProcessor/Private/SpellCorrector.h
+    libTargomanTextProcessor/Private/SpellCorrector.h \
+    libTargomanTextProcessor/Private/Configs.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -23,7 +24,8 @@ SOURCES += libID.cpp \
     libTargomanTextProcessor/TextProcessor.cpp \
     libTargomanTextProcessor/Private/SpellCheckers/clsPersianSpellCorrector.cpp \
     libTargomanTextProcessor/Private/IXMLWriter.cpp \
-    libTargomanTextProcessor/Private/SpellCorrector.cpp
+    libTargomanTextProcessor/Private/SpellCorrector.cpp \
+    libTargomanTextProcessor/Private/Configs.cpp
 
 OTHER_FILES += \
     conf/Abbreviations.tbl \

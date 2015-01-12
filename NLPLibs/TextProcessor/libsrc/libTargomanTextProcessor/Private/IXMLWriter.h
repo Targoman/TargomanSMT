@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_NLPLIBS_PRIVATE_CLSIXMLWRITER_H
-#define TARGOMAN_NLPLIBS_PRIVATE_CLSIXMLWRITER_H
+#ifndef TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_CLSIXMLWRITER_H
+#define TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_CLSIXMLWRITER_H
 
 #include <QTextStream>
 #include <QRegExp>
@@ -22,6 +22,7 @@
 
 namespace Targoman {
 namespace NLPLibs {
+namespace TextProcessor_{
 namespace Private {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exIXMLWriter, exTextProcessor);
@@ -95,5 +96,6 @@ private:
 }
 }
 }
+}
 
-#endif // TARGOMAN_NLPLIBS_PRIVATE_CLSIXMLWRITER_H
+#endif // TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_CLSIXMLWRITER_H

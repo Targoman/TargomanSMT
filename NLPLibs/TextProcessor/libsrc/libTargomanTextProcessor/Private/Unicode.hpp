@@ -10,8 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_NLPLIBS_PRIVATE_UNICODE_HPP
-#define TARGOMAN_NLPLIBS_PRIVATE_UNICODE_HPP
+#ifndef TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_UNICODE_HPP
+#define TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_UNICODE_HPP
 
 #include <QHash>
 #include <QChar>
@@ -28,6 +28,7 @@ QT_END_NAMESPACE
 
 namespace Targoman {
 namespace NLPLibs {
+namespace TextProcessor_{
 namespace Private {
 
 //More info on http://www.fileformat.info/info/unicode/category
@@ -2293,5 +2294,6 @@ const ScriptBasedNormalizer ScriptBasedNormalizers[]={
 }
 }
 }
+}
 
-#endif // TARGOMAN_NLPLIBS_PRIVATE_UNICODE_HPP
+#endif // TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_UNICODE_HPP

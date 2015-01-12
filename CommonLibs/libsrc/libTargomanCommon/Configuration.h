@@ -49,7 +49,8 @@ public:
     inline const QString& shortSwitch(){return this->ShortSwitch;}
     inline const QString& shortHelp(){return this->ShortHelp;}
     inline const QString& longSwitch(){return this->LongSwitch;}
-    inline size_t argCount(){return this->ArgCount;}
+    inline qint8 argCount(){return this->ArgCount;}
+    inline const QString& configPath(){return this->ConfigPath;}
 
 protected:
     QString ConfigPath;
@@ -57,10 +58,42 @@ protected:
     QString ShortSwitch;
     QString ShortHelp;
     QString LongSwitch;
-    size_t  ArgCount;
+    qint8   ArgCount;
 };
 
 /***************************************************************************************/
+/**
+ * @brief The clsFileBasedConfig class is used when there are more optional configs stored in configuration file
+ * this optional configs will not be stored and monitored by configuration manager.
+ */
+class clsFileBasedConfig : public clsConfigurableAbstract{
+public:
+    clsFileBasedConfig(const QString&  _configPath) :
+        clsConfigurableAbstract(_configPath, "OPTIONAL_CONFIGS_IN_FILE"){
+        this->ArgCount = -1;
+    }
+
+    virtual inline void setFromVariant(const QVariant& ){
+        throw exTargomanNotImplemented(this->ConfigPath + " is Abstract");
+    }
+
+    virtual inline QVariant    toVariant(){
+        throw exTargomanNotImplemented(this->ConfigPath + " is Abstract");
+    }
+
+    virtual inline bool        validate(const QVariant&, QString&){
+        return true;
+    }
+
+    virtual inline bool        crossValidate(QString& ){
+        return true;
+    }
+};
+
+/***************************************************************************************/
+/**
+ * @brief The clsConfigurable template is used to store and validate different configurable items
+ */
 template <class Type_t> class clsConfigurable : public clsConfigurableAbstract
 {
 public:
@@ -125,6 +158,10 @@ _SPECIAL_CONFIGURABLE(float)
 _SPECIAL_CONFIGURABLE(QString)
 
 /***************************************************************************************/
+/**
+ * @brief The Configuration class is the base configuration manager class.
+ * Currently it will just manage Arguments and config file
+ */
 class Configuration
 {
 public:

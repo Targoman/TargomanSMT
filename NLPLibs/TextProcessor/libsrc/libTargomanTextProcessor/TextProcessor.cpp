@@ -15,7 +15,9 @@
 #include "Private/Normalizer.h"
 #include "Private/SpellCorrector.h"
 #include "Private/IXMLWriter.h"
-using namespace Targoman::NLPLibs::Private;
+#include "Private/Configs.h"
+#include <QSettings>
+using namespace Targoman::NLPLibs::TextProcessor_::Private;
 
 #include "ISO639.h"
 
@@ -44,6 +46,32 @@ bool TextProcessor::init(const stuConfigs& _configs) const
     SpellCorrector::instance().init(_configs.SpellCorrectorBaseConfigPath, _configs.SpellCorrectorLanguageBasedConfigs);
     IXMLWriter::instance().init(_configs.AbbreviationsFile);
     return true;
+}
+
+/**
+ * @brief TextProcessor::init Initialization method used in combination with TargomanStyle configurations
+ * @return
+ */
+bool TextProcessor::init(const QString _configFile)
+{
+    TextProcessor::stuConfigs MyConfigs;
+    MyConfigs.AbbreviationsFile = TextProcessor_::Private::Configs.AbbreviationFile.value();
+    MyConfigs.NormalizationFile = TextProcessor_::Private::Configs.NormalizationFile.value();
+    MyConfigs.SpellCorrectorBaseConfigPath = TextProcessor_::Private::Configs.SpellCorrectorBaseConfigPath.value();
+
+    if (_configFile.size()){
+        QSettings ConfigFile(_configFile, QSettings::IniFormat);
+
+        ConfigFile.beginGroup(TextProcessor_::Private::Configs.SpellCorrectorLanguageBasedConfigs.configPath());
+        foreach(const QString& Lang, ConfigFile.childGroups()){
+            ConfigFile.beginGroup(Lang);
+            foreach (const QString& Key, ConfigFile.allKeys())
+                MyConfigs.SpellCorrectorLanguageBasedConfigs[Lang].insert(Key, ConfigFile.value(Key));
+            ConfigFile.endGroup();
+        }
+        ConfigFile.endGroup();
+    }
+    this->init(MyConfigs);
 }
 
 /**
@@ -154,7 +182,4 @@ QString TextProcessor::normalizeText(const QString _input, bool _interactive, co
 
 }
 }
-
-
-
 

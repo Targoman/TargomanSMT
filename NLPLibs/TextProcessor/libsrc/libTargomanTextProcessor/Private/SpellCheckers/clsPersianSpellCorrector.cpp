@@ -16,6 +16,7 @@
 
 namespace Targoman {
 namespace NLPLibs {
+namespace TextProcessor_{
 namespace Private {
 
 const QString PERSIAN_Mi         = QStringLiteral("می");
@@ -340,6 +341,7 @@ QString clsPersianSpellCorrector::processTar_Tarin(const QString& _prefix,
     return "";
 }
 
+}
 }
 }
 }
