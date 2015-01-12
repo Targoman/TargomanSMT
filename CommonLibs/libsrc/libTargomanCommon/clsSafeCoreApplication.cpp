@@ -34,5 +34,10 @@ bool clsSafeCoreApplication::notify(QObject * _object, QEvent * _ev)
     return false;
 }
 
+/*
+check assertion file from http://www.dev.voxforge.org/projects/Main/browser/Tags/AudioSegmentation/AudioBook/input_files/g2p/source/Assertions.hh
+
+ */
+
 }
 }

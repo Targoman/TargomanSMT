@@ -13,8 +13,9 @@
 #ifndef TARGOMAN_COMMON_CONFIGURATION_H
 #define TARGOMAN_COMMON_CONFIGURATION_H
 
-#include "libTargomanCommon/exTargomanBase.h"
 #include <cfloat>
+#include "libTargomanCommon/exTargomanBase.h"
+#include "libTargomanCommon/Constants.h"
 
 namespace Targoman {
 namespace Common {
@@ -27,8 +28,18 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
 
 
 class clsConfigurableAbstract;
+/***************************************************************************************/
+class clsCrossValidateAbstract{
+public:
+    clsCrossValidateAbstract(const clsConfigurableAbstract& _item):
+        Item(_item)
+    {}
 
-typedef bool (*isValidConfig_t)(clsConfigurableAbstract* _item, QString& _errorMessageHolder);
+    virtual bool validate(QString& _errorMessage) = 0;
+
+protected:
+    const clsConfigurableAbstract& Item;
+};
 
 /***************************************************************************************/
 class clsConfigurableAbstract
@@ -41,16 +52,16 @@ public:
                             const QString&  _longSwitch = "");
 
     virtual void        setFromVariant(const QVariant& _value) = 0;
-    virtual QVariant    toVariant() = 0;
-    virtual bool        validate(const QVariant& _value, QString& _errorMessage) = 0;
-    virtual bool        crossValidate(QString& _errorMessage) = 0;
+    virtual QVariant    toVariant() const = 0 ;
+    virtual bool        validate(const QVariant& _value, QString& _errorMessage) const = 0 ;
+    virtual bool        crossValidate(QString& _errorMessage) const = 0;
 
-    inline const QString& description(){return this->Description;}
-    inline const QString& shortSwitch(){return this->ShortSwitch;}
-    inline const QString& shortHelp(){return this->ShortHelp;}
-    inline const QString& longSwitch(){return this->LongSwitch;}
-    inline qint8 argCount(){return this->ArgCount;}
-    inline const QString& configPath(){return this->ConfigPath;}
+    inline const QString& description()const{return this->Description;}
+    inline const QString& shortSwitch()const{return this->ShortSwitch;}
+    inline const QString& shortHelp()const{return this->ShortHelp;}
+    inline const QString& longSwitch()const{return this->LongSwitch;}
+    inline qint8 argCount()const{return this->ArgCount;}
+    inline const QString& configPath()const{return this->ConfigPath;}
 
 protected:
     QString ConfigPath;
@@ -77,15 +88,15 @@ public:
         throw exTargomanNotImplemented(this->ConfigPath + " is Abstract");
     }
 
-    virtual inline QVariant    toVariant(){
+    virtual inline QVariant    toVariant() const{
         throw exTargomanNotImplemented(this->ConfigPath + " is Abstract");
     }
 
-    virtual inline bool        validate(const QVariant&, QString&){
+    virtual inline bool        validate(const QVariant&, QString&) const{
         return true;
     }
 
-    virtual inline bool        crossValidate(QString& ){
+    virtual inline bool        crossValidate(QString& ) const{
         return true;
     }
 };
@@ -100,7 +111,7 @@ public:
     clsConfigurable(const QString&  _configPath,
                     const QString&  _description,
                     const QVariant& _default,
-                    isValidConfig_t _crossValidator = NULL,
+                    clsCrossValidateAbstract* _crossValidator = NULL,
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
                     const QString&  _LongSwitch = ""):
@@ -113,35 +124,35 @@ public:
         if (!this->validate(_default, ErrorMessage))
             throw exTargomanInitialization("Invalid default value for: " + _configPath + ": " + ErrorMessage);
         this->setFromVariant(_default);
-        this->fCrossValidator = _crossValidator;
+        this->CrossValidator = _crossValidator;
     }
 
     virtual inline void setFromVariant(const QVariant& _value){
         throw exTargomanMustBeImplemented("setFromVariant for "+this->ConfigPath+" Not Implemented");
     }
 
-    virtual inline QVariant    toVariant(){
+    virtual inline QVariant    toVariant() const{
         return QVariant(this->Value);
     }
 
-    virtual inline bool        validate(const QVariant& _value, QString& _errorMessage){
+    virtual inline bool        validate(const QVariant& _value, QString& _errorMessage) const{
         return true;
     }
 
-    virtual inline bool        crossValidate(QString& _errorMessage){
-        return this->fCrossValidator(this, _errorMessage);
+    virtual inline bool        crossValidate(QString& _errorMessage) const{
+        return Q_LIKELY(this->CrossValidator) ? this->CrossValidator->validate(_errorMessage) : true;
     }
 
     inline Type_t  value(){return this->Value;}
 
 private:
     Type_t  Value;
-    isValidConfig_t fCrossValidator;
+    clsCrossValidateAbstract* CrossValidator;
 };
 
 /***************************************************************************************/
 #define _SPECIAL_CONFIGURABLE(_type) \
-    template <> bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage);\
+    template <> bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
     template <> void clsConfigurable<_type>::setFromVariant(const QVariant& _value);
 
 /***************************************************************************************/
@@ -156,6 +167,45 @@ _SPECIAL_CONFIGURABLE(quint64)
 _SPECIAL_CONFIGURABLE(double)
 _SPECIAL_CONFIGURABLE(float)
 _SPECIAL_CONFIGURABLE(QString)
+_SPECIAL_CONFIGURABLE(bool)
+/***************************************************************************************/
+namespace Validators {
+    class clsPathValidator : public clsCrossValidateAbstract{
+    public:
+        clsPathValidator(const clsConfigurableAbstract& _item,
+                         PathAccess _requiredAccess);
+        bool validate(QString &_errorMessage);
+    private:
+        PathAccess RequiredAccess;
+    };
+    ///////////////////////////////////////////////////////////////////////////////////////
+    class clsIntValidator : public clsCrossValidateAbstract{
+    public:
+        clsIntValidator(const clsConfigurableAbstract& _item,
+                        qint64 _min, qint64 _max);
+        bool validate(QString &_errorMessage);
+    private:
+        qint64 Min,Max;
+    };
+    ///////////////////////////////////////////////////////////////////////////////////////
+    class clsUIntValidator : public clsCrossValidateAbstract{
+    public:
+        clsUIntValidator(const clsConfigurableAbstract& _item,
+                         quint64 _min, quint64 _max);
+        bool validate(QString &_errorMessage);
+    private:
+        quint64 Min,Max;
+    };
+    ///////////////////////////////////////////////////////////////////////////////////////
+    class clsDoubleValidator : public clsCrossValidateAbstract{
+    public:
+        clsDoubleValidator(const clsConfigurableAbstract& _item,
+                           double _min, double _max);
+        bool validate(QString &_errorMessage);
+    private:
+        double Max,Min;
+    };
+}
 
 /***************************************************************************************/
 /**
@@ -169,7 +219,7 @@ public:
     static inline Configuration& instance(){
         return *(Q_LIKELY(Instance) ? Instance : (Instance = new Configuration));}
 
-    void init(const QStringList &_arguments);
+    void init(const QStringList &_arguments, const QString &_license);
     void save2File(const QString&  _fileName, bool _backup);
     void addConfig(const QString _path, clsConfigurableAbstract* _item);
     QVariant getConfig(const QString& _path, const QVariant &_default = QVariant());

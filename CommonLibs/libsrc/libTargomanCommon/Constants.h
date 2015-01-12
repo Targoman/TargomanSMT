@@ -14,6 +14,7 @@
 #define TARGOMAN_COMMON_CONSTANTS_H
 
 #include "libTargomanCommon/Types.h"
+#include "libTargomanCommon/Macros.h"
 
 namespace Targoman {
 namespace Common {
@@ -26,7 +27,21 @@ struct Constants
 
 };
 
+class PathAccess{
+public:
+    enum Option{
+        Readable   = 0x01,
+        Writeatble = 0x02,
+        Executable = 0x04,
+        File       = 0x08,
+        Dir        = 0x10
+    };
+    Q_DECLARE_FLAGS(Options, Option)
+};
+
 }
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Targoman::Common::PathAccess::Options)
 
 #endif // TARGOMAN_COMMON_CONSTANTS_H

@@ -29,16 +29,17 @@ public:
         QString         LongSwitch;
         QString         ShortHelp;
         QString         LongHelp;
-        isValidConfig_t fValidator;
+        clsCrossValidateAbstract* Validator;
     };
+
+    void printHelp(const QString &_license);
 
     QHash<QString, clsConfigurableAbstract*>    Configs;
     QString                                    ConfigFilePath;
     bool Initialized;
 
-//TODO add --save switch
+    //TODO add --save switch
 };
-
 
 }
 }

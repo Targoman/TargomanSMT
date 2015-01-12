@@ -37,6 +37,8 @@ public:
     QMutex  mxLog;
     QString ActorUUID;
     QHash<QString, QString> Actors;
+
+    //TODO add configuration settings
 };
 
 }

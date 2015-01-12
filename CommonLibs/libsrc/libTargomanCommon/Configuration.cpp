@@ -13,6 +13,7 @@
 #include <QCoreApplication>
 #include <QSettings>
 #include <QFileInfo>
+#include <iostream>
 #include "Configuration.h"
 #include "Private/clsConfiguration_p.h"
 
@@ -32,9 +33,16 @@ Configuration::~Configuration()
     //Defined just to suppress compiler error on QScoppedPointer
 }
 
-void Configuration::init(const QStringList &_arguments)
+void Configuration::init(const QStringList &_arguments, const QString& _license)
 {
     QString ErrorMessage;
+
+    if (_arguments.indexOf(QRegExp("-h|--help")) >= 0){
+        this->pPrivate->printHelp(_license);
+        QCoreApplication::exit(1);
+        exit(1);
+        return;
+    }
     //////////////////////////////////////////////////
     ///check arguments for configfile path or set default configfile path
     //////////////////////////////////////////////////
@@ -139,7 +147,7 @@ void Configuration::init(const QStringList &_arguments)
 
 void Configuration::save2File(const QString &_fileName, bool _backup)
 {
-//TODO implement me
+    //TODO implement me
 }
 
 void Configuration::addConfig(const QString _path, clsConfigurableAbstract *_item)
@@ -160,6 +168,33 @@ QVariant Configuration::getConfig(const QString &_path, const QVariant& _default
     else
         return _default;
 }
+/***********************************************************************************************/
+void Private::clsConfigurationPrivate::printHelp(const QString& _license)
+{
+    std::cout<<_license.toUtf8().constData()<<endl;
+    std::cout<<"Usage:"<<std::endl;
+    std::cout<<"\t-h|--help:\t Print this help"<<std::endl;
+    QStringList Keys = this->Configs.keys();
+    Keys.sort();
+    foreach(const QString& Key, Keys){
+        stuConfigItem* Item = this->Configs.value(Key);
+        if (Item && (Item->ShortSwitch.size() || Item->LongSwitch.size())){
+            std::cout<<"\t";
+            if(Item->ShortSwitch.size())
+                std::cout<<"-" + Item->ShortSwitch;
+            if (Item->LongSwitch.size()){
+                if (Item->ShortSwitch.size())
+                    std::cout<<"|";
+                std::cout<<Item->LongSwitch;
+            }
+            if (Item->ShortHelp)
+                std::cout<<Item->ShortHelp<<std::endl;
+            std::cout<<"\t\t\t"<<Item->LongHelp<<std::endl;
+        }
+    }
+}
+
+/***********************************************************************************************/
 
 clsConfigurableAbstract::clsConfigurableAbstract(const QString &_configPath,
                                                  const QString &_description,
@@ -179,21 +214,21 @@ clsConfigurableAbstract::clsConfigurableAbstract(const QString &_configPath,
 
 #define _NUMERIC_CONFIGURABLE_IMPL(_name, _variantType, _type, _nextType, _min, _max) \
     template <> \
-        bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage){ \
-            if (_value.canConvert(_variantType) == false) {\
-                _errorMessage = "Unable to convert" + _value.toString() + " to numeric."; \
-                return false;\
-            }else if (_value.value<_nextType>() > _max || _value.value<_nextType>() < _min ){ \
-                _errorMessage = QString("%1 values must be between (%2 : %3)").arg(_name).arg(_min).arg(_max); \
-                return false; \
-            }else return true; \
-        } \
+    bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const{ \
+        if (_value.canConvert(_variantType) == false) {\
+            _errorMessage = "Unable to convert" + _value.toString() + " to numeric."; \
+            return false;\
+        }else if (_value.value<_nextType>() > _max || _value.value<_nextType>() < _min ){ \
+            _errorMessage = QString("%1 values must be between (%2 : %3)").arg(_name).arg(_min).arg(_max); \
+            return false; \
+        }else return true; \
+    } \
     template <> \
-        void clsConfigurable<_type>::setFromVariant(const QVariant& _value){ \
-            QString ErrorMessage; \
-            if (this->validate(_value, ErrorMessage)) this->Value = _value.value<_type>(); \
-            else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);\
-        }
+    void clsConfigurable<_type>::setFromVariant(const QVariant& _value) { \
+        QString ErrorMessage; \
+        if (this->validate(_value, ErrorMessage)) this->Value = _value.value<_type>(); \
+        else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);\
+    }
 
 /***************************************************************************************/
 _NUMERIC_CONFIGURABLE_IMPL("qint8",QVariant::Int,qint8,qint16, CHAR_MIN,CHAR_MAX)
@@ -221,10 +256,107 @@ _NUMERIC_CONFIGURABLE_IMPL("float",QVariant::Double, float,double, FLT_MIN,FLT_M
 
 //////QString
 template <>
-    bool clsConfigurable<QString>::validate(const QVariant&, QString& ){ return true; }
+bool clsConfigurable<QString>::validate(const QVariant&, QString& )const { return true; }
 template <>
-    void clsConfigurable<QString>::setFromVariant(const QVariant& _value){ this->Value = _value.toString(); }
+void clsConfigurable<QString>::setFromVariant(const QVariant& _value){ this->Value = _value.toString(); }
 
+//////bool
+template <>
+bool clsConfigurable<bool>::validate(const QVariant& _value, QString& _errorMessage) const{
+    if (_value.canConvert(QVariant::Bool) == false) {
+        _errorMessage = "Unable to convert" + _value.toString() + " to bool.";
+        return false;
+    }else
+        return true;
+}
+template <>
+void clsConfigurable<bool>::setFromVariant(const QVariant& _value){
+    QString ErrorMessage;
+    if (this->validate(_value, ErrorMessage)) this->Value = _value.value<bool>();
+    else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
+}
+
+/***************************************************************************************/
+Validators::clsPathValidator::clsPathValidator(const clsConfigurableAbstract &_item,
+                                                       PathAccess _requiredAccess):
+    clsCrossValidateAbstract(_item),RequiredAccess(_requiredAccess)
+{}
+
+bool Validators::clsPathValidator::validate(QString &_errorMessage)
+{
+    QString Path = this->Item.toVariant().toString();
+    QFileInfo PathInfo(Path);
+
+    if (PathAccess::Dir && PathInfo.isDir() == false){
+        _errorMessage = this->Item.configPath() + ": <"+Path+"> must be a directory";
+        return false;
+    }else if (PathAccess::Dir && PathInfo.isFile() == false){
+        _errorMessage = this->Item.configPath() + ": <"+Path+"> must be a file";
+        return false;
+    }
+    if (PathAccess::Executable && PathInfo.isExecutable() == false){
+        _errorMessage = this->Item.configPath() + ": <"+Path+"> must be executable";
+        return false;
+    }
+
+    if (PathAccess::Readable && PathInfo.isReadable() == false){
+        _errorMessage = this->Item.configPath() + ": Unable to open <"+Path+"> for READING";
+        return false;
+    }
+    if (PathAccess::Writeatble && PathInfo.isWritable() == false){
+        _errorMessage = this->Item.configPath() + ": Unable to open <"+Path+"> for WRITING";
+        return false;
+    }
+    _errorMessage.clear();
+    return true;
+}
+///////////////////////////////////////////////////////////////////////
+Validators::clsIntValidator::clsIntValidator(const clsConfigurableAbstract &_item, qint64 _min, qint64 _max):
+    clsCrossValidateAbstract(_item),Max(_max),Min(_min)
+{}
+
+bool Validators::clsIntValidator::validate(QString &_errorMessage)
+{
+    qint64 Number = this->Item.toVariant().toLongLong();
+    if (Number < this->Min || Number > this->Max){
+        _errorMessage = this->Item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
+        return false;
+    }
+    _errorMessage.clear();
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////
+Validators::clsUIntValidator::clsUIntValidator(const clsConfigurableAbstract &_item, quint64 _min, quint64 _max):
+    clsCrossValidateAbstract(_item),Max(_max),Min(_min)
+{}
+
+bool Validators::clsUIntValidator::validate(QString &_errorMessage)
+{
+    quint64 Number = this->Item.toVariant().toULongLong();
+    if (Number < this->Min || Number > this->Max){
+        _errorMessage = this->Item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
+        return false;
+    }
+    _errorMessage.clear();
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////
+Validators::clsDoubleValidator::clsDoubleValidator(const clsConfigurableAbstract &_item, double _min, double _max):
+    clsCrossValidateAbstract(_item),Max(_max),Min(_min)
+{}
+
+bool Validators::clsDoubleValidator::validate(QString &_errorMessage)
+{
+    double Number = this->Item.toVariant().toDouble();
+    if (Number < this->Min || Number > this->Max){
+        _errorMessage = this->Item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
+        return false;
+    }
+    _errorMessage.clear();
+    return true;
+}
 
 }
 }

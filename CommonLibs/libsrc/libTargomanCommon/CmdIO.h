@@ -28,7 +28,6 @@ class clsOutputSettings{
 public:
     clsOutputSettings(){
         this->Details = 0xFF;
-
     }
 
     inline bool canBeShown(quint8 _level){
@@ -126,6 +125,7 @@ public:
     clsOutputSettings Normal;
     bool ShowColored;
 
+    //TODO add silent, default, and property configurations
 } extern TARGOMAN_IO_SETTINGS;
 
 void printLoadedLibs();
