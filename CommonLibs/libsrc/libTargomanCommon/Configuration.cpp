@@ -177,19 +177,19 @@ void Private::clsConfigurationPrivate::printHelp(const QString& _license)
     QStringList Keys = this->Configs.keys();
     Keys.sort();
     foreach(const QString& Key, Keys){
-        stuConfigItem* Item = this->Configs.value(Key);
-        if (Item && (Item->ShortSwitch.size() || Item->LongSwitch.size())){
+        clsConfigurableAbstract* Item = this->Configs.value(Key);
+        if (Item && (Item->shortSwitch().size() || Item->longSwitch().size())){
             std::cout<<"\t";
-            if(Item->ShortSwitch.size())
-                std::cout<<"-" + Item->ShortSwitch;
-            if (Item->LongSwitch.size()){
-                if (Item->ShortSwitch.size())
+            if(Item->shortSwitch().size())
+                std::cout<<("-" + Item->shortSwitch()).toUtf8().constData();
+            if (Item->longSwitch().size()){
+                if (Item->shortSwitch().size())
                     std::cout<<"|";
-                std::cout<<Item->LongSwitch;
+                std::cout<<Item->longSwitch().toUtf8().constData();
             }
-            if (Item->ShortHelp)
-                std::cout<<Item->ShortHelp<<std::endl;
-            std::cout<<"\t\t\t"<<Item->LongHelp<<std::endl;
+            if (Item->shortHelp().size())
+                std::cout<<Item->shortHelp().toUtf8().constData()<<std::endl;
+            std::cout<<"\t\t\t"<<Item->description().toUtf8().constData()<<std::endl;
         }
     }
 }
