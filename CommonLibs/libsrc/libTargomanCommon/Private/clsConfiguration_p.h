@@ -24,18 +24,10 @@ namespace Private {
 class clsConfigurationPrivate
 {
 public:
-    struct stuConfigItem{
-        QString         ShortSwitch;
-        QString         LongSwitch;
-        QString         ShortHelp;
-        QString         LongHelp;
-        clsCrossValidateAbstract* Validator;
-    };
-
     void printHelp(const QString &_license);
 
-    QHash<QString, clsConfigurableAbstract*>    Configs;
-    QString                                    ConfigFilePath;
+    QHash<QString, intfConfigurable*>    Configs;
+    QString                              ConfigFilePath;
     bool Initialized;
 
     //TODO add --save switch

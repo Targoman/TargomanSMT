@@ -27,25 +27,25 @@ class clsConfigurationPrivate;
 TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
 
 
-class clsConfigurableAbstract;
+class intfConfigurable;
 /***************************************************************************************/
-class clsCrossValidateAbstract{
+class intfCrossValidate{
 public:
-    clsCrossValidateAbstract(const clsConfigurableAbstract& _item):
+    intfCrossValidate(const intfConfigurable& _item):
         Item(_item)
     {}
 
     virtual bool validate(QString& _errorMessage) = 0;
 
 protected:
-    const clsConfigurableAbstract& Item;
+    const intfConfigurable& Item;
 };
 
 /***************************************************************************************/
-class clsConfigurableAbstract
+class intfConfigurable
 {
 public:
-    clsConfigurableAbstract(const QString&  _configPath,
+    intfConfigurable(const QString&  _configPath,
                             const QString&  _description,
                             const QString&  _shortSwitch = "",
                             const QString&  _shortHelp = "",
@@ -77,10 +77,10 @@ protected:
  * @brief The clsFileBasedConfig class is used when there are more optional configs stored in configuration file
  * this optional configs will not be stored and monitored by configuration manager.
  */
-class clsFileBasedConfig : public clsConfigurableAbstract{
+class clsFileBasedConfig : public intfConfigurable{
 public:
     clsFileBasedConfig(const QString&  _configPath) :
-        clsConfigurableAbstract(_configPath, "OPTIONAL_CONFIGS_IN_FILE"){
+        intfConfigurable(_configPath, "OPTIONAL_CONFIGS_IN_FILE"){
         this->ArgCount = -1;
     }
 
@@ -105,17 +105,17 @@ public:
 /**
  * @brief The clsConfigurable template is used to store and validate different configurable items
  */
-template <class Type_t> class clsConfigurable : public clsConfigurableAbstract
+template <class Type_t> class clsConfigurable : public intfConfigurable
 {
 public:
     clsConfigurable(const QString&  _configPath,
                     const QString&  _description,
                     const QVariant& _default,
-                    clsCrossValidateAbstract* _crossValidator = NULL,
+                    intfCrossValidate* _crossValidator = NULL,
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
                     const QString&  _LongSwitch = ""):
-        clsConfigurableAbstract(_configPath,
+        intfConfigurable(_configPath,
                                 _description,
                                 _shortSwitch,
                                 _shortHelp,
@@ -147,7 +147,7 @@ public:
 
 private:
     Type_t  Value;
-    clsCrossValidateAbstract* CrossValidator;
+    intfCrossValidate* CrossValidator;
 };
 
 /***************************************************************************************/
@@ -170,36 +170,36 @@ _SPECIAL_CONFIGURABLE(QString)
 _SPECIAL_CONFIGURABLE(bool)
 /***************************************************************************************/
 namespace Validators {
-    class clsPathValidator : public clsCrossValidateAbstract{
+    class clsPathValidator : public intfCrossValidate{
     public:
-        clsPathValidator(const clsConfigurableAbstract& _item,
+        clsPathValidator(const intfConfigurable& _item,
                          PathAccess _requiredAccess);
         bool validate(QString &_errorMessage);
     private:
         PathAccess RequiredAccess;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
-    class clsIntValidator : public clsCrossValidateAbstract{
+    class clsIntValidator : public intfCrossValidate{
     public:
-        clsIntValidator(const clsConfigurableAbstract& _item,
+        clsIntValidator(const intfConfigurable& _item,
                         qint64 _min, qint64 _max);
         bool validate(QString &_errorMessage);
     private:
         qint64 Min,Max;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
-    class clsUIntValidator : public clsCrossValidateAbstract{
+    class clsUIntValidator : public intfCrossValidate{
     public:
-        clsUIntValidator(const clsConfigurableAbstract& _item,
+        clsUIntValidator(const intfConfigurable& _item,
                          quint64 _min, quint64 _max);
         bool validate(QString &_errorMessage);
     private:
         quint64 Min,Max;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
-    class clsDoubleValidator : public clsCrossValidateAbstract{
+    class clsDoubleValidator : public intfCrossValidate{
     public:
-        clsDoubleValidator(const clsConfigurableAbstract& _item,
+        clsDoubleValidator(const intfConfigurable& _item,
                            double _min, double _max);
         bool validate(QString &_errorMessage);
     private:
@@ -221,7 +221,7 @@ public:
 
     void init(const QStringList &_arguments, const QString &_license);
     void save2File(const QString&  _fileName, bool _backup);
-    void addConfig(const QString _path, clsConfigurableAbstract* _item);
+    void addConfig(const QString _path, intfConfigurable* _item);
     QVariant getConfig(const QString& _path, const QVariant &_default = QVariant());
 
 private:

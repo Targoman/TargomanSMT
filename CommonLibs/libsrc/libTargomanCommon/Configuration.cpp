@@ -89,7 +89,7 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
                 else
                     throw exConfiguration("Configuration path <"+Key+"> is not registered");
             }
-            clsConfigurableAbstract* ConfigItem  = this->pPrivate->Configs[Key];
+            intfConfigurable* ConfigItem  = this->pPrivate->Configs[Key];
             QVariant Value = ConfigFile.value(Key);
             if (ConfigItem->validate(Value, ErrorMessage) == false)
                 throw exConfiguration(ErrorMessage);
@@ -137,7 +137,7 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
     //////////////////////////////////////////////////
     ///validate all config items
     //////////////////////////////////////////////////
-    foreach (clsConfigurableAbstract* ConfigItem, this->pPrivate->Configs.values()){
+    foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
         if (ConfigItem->crossValidate(ErrorMessage) == false)
             throw exConfiguration(ErrorMessage);
     }
@@ -150,7 +150,7 @@ void Configuration::save2File(const QString &_fileName, bool _backup)
     //TODO implement me
 }
 
-void Configuration::addConfig(const QString _path, clsConfigurableAbstract *_item)
+void Configuration::addConfig(const QString _path, intfConfigurable *_item)
 {
     if (this->pPrivate->Configs.contains(_path))
         throw exConfiguration("Duplicate path key: " + _path);
@@ -162,7 +162,7 @@ QVariant Configuration::getConfig(const QString &_path, const QVariant& _default
     if (this->pPrivate->Initialized == false)
         throw exConfiguration("Configuration is not initialized yet.");
 
-    clsConfigurableAbstract* Item= this->pPrivate->Configs.value(_path);
+    intfConfigurable* Item= this->pPrivate->Configs.value(_path);
     if (Item->toVariant().isValid() == false)
         return Item->toVariant();
     else
@@ -177,7 +177,7 @@ void Private::clsConfigurationPrivate::printHelp(const QString& _license)
     QStringList Keys = this->Configs.keys();
     Keys.sort();
     foreach(const QString& Key, Keys){
-        clsConfigurableAbstract* Item = this->Configs.value(Key);
+        intfConfigurable* Item = this->Configs.value(Key);
         if (Item && (Item->shortSwitch().size() || Item->longSwitch().size())){
             std::cout<<"\t";
             if(Item->shortSwitch().size())
@@ -196,11 +196,11 @@ void Private::clsConfigurationPrivate::printHelp(const QString& _license)
 
 /***********************************************************************************************/
 
-clsConfigurableAbstract::clsConfigurableAbstract(const QString &_configPath,
-                                                 const QString &_description,
-                                                 const QString &_shortSwitch,
-                                                 const QString &_shortHelp,
-                                                 const QString &_longSwitch)
+intfConfigurable::intfConfigurable(const QString &_configPath,
+                                   const QString &_description,
+                                   const QString &_shortSwitch,
+                                   const QString &_shortHelp,
+                                   const QString &_longSwitch)
 {
     this->Description = _description;
     this->ShortSwitch = _shortSwitch;
@@ -215,20 +215,20 @@ clsConfigurableAbstract::clsConfigurableAbstract(const QString &_configPath,
 #define _NUMERIC_CONFIGURABLE_IMPL(_name, _variantType, _type, _nextType, _min, _max) \
     template <> \
     bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const{ \
-        if (_value.canConvert(_variantType) == false) {\
-            _errorMessage = "Unable to convert" + _value.toString() + " to numeric."; \
-            return false;\
-        }else if (_value.value<_nextType>() > _max || _value.value<_nextType>() < _min ){ \
-            _errorMessage = QString("%1 values must be between (%2 : %3)").arg(_name).arg(_min).arg(_max); \
-            return false; \
-        }else return true; \
-    } \
+    if (_value.canConvert(_variantType) == false) {\
+    _errorMessage = "Unable to convert" + _value.toString() + " to numeric."; \
+    return false;\
+}else if (_value.value<_nextType>() > _max || _value.value<_nextType>() < _min ){ \
+    _errorMessage = QString("%1 values must be between (%2 : %3)").arg(_name).arg(_min).arg(_max); \
+    return false; \
+}else return true; \
+} \
     template <> \
     void clsConfigurable<_type>::setFromVariant(const QVariant& _value) { \
-        QString ErrorMessage; \
-        if (this->validate(_value, ErrorMessage)) this->Value = _value.value<_type>(); \
-        else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);\
-    }
+    QString ErrorMessage; \
+    if (this->validate(_value, ErrorMessage)) this->Value = _value.value<_type>(); \
+    else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);\
+}
 
 /***************************************************************************************/
 _NUMERIC_CONFIGURABLE_IMPL("qint8",QVariant::Int,qint8,qint16, CHAR_MIN,CHAR_MAX)
@@ -237,8 +237,8 @@ _NUMERIC_CONFIGURABLE_IMPL("qint16",QVariant::Int,qint16,qint32, SHRT_MIN,SHRT_M
 _NUMERIC_CONFIGURABLE_IMPL("qint32",QVariant::Int,qint32,qint64, INT_MIN, INT_MAX)
 _NUMERIC_CONFIGURABLE_IMPL("qint64",QVariant::Int,qint64,qint64, LONG_MIN,LONG_MAX)
 #else
-_NUMERIC_CONFIGURABLE_IMPL("qint32",QVariant::ULongLong,qint32,qint64, LONG_MIN, LONG_MAX)
-_NUMERIC_CONFIGURABLE_IMPL("qint64",QVariant::ULongLong,qint64,qint64, LONG_LONG_MIN,LONG_LONG_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("qint32",QVariant::LongLong,qint32,qint64, LONG_MIN, LONG_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("qint64",QVariant::LongLong,qint64,qint64, LONG_LONG_MIN,LONG_LONG_MAX)
 #endif
 
 _NUMERIC_CONFIGURABLE_IMPL("quint8",QVariant::UInt,quint8,quint16, 0,CHAR_MAX)
@@ -277,9 +277,9 @@ void clsConfigurable<bool>::setFromVariant(const QVariant& _value){
 }
 
 /***************************************************************************************/
-Validators::clsPathValidator::clsPathValidator(const clsConfigurableAbstract &_item,
-                                                       PathAccess _requiredAccess):
-    clsCrossValidateAbstract(_item),RequiredAccess(_requiredAccess)
+Validators::clsPathValidator::clsPathValidator(const intfConfigurable &_item,
+                                               PathAccess _requiredAccess):
+    intfCrossValidate(_item),RequiredAccess(_requiredAccess)
 {}
 
 bool Validators::clsPathValidator::validate(QString &_errorMessage)
@@ -311,8 +311,8 @@ bool Validators::clsPathValidator::validate(QString &_errorMessage)
     return true;
 }
 ///////////////////////////////////////////////////////////////////////
-Validators::clsIntValidator::clsIntValidator(const clsConfigurableAbstract &_item, qint64 _min, qint64 _max):
-    clsCrossValidateAbstract(_item),Max(_max),Min(_min)
+Validators::clsIntValidator::clsIntValidator(const intfConfigurable &_item, qint64 _min, qint64 _max):
+    intfCrossValidate(_item),Max(_max),Min(_min)
 {}
 
 bool Validators::clsIntValidator::validate(QString &_errorMessage)
@@ -327,8 +327,8 @@ bool Validators::clsIntValidator::validate(QString &_errorMessage)
 }
 
 ///////////////////////////////////////////////////////////////////////
-Validators::clsUIntValidator::clsUIntValidator(const clsConfigurableAbstract &_item, quint64 _min, quint64 _max):
-    clsCrossValidateAbstract(_item),Max(_max),Min(_min)
+Validators::clsUIntValidator::clsUIntValidator(const intfConfigurable &_item, quint64 _min, quint64 _max):
+    intfCrossValidate(_item),Max(_max),Min(_min)
 {}
 
 bool Validators::clsUIntValidator::validate(QString &_errorMessage)
@@ -343,8 +343,8 @@ bool Validators::clsUIntValidator::validate(QString &_errorMessage)
 }
 
 ///////////////////////////////////////////////////////////////////////
-Validators::clsDoubleValidator::clsDoubleValidator(const clsConfigurableAbstract &_item, double _min, double _max):
-    clsCrossValidateAbstract(_item),Max(_max),Min(_min)
+Validators::clsDoubleValidator::clsDoubleValidator(const intfConfigurable &_item, double _min, double _max):
+    intfCrossValidate(_item),Max(_max),Min(_min)
 {}
 
 bool Validators::clsDoubleValidator::validate(QString &_errorMessage)

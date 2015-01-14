@@ -33,8 +33,13 @@ public:
     inline bool canBeShown(quint8 _level){
         return (this->Details & 0x0F) >= _level;
     }
+    inline bool validateLevel(quint8 _level){
+        Q_ASSERT_X(_level < 8, "CmdIO",  "Level must be between 1 to 7");
+        throw std::bad_exception();
+    }
 
     inline void setLevel(quint8 _level){
+        this->validateLevel(_level);
         this->Details = (this->Details & 0xF0) + _level;
     }
 
@@ -51,6 +56,7 @@ public:
     }
 
     inline void set(quint8 _level, bool _time = false, bool _func = false, bool _line = false, bool _file = false) {
+        this->validateLevel(_level);
         this->Details = _level;
         if(_time)
             this->Details |= 0x10;
@@ -73,7 +79,10 @@ public:
                     OutStr +=  QString(" %1 %2").arg(_file).arg(this->Details & 0xC0 ? ":" : "");
             if (this->Details & 0x40)
                     OutStr +=  QString(" %1 ").arg(_function);
-            OutStr += QString(":%1").arg(_line) + " ]";
+            if (this->Details & 0x80)
+                OutStr += QString(":%1").arg(_line) + " ]";
+            else
+                OutStr += " ]";
         }
 
         return OutStr;
@@ -100,12 +109,12 @@ public:
     }
 
     void setFull(){
-        this->Debug.set(10,true,true,true);
-        this->Info.set(10,true,true,true);
-        this->Warning.set(10,true,true,true);
-        this->Happy.set(10,true,true,true);
-        this->Error.set(10,true,true,true);
-        this->Normal.set(10,true,true,true);
+        this->Debug.set(7,true,true,true);
+        this->Info.set(7,true,true,true);
+        this->Warning.set(7,true,true,true);
+        this->Happy.set(7,true,true,true);
+        this->Error.set(7,true,true,true);
+        this->Normal.set(7,true,true,true);
     }
 
     void setDefault(quint8 _debugLevel = 5, quint8 _otherLevel = 10){
