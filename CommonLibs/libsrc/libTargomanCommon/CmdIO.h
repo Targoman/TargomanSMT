@@ -35,7 +35,8 @@ public:
     }
     inline bool validateLevel(quint8 _level){
         Q_ASSERT_X(_level < 8, "CmdIO",  "Level must be between 1 to 7");
-        throw std::bad_exception();
+        if (_level > 7)
+            throw std::bad_exception();
     }
 
     inline void setLevel(quint8 _level){
