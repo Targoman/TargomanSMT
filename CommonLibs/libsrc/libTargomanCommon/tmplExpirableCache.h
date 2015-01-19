@@ -85,7 +85,7 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
         }
 
         inline int remove(const itmplKey& _key){
-            this->KeyAccessDateTime.remove(KeyAccessDateTime);
+            this->KeyAccessDateTime.remove(_key);
             return this->Cache.remove(_key);
         }
 
