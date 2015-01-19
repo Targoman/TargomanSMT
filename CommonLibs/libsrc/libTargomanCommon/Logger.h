@@ -79,11 +79,18 @@ public:
         this->Details = 0xFF;
     }
 
+    inline bool validateLevel(quint8 _level){
+        Q_ASSERT_X(_level < 10, "LogSettings",  "Level must be between 0 to 9");
+        if (_level > 9)
+            throw exLogger("Logger log Level must be between 0 to 9");
+    }
+
     inline bool canBeShown(quint8 _level){
         return (this->Details & 0x0F) >= _level;
     }
 
     inline void setLevel(quint8 _level){
+        this->validateLevel(_level);
         this->Details = (this->Details & 0xF0) + _level;
     }
 

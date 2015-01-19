@@ -34,8 +34,8 @@ public:
         return (this->Details & 0x0F) >= _level;
     }
     inline bool validateLevel(quint8 _level){
-        Q_ASSERT_X(_level < 8, "CmdIO",  "Level must be between 1 to 7");
-        if (_level > 7)
+        Q_ASSERT_X(_level < 10, "CmdIO",  "Level must be between 0 to 9");
+        if (_level > 9)
             throw std::bad_exception();
     }
 
@@ -110,15 +110,15 @@ public:
     }
 
     void setFull(){
-        this->Debug.set(7,true,true,true);
-        this->Info.set(7,true,true,true);
-        this->Warning.set(7,true,true,true);
-        this->Happy.set(7,true,true,true);
-        this->Error.set(7,true,true,true);
-        this->Normal.set(7,true,true,true);
+        this->Debug.set(9,true,true,true);
+        this->Info.set(9,true,true,true);
+        this->Warning.set(9,true,true,true);
+        this->Happy.set(9,true,true,true);
+        this->Error.set(9,true,true,true);
+        this->Normal.set(9,true,true,true);
     }
 
-    void setDefault(quint8 _debugLevel = 5, quint8 _otherLevel = 10){
+    void setDefault(quint8 _debugLevel = 5, quint8 _otherLevel = 9){
         this->Debug.set(_debugLevel,true,true,true);
         this->Info.set(_otherLevel,true);
         this->Warning.set(_otherLevel,true);
