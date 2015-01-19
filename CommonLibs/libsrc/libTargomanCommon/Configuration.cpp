@@ -114,8 +114,8 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
             for (auto ConfigItemIter = this->pPrivate->Configs.begin();
                  ConfigItemIter != this->pPrivate->Configs.end();
                  ConfigItemIter++){
-                if ((KeyIter->startsWith("--") && ConfigItemIter.value()->longSwitch() == "--" + *KeyIter) ||
-                        ConfigItemIter.value()->shortSwitch() == "-" + *KeyIter){
+                if ((KeyIter->startsWith("--") && *KeyIter == "--" + ConfigItemIter.value()->longSwitch()) ||
+                       *KeyIter  == "-" + ConfigItemIter.value()->shortSwitch()){
                     QString Value;
                     for (size_t i=0; i<ConfigItemIter.value()->argCount(); i++){
                         Value += *KeyIter + " ";
