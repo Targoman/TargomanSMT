@@ -118,11 +118,11 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
                        *KeyIter  == "-" + ConfigItemIter.value()->shortSwitch()){
                     QString Value;
                     for (size_t i=0; i<ConfigItemIter.value()->argCount(); i++){
-                        Value += *KeyIter + " ";
                         KeyIter++;
                         if (KeyIter == _arguments.end())
                             throw exConfiguration("Switch: <" +*KeyIter+ "> needs at least: " +
                                                   QString::number(ConfigItemIter.value()->argCount())+ " arguments.");
+                        Value += *KeyIter + " ";
                     }
                     if (ConfigItemIter.value()->validate(Value.trimmed(), ErrorMessage) == false)
                         throw exConfiguration(ErrorMessage);
@@ -278,7 +278,7 @@ void clsConfigurable<bool>::setFromVariant(const QVariant& _value){
 
 /***************************************************************************************/
 Validators::clsPathValidator::clsPathValidator(const intfConfigurable &_item,
-                                               PathAccess _requiredAccess):
+                                               PathAccess::Options _requiredAccess):
     intfCrossValidate(_item),RequiredAccess(_requiredAccess)
 {}
 
@@ -287,23 +287,23 @@ bool Validators::clsPathValidator::validate(QString &_errorMessage)
     QString Path = this->Item.toVariant().toString();
     QFileInfo PathInfo(Path);
 
-    if (PathAccess::Dir && PathInfo.isDir() == false){
+    if (this->RequiredAccess.testFlag(PathAccess::Dir) && PathInfo.isDir() == false){
         _errorMessage = this->Item.configPath() + ": <"+Path+"> must be a directory";
         return false;
-    }else if (PathAccess::Dir && PathInfo.isFile() == false){
+    }else if (this->RequiredAccess.testFlag(PathAccess::File) && PathInfo.isFile() == false){
         _errorMessage = this->Item.configPath() + ": <"+Path+"> must be a file";
         return false;
     }
-    if (PathAccess::Executable && PathInfo.isExecutable() == false){
+    if (this->RequiredAccess.testFlag(PathAccess::Executable) && PathInfo.isExecutable() == false){
         _errorMessage = this->Item.configPath() + ": <"+Path+"> must be executable";
         return false;
     }
 
-    if (PathAccess::Readable && PathInfo.isReadable() == false){
+    if (this->RequiredAccess.testFlag(PathAccess::Readable) && PathInfo.isReadable() == false){
         _errorMessage = this->Item.configPath() + ": Unable to open <"+Path+"> for READING";
         return false;
     }
-    if (PathAccess::Writeatble && PathInfo.isWritable() == false){
+    if (this->RequiredAccess.testFlag(PathAccess::Writeatble) && PathInfo.isWritable() == false){
         _errorMessage = this->Item.configPath() + ": Unable to open <"+Path+"> for WRITING";
         return false;
     }

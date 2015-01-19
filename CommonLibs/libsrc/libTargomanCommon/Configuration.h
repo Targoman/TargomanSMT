@@ -173,10 +173,10 @@ namespace Validators {
     class clsPathValidator : public intfCrossValidate{
     public:
         clsPathValidator(const intfConfigurable& _item,
-                         PathAccess _requiredAccess);
+                         PathAccess::Options _requiredAccess);
         bool validate(QString &_errorMessage);
     private:
-        PathAccess RequiredAccess;
+        PathAccess::Options RequiredAccess;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
     class clsIntValidator : public intfCrossValidate{
