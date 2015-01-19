@@ -76,8 +76,7 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
             if (this->TTL > 0 &&
                 QDateTime::currentDateTime().msecsTo(this->KeyAccessDateTime.value(_key)) > this->TTL){
                 this->KeyAccessDateTime.remove(_key);
-                this->Cache.remove(_key);
-                return this->Cache[_key];
+                return this->Cache.take(_key);
             }
 
             this->KeyAccessDateTime.insert(_key, QDateTime::currentDateTime());
