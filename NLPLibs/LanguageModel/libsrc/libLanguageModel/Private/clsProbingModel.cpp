@@ -12,7 +12,7 @@
  */
 
 #include "libTargomanCommon/Constants.h"
-#include "libTargomanCommon/HashFunctions.h"
+#include "libTargomanCommon/HashFunctions.hpp"
 #include "clsProbingModel.h"
 #include "../Definitions.h"
 
