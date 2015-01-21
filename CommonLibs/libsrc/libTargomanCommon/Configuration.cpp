@@ -277,65 +277,48 @@ void clsConfigurable<bool>::setFromVariant(const QVariant& _value){
 }
 
 /***************************************************************************************/
-Validators::clsPathValidator::clsPathValidator(const intfConfigurable &_item,
-                                               PathAccess::Options _requiredAccess):
-    intfCrossValidate(_item),RequiredAccess(_requiredAccess)
+Validators::clsPathValidator::clsPathValidator(PathAccess::Options _requiredAccess):
+    RequiredAccess(_requiredAccess)
 {}
 
-bool Validators::clsPathValidator::validate(QString &_errorMessage)
+bool Validators::clsPathValidator::validate(const intfConfigurable &_item, QString &_errorMessage)
 {
-    QString Path = this->Item.toVariant().toString();
+    QString Path = _item.toVariant().toString();
     QFileInfo PathInfo(Path);
 
     if (this->RequiredAccess.testFlag(PathAccess::Dir) && PathInfo.isDir() == false){
-        _errorMessage = this->Item.configPath() + ": <"+Path+"> must be a directory";
+        _errorMessage = _item.configPath() + ": <"+Path+"> must be a directory";
         return false;
     }else if (this->RequiredAccess.testFlag(PathAccess::File) && PathInfo.isFile() == false){
-        _errorMessage = this->Item.configPath() + ": <"+Path+"> must be a file";
+        _errorMessage = _item.configPath() + ": <"+Path+"> must be a file";
         return false;
     }
     if (this->RequiredAccess.testFlag(PathAccess::Executable) && PathInfo.isExecutable() == false){
-        _errorMessage = this->Item.configPath() + ": <"+Path+"> must be executable";
+        _errorMessage = _item.configPath() + ": <"+Path+"> must be executable";
         return false;
     }
 
     if (this->RequiredAccess.testFlag(PathAccess::Readable) && PathInfo.isReadable() == false){
-        _errorMessage = this->Item.configPath() + ": Unable to open <"+Path+"> for READING";
+        _errorMessage = _item.configPath() + ": Unable to open <"+Path+"> for READING";
         return false;
     }
     if (this->RequiredAccess.testFlag(PathAccess::Writeatble) && PathInfo.isWritable() == false){
-        _errorMessage = this->Item.configPath() + ": Unable to open <"+Path+"> for WRITING";
+        _errorMessage = _item.configPath() + ": Unable to open <"+Path+"> for WRITING";
         return false;
     }
     _errorMessage.clear();
     return true;
 }
 ///////////////////////////////////////////////////////////////////////
-Validators::clsIntValidator::clsIntValidator(const intfConfigurable &_item, qint64 _min, qint64 _max):
-    intfCrossValidate(_item),Max(_max),Min(_min)
+Validators::clsIntValidator::clsIntValidator(qint64 _min, qint64 _max):
+    Max(_max),Min(_min)
 {}
 
-bool Validators::clsIntValidator::validate(QString &_errorMessage)
+bool Validators::clsIntValidator::validate(const intfConfigurable &_item, QString &_errorMessage)
 {
-    qint64 Number = this->Item.toVariant().toLongLong();
+    qint64 Number = _item.toVariant().toLongLong();
     if (Number < this->Min || Number > this->Max){
-        _errorMessage = this->Item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
-        return false;
-    }
-    _errorMessage.clear();
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////
-Validators::clsUIntValidator::clsUIntValidator(const intfConfigurable &_item, quint64 _min, quint64 _max):
-    intfCrossValidate(_item),Max(_max),Min(_min)
-{}
-
-bool Validators::clsUIntValidator::validate(QString &_errorMessage)
-{
-    quint64 Number = this->Item.toVariant().toULongLong();
-    if (Number < this->Min || Number > this->Max){
-        _errorMessage = this->Item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
+        _errorMessage = _item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
         return false;
     }
     _errorMessage.clear();
@@ -343,15 +326,31 @@ bool Validators::clsUIntValidator::validate(QString &_errorMessage)
 }
 
 ///////////////////////////////////////////////////////////////////////
-Validators::clsDoubleValidator::clsDoubleValidator(const intfConfigurable &_item, double _min, double _max):
-    intfCrossValidate(_item),Max(_max),Min(_min)
+Validators::clsUIntValidator::clsUIntValidator(quint64 _min, quint64 _max):
+    Max(_max),Min(_min)
 {}
 
-bool Validators::clsDoubleValidator::validate(QString &_errorMessage)
+bool Validators::clsUIntValidator::validate(const intfConfigurable &_item, QString &_errorMessage)
 {
-    double Number = this->Item.toVariant().toDouble();
+    quint64 Number = _item.toVariant().toULongLong();
     if (Number < this->Min || Number > this->Max){
-        _errorMessage = this->Item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
+        _errorMessage = _item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
+        return false;
+    }
+    _errorMessage.clear();
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////
+Validators::clsDoubleValidator::clsDoubleValidator(double _min, double _max):
+    Max(_max),Min(_min)
+{}
+
+bool Validators::clsDoubleValidator::validate(const intfConfigurable &_item, QString &_errorMessage)
+{
+    double Number = _item.toVariant().toDouble();
+    if (Number < this->Min || Number > this->Max){
+        _errorMessage = _item.configPath() + QString(": must be between %1 - %2").arg(this->Min).arg(this->Max);
         return false;
     }
     _errorMessage.clear();

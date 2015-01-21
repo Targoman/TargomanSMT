@@ -31,14 +31,10 @@ class intfConfigurable;
 /***************************************************************************************/
 class intfCrossValidate{
 public:
-    intfCrossValidate(const intfConfigurable& _item):
-        Item(_item)
-    {}
+    intfCrossValidate(){}
 
-    virtual bool validate(QString& _errorMessage) = 0;
-
-protected:
-    const intfConfigurable& Item;
+    virtual bool validate(const intfConfigurable& _item,
+                          QString& _errorMessage) = 0;
 };
 
 /***************************************************************************************/
@@ -140,7 +136,7 @@ public:
     }
 
     virtual inline bool        crossValidate(QString& _errorMessage) const{
-        return Q_LIKELY(this->CrossValidator) ? this->CrossValidator->validate(_errorMessage) : true;
+        return Q_LIKELY(this->CrossValidator) ? this->CrossValidator->validate(*this, _errorMessage) : true;
     }
 
     inline Type_t  value(){return this->Value;}
@@ -172,36 +168,36 @@ _SPECIAL_CONFIGURABLE(bool)
 namespace Validators {
     class clsPathValidator : public intfCrossValidate{
     public:
-        clsPathValidator(const intfConfigurable& _item,
-                         PathAccess::Options _requiredAccess);
-        bool validate(QString &_errorMessage);
+        clsPathValidator(PathAccess::Options _requiredAccess);
+        bool validate(const intfConfigurable& _item,
+                      QString &_errorMessage);
     private:
         PathAccess::Options RequiredAccess;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
     class clsIntValidator : public intfCrossValidate{
     public:
-        clsIntValidator(const intfConfigurable& _item,
-                        qint64 _min, qint64 _max);
-        bool validate(QString &_errorMessage);
+        clsIntValidator(qint64 _min, qint64 _max);
+        bool validate(const intfConfigurable& _item,
+                      QString &_errorMessage);
     private:
         qint64 Min,Max;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
     class clsUIntValidator : public intfCrossValidate{
     public:
-        clsUIntValidator(const intfConfigurable& _item,
-                         quint64 _min, quint64 _max);
-        bool validate(QString &_errorMessage);
+        clsUIntValidator(quint64 _min, quint64 _max);
+        bool validate(const intfConfigurable& _item,
+                      QString &_errorMessage);
     private:
         quint64 Min,Max;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
     class clsDoubleValidator : public intfCrossValidate{
     public:
-        clsDoubleValidator(const intfConfigurable& _item,
-                           double _min, double _max);
-        bool validate(QString &_errorMessage);
+        clsDoubleValidator(double _min, double _max);
+        bool validate(const intfConfigurable& _item,
+                      QString &_errorMessage);
     private:
         double Max,Min;
     };
