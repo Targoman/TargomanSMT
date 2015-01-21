@@ -11,19 +11,20 @@ BasePath = ".."
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 HEADERS += \
     libTargomanCore/Private/Input/clsInput.h \
-    libTargomanCore/Private/PhraseTable/clsMosesPTBinary.h \
     libTargomanCore/Private/PhraseTable/intfPhraseTable.hpp \
-    libTargomanCore/Private/LexicalReordering/intfLexicalReordering.h \
-    libTargomanCore/Private/LexicalReordering/clsMosesLR.h \
     libTargomanCore/Private/Input/clsToken.h \
-    libTargomanCore/GlobalConfigs.h
+    libTargomanCore/GlobalConfigs.h \
+    libTargomanCore/Private/PhraseTable/clsJanePTPlain.h \
+    libTargomanCore/Private/PhraseTable/clsTargetRule.h \
+    libTargomanCore/Private/PhraseTable/clsRuleNode.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
     libTargomanCore/Private/Input/clsInput.cpp \
-    libTargomanCore/Private/PhraseTable/clsMosesPTBinary.cpp \
-    libTargomanCore/Private/LexicalReordering/clsMosesLR.cpp \
-    libTargomanCore/GlobalConfigs.cpp
+    libTargomanCore/GlobalConfigs.cpp \
+    libTargomanCore/Private/PhraseTable/clsJanePTPlain.cpp \
+    libTargomanCore/Private/PhraseTable/clsTargetRule.cpp \
+    libTargomanCore/Private/PhraseTable/clsRuleNode.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=
@@ -51,9 +52,7 @@ build_static {
     CONFIG+= staticlib
 }
 
-QMAKE_POST_LINK += mkdir -p $$BaseLibraryIncludeFolder/lib$$ProjectName;
-QMAKE_POST_LINK += cp -vf lib$$ProjectName/*.h lib$$ProjectName/*.hpp $$BaseLibraryIncludeFolder/lib$$ProjectName 2>/dev/null|| : ;
-QMAKE_POST_LINK += mkdir -p $$BaseConfigFolder/  ;
-QMAKE_POST_LINK += cp -rvf conf/* $$BaseConfigFolder/ 2>/dev/null|| : ;
+QMAKE_POST_LINK += $$BaseOutput/linuxPostBuild.sh lib$$ProjectName $$BaseLibraryIncludeFolder $$BaseConfigFolder
+
 
 

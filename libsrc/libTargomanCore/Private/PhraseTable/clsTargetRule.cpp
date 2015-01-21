@@ -10,14 +10,14 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "clsToken.h"
+#include "clsTargetRule.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace Input {
+namespace PhraseTable{
 
-clsToken::clsToken()
+clsTargetRule::clsTargetRule()
 {
 }
 

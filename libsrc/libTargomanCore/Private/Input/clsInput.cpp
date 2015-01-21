@@ -218,7 +218,6 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
     case CollectAttrValue:
         throw exInput("XML Tag: <"+TagStr+"> Attribute: <"+AttrName+"> value not closed");
     }
-
 }
 
 void clsInput::clear()

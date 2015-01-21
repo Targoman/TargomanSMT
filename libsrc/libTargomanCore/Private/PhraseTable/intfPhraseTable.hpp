@@ -26,55 +26,108 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
 
 TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuPTFileFormat)
     Moses,
-    Hiero,
-    Compact,
+    Jane,
+    JaneBinary,
     Binary
 TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "Moses",
-    "Hiero",
-    "Compact",
+    "Jane",
+    "JaneBinary",
     "Binary"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
-//Reimplementation of PhraseDictionary class in moses
 class intfPhraseTable
 {
 public:
     intfPhraseTable(){}
 
-    virtual void load() = 0;
-    virtual void initializeForInput(Input::clsInput const& _source){
-        Q_UNUSED(_source)
-    }
+    virtual void init() = 0;
 
-    virtual void cleanUpAfterSentenceProcessing(Input::clsInput const& _source){
-        Q_UNUSED(_source)
-    }
+    virtual void newSentence() = 0;
 
-    //it was named SetParameter in moses
-    virtual void init(){
-/*        this->CacheSize  = Targoman::Core::gConfigs.getConfig("CacheSize").toUInt();
-        this->FilePath   = Targoman::Core::gConfigs.getConfig("FilePath").toString();
-        this->TableLimit = Targoman::Core::gConfigs.getConfig("TableLimit").toUInt();*/
-    }
+    virtual bool isBinary() = 0;
 
-    virtual void registerConfigs(const QString& _configPath){
-        /*Targoman::Core::gConfigs.addConfig(_configPath + "/CacheSize" , QVariant::UInt  , (quint32)DEFAULT_MAX_TRANS_OPT_CACHE_SIZE);
-        Targoman::Core::gConfigs.addConfig(_configPath + "/FilePath"  , QVariant::String, "");
-        Targoman::Core::gConfigs.addConfig(_configPath + "/TableLimit", QVariant::UInt  , 20);*/
-    }
+/*    virtual void sortRuleTrees(const std::vector<double> &_scalingFactors,
+                               unsigned _rulesCostsBegin,
+                               size_t _observationHistogramSize = 0) = 0;*/
+    virtual void partialSortRuleTreesWithLM(const std::vector<double> &_scalingFactors,
+                                            unsigned _rulesCostsBegin,
+                                            size_t _observationHistogramSize) {}
+
+    //RulePrefixTree *getRulesPrefixTree() { return rulesPrefixTree_; }
+    //void setRulesPrefixTree(RulePrefixTree *rulesPrefixTree) { rulesPrefixTree_ = rulesPrefixTree; }
+
+   /* virtual std::string getConfigText() const;
+    static std::string getUsage(const std::string &indentation, bool showNamesHelp = true);
+    static std::string getMan();*/
+
+   /* const std::vector<std::string> getCostsNames() { return costsNames_; }
+
+    size_t getNCosts() const { return nCosts_; }
+
+    Word getUnknownWord() const { return unknownWord_; }
+
+    std::vector<Word> getReverseSourcePart(const SourcePartInfo &sourcePart) const;
+    int getOrAddAdditionalInfoPosition(const std::string &name){//implemented but discarded}
+    int getAdditionalInfoPosition(const std::string &name) const {//implemented but discarded}
+    ConstAlphabetRef getSourceAlphabet() const { return sourceAlphabet_; }
+    ConstAlphabetRef getTargetAlphabet() const { return targetAlphabet_; }
+    char getNonTerminalIndicator() const { return nonTerminalIndicator_; }
+*/
+protected:
+    static const QString& baseConfigPath(){return "PhraseTable";}
 
 protected:
-    //bool satisfyBackoff(const InputPath &inputPath)
+    QString ActorUUID;
 
-protected:
-    size_t  CacheSize;
-    QString FilePath;
-    size_t  TableLimit;
+    /*
+        static Core::ParameterString       paramRulesFileName_;
+        static Core::ParameterString       paramNonTerminalIndicator_;
+        static Core::ParameterIntVector    paramWhichCosts_;
+        static Core::ParameterStringVector paramCostsNames_;
+        static Core::ParameterString       paramUnknownString_;
+        static Core::ParameterBool         paramDoL1o_;
 
-    //Targoman::Common::tmplExpirableCache<QString, TargetPhraseCollection> Cache;
+        StaticAlphabetRef sourceAlphabet_;
+        StaticAlphabetRef targetAlphabet_;
 
-    //TODO m_id and s_staticColl must be implemented if multiple PT is needed
+        RulePrefixTree *rulesPrefixTree_;
+        RulePrefixTree *lexicalPrefixTree_; //TODO what is this, how is this used?
+
+        char nonTerminalIndicator_;
+
+        std::string stringUnknownWord_;
+        Word unknownWord_;
+
+        Word maxKnownSourceWord_;
+
+        quint32 maxNumberOfNonTerminals_;
+
+        size_t nCosts_;
+
+        std::vector<int> whichCosts_;
+        std::vector<std::string> costsNames_;
+
+        bool doL1o_;
+
+        friend Core::Ref<RuleSet> createRuleSet(const Core::Configuration &config,
+                                                StaticAlphabetRef sourceAlphabet, StaticAlphabetRef targetAlphabet);
+
+     */
+
+    /*
+    static const quint32 binaryRuleFormatVersion_;
+
+    // Ids for the additional information present in the rules
+    std::map<std::string, unsigned> additionalInfoMapping_;
+    std::vector<std::string> additionalInfoNames_;
+
+    std::vector<AdditionalRuleInfoReader *> additionalRuleInfoReaders_;
+
+    friend AdditionalRuleInfoReader *getAdditionalRuleInfoReader(const std::string&, RuleSet*);
+        // We make this function a friend, so that it can take the components the
+        // readers need, without cluttering the interface
+    */
 };
 
 }
