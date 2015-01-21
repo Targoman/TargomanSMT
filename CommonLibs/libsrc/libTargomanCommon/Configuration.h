@@ -106,7 +106,7 @@ template <class Type_t> class clsConfigurable : public intfConfigurable
 public:
     clsConfigurable(const QString&  _configPath,
                     const QString&  _description,
-                    const QVariant& _default,
+                    const QVariant& _default = QVariant(),
                     intfCrossValidate* _crossValidator = NULL,
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
@@ -164,6 +164,7 @@ _SPECIAL_CONFIGURABLE(double)
 _SPECIAL_CONFIGURABLE(float)
 _SPECIAL_CONFIGURABLE(QString)
 _SPECIAL_CONFIGURABLE(bool)
+_SPECIAL_CONFIGURABLE(QList<quint8>)
 /***************************************************************************************/
 namespace Validators {
     class clsPathValidator : public intfCrossValidate{

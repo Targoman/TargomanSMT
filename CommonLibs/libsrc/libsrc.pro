@@ -19,8 +19,6 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Constants.h \
     libTargomanCommon/Types.h \
     libTargomanCommon/clsCmdProgressBar.h \
-    libTargomanCommon/Configuration.h \
-    libTargomanCommon/Private/clsConfiguration_p.h \
     libTargomanCommon/PrefixTree/tmplAbstractFilePrefixTree.hpp \
     libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp \
     libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp \
@@ -30,7 +28,9 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplVectorFilePrefixTree.hpp \
     libTargomanCommon/PrefixTree/tmplVectorPrefixTree.hpp \
     libTargomanCommon/HashFunctions.hpp \
-    libTargomanCommon/tmplExpirableCache.hpp
+    libTargomanCommon/tmplExpirableCache.hpp \
+    libTargomanCommon/Private/clsConfiguration_p.h \
+    libTargomanCommon/Configuration.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

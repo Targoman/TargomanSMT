@@ -14,7 +14,7 @@
 #define TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFPHRASETABLE_H
 
 #include "libTargomanCommon/Macros.h"
-#include "libTargomanCommon/tmplExpirableCache.h"
+#include "libTargomanCommon/tmplExpirableCache.hpp"
 #include "Private/Input/clsInput.h"
 
 namespace Targoman {
@@ -42,9 +42,7 @@ public:
     intfPhraseTable(){}
 
     virtual void init() = 0;
-
     virtual void newSentence() = 0;
-
     virtual bool isBinary() = 0;
 
 /*    virtual void sortRuleTrees(const std::vector<double> &_scalingFactors,
@@ -76,6 +74,7 @@ public:
 */
 protected:
     static const QString& baseConfigPath(){return "PhraseTable";}
+    friend class clsRuleNode;
 
 protected:
     QString ActorUUID;

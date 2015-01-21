@@ -21,8 +21,6 @@ void UnitTest::initTestCase(){
     Targoman::Common::TARGOMAN_IO_SETTINGS.Debug.setLevel(8);
     Targoman::Common::TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
 
-
-
     Targoman::NLPLibs::TextProcessor::stuConfigs Configs;
     Configs.NormalizationFile = "../conf/Normalization.conf";
     Configs.AbbreviationsFile = "../conf/Normalization.conf";

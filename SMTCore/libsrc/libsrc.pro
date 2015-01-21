@@ -14,17 +14,17 @@ HEADERS += \
     libTargomanCore/Private/PhraseTable/intfPhraseTable.hpp \
     libTargomanCore/Private/Input/clsToken.h \
     libTargomanCore/GlobalConfigs.h \
-    libTargomanCore/Private/PhraseTable/clsJanePTPlain.h \
     libTargomanCore/Private/PhraseTable/clsTargetRule.h \
-    libTargomanCore/Private/PhraseTable/clsRuleNode.h
+    libTargomanCore/Private/PhraseTable/clsRuleNode.h \
+    libTargomanCore/Private/PhraseTable/clsJanePhraseTable.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
     libTargomanCore/Private/Input/clsInput.cpp \
     libTargomanCore/GlobalConfigs.cpp \
-    libTargomanCore/Private/PhraseTable/clsJanePTPlain.cpp \
     libTargomanCore/Private/PhraseTable/clsTargetRule.cpp \
-    libTargomanCore/Private/PhraseTable/clsRuleNode.cpp
+    libTargomanCore/Private/PhraseTable/clsRuleNode.cpp \
+    libTargomanCore/Private/PhraseTable/clsJanePhraseTable.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

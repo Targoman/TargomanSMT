@@ -214,6 +214,7 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
     Configuration::instance().addConfig(_configPath, this);
 }
 
+/***************************************************************************************/
 #define _NUMERIC_CONFIGURABLE_IMPL(_name, _variantType, _type, _nextType, _min, _max) \
     template <> \
     bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const{ \
@@ -280,6 +281,30 @@ void clsConfigurable<bool>::setFromVariant(const QVariant& _value){
     if (this->validate(_value, ErrorMessage)) this->Value = _value.value<bool>();
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
+
+//////QList<quint8>
+template <>
+bool clsConfigurable<QList<quint8> >::validate(const QVariant&, QString& )const {
+    Q_ASSERT_X (0, "QList<QVariant>", "Check Validation");return true;
+}
+template <>
+void clsConfigurable<QList<quint8> >::setFromVariant(const QVariant& _value){
+    QString ErrorMessage;
+    if (this->validate(_value, ErrorMessage)) {
+        foreach (const QString& Value, _value.toString().split(" ")){
+
+            this->Value.append(Value.toUInt());
+        }
+    }
+    else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
+}
+template <>
+QVariant    clsConfigurable<QList<quint8> >::toVariant() const{
+    Q_ASSERT_X (0, "QList<QVariant>", "toVariant");
+    return QVariant();
+}
+
+
 
 /***************************************************************************************/
 Validators::clsPathValidator::clsPathValidator(PathAccess::Options _requiredAccess):

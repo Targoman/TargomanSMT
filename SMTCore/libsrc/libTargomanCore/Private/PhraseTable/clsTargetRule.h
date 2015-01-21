@@ -13,15 +13,34 @@
 #ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSTARGETRULE_H
 #define TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSTARGETRULE_H
 
+#include <QList>
+#include "libTargomanCommon/Types.h"
+
 namespace Targoman {
 namespace Core {
 namespace Private {
 namespace PhraseTable{
 
-class clsTargetRule
+class clsTargetRule : public QSharedData
 {
 public:
     clsTargetRule();
+
+private:
+
+private:
+    mutable QList<Common::WordIndex_t> TargetPhrase;
+    mutable QList<Common::LogP_t>      Costs;
+
+    mutable Common::LogP_t  AllCosts;
+    mutable bool            AllCostsComputed;
+    mutable Common::LogP_t  LMCosts;
+    mutable Common::LogP_t  LMCostsWithoutFirstWord;
+    mutable bool            LMCostsComputed;
+
+    float   Counts;
+    float   Marginals;
+    float   RealCount;
 };
 
 }
