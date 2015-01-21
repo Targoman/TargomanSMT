@@ -71,7 +71,7 @@ bool TextProcessor::init(const QString _configFile)
         }
         ConfigFile.endGroup();
     }
-    this->init(MyConfigs);
+    return this->init(MyConfigs);
 }
 
 /**
@@ -144,6 +144,7 @@ QString TextProcessor::text2RichIXML(const QString &_inStr,
  */
 QString TextProcessor::ixml2Text(const QString &_ixml) const
 {
+    Q_UNUSED(_ixml)
     //TODO detokenize
     return "";
 }
@@ -155,6 +156,8 @@ QString TextProcessor::ixml2Text(const QString &_ixml) const
  */
 QString TextProcessor::richIXML2Text(const QString &_ixml) const
 {
+    Q_UNUSED(_ixml)
+
     //TODO detokenize
     return "";
 }

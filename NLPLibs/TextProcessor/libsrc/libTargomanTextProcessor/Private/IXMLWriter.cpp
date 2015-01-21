@@ -286,7 +286,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
             OutputPhrase.append(Token);
         OutputPhrase.append(" ");
     }
-    OutputPhrase.truncate(OutputPhrase.size() - 1);
+    OutputPhrase.truncate(OutputPhrase.size() - 2);
     OutputPhrase = this->NormalizerInstance.fullTrim(OutputPhrase.replace("  "," ").replace("  "," "));
     TargomanDebug(7,"[ALL-TAGS] |"<<OutputPhrase<<"|");
 

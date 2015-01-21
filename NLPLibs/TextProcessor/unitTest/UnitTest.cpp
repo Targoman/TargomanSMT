@@ -16,6 +16,13 @@ using namespace Targoman::Common;
 using namespace Targoman::NLPLibs;
 
 void UnitTest::initTestCase(){
+    //TARGOMAN_REGISTER_ACTOR("testLibCommon");
+//    Targoman::Common::Logger::instance().init("log.log");
+    Targoman::Common::TARGOMAN_IO_SETTINGS.Debug.setLevel(8);
+    Targoman::Common::TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
+
+
+
     Targoman::NLPLibs::TextProcessor::stuConfigs Configs;
     Configs.NormalizationFile = "../conf/Normalization.conf";
     Configs.AbbreviationsFile = "../conf/Normalization.conf";
@@ -24,6 +31,7 @@ void UnitTest::initTestCase(){
     PersianSpellCorrector.insert("Active", true);
     Configs.SpellCorrectorLanguageBasedConfigs.insert("fa", PersianSpellCorrector);
     Targoman::NLPLibs::TextProcessor::instance().init(Configs);
+
 }
 
 QTEST_MAIN(UnitTest)

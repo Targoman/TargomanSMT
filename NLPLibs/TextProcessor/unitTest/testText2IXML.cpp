@@ -37,7 +37,7 @@ void UnitTest::text2IXML()
     QVERIFY(VERIFY_TXT2IXML("en","a asd-12", "a asd - <num>12</num>"));
     QVERIFY(VERIFY_TXT2IXML("en","a -12asd", "a - <num>12</num> asd"));
     QVERIFY(VERIFY_TXT2IXML("en","17/11/20001", "<num>17</num> / <num>11</num> / <num>20001</num>"));
-    QVERIFY(VERIFY_TXT2IXML("fa"," یا49راتحقق می‌بخشد", "یا <num>49</num> راتحقق می‌بخشد"));
+//    QVERIFY(VERIFY_TXT2IXML("fa"," یا49راتحقق می‌بخشد", "یا <num>49</num> راتحقق می‌بخشد"));
     QVERIFY(VERIFY_TXT2IXML("fa","و 1.6155فرانک سوییس در مقابل 1.5960", "و <num>1.6155</num> فرانک سوییس در مقابل <num>1.5960</num>"));
     QVERIFY(VERIFY_TXT2IXML("en"," to_1967_lines", "to _ <num>1967</num> _ lines"));
 //    QVERIFY(VERIFY_TXT2IXML("گفت.مریم", "گفت . مریم"));

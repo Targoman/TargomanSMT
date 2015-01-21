@@ -44,7 +44,7 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
         return;
     }
     //////////////////////////////////////////////////
-    ///check arguments for configfile path or set default configfile path
+    ///check arguments for configFileile path or set default cogFileplFile path
     //////////////////////////////////////////////////
     if (_arguments.count("-c") + _arguments.count("--config") > 1)
         throw exConfiguration("Invalid multiple configuration file definition");
@@ -61,18 +61,18 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
     if (this->pPrivate->ConfigFilePath.isEmpty()){
         this->pPrivate->ConfigFilePath = QCoreApplication::applicationDirPath() + QCoreApplication::applicationName() + ".ini";
         if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false){
-            TargomanWarn(1, "No ConfigFile can be found. It is absolutely recomended to write one. Use --save to create one");
+            TargomanWarn(1, "No ConfigFileile can be found. It is absolutely recomended to write one. Use --save to create one");
             this->pPrivate->ConfigFilePath.clear();
         }
     }
 
     //////////////////////////////////////////////////
-    ///check configFile and load everything
+    ///check configFileile and load everything
     //////////////////////////////////////////////////
     if (this->pPrivate->ConfigFilePath.size()){
-        QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
+        QSettings ConfigFileile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
 
-        foreach (const QString& Key, ConfigFile.allKeys()){
+        foreach (const QString& Key, ConfigFileile.allKeys()){
             if (this->pPrivate->Configs.contains(Key) == false){
                 QString BasePath = Key;
                 bool Found = false;
@@ -90,7 +90,7 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
                     throw exConfiguration("Configuration path <"+Key+"> is not registered");
             }
             intfConfigurable* ConfigItem  = this->pPrivate->Configs[Key];
-            QVariant Value = ConfigFile.value(Key);
+            QVariant Value = ConfigFileile.value(Key);
             if (ConfigItem->validate(Value, ErrorMessage) == false)
                 throw exConfiguration(ErrorMessage);
             else

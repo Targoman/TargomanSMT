@@ -19,11 +19,11 @@ SOURCES += \
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 ################################################################################
-ConfigFile = $$BasePath/Configs.pri
-!exists($$ConfigFile){
-error("**** libsrc: Unable to find Configuration file $$ConfigFile ****")
+ConfigFileile = $$BasePath/Configs.pri
+!exists($$ConfigFileile){
+error("**** libsrc: Unable to find Configuration file $$ConfigFileile ****")
 }
-include ($$ConfigFile)
+include ($$ConfigFileile)
 
 TEMPLATE = app
 QT+=testlib

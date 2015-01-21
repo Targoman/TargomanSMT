@@ -19,10 +19,18 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Constants.h \
     libTargomanCommon/Types.h \
     libTargomanCommon/clsCmdProgressBar.h \
-    libTargomanCommon/HashFunctions.h \
-    libTargomanCommon/tmplExpirableCache.h \
     libTargomanCommon/Configuration.h \
-    libTargomanCommon/Private/clsConfiguration_p.h
+    libTargomanCommon/Private/clsConfiguration_p.h \
+    libTargomanCommon/PrefixTree/tmplAbstractFilePrefixTree.hpp \
+    libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp \
+    libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp \
+    libTargomanCommon/PrefixTree/tmplFullVectorPrefixTree.hpp \
+    libTargomanCommon/PrefixTree/tmplMapFilePrefixTree.hpp \
+    libTargomanCommon/PrefixTree/tmplMapPrefixTree.hpp \
+    libTargomanCommon/PrefixTree/tmplVectorFilePrefixTree.hpp \
+    libTargomanCommon/PrefixTree/tmplVectorPrefixTree.hpp \
+    libTargomanCommon/HashFunctions.hpp \
+    libTargomanCommon/tmplExpirableCache.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -40,11 +48,11 @@ OTHER_FILES +=
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 ################################################################################
-ConfigFile = $$BasePath/Configs.pri
-!exists($$ConfigFile){
-error("**** libsrc: Unable to find Configuration file $$ConfigFile ****")
+ConfigFileile = $$BasePath/Configs.pri
+!exists($$ConfigFileile){
+error("**** libsrc: Unable to find Configuration file $$ConfigFileile ****")
 }
-include ($$ConfigFile)
+include ($$ConfigFileile)
 
 TEMPLATE = lib
 TARGET = $$ProjectName
@@ -60,9 +68,6 @@ build_static {
     CONFIG+= staticlib
 }
 
-QMAKE_POST_LINK += mkdir -p $$BaseLibraryIncludeFolder/lib$$ProjectName;
-QMAKE_POST_LINK += cp -vf lib$$ProjectName/*.h lib$$ProjectName/*.hpp $$BaseLibraryIncludeFolder/lib$$ProjectName 2>/dev/null|| : ;
-QMAKE_POST_LINK += mkdir -p $$BaseConfigFolder/  ;
-QMAKE_POST_LINK += cp -rvf conf/* $$BaseConfigFolder/ 2>/dev/null|| : ;
+QMAKE_POST_LINK += $$BaseOutput/linuxPostBuild.sh lib$$ProjectName $$BaseLibraryIncludeFolder $$BaseConfigFolder
 
 

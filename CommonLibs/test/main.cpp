@@ -16,7 +16,7 @@
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/clsCmdProgressBar.h"
-#include "libTargomanCommon/HashFunctions.h"
+#include "libTargomanCommon/HashFunctions.hpp"
 #include "libTargomanCommon/Configuration.h"
 
 #include <iostream>

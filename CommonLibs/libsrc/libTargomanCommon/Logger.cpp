@@ -44,7 +44,7 @@ bool Logger::init(const QString &_fileName,
                   bool _show)
 {
     qRegisterMetaType<Targoman::Common::enuLogType::Type>("Targoman::Common::enuLogType::Type");
-    this->pPrivate->LogFile.setFileName(_fileName.size() ? _fileName : "/dev/null");
+    this->pPrivate->LogFileile.setFileName(_fileName.size() ? _fileName : "/dev/null");
     this->pPrivate->LogSettings[enuLogType::Debug] = _logSettings.value(enuLogType::Debug);
     this->pPrivate->LogSettings[enuLogType::Error] = _logSettings.value(enuLogType::Error);
     this->pPrivate->LogSettings[enuLogType::Warning] = _logSettings.value(enuLogType::Warning);
@@ -82,12 +82,12 @@ void Logger::write(const QString &_actorID,
 
 
     QMutexLocker Locker(&this->pPrivate->mxLog);
-    if (this->pPrivate->LogFile.fileName().size()){
-        if (!this->pPrivate->LogFile.isOpen() ||
-                !this->pPrivate->LogFile.isWritable())
+    if (this->pPrivate->LogFileile.fileName().size()){
+        if (!this->pPrivate->LogFileile.isOpen() ||
+                !this->pPrivate->LogFileile.isWritable())
             this->pPrivate->open();
 
-        this->pPrivate->LogFile.write(LogMessage);
+        this->pPrivate->LogFileile.write(LogMessage);
     }
     switch(_type){
     case enuLogType::Debug:
@@ -109,8 +109,8 @@ void Logger::write(const QString &_actorID,
         break;
     }
 
-    if (this->pPrivate->LogFile.fileName().size()){
-        this->pPrivate->LogFile.flush();
+    if (this->pPrivate->LogFileile.fileName().size()){
+        this->pPrivate->LogFileile.flush();
         this->pPrivate->rotateLog();
     }
     Locker.unlock();
@@ -178,13 +178,13 @@ Private::LoggerPrivate::LoggerPrivate()
 
 bool Private::LoggerPrivate::open()
 {
-    if (this->LogFile.isOpen())
-        this->LogFile.close();
+    if (this->LogFileile.isOpen())
+        this->LogFileile.close();
 
-    this->LogFile.open(QIODevice::Append);
+    this->LogFileile.open(QIODevice::Append);
 
-    if ( ! this->LogFile.isWritable()) {
-        TargomanError("%s",QString("Unable to open <%1> for writing").arg(this->LogFile.fileName()).toUtf8().constData());
+    if ( ! this->LogFileile.isWritable()) {
+        TargomanError("%s",QString("Unable to open <%1> for writing").arg(this->LogFileile.fileName()).toUtf8().constData());
         return false;
     }
     return true;
@@ -192,11 +192,11 @@ bool Private::LoggerPrivate::open()
 
 void Private::LoggerPrivate::rotateLog()
 {
-    if (((quint64)this->LogFile.size() > this->MaxFileSize) ) {
+    if (((quint64)this->LogFileile.size() > this->MaxFileSize) ) {
         TargomanDebug(7, "Rotating Logs");
-        this->LogFile.close();
-        QString NewFileName = this->LogFile.fileName() + QDateTime().currentDateTime().toString("yyyy_MM_dd_hh:mm:ss");
-        QFile::rename(this->LogFile.fileName(), NewFileName);
+        this->LogFileile.close();
+        QString NewFileName = this->LogFileile.fileName() + QDateTime().currentDateTime().toString("yyyy_MM_dd_hh:mm:ss");
+        QFile::rename(this->LogFileile.fileName(), NewFileName);
 #ifdef Q_OS_UNIX
         QProcess::startDetached("gzip",QStringList(NewFileName));
 #else

@@ -122,7 +122,7 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
                 Phrase = Output;
                 Tokens = Phrase.trimmed().replace("  "," ").replace("  "," ").split(" ", QString::SkipEmptyParts);
                 if (Tokens.size() < MaxTokens)
-                    continue;
+                    break;
                 Output.clear();
 
                 bool HasRemaining = true;

@@ -30,7 +30,7 @@ public:
     void rotateLog();
 
 public:
-    QFile   LogFile;
+    QFile   LogFileile;
     clsLogSettings* LogSettings;
     quint64 MaxFileSize;
     bool GlobalSettings;
