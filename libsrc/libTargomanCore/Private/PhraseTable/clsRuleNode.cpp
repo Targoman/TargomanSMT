@@ -11,14 +11,31 @@
  */
 
 #include "clsRuleNode.h"
+#include "intfPhraseTable.hpp"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
 namespace PhraseTable{
 
+using namespace Common;
+
+clsConfigurable<QList<quint8> > clsRuleNode::WhichCosts(intfPhraseTable::baseConfigPath() + "/RuleWhichCosts",
+                                                        "Indictaes which costs to use when computing general costs");
+
+//RulesForSourcePart.cc
 clsRuleNode::clsRuleNode()
 {
+}
+
+void clsRuleNode::readBinary(std::istream &input)
+{
+//TODO
+}
+
+void clsRuleNode::writeBinary(std::ostream &output) const
+{
+//TODO
 }
 
 }

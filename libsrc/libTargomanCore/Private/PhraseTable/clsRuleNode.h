@@ -15,6 +15,7 @@
 
 #include <QList>
 #include "clsTargetRule.h"
+#include "libTargomanCommon/Configuration.h"
 
 namespace Targoman {
 namespace Core {
@@ -26,9 +27,14 @@ class clsRuleNode
 public:
     clsRuleNode();
 
-private:
-    QList<clsTargetRule> TargetRules;
 
+    // Following functions are needed for the binary input/output
+    void readBinary(std::istream &input);
+    void writeBinary(std::ostream &output) const;
+
+private:
+    QList<QSharedDataPointer<clsTargetRule> > TargetRules;
+    static Common::clsConfigurable<QList<quint8> > WhichCosts;
 };
 
 }

@@ -10,34 +10,30 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPTPLAIN_H
-#define TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPTPLAIN_H
+#ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPHRASETABLE_H
+#define TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPHRASETABLE_H
 
 #include "intfPhraseTable.hpp"
 #include "libTargomanCommon/Configuration.h"
 #include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
+#include "clsRuleNode.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
 namespace PhraseTable {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exJanePTPlain, exPhraseTable);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exJanePhraseTable, exPhraseTable);
 
-typedef Common::PrefixTree::GFullVectorFilePrefixTree<RulesForSourcePart> RulePrefixTree;
-
-class clsJanePTPlain : intfPhraseTable
+class clsJanePhraseTable : intfPhraseTable
 {
 public:
-    clsJanePTPlain(/*const Core::Configuration &config,
-                   StaticAlphabetRef sourceAlphabet,
-                   StaticAlphabetRef targetAlphabet,
-                   bool needCostsNames=true*/);
+    clsJanePhraseTable();
 
     virtual void init();
 
-    /*! \brief empty function
-     *  \note it is not important for us that we have a new sentence
+    /**
+     * @brief newSentence is empty because it is not important for us that we have a new sentence
      */
     void newSentence() {}
     bool isBinary() { return false; }
@@ -45,18 +41,15 @@ public:
     void partialSortRuleTreesWithLM(const std::vector<double> &_scalingFactors,
                                     unsigned _rulesCostsBegin,
                                     size_t _observationHistogramSize);
-    //virtual std::string getConfigText() const;
-    static QString baseConfigPath(){return intfPhraseTable::baseConfigPath() + "/JainPlain";}
+
+    static QString baseConfigPath(){return intfPhraseTable::baseConfigPath() + "/JainePlain";}
 
 protected:
      static Targoman::Common::clsConfigurable<QString> FileName;
-
-    //bool    warnedAboutFewCounts_
-    //TODO there were some other methods not imported including
 };
 
 }
 }
 }
 }
-#endif // TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPTPLAIN_H
+#endif // TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPHRASETABLE_H
