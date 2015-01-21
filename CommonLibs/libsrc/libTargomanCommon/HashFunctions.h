@@ -131,8 +131,11 @@ public:
             Hash ^= Buffer;
             Hash = ((Hash << Round2) | (Hash >> (32 - Round2))) * M + Const3;
         }
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-arith"
         const quint8 *Tail = (const quint8 *) (_buff + BlockCount * 4);
+#pragma GCC diagnostic pop
+
         quint32 Buffer = 0;
 
         switch (_len & 3) {

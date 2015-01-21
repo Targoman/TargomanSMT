@@ -37,6 +37,7 @@ public:
         Q_ASSERT_X(_level < 10, "CmdIO",  "Level must be between 0 to 9");
         if (_level > 9)
             throw std::bad_exception();
+        return true;
     }
 
     inline void setLevel(quint8 _level){

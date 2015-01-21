@@ -181,7 +181,7 @@ namespace Validators {
         bool validate(const intfConfigurable& _item,
                       QString &_errorMessage);
     private:
-        qint64 Min,Max;
+        qint64 Max,Min;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
     class clsUIntValidator : public intfCrossValidate{
@@ -190,7 +190,7 @@ namespace Validators {
         bool validate(const intfConfigurable& _item,
                       QString &_errorMessage);
     private:
-        quint64 Min,Max;
+        quint64 Max,Min;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
     class clsDoubleValidator : public intfCrossValidate{

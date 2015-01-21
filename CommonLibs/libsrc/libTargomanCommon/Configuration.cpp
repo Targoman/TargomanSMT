@@ -117,7 +117,7 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
                 if ((KeyIter->startsWith("--") && *KeyIter == "--" + ConfigItemIter.value()->longSwitch()) ||
                        *KeyIter  == "-" + ConfigItemIter.value()->shortSwitch()){
                     QString Value;
-                    for (size_t i=0; i<ConfigItemIter.value()->argCount(); i++){
+                    for (qint8 i=0; i<ConfigItemIter.value()->argCount(); i++){
                         KeyIter++;
                         if (KeyIter == _arguments.end())
                             throw exConfiguration("Switch: <" +*KeyIter+ "> needs at least: " +
@@ -147,6 +147,8 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
 
 void Configuration::save2File(const QString &_fileName, bool _backup)
 {
+    Q_UNUSED(_fileName)
+    Q_UNUSED(_backup)
     //TODO implement me
 }
 
@@ -171,7 +173,7 @@ QVariant Configuration::getConfig(const QString &_path, const QVariant& _default
 /***********************************************************************************************/
 void Private::clsConfigurationPrivate::printHelp(const QString& _license)
 {
-    std::cout<<_license.toUtf8().constData()<<endl;
+    std::cout<<_license.toUtf8().constData()<<std::endl;
     std::cout<<"Usage:"<<std::endl;
     std::cout<<"\t-h|--help:\t Print this help"<<std::endl;
     QStringList Keys = this->Configs.keys();
@@ -241,6 +243,8 @@ _NUMERIC_CONFIGURABLE_IMPL("qint32",QVariant::LongLong,qint32,qint64, LONG_MIN, 
 _NUMERIC_CONFIGURABLE_IMPL("qint64",QVariant::LongLong,qint64,qint64, LONG_LONG_MIN,LONG_LONG_MAX)
 #endif
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wtype-limits"
 _NUMERIC_CONFIGURABLE_IMPL("quint8",QVariant::UInt,quint8,quint16, 0,CHAR_MAX)
 _NUMERIC_CONFIGURABLE_IMPL("quint16",QVariant::UInt,quint16,quint32, 0,USHRT_MAX)
 #ifdef TARGOMAN_ARCHITECTURE_64
@@ -253,6 +257,7 @@ _NUMERIC_CONFIGURABLE_IMPL("quint64",QVariant::ULongLong,quint64,quint64, 0,ULON
 
 _NUMERIC_CONFIGURABLE_IMPL("double",QVariant::Double,double,double, DBL_MIN, DBL_MAX)
 _NUMERIC_CONFIGURABLE_IMPL("float",QVariant::Double, float,double, FLT_MIN,FLT_MAX)
+#pragma GCC diagnostic pop
 
 //////QString
 template <>
