@@ -10,32 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "clsRuleNode.h"
-#include "intfPhraseTable.hpp"
-
-namespace Targoman {
-namespace Core {
-namespace Private {
-namespace PhraseTable{
-
-using namespace Common;
-
-//RulesForSourcePart.cc
-clsRuleNode::clsRuleNode()
+#include "clsTranslator.h"
+//TODO namespace
+clsTranslator::clsTranslator()
 {
-}
-
-void clsRuleNode::readBinary(std::istream &input)
-{
-//TODO
-}
-
-void clsRuleNode::writeBinary(std::ostream &output) const
-{
-//TODO
-}
-
-}
-}
-}
 }
