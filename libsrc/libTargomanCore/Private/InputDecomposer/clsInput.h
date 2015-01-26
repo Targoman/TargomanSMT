@@ -10,18 +10,18 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_INPUT_CLSINPUT_H
-#define TARGOMAN_CORE_PRIVATE_INPUT_CLSINPUT_H
+#ifndef TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSINPUT_H
+#define TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSINPUT_H
 
 #include <QList>
 #include <QSet>
 
-#include "GlobalConfigs.h"
+#include "Private/GlobalConfigs.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace Input {
+namespace InputDecomposer {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
 
@@ -31,7 +31,7 @@ class clsInput
 {
 public:
     clsInput();
-
+    ~clsInput();
 
     static void init();
 
@@ -40,6 +40,8 @@ public:
     void parseRichIXML(const QString& _inputIXML, bool _normalize, const QString &_lang = "");
 
     void clear();
+    inline const QList<clsToken*>& tokens(){return this->Tokens;}
+
 private:
     inline bool isSpace(const QChar& _ch){
         return _ch == ' ';// || _ch == '\n' || _ch == '\t';
@@ -57,4 +59,4 @@ private:
 }
 }
 }
-#endif // TARGOMAN_CORE_PRIVATE_INPUT_CLSINPUT_H
+#endif // TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSINPUT_H

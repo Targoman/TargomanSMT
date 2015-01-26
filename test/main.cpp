@@ -10,7 +10,7 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "libTargomanCore/Private/Input/clsInput.h"
+#include "libTargomanCore/Private/InputDecomposer/clsInput.h"
 #include "libTargomanCore/GlobalConfigs.h"
 #include "libTargomanCommon/Logger.h"
 #include <iostream>
@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
 
 #if 1
     try{
-        Targoman::Core::Private::Input::clsInput::init();
+        Targoman::Core::Private::InputDecomposer::clsInput::init();
 
-        Targoman::Core::Private::Input::clsInput Input;
+        Targoman::Core::Private::InputDecomposer::clsInput Input;
 
     //    Input.parseRichIXML("This is a test .");
     //   Input.parseRichIXML("This <num> is</num> a test .");

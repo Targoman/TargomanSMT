@@ -10,12 +10,17 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef CLSTRANSLATOR_H
-#define CLSTRANSLATOR_H
+#ifndef TARGOMAN_CORE_CLSTRANSLATOR_H
+#define TARGOMAN_CORE_CLSTRANSLATOR_H
 
 #include <QMap>
 #include <QStringList>
+#include "libTargomanCommon/exTargomanBase.h"
 
+namespace Targoman{
+namespace Core {
+
+TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanCore, Targoman::Common::exTargomanBase);
 
 struct stuTranslationOutput{
     struct stuCharacterRange{
@@ -24,23 +29,41 @@ struct stuTranslationOutput{
         //Todo Assert
     };
 
-    struct stuTargetPhrase{
-        QList<stuCharacterRange> Range;
+    struct stuMetaInfo{
+        QList<stuCharacterRange> SourceRanges;
+        QList<stuCharacterRange> TargetRanges;
         QStringList              TranslationOptions;
     };
 
     QString Translation;
-    QMap<QList<stuCharacterRange>,  stuTargetPhrase> AlignInfo;
+    QList<stuMetaInfo> MetaInfo;
+};
+
+struct stuTranslatorConfigs{
 
 };
 
-
+namespace Private {
+class clsTranslatorPrivate;
+}
 class clsTranslator
 {
 public:
     clsTranslator();
+    ~clsTranslator();
 
+    static void init(const stuTranslatorConfigs& _configs);
 
+    //Input language is predefined
+    stuTranslationOutput translate(const QString& _inputStr);
+
+private:
+    QScopedPointer<Private::clsTranslatorPrivate> pPrivate;
 };
 
-#endif // CLSTRANSLATOR_H
+}
+}
+
+
+
+#endif // TARGOMAN_CORE_CLSTRANSLATOR_H

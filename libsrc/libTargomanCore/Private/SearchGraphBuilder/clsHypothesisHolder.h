@@ -10,17 +10,29 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "GlobalConfigs.h"
+#ifndef TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSHYPOTHESISHOLDER_H
+#define TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSHYPOTHESISHOLDER_H
 
-namespace Targoman {
+#include <QList>
+#include "clsCoverageContainer.h"
+
+namespace Targoman{
 namespace Core {
+namespace Private{
+namespace SearchGraphBuilder {
 
-using namespace Common;
+class clsHypothesisHolder
+{
+public:
+    clsHypothesisHolder();
 
-stuGlobalConfigs gConfigs;
+private:
+    QList<clsCoverageContainer> CardinalityContainer;
+};
 
-clsConfigurable<QString> stuGlobalConfigs::Separator("/Common/Separator",
-                                            "Separator used on multi field configurations",
-                                            ";:;");
 }
 }
+}
+}
+
+#endif // TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSHYPOTHESISHOLDER_H

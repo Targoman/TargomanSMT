@@ -10,17 +10,18 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_INPUT_CLSTOKEN_H
-#define TARGOMAN_CORE_PRIVATE_INPUT_CLSTOKEN_H
+#ifndef TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSTOKEN_H
+#define TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSTOKEN_H
 
 
 #include <QString>
 #include <QHash>
+#include "libTargomanCommon/Types.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace Input {
+namespace InputDecomposer {
 
 class clsToken
 {
@@ -33,13 +34,15 @@ public:
 
 private:
     QString Value;
+    Common::WordIndex_t WordIndex;
     QString TagStr;
     QHash<QString, QString> Attrs;
 };
 
+
 }
 }
 }
 }
 
-#endif // TARGOMAN_CORE_PRIVATE_INPUT_CLSTOKEN_H
+#endif // TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSTOKEN_H
