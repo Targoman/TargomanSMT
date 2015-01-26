@@ -20,7 +20,7 @@ using Targoman::NLPLibs::TextProcessor;
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace Input {
+namespace InputDecomposer {
 
 using namespace Common;
 
@@ -31,6 +31,11 @@ clsConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
 
 clsInput::clsInput()
 {
+}
+
+clsInput::~clsInput()
+{
+    this->clear();
 }
 
 void clsInput::init()

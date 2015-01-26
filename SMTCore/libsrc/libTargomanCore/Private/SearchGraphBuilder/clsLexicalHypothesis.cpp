@@ -10,26 +10,8 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFLANGUAGEMODEL_HPP
-#define TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFLANGUAGEMODEL_HPP
-namespace Targoman {
-namespace Core {
-namespace Private {
-namespace PhraseTable{
+#include "clsLexicalHypothesis.h"
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
-
-class intfLanguageModel
+clsLexicalHypothesis::clsLexicalHypothesis()
 {
-public:
-    intfLanguageModel(){}
-
-
-
-};
-
 }
-}
-}
-}
-#endif // TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFLANGUAGEMODEL_HPP

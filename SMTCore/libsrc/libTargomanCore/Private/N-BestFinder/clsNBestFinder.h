@@ -10,23 +10,25 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_CORE_GLOBALCONFIGS_H
-#define TARGOMAN_CORE_GLOBALCONFIGS_H
+#ifndef TARGOMAN_CORE_PRIVATE_NBESTFINDER_CLSNBESTFINDER_H
+#define TARGOMAN_CORE_PRIVATE_NBESTFINDER_CLSNBESTFINDER_H
 
-#include "libTargomanCommon/exTargomanBase.h"
-#include "libTargomanCommon/Configuration.h"
-
-namespace Targoman {
+namespace Targoman{
 namespace Core {
+namespace Private{
+namespace NBestFinder {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanCore, Targoman::Common::exTargomanBase);
+class clsNBestFinder
+{
+public:
+    clsNBestFinder();
 
-struct stuGlobalConfigs{
-    static Targoman::Common::clsConfigurable<QString> Separator;
+    static void init();
 };
 
-extern stuGlobalConfigs gConfigs;
+}
+}
+}
+}
 
-}
-}
-#endif // TARGOMAN_CORE_GLOBALCONFIGS_H
+#endif // TARGOMAN_CORE_PRIVATE_NBESTFINDER_CLSNBESTFINDER_H

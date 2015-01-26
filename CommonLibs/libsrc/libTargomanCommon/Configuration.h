@@ -140,6 +140,7 @@ public:
     }
 
     inline Type_t  value(){return this->Value;}
+    inline Type_t  operator ()(){return this->Value;}
 
 private:
     Type_t  Value;

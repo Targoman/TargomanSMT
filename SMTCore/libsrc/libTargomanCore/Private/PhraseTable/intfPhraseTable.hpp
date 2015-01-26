@@ -15,7 +15,7 @@
 
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/tmplExpirableCache.hpp"
-#include "Private/Input/clsInput.h"
+#include "Private/InputDecomposer/clsInput.h"
 
 namespace Targoman {
 namespace Core {
