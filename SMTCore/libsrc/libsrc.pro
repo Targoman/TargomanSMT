@@ -16,7 +16,9 @@ HEADERS += \
     libTargomanCore/GlobalConfigs.h \
     libTargomanCore/Private/PhraseTable/clsTargetRule.h \
     libTargomanCore/Private/PhraseTable/clsRuleNode.h \
-    libTargomanCore/Private/PhraseTable/clsJanePhraseTable.h
+    libTargomanCore/Private/PhraseTable/clsJanePhraseTable.h \
+    libTargomanCore/Private/LanguageModel/intfLanguageModel.hpp \
+    libTargomanCore/clsTranslator.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -24,7 +26,8 @@ SOURCES += libID.cpp \
     libTargomanCore/GlobalConfigs.cpp \
     libTargomanCore/Private/PhraseTable/clsTargetRule.cpp \
     libTargomanCore/Private/PhraseTable/clsRuleNode.cpp \
-    libTargomanCore/Private/PhraseTable/clsJanePhraseTable.cpp
+    libTargomanCore/Private/PhraseTable/clsJanePhraseTable.cpp \
+    libTargomanCore/clsTranslator.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

@@ -10,35 +10,26 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_RULENODE_H
-#define TARGOMAN_CORE_PRIVATE_PHRASETABLE_RULENODE_H
-
-#include <QList>
-#include "clsTargetRule.h"
-#include "libTargomanCommon/Configuration.h"
-
+#ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFLANGUAGEMODEL_HPP
+#define TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFLANGUAGEMODEL_HPP
 namespace Targoman {
 namespace Core {
 namespace Private {
 namespace PhraseTable{
 
-class clsRuleNode
+TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
+
+class intfLanguageModel
 {
 public:
-    clsRuleNode();
+    intfLanguageModel(){}
 
 
-    // Following functions are needed for the binary input/output
-    void readBinary(std::istream &input);
-    void writeBinary(std::ostream &output) const;
 
-private:
-    QList<QSharedDataPointer<clsTargetRule> > TargetRules;
 };
 
 }
 }
 }
 }
-
-#endif // TARGOMAN_CORE_PRIVATE_PHRASETABLE_RULENODE_H
+#endif // TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFLANGUAGEMODEL_HPP
