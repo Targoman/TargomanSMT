@@ -52,6 +52,9 @@ void dummyPrintLoadedLibs()
 {
 }
 
+/**
+ * @brief prints a list of loaded system and Targoman libraries.
+ */
 void printLoadedLibs()
 {
     if (TARGOMAN_IO_SETTINGS.Debug.canBeShown(5) == false)

@@ -36,7 +36,7 @@ public:
         File       = 0x08,
         Dir        = 0x10
     };
-    Q_DECLARE_FLAGS(Options, Option)
+    Q_DECLARE_FLAGS(Options, Option) /**<  helps to treat logical "and" and logical "or" of Option enumeration as type of enumeration*/
 };
 
 }

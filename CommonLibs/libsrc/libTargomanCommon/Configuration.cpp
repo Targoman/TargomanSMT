@@ -33,6 +33,19 @@ Configuration::~Configuration()
     //Defined just to suppress compiler error on QScoppedPointer
 }
 
+/**
+ * @brief Initializes configuration managment.
+ * @param _arguments list of arguments in QStringList format.
+ * @exception throws exception if multiple configuration file defined
+ * @exception throws exception if config option has no file name
+ * @exception throws exception if config path not found or can not be read
+ * @exception throws exception if config path not found or can not be read
+ * @exception throws exception if a configurable in config file is not registered
+ * @exception throws exception if a configurable could not be validated
+ * @exception throws exception if not enough parameters is provided for a switch
+ * @exception throws exception if invalid arguments are provided for switch
+ * @exception throws exception if every configurable could not be cross validated
+ */
 void Configuration::init(const QStringList &_arguments, const QString& _license)
 {
     QString ErrorMessage;
@@ -43,8 +56,9 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
         exit(1);
         return;
     }
+
     //////////////////////////////////////////////////
-    ///check arguments for configFileile path or set default cogFileplFile path
+    ///First, check arguments for configFile path or set default cogFileplFile path
     //////////////////////////////////////////////////
     if (_arguments.count("-c") + _arguments.count("--config") > 1)
         throw exConfiguration("Invalid multiple configuration file definition");
@@ -67,12 +81,12 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
     }
 
     //////////////////////////////////////////////////
-    ///check configFileile and load everything
+    ///Second, check configFile and load everything
     //////////////////////////////////////////////////
     if (this->pPrivate->ConfigFilePath.size()){
-        QSettings ConfigFileile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
+        QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
 
-        foreach (const QString& Key, ConfigFileile.allKeys()){
+        foreach (const QString& Key, ConfigFile.allKeys()){
             if (this->pPrivate->Configs.contains(Key) == false){
                 QString BasePath = Key;
                 bool Found = false;
@@ -89,7 +103,7 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
                     throw exConfiguration("Configuration path <"+Key+"> is not registered");
             }
             intfConfigurable* ConfigItem  = this->pPrivate->Configs[Key];
-            QVariant Value = ConfigFileile.value(Key);
+            QVariant Value = ConfigFile.value(Key);
             if (ConfigItem->validate(Value, ErrorMessage) == false)
                 throw exConfiguration(ErrorMessage);
             else
@@ -98,7 +112,7 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
     }
 
     //////////////////////////////////////////////////
-    ///check arguments and override settings
+    ///Then, check arguments and override settings
     //////////////////////////////////////////////////
     for (auto KeyIter = _arguments.begin();
          KeyIter != _arguments.end();
@@ -136,7 +150,7 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
     }
 
     //////////////////////////////////////////////////
-    ///validate all config items
+    ///Finally, validate all config items
     //////////////////////////////////////////////////
     foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
         if (ConfigItem->crossValidate(ErrorMessage) == false)
@@ -146,20 +160,38 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
     this->pPrivate->Initialized = true;
 }
 
+/**
+ * @brief save current configuration to ini file (not implimented yet).
+ * @param _fileName name of file to save.
+ * @param _backup save backup option.
+ */
 void Configuration::save2File(const QString &_fileName, bool _backup)
 {
     Q_UNUSED(_fileName)
     Q_UNUSED(_backup)
-    //TODO implement me
-}
+    /**
+    * @todo implement me!
+    */
 
+}
+/**
+ * @brief Registers new configurations
+ * @param configuration path
+ * @param configurable item
+ * @exception throws exception if a path for a configurable already exists.
+ */
 void Configuration::addConfig(const QString _path, intfConfigurable *_item)
 {
     if (this->pPrivate->Configs.contains(_path))
         throw exConfiguration("Duplicate path key: " + _path);
     this->pPrivate->Configs.insert(_path, _item);
 }
-
+/**
+ * @brief gives value of a configurable in QVariant format.
+ * @param _path  path of configurable (key in config registery Map).
+ * @param _default default value if value could not be convert to variant.
+ * @exception throws exception configuration class is not initialized yet.
+ */
 QVariant Configuration::getConfig(const QString &_path, const QVariant& _default)
 {
     if (this->pPrivate->Initialized == false)
@@ -216,6 +248,10 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
 }
 
 /***************************************************************************************/
+/**
+*@def _NUMERIC_CONFIGURABLE_IMPL
+* specific implimentation of validate(const QVariant&, QString& ) and setFromVariant( const QVariant&) for numeric configurables like quint8, quint16, quint32, quint64, double and float
+*/
 #define _NUMERIC_CONFIGURABLE_IMPL(_name, _variantType, _type, _nextType, _min, _max) \
     template <> \
     bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const{ \
@@ -262,12 +298,19 @@ _NUMERIC_CONFIGURABLE_IMPL("float",QVariant::Double, float,double, FLT_MIN,FLT_M
 #pragma GCC diagnostic pop
 
 //////QString
+/**
+* specific implimentation of validate(const QVariant&, QString& ) and setFromVariant( const QVariant&) for QString configurables like quint8, quint16, quint32, quint64, double and float
+*/
 template <>
 bool clsConfigurable<QString>::validate(const QVariant&, QString& )const { return true; }
 template <>
 void clsConfigurable<QString>::setFromVariant(const QVariant& _value){ this->Value = _value.toString(); }
 
 //////bool
+
+/**
+* specific implimentation of validate(const QVariant&, QString& ) and setFromVariant( const QVariant&) for bool configurables like quint8, quint16, quint32, quint64, double and float
+*/
 template <>
 bool clsConfigurable<bool>::validate(const QVariant& _value, QString& _errorMessage) const{
     if (_value.canConvert(QVariant::Bool) == false) {
@@ -276,6 +319,9 @@ bool clsConfigurable<bool>::validate(const QVariant& _value, QString& _errorMess
     }else
         return true;
 }
+/**
+ * @exception throws exception if validation fails.
+ */
 template <>
 void clsConfigurable<bool>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
@@ -284,10 +330,19 @@ void clsConfigurable<bool>::setFromVariant(const QVariant& _value){
 }
 
 //////QList<quint8>
+
+/**
+* specific implimentation of validate(const QVariant&, QString& ) and setFromVariant( const QVariant&) for QList<quint8> configurables like quint8, quint16, quint32, quint64, double and float
+*/
+
 template <>
 bool clsConfigurable<QList<quint8> >::validate(const QVariant&, QString& )const {
     Q_ASSERT_X (0, "QList<QVariant>", "Check Validation");return true;
 }
+
+/**
+ * @exception throws exception if validation fails.
+ */
 template <>
 void clsConfigurable<QList<quint8> >::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
@@ -311,7 +366,10 @@ QVariant    clsConfigurable<QList<quint8> >::toVariant() const{
 Validators::clsPathValidator::clsPathValidator(PathAccess::Options _requiredAccess):
     RequiredAccess(_requiredAccess)
 {}
-
+/**
+ * @brief Cross validator of Path(QString) configurables.
+ * Matches path access info with with RequiredAccess.
+ */
 bool Validators::clsPathValidator::validate(const intfConfigurable &_item, QString &_errorMessage)
 {
     QString Path = _item.toVariant().toString();
@@ -341,10 +399,20 @@ bool Validators::clsPathValidator::validate(const intfConfigurable &_item, QStri
     return true;
 }
 ///////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief set min and max value for int cross validator
+ * @param _min min value for int configurable
+ * @param _max max value for int configurable
+ */
 Validators::clsIntValidator::clsIntValidator(qint64 _min, qint64 _max):
     Max(_max),Min(_min)
 {}
 
+/**
+ * @brief Cross validator of int configurables.
+ * @return return true if number is between Min and Max value, else returns false.
+ */
 bool Validators::clsIntValidator::validate(const intfConfigurable &_item, QString &_errorMessage)
 {
     qint64 Number = _item.toVariant().toLongLong();
@@ -357,10 +425,20 @@ bool Validators::clsIntValidator::validate(const intfConfigurable &_item, QStrin
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief set min and max value for uint cross validator
+ * @param _min min value for int configurable
+ * @param _max max value for int configurable
+ */
 Validators::clsUIntValidator::clsUIntValidator(quint64 _min, quint64 _max):
     Max(_max),Min(_min)
 {}
 
+/**
+ * @brief Cross validator of uint configurables.
+ * @return return true if number is between Min and Max value, else returns false.
+ */
 bool Validators::clsUIntValidator::validate(const intfConfigurable &_item, QString &_errorMessage)
 {
     quint64 Number = _item.toVariant().toULongLong();
@@ -373,10 +451,20 @@ bool Validators::clsUIntValidator::validate(const intfConfigurable &_item, QStri
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief set min and max value for uint cross validator
+ * @param _min min value for int configurable
+ * @param _max max value for int configurable
+ */
 Validators::clsDoubleValidator::clsDoubleValidator(double _min, double _max):
     Max(_max),Min(_min)
 {}
 
+/**
+ * @brief Cross validator of uint configurables.
+ * @return return true if number is between Min and Max value, else returns false.
+ */
 bool Validators::clsDoubleValidator::validate(const intfConfigurable &_item, QString &_errorMessage)
 {
     double Number = _item.toVariant().toDouble();

@@ -290,8 +290,8 @@ void printLoadedLibs();
 #endif
 
 /**
-* @def TargomanDebug, prints function name, file name, line number and a message in debug mode, if message is QString this macro calls
-* TargomanDebug_Single, and if message is char* and has a formating styles, calls TargomanDebug_Multi.
+* @def TargomanError, prints function name, file name, line number and a message in Error mode, if message is QString this macro calls
+* TargomanError_Single, and if message is char* and has a formating styles, calls TargomanError_Multi.
 */
 
 #define TargomanError_Multi(_fmt,...)\
@@ -305,6 +305,11 @@ void printLoadedLibs();
             , TARGOMAN_COLOR_NORMAL);}
 
 #define TargomanError(...)  {TARGOMAN_MACRO_ARG_BASED_FUNC(TargomanError_,__VA_ARGS__)(__VA_ARGS__)}
+
+/**
+* @def TargomanWarn, prints function name, file name, line number and a message in Warn mode, if message is QString this macro calls
+* TargomanWarn_Single, and if message is char* and has a formating styles, calls TargomanWarn_Multi.
+*/
 
 #if TARGOMAN_SHOW_WARNING
     #define TargomanWarn_Multi(_warnLevel,_fmt,...)\
@@ -322,6 +327,14 @@ void printLoadedLibs();
 #else
     #define TargomanWarn(_warnLevel,...) {}
 #endif
+
+/**
+* @def TargomanInfo, prints function name, file name, line number and a message in Info mode, if message is QString this macro calls
+* TargomanInfo_Single, and if message is char* and has a formating styles, calls TargomanInfo_Multi.
+* @def TargomanInlineInfo, prints details and message in Info mode but it doesn't print end line character.
+* @def TargomanFinishInlineInfo, prints a message in Info mode without details of function and file names and line number,
+* it also prints end line character.
+*/
 
 #if TARGOMAN_SHOW_INFO
     #define TargomanInfo_Multi(_infoLevel,_newline,_fmt,...)\
@@ -351,6 +364,14 @@ void printLoadedLibs();
     #define TargomanFinishInlineInfo(_color, _lbl) {}
 #endif
 
+/**
+* @def TargomanOut, prints function name, file name, line number and a message in normal mode, if message is QString this macro calls
+* TargomanOut_Single, and if message is char* and has a formating styles, calls TargomanOut_Multi.
+* @def TargomanInlineOut, prints details and message in normal mode but it doesn't print end line character.
+* @def TargomanFinishInlineOut, prints a message in normal mode without details of function and file names and line number,
+* it also prints end line character.
+*/
+
 #if TARGOMAN_SHOW_NORMAL
     #define TargomanOut_Multi(_infoLevel,_newline,_fmt,...)\
         {fprintf(stdout,"%s[NORMAL][%d] " _fmt _newline, \
@@ -378,6 +399,11 @@ void printLoadedLibs();
     #define TargomanInlineOut(_infoLevel,...) {}
     #define TargomanFinishInlineOut(_color, _lbl) {}
 #endif
+
+/**
+* @def TargomanHappy, prints function name, file name, line number and a message in Happy mode, if message is QString this macro calls
+* TargomanHappy_Single, and if message is char* and has a formating styles, calls TargomanHappy_Multi.
+*/
 
 #if TARGOMAN_SHOW_HAPPY
     #define TargomanHappy_Multi(_happyLevel,_fmt,...)\

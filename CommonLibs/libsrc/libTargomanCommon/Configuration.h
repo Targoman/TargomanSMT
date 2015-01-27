@@ -29,15 +29,28 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
 
 class intfConfigurable;
 /***************************************************************************************/
+/**
+ * @brief This class is an interface for all kinds of validators.
+ * This class and derivations of this class checks the validity of value of a configurable in comparing with itself and other configurables.
+ */
 class intfCrossValidate{
 public:
     intfCrossValidate(){}
-
+    /**
+     * @brief checks validity of input configurable.
+     * @param[in] configurable item which is need to be a derivation of intfConfigurable class.
+     * @param[in] _errorMessage error message for showing in case of not validity of configurable item.
+     */
     virtual bool validate(const intfConfigurable& _item,
                           QString& _errorMessage) = 0;
 };
 
 /***************************************************************************************/
+/**
+ * @brief This class is an interface for all kinds of configurables. Configurables are options and configurations of programs.
+ * This class and derivations of this class manage and holds informations of configurables.
+ * This class and its derivations is used as value of pPrivate Map of clsConfigurationPrivate class.
+ */
 class intfConfigurable
 {
 public:
@@ -60,12 +73,12 @@ public:
     inline const QString& configPath()const{return this->ConfigPath;}
 
 protected:
-    QString ConfigPath;
-    QString Description;
-    QString ShortSwitch;
-    QString ShortHelp;
-    QString LongSwitch;
-    qint8   ArgCount;
+    QString ConfigPath;  /**< path of Configuration file */
+    QString Description; /**< long descriptions of configurable  */
+    QString ShortSwitch; /**< short switch of configurable i.e. "-i" option */
+    QString ShortHelp;   /**< short descriptions of configurable */
+    QString LongSwitch;  /**< long switch of configurable i.e. "--input" option */
+    qint8   ArgCount;    /**< number of arguments for this configurable */
 };
 
 /***************************************************************************************/
@@ -73,7 +86,6 @@ protected:
  * @brief The clsFileBasedConfig class is used when there are more optional configs stored in configuration file
  * this optional configs will not be stored and monitored by configuration manager.
  */
-//zhnDebug: what is this class for?
 class clsFileBasedConfig : public intfConfigurable{
 public:
     clsFileBasedConfig(const QString&  _configPath) :
@@ -124,18 +136,31 @@ public:
         this->CrossValidator = _crossValidator;
     }
 
+    /**
+     * @brief This function will be overloaded for every type (such as int, float ,...).
+     * This function converts input value from QVariant to a specific type based on overloaded implementation.
+     */
     virtual inline void setFromVariant(const QVariant& _value){
         throw exTargomanMustBeImplemented("setFromVariant for "+this->ConfigPath+" Not Implemented");
     }
 
+    /**
+     * @brief convert #value variable to QVariant type.
+     */
     virtual inline QVariant    toVariant() const{
         return QVariant(this->Value);
     }
 
+    /**
+     * @brief This function will be overloaded for every type (such as int, float ,...)
+     * This function validate value of input value.
+     */
     virtual inline bool        validate(const QVariant& _value, QString& _errorMessage) const{
         return true;
     }
-
+    /**
+     * @brief if cross validator function is prepared that function will be called, else returns true.
+     */
     virtual inline bool        crossValidate(QString& _errorMessage) const{
         return Q_LIKELY(this->CrossValidator) ? this->CrossValidator->validate(*this, _errorMessage) : true;
     }
@@ -149,6 +174,9 @@ private:
 };
 
 /***************************************************************************************/
+/**
+ * @def type specific validate and setFromVariant functions signiture.
+ */
 #define _SPECIAL_CONFIGURABLE(_type) \
     template <> bool clsConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
     template <> void clsConfigurable<_type>::setFromVariant(const QVariant& _value);
@@ -169,6 +197,9 @@ _SPECIAL_CONFIGURABLE(bool)
 _SPECIAL_CONFIGURABLE(QList<quint8>)
 /***************************************************************************************/
 namespace Validators {
+    /**
+     * @brief The clsPathValidator class overloads intfCrossValidate that can be used for path(string) configurables
+     */
     class clsPathValidator : public intfCrossValidate{
     public:
         clsPathValidator(PathAccess::Options _requiredAccess);
@@ -178,6 +209,9 @@ namespace Validators {
         PathAccess::Options RequiredAccess;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief The clsIntValidator class overloads intfCrossValidate that can be used for int configurables
+     */
     class clsIntValidator : public intfCrossValidate{
     public:
         clsIntValidator(qint64 _min, qint64 _max);
@@ -187,6 +221,9 @@ namespace Validators {
         qint64 Max,Min;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief The clsUIntValidator class overloads intfCrossValidate that can be used for uint configurables
+     */
     class clsUIntValidator : public intfCrossValidate{
     public:
         clsUIntValidator(quint64 _min, quint64 _max);
@@ -196,6 +233,9 @@ namespace Validators {
         quint64 Max,Min;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief The clsDoubleValidator class overloads intfCrossValidate that can be used for double configurables
+     */
     class clsDoubleValidator : public intfCrossValidate{
     public:
         clsDoubleValidator(double _min, double _max);

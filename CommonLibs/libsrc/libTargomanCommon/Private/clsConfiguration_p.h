@@ -32,13 +32,13 @@ class clsConfigurationPrivate
 public:
     void printHelp(const QString &_license);
     /**
-     * @brief This is a registry (Map) for all configs and arguments of all programs such as normalizer, the key value of
+     * @brief This is a registry (Map) for all configs and arguments of all programs such as normalizer, the key of
      * this Map, specifies the program and option of that program, and value of this Map, specifies the value of that
      * option.
      */
     QHash<QString, intfConfigurable*>    Configs;
     /**
-     * @brief In case that we have a config file for arguments of our programs, we put the address of
+     * @brief In case that we have a config file (.ini file) for arguments of our programs, we put the address of
      * that config file in #ConfigFilePath
      */
     QString                              ConfigFilePath;
