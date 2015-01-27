@@ -62,13 +62,21 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
 "Val3"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
+
 void checkOutput()
 {
+
     TargomanDebugLine
+    QString myQString ("Debug QString");
+    std::string myString ("Debug String");
+
     TargomanDebug(6,"DEBUG"<<" Stream"<<1);
     TargomanDebug(5,"%s b=%d","DEBUG",2);
+//    TargomanDebug(5,myQString);
+//    TargomanDebug(5,"myString");
     TargomanInlineDebug(5,"Checking...");
-    TargomanFinishInlineDebug(TARGOMAN_COLOR_HAPPY,"Ok");
+//    TargomanInlineDebug(5,myQString);
+    TargomanFinishInlineDebug(TARGOMAN_COLOR_ERROR,"Ok");
 
     TargomanWarn(6,"Warn"<<" Stream"<<1);
     TargomanWarn(5,"%s b=%d","Warn",2);
@@ -90,8 +98,10 @@ void checkOutput()
     TargomanError("%s b=%d","Error",2);
 }
 
+
 int main(int argc, char *argv[])
 {
+
   Targoman::Common::printLoadedLibs();
 
   QString ActorUUID;
@@ -99,6 +109,7 @@ int main(int argc, char *argv[])
   TARGOMAN_REGISTER_ACTOR("testLibCommon");
   TARGOMAN_IO_SETTINGS.setFull();
   Targoman::Common::Logger::instance().init("log.log");
+
 
   Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored = false;
   checkOutput();
@@ -109,10 +120,10 @@ int main(int argc, char *argv[])
   checkOutput();
   qDebug("************************* After Silence");
 
+
   TARGOMAN_IO_SETTINGS.setDefault(5, 5);
 
   checkOutput();
-
 
   A.toVariant();
 
@@ -159,7 +170,6 @@ int main(int argc, char *argv[])
       PB.setValue(i);
       usleep(500);
   }
-
   return 0;
 /**/
   //  return a.exec();*/

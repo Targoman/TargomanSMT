@@ -72,30 +72,46 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "Happy"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
+/**
+ * @class clsLogSettings
+ * This class is used for defining and checking options for log files.
+ * Pointer of this class is used in LoggerPrivate class as a data member.
+ */
 class clsLogSettings
 {
 public:
+    /**
+     * @brief Constructor sets level of details at highest level.
+     */
     clsLogSettings(){
         this->Details = 0xFF;
     }
-
+    /**
+     * @brief validateLevel
+     * @exception throws exceptions if input level is equal or greater than 10
+     */
     inline bool validateLevel(quint8 _level){
         Q_ASSERT_X(_level < 10, "LogSettings",  "Level must be between 0 to 9");
         if (_level > 9)
             throw exLogger("Logger log Level must be between 0 to 9");
     }
-
+    /**
+     * @brief canBeShown
+     * @return Returns true if #Details is greater than _level
+     */
     inline bool canBeShown(quint8 _level){
         return (this->Details & 0x0F) >= _level;
     }
-
+    /**
+     * @brief sets level of details.
+     */
     inline void setLevel(quint8 _level){
         this->validateLevel(_level);
         this->Details = (this->Details & 0xF0) + _level;
     }
 
 private:
-    quint8 Details;
+    quint8 Details; /**< This variable is used for setting level of details in log file. Just higher bits of this variable is used*/
 };
 
 /**
@@ -162,7 +178,9 @@ public:
      * @param _level An integer below or equal 10 specifiying Log priority
      * @param _message Message to be written as Log
      * @return void in case of any error it will rais an exception
-     **/
+     * @param _newLine if this is true, newline character will be added after printing message in log file.
+     * @exception throws exception if _actorID and value of _actorID in LoggerPrivate#Actor is empty.
+     */
     void   write(const QString&     _actorID,
                  enuLogType::Type   _type,
                  quint8             _level,
@@ -174,6 +192,8 @@ public:
      * @param _actorID UUID for registering actor. If it passes empty a new UUID will be generated
      * @param _actorName Name for the registering Actor
      * @return void in case of any error it will rais an exception
+     * @exception throws exception if _actorName or _actorUUID is empty
+     * @exception throws exception if _actorName is already exists in our Map, but _actorUUID is different
      **/
     void   registerActor(QString* _actorID, const QString& _actorName);
     /**
@@ -199,6 +219,9 @@ public:
 
     bool isVisible();
   private:
+    /**
+     * @brief sets all kinds logSettings levels to lowest level.
+     */
     Logger(QObject *parent=0);
 
   signals:

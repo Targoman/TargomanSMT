@@ -18,6 +18,9 @@
 namespace Targoman {
 namespace Common {
 
+/**
+ * @brief This class helps us to show a progress bar in command line.
+ */
 class clsCmdProgressBar
 {
 public:

@@ -119,12 +119,12 @@ QString Normalizer::normalize(const QChar &_char,
 
         if (Normalized.size()){
             if (Normalized.size() > 1){
-                return Normalized;
                 this->LastChar = Normalized.at(Normalized.size() - 1);
+                return Normalized;
             }
             else if (_skipRecheck){
-                this->LastChar = Normalized.at(Normalized.size() - 1);
                 return Normalized;
+                this->LastChar = Normalized.at(Normalized.size() - 1);
             }else{
                 Normalized  = this->normalize(Normalized.at(0),
                                        _nextChar, true, _line, _phrase, _charPos, true);
@@ -449,7 +449,6 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
         TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, "Loaded");
         return;
     }
-
     QFile ConfigFile(this->ConfigFile);
     ConfigFile.open(QIODevice::ReadOnly);
     if(!ConfigFile.isReadable ())

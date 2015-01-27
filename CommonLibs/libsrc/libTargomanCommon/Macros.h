@@ -132,6 +132,21 @@ namespace _name { enum Type { Unknown = -1,
 #define TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS \
   }; static const char* Strings[] ={
 
+/**
+* @def getCount()
+* returns number of values in this enumerations.
+*/
+
+/**
+ * @def toStr
+ * @return converts enum type value to char*
+ */
+
+/**
+ * @def ToEnum
+ * converts char* to enumeration
+ */
+
 #define TARGOMAN_DEFINE_ENHANCED_ENUM_END \
   }; \
   inline static int getCount() { return sizeof(Strings)/sizeof(char*); } \

@@ -82,7 +82,6 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
                         Found = true;
                         break;
                     }
-
                 }
                 if (Found)
                     continue; // Continue to next key
@@ -117,7 +116,9 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
                 if ((KeyIter->startsWith("--") && *KeyIter == "--" + ConfigItemIter.value()->longSwitch()) ||
                        *KeyIter  == "-" + ConfigItemIter.value()->shortSwitch()){
                     QString Value;
+
                     for (qint8 i=0; i<ConfigItemIter.value()->argCount(); i++){
+
                         KeyIter++;
                         if (KeyIter == _arguments.end())
                             throw exConfiguration("Switch: <" +*KeyIter+ "> needs at least: " +

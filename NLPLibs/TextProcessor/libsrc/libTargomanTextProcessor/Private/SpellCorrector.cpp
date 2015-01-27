@@ -21,6 +21,7 @@
 /****************************/
 #include "SpellCheckers/clsPersianSpellCorrector.h"
 /****************************/
+#define DUAL_SPACE "  "
 
 namespace Targoman {
 namespace NLPLibs {
@@ -30,7 +31,7 @@ namespace Private {
 SpellCorrector* SpellCorrector::Instance = NULL;
 
 SpellCorrector::SpellCorrector():
-    NormalizerInstance(this->NormalizerInstance)
+    NormalizerInstance(this->NormalizerInstance) //zhnDebug: what is this?
 {
     this->Processors.insert("fa", new clsPersianSpellCorrector);
 }
@@ -73,7 +74,7 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
     do{
         Phrase = Output;
         Output.clear();
-        Tokens = Phrase.trimmed().replace("  "," ").replace("  "," ").split(" ", QString::SkipEmptyParts);
+        Tokens = Phrase.trimmed().replace(DUAL_SPACE," ").replace(DUAL_SPACE," ").split(" ", QString::SkipEmptyParts);
         foreach(const QString& Token, Tokens){
             Normalized =  Processor->process(Token);
             if (Normalized.size())
@@ -120,7 +121,7 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
         for (int MaxTokens=2; MaxTokens< Processor->maxAutoCorrectTokens(); ++MaxTokens){
             do{
                 Phrase = Output;
-                Tokens = Phrase.trimmed().replace("  "," ").replace("  "," ").split(" ", QString::SkipEmptyParts);
+                Tokens = Phrase.trimmed().replace(DUAL_SPACE," ").replace(DUAL_SPACE," ").split(" ", QString::SkipEmptyParts);
                 if (Tokens.size() < MaxTokens)
                     break;
                 Output.clear();
@@ -133,15 +134,14 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
                         if ((FromTokenIndex + i) < Tokens.size())
                             MultiWordBuffer.append(Tokens.at(FromTokenIndex+i));
 
-                    if (MultiWordBuffer.size() < MaxTokens - 1)
+                    if (MultiWordBuffer.size() < MaxTokens - 1) //TODO why -1
                         continue;
 
                     Normalized = Processor->process(MultiWordBuffer);
                     if (Normalized.size()){
                         Output += Normalized + " ";
                         if (Normalized.split(" ").size() >= MaxTokens){
-                            Tokens.removeAt(
-                                        FromTokenIndex);
+                            Tokens.removeAt(FromTokenIndex);
                             foreach(const QString& MidTokens, Normalized.split(" ", QString::SkipEmptyParts))
                                 Tokens.insert(FromTokenIndex,MidTokens);
                             FromTokenIndex--; // As Token at FromTokenIndex has changed so reprocess it
@@ -210,7 +210,7 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
                     QString Val = this->NormalizerInstance.normalize(Pair[1].trimmed());
                     Config.KeyValStorage->insert(Key, Val);
                     this->MaxAutoCorrectTokens = qMax(this->MaxAutoCorrectTokens,
-                                                      Key.split(" ", QString::SkipEmptyParts).size());
+                                                      Key.split(" ", QString::SkipEmptyParts).size()); //zhnDebug: what is this?
                 }
                 else {
                     throw exSpellCorrector(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));

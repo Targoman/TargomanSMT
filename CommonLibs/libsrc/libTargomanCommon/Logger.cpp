@@ -27,6 +27,8 @@ namespace Common {
 
 Logger* Logger::Instance = NULL;
 
+
+
 Logger::Logger(QObject *parent) :
     QObject(parent),pPrivate(new Private::LoggerPrivate)
 {
@@ -55,6 +57,7 @@ bool Logger::init(const QString &_fileName,
     this->setActive();
     return this->pPrivate->open();
 }
+
 
 void Logger::write(const QString &_actorID,
                    enuLogType::Type _type,
@@ -171,6 +174,7 @@ bool Logger::isVisible()
 
 
 /***************************************************************************/
+
 Private::LoggerPrivate::LoggerPrivate()
 {
     this->LogSettings = new clsLogSettings[enuLogType::getCount()];

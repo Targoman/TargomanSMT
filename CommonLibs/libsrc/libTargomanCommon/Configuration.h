@@ -73,6 +73,7 @@ protected:
  * @brief The clsFileBasedConfig class is used when there are more optional configs stored in configuration file
  * this optional configs will not be stored and monitored by configuration manager.
  */
+//zhnDebug: what is this class for?
 class clsFileBasedConfig : public intfConfigurable{
 public:
     clsFileBasedConfig(const QString&  _configPath) :

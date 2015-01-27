@@ -22,23 +22,44 @@
 namespace Targoman {
 namespace Common {
 namespace Private {
-
+/**
+ * @brief The pointer of this class is used as "pPrivate" data variable of Logger class.
+ * This class is used as an integral place for registering all users by their UUIDs.
+ * This class also helps to write outout logs safely.
+ */
 class LoggerPrivate{
 public:
+
+    /**
+     * @brief Generates an array of clsLogSettings for different types of log settings such as
+     * "Info", "Warning", "Error", "Debug" and "Happy".
+     */
     LoggerPrivate();
+
+    /**
+     * @brief Opens logs file in appending mode.
+     * @return returns true if succesfull, returns false if file is not writable.
+     */
     bool open();
+
+    /**
+     * @brief Zips log file if size of log file is bigger MaxFileSize
+     * @exception Throws exception if OS type is not linux
+     */
     void rotateLog();
 
 public:
     QFile   LogFileile;
-    clsLogSettings* LogSettings;
+    clsLogSettings* LogSettings; /**< a pointer to clsLogSettings class, which specifies level of details of log files  */
     quint64 MaxFileSize;
-    bool GlobalSettings;
-    QMutex  mxLog;
+    bool GlobalSettings; /**< first bit of this boolian defines whether it is active or not and second bit defines whether it is visible or not*/
+    QMutex  mxLog; /**< a mutex for insuring unique access for logging outputs for safty */
     QString ActorUUID;
-    QHash<QString, QString> Actors;
+    QHash<QString, QString> Actors; /**< a map for registring actors. Key: actor_name, Value: actor_UUID */
 
-    //TODO add configuration settings
+    /**
+     * @todo add configuration settings
+     */
 };
 
 }

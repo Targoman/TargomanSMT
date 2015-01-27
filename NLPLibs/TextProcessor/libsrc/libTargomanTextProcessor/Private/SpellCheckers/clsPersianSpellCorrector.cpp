@@ -109,6 +109,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
         Prefix = Buffer.mid(0,2);
         Buffer.remove(0,2); //Remove Bi
 
+        //zhnDebug: ناخوبیهایشان
         Buffer = this->processStartingWithBi_Ba_Na(this->CanStartWithBi_Ba, Prefix, Buffer);
         if (Buffer.size())
             return Buffer;
@@ -250,6 +251,7 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
     Postfix = Normalizer::sidesTrim(Postfix.remove(0,Buffer.size()));
     if (Postfix.size() && Postfix.startsWith(PERSIAN_Noon)){
         Buffer = Normalizer::sidesTrim(Buffer.append(PERSIAN_Noon));
+        //zhnDebug: can not understand the logic of it.
         if(this->VerbStemPresent.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
     }

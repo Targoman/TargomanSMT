@@ -56,6 +56,7 @@ IXMLWriter::IXMLWriter() :
     // suffixes
     this->RxSuffix = QRegExp(QStringLiteral("((?:'(?:%1))\\b)").arg(TGMN_SUFFIXES));
 
+    //zhnDebug: what is this?
     // Dates
     this->RxDate = QRegExp(QStringLiteral("^$"));
     // Times

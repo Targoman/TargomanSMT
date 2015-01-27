@@ -46,7 +46,7 @@ int main(int _argc, char *_argv[])
 
         Targoman::NLPLibs::TextProcessor::stuConfigs Configs;
         Configs.NormalizationFile = "../conf/Normalization.conf";
-        Configs.AbbreviationsFile = "../conf/Normalization.conf";
+        Configs.AbbreviationsFile = "../conf/Abbreviations.tbl";
         Configs.SpellCorrectorBaseConfigPath = "../conf/SpellCorrectors";
         QVariantHash PersianSpellCorrector;
         PersianSpellCorrector.insert("Active", true);
@@ -57,11 +57,18 @@ int main(int _argc, char *_argv[])
 
 //        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin", true);
 
-      //  qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
-      //              QStringLiteral("من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند"), false, "fa");
-        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
-                    QStringLiteral("a -12asd"), "en", 0, true, true);
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+//                    QStringLiteral("من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند"), false, "fa");
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+//                    QStringLiteral("آذربایجان‌شرقی"), false, "fa");
+        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+                    QStringLiteral("نامردیهایشان"), false, "fa");
+        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+                    QStringLiteral("بیمعرفتها"), false, "fa");
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
+//                    QStringLiteral("a -12asd"), "en", 0, true, true);
 
+        /*
         while(1);
 
         QFile SampleFile("/tmp/persian.txt");
@@ -83,6 +90,8 @@ int main(int _argc, char *_argv[])
             Line = Targoman::NLPLibs::TextProcessor_::Private::SpellCorrector::instance().process("fa",Line,false);
             TargomanDebug(1, "[FNL]\n"<<Line);
         }
+        */
+
         /**/
 /*
 
@@ -114,7 +123,7 @@ int main(int _argc, char *_argv[])
                                  "INTACT" :
                                  QString("{%1}").arg(Normalized))).toUtf8().constData()<<std::endl;
         }/**/
-        while(1);
+//        while(1);
     }catch(Targoman::Common::exTargomanBase &e){
         qDebug()<<e.what();
     }

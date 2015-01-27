@@ -26,13 +26,25 @@ namespace Common {
 
 class clsOutputSettings{
 public:
+    /**
+     * @brief Constructor sets level of details at highest level.
+     */
     clsOutputSettings(){
         this->Details = 0xFF;
     }
 
+    /**
+     * @brief canBeShown
+     * @return Returns true if #Details is greater than _level
+     */
     inline bool canBeShown(quint8 _level){
         return (this->Details & 0x0F) >= _level;
     }
+
+    /**
+     * @brief validateLevel
+     * @exception Throws exceptions if input level is equal or greater than 10
+     */
     inline bool validateLevel(quint8 _level){
         Q_ASSERT_X(_level < 10, "CmdIO",  "Level must be between 0 to 9");
         if (_level > 9)
@@ -40,11 +52,21 @@ public:
         return true;
     }
 
+    /**
+     * @brief Sets level of output by setting lower bits of #Details.
+     */
     inline void setLevel(quint8 _level){
         this->validateLevel(_level);
         this->Details = (this->Details & 0xF0) + _level;
     }
 
+    /**
+     * @brief setDetails sets details of output by setting Higher bits of #Details.
+     * @param _time whether output time or not.
+     * @param _func whether output function name or not.
+     * @param _line whether output line number or not.
+     * @param _file whether output file name or not.
+     */
     inline void setDetails(bool _time = false, bool _func = false, bool _line = false, bool _file = false) {
         this->Details &= 0x0F;
         if(_time)
@@ -57,6 +79,15 @@ public:
             this->Details |= 0x80;
     }
 
+
+    /**
+     * @brief set, sets details and level of output.
+     * @param _time whether output time or not.
+     * @param _func whether output function name or not.
+     * @param _line whether output line number or not.
+     * @param _file whether output file name or not.
+     * @param _level level of output.
+     */
     inline void set(quint8 _level, bool _time = false, bool _func = false, bool _line = false, bool _file = false) {
         this->validateLevel(_level);
         this->Details = _level;
@@ -70,6 +101,13 @@ public:
             this->Details |= 0x80;
     }
 
+    /**
+     * @brief details, makes QString of details of output messages.
+     * @param[in] _function function name
+     * @param[in] _file file name
+     * @param[in] _line line number
+     * @return returns a QString of current time, function name, file name and line number.
+     */
     inline QString details(const char* _function, const char* _file, quint16 _line){
         QString OutStr;
         OutStr +=  (this->Details & 0x10 ?
@@ -90,17 +128,31 @@ public:
         return OutStr;
     }
 
-private:
-    quint8 Details; //0-7: Levels, 0x10:TimeStamp, 0x20: File, 0x40: Func, 0x80: Line
+private:/**
+     * @brief Details
+     * Higher bits of this variable defines details of output messages, such as TimeStamp, File, Func and line.
+     * Details: 0x10:TimeStamp, 0x20: File, 0x40: Func, 0x80: Line
+     * Lower bits of this variable defines level of output message.
+     * Level: 0-9
+     */
+    quint8 Details;
 };
 
 
+/**
+ * @brief This Class makes 6 instantiation of class clsOutputSettings for Debug, Info, Warning Happy and Normal output modes
+ * and sets their Details and level of outputs.
+ *
+ */
 class clsIOSettings{
 public:
     clsIOSettings(){
         this->setDefault();
     }
 
+    /**
+     * @brief setSilent, sets level of out messages to lowest level, and none output modes, shows their messages.
+     */
     void setSilent(){
         this->Debug.setLevel(0);
         this->Info.setLevel(0);
@@ -110,6 +162,9 @@ public:
 //        this->Error.setLevel(0); //Error must not be silented
     }
 
+    /**
+     * @brief setFull, sets level of out messages to highest level, and all output modes, shows their messages.
+     */
     void setFull(){
         this->Debug.set(9,true,true,true);
         this->Info.set(9,true,true,true);
@@ -119,6 +174,11 @@ public:
         this->Normal.set(9,true,true,true);
     }
 
+    /**
+     * @brief setDefault, sets default level of details for debug and none debug output mode.
+     * @param _debugLevel level of output for debug mode.
+     * @param _otherLevel level of output for other modes.
+     */
     void setDefault(quint8 _debugLevel = 5, quint8 _otherLevel = 9){
         this->Debug.set(_debugLevel,true,true,true);
         this->Info.set(_otherLevel,true);
@@ -134,9 +194,11 @@ public:
     clsOutputSettings Happy;
     clsOutputSettings Error;
     clsOutputSettings Normal;
-    bool ShowColored;
+    bool ShowColored; /**< whether show output messages in color or not. */
 
-    //TODO add silent, default, and property configurations
+    /**
+    @todo  add silent, default, and property configurations
+    */
 } extern TARGOMAN_IO_SETTINGS;
 
 void printLoadedLibs();
@@ -174,6 +236,14 @@ void printLoadedLibs();
 /********************************************************************************************
  * Output Macros
  ********************************************************************************************/
+/**
+* @def TargomanDebugLine, just prints function name, file name and line number in debug mode.
+* @def TargomanDebug, prints function name, file name, line number and a message in debug mode, if message is QString this macro calls
+* TargomanDebug_Single, and if message is char* and has a formating styles, calls TargomanDebug_Multi.
+* @def TargomanInlineDebug, prints details and message in debug mode but it doesn't print end line character.
+* @def TargomanFinishInlineDebug, prints a message in debug mode without details of function and file names and line number,
+* it also prints end line character.
+*/
 #if TARGOMAN_SHOW_DEBUG
     #if TARGOMAN_DEBUG_PROCESS_LINE
 
@@ -218,6 +288,11 @@ void printLoadedLibs();
     #define TargomanInlineDebug(_debugLevel, ...) {}
     #define TargomanFinishInlineDebug(_color, _lbl) {}
 #endif
+
+/**
+* @def TargomanDebug, prints function name, file name, line number and a message in debug mode, if message is QString this macro calls
+* TargomanDebug_Single, and if message is char* and has a formating styles, calls TargomanDebug_Multi.
+*/
 
 #define TargomanError_Multi(_fmt,...)\
     {fprintf(stderr,"%s%s[ERROR][-] %s" _fmt "\n", TARGOMAN_COLOR_ERROR, \
