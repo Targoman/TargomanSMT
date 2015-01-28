@@ -29,8 +29,13 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplVectorPrefixTree.hpp \
     libTargomanCommon/HashFunctions.hpp \
     libTargomanCommon/tmplExpirableCache.hpp \
-    libTargomanCommon/Private/clsConfiguration_p.h \
-    libTargomanCommon/Configuration.h
+    libTargomanCommon/Configuration/intfCrossValidate.hpp \
+    libTargomanCommon/Configuration/intfConfigurable.hpp \
+    libTargomanCommon/Configuration/clsFileBasedConfig.hpp \
+    libTargomanCommon/Configuration/tmplConfigurable.h \
+    libTargomanCommon/Configuration/Validators.h \
+    libTargomanCommon/Private/clsConfigManager_p.h \
+    libTargomanCommon/Configuration/ConfigManager.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -41,7 +46,9 @@ SOURCES += \
     libID.cpp \
     libTargomanCommon/Constants.cpp \
     libTargomanCommon/clsCmdProgressBar.cpp \
-    libTargomanCommon/Configuration.cpp
+    libTargomanCommon/Configuration/tmplConfigurable.cpp \
+    libTargomanCommon/Configuration/Validators.cpp \
+    libTargomanCommon/Configuration/ConfigManager.cpp
 
 OTHER_FILES +=
 

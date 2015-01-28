@@ -10,24 +10,19 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#ifndef TARGOMAN_COMMON_PRIVATE_CLSCONFIGURATION_P_H
-#define TARGOMAN_COMMON_PRIVATE_CLSCONFIGURATION_P_H
+#ifndef TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGURATION_P_H
+#define TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGURATION_P_H
 
 #include <QHash>
 #include <QVariant>
-#include "Configuration.h"
+#include "Configuration/intfConfigurable.hpp"
 
 namespace Targoman {
 namespace Common {
+namespace Configuration {
 namespace Private {
 
-/**
- * @brief The clsConfigurationPrivate class
- *
- * The pointer of this class is used as "pPrivate" data variable of Configuration class.
- * This class is used as integrated place for all options and configs of programs.
- */
-class clsConfigurationPrivate
+class clsConfigManagerPrivate
 {
 public:
     void printHelp(const QString &_license);
@@ -36,7 +31,7 @@ public:
      * this Map, specifies the program and option of that program, and value of this Map, specifies the value of that
      * option.
      */
-    QHash<QString, intfConfigurable*>    Configs;
+    QHash<QString, Configuration::intfConfigurable*>    Configs;
     /**
      * @brief In case that we have a config file (.ini file) for arguments of our programs, we put the address of
      * that config file in #ConfigFilePath
@@ -46,14 +41,11 @@ public:
      * @brief This variable will be true if init() function of Configuration class works without any exceptions.
      */
     bool Initialized;
-
-    /**
-      @todo add --save switch
-    */
 };
 
 }
 }
 }
+}
 
-#endif // TARGOMAN_COMMON_PRIVATE_CLSCONFIGURATION_P_H
+#endif // TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGURATION_P_H

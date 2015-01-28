@@ -17,14 +17,18 @@
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/clsCmdProgressBar.h"
 #include "libTargomanCommon/HashFunctions.hpp"
-#include "libTargomanCommon/Configuration.h"
+#include "libTargomanCommon/Configuration/ConfigManager.h"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
+#include "libTargomanCommon/Configuration/Validators.h"
 
 #include <iostream>
 #include <unistd.h>
 
 using namespace Targoman::Common;
 
-static clsConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
+static Configuration::tmplConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
+static Configuration::tmplConfigurable<QString> B("/s","fjkdfjkdsfjk",123,
+                                                  new Configuration::Validators::clsPathValidator(PathAccess::Dir | PathAccess::Readable));
 
 
 class exSample: public exTargomanBase
@@ -101,76 +105,81 @@ void checkOutput()
 
 int main(int argc, char *argv[])
 {
+    try{
+      Targoman::Common::printLoadedLibs();
 
-  Targoman::Common::printLoadedLibs();
+      QString ActorUUID;
 
-  QString ActorUUID;
+      TARGOMAN_REGISTER_ACTOR("testLibCommon");
+      TARGOMAN_IO_SETTINGS.setFull();
+      Targoman::Common::Logger::instance().init("log.log");
 
-  TARGOMAN_REGISTER_ACTOR("testLibCommon");
-  TARGOMAN_IO_SETTINGS.setFull();
-  Targoman::Common::Logger::instance().init("log.log");
+      Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored = false;
+      checkOutput();
+      Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored = true;
+      checkOutput();
+      Targoman::Common::TARGOMAN_IO_SETTINGS.setSilent();
+      qDebug("************************* Silented");
+      checkOutput();
+      qDebug("************************* After Silence");
 
+      TARGOMAN_IO_SETTINGS.setDefault(6, 6);
 
-  Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored = false;
-  checkOutput();
-  Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored = true;
-  checkOutput();
-  Targoman::Common::TARGOMAN_IO_SETTINGS.setSilent();
-  qDebug("************************* Silented");
-  checkOutput();
-  qDebug("************************* After Silence");
+      checkOutput();
 
+      A.toVariant();
 
-  TARGOMAN_IO_SETTINGS.setDefault(5, 5);
+      clsSample Sample;
 
-  checkOutput();
+      clsSafeCoreApplication App(argc, argv);
 
-  A.toVariant();
-
-  clsSample Sample;
-
-  clsSafeCoreApplication App(argc, argv);
-
-  TargomanLogWarn(5, " Log Warn");
-  TargomanLogInfo(5, " Log Info");
-  TargomanLogHappy(5, " Log Happy");
-  TargomanLogDebug(5, " Log Debug");
-  TargomanLogError(" Log Error");
+      TargomanLogWarn(5, " Log Warn");
+      TargomanLogInfo(5, " Log Info");
+      TargomanLogHappy(5, " Log Happy");
+      TargomanLogDebug(5, " Log Debug");
+      TargomanLogError(" Log Error");
 
 
-  try{
-    throw exSample2("Hello Wolrd to exception");
-    throw exSample("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ", __LINE__);
-  }catch (exSample& e){
-    TargomanError(" %s", qPrintable(e.what()));
-  }catch (exTargomanBase& e){
-    TargomanError(" %s", qPrintable(e.what()));
-  }
+      try{
+        throw exSample2("Hello Wolrd to exception");
+        throw exSample("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ", __LINE__);
+      }catch (exSample& e){
+        TargomanError(" %s", qPrintable(e.what()));
+      }catch (exTargomanBase& e){
+        TargomanError(" %s", qPrintable(e.what()));
+      }
 
-  try{
-    throw exTargomanInvalidParameter("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ", __LINE__);
-  }catch (exSample& e){
-    TargomanError(" %s", qPrintable(e.what()));
-  }catch (exTargomanBase& e){
-    TargomanError(" %s", qPrintable(e.what()));
-  }
+      try{
+        throw exTargomanInvalidParameter("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ", __LINE__);
+      }catch (exSample& e){
+        TargomanError(" %s", qPrintable(e.what()));
+      }catch (exTargomanBase& e){
+        TargomanError(" %s", qPrintable(e.what()));
+      }
 
-  QString Test = "this is a test";
-  TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),1));
-  TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),2));
-  TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),1));
+      QString Test = "this is a test";
+      TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),1));
+      TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),2));
+      TargomanHappy(1,HashFunctions::murmurHash32(Test.toUtf8().constData(), Test.length(),1));
 
-  TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1));
-  TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),2));
-  TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1));
-  TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1192));
+      TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1));
+      TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),2));
+      TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1));
+      TargomanHappy(1,HashFunctions::murmurHash64(Test.toUtf8().constData(), Test.length(),1192));
 
-  clsCmdProgressBar PB("Test Progress", 10000);
-  for (int i=0; i< 10001; i++){
-      PB.setValue(i);
-      usleep(500);
-  }
-  return 0;
+     // Configuration::ConfigManager::instance().init("Sample");
+     // Configuration::ConfigManager::instance().init("Sample", QStringList()<<"-h");
+      clsCmdProgressBar PB("Test Progress", 10000);
+      for (int i=0; i< 10001; i++){
+          PB.setValue(i);
+          usleep(500);
+      }
+
+      return 0;
+    }catch(exTargomanBase &e){
+        TargomanError(e.what());
+    }
+
 /**/
   //  return a.exec();*/
 }
