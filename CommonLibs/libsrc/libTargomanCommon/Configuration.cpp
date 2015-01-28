@@ -35,6 +35,10 @@ Configuration::~Configuration()
 
 /**
  * @brief Initializes configuration managment.
+ *
+ * First, check arguments for configFile path or set default configFile path. Second, check configFile and load everything.
+ * Then, check arguments and override settings. Finally, validate all config items
+ *
  * @param _arguments list of arguments in QStringList format.
  * @exception throws exception if multiple configuration file defined
  * @exception throws exception if config option has no file name
@@ -57,9 +61,9 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
         return;
     }
 
-    //////////////////////////////////////////////////
-    ///First, check arguments for configFile path or set default cogFileplFile path
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    //Check arguments for configFile path or set default configFile path
+    // ////////////////////////////////////////////////
     if (_arguments.count("-c") + _arguments.count("--config") > 1)
         throw exConfiguration("Invalid multiple configuration file definition");
 
@@ -80,9 +84,9 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
         }
     }
 
-    //////////////////////////////////////////////////
-    ///Second, check configFile and load everything
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    //Check configFile and load everything
+    // ////////////////////////////////////////////////
     if (this->pPrivate->ConfigFilePath.size()){
         QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
 
@@ -111,9 +115,9 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
         }
     }
 
-    //////////////////////////////////////////////////
-    ///Then, check arguments and override settings
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    //Check arguments and override settings
+    // ////////////////////////////////////////////////
     for (auto KeyIter = _arguments.begin();
          KeyIter != _arguments.end();
          KeyIter++){
@@ -149,9 +153,9 @@ void Configuration::init(const QStringList &_arguments, const QString& _license)
             throw exConfiguration("invalid argument <"+*KeyIter+">");
     }
 
-    //////////////////////////////////////////////////
-    ///Finally, validate all config items
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    //Finally, validate all config items
+    // ////////////////////////////////////////////////
     foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
         if (ConfigItem->crossValidate(ErrorMessage) == false)
             throw exConfiguration(ErrorMessage);
