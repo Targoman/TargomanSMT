@@ -13,9 +13,9 @@ namespace Common{
 namespace PrefixTree {
     /**
      * @brief Extends the tmplPrefixTreeAbstractNode by file accessing methods
-     * 
+     *
      * Using multiple inheritance this class is attached to the nodes of file trees.
-     * 
+     *
      * @see GMapFilePrefixTree
      */
     template <class clsIndex_t, class clsData_t> class tmplFilePrefixTreeAbstractNode : virtual public tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t>
@@ -30,8 +30,8 @@ namespace PrefixTree {
     protected:
         /**
          * @brief A structure representing a virtual child node
-         * 
-         * Whenever moveToFile is used a virtual child node is created to take the child nodes place. Instead of holding 
+         *
+         * Whenever moveToFile is used a virtual child node is created to take the child nodes place. Instead of holding
          * the data it only refers to a temporary file or to an offset in the tree file, depending on whether isFile is set.
          */
         class VirtualChild
@@ -59,7 +59,7 @@ namespace PrefixTree {
 
         /**
          * @brief A structure holding variables set by the tree that change the behaviour of tree nodes
-         * 
+         *
          * The tree needs to set a number of variables to modify the nodes behaviour depending on the way the tree class is used.
          */
         struct TreeControlData
@@ -67,7 +67,7 @@ namespace PrefixTree {
             bool writeOnly;			///< True if nodes can only be written. moveToFile will write them to the tree file then, not a temporary file.
             std::ofstream *outputStream;	///< If writeOnly is true this is the open tree file, otherwise 0.
             std::istream *inputStream;		///< If this node is part of a file based tree this variable will hold the input stream used to load child nodes.
-            bool closeFile;                     ///< Close the file 
+            bool closeFile;                     ///< Close the file
         };
 
     public:
@@ -116,15 +116,15 @@ namespace PrefixTree {
     public:
         /**
          * @brief Returns the memory usage of this nodes subtree
-         * 
+         *
          * This method calculates the memory usage of the subtree below this node (including the node itself).
-         * Be aware that this method is slow since the whole tree will be traversed each time it is called. However, if it 
+         * Be aware that this method is slow since the whole tree will be traversed each time it is called. However, if it
          * is not used it does not introduce any overhead.
-         * 
+         *
          * This method is pure virtual because every type of node handles it child nodes in a different way introducing
          * a different amount of memory usage. Also, to capture all vtables properly, it is usefull to use sizeof on the
          * most specific class in the class hierarchy.
-         * 
+         *
          * This method will call the getSize member of the Data class:
          * \code
          * size_t getSize() const
@@ -133,7 +133,7 @@ namespace PrefixTree {
          * return sizeof(*this), since this size is already captured by the nodes getSize method. Only sum up memory
          * usage resulting from pointers and other members that introduce memory usage that is not inherited to the class
          * holding the Data as a member variable.
-         * 
+         *
          * @return Size of the sub tree in bytes
          */
 #if 0
@@ -162,7 +162,7 @@ namespace PrefixTree {
          * \code
          * void writeBinary(std::ostream &oStream);
          * \endcode
-         * 
+         *
          * @param pNode The index that has to be written
          * @param oStream Write to this stream
          */
@@ -177,7 +177,7 @@ namespace PrefixTree {
          * \code
          * void readBinary(std::ostream &oStream);
          * \endcode
-         * 
+         *
          * @param pNode The index that has to be read
          * @param iStream Read from this stream
          */
@@ -185,9 +185,9 @@ namespace PrefixTree {
 
         /**
          * @brief This method returns the node type
-         * 
+         *
          * See tmplFilePrefixTreeAbstractNode::FilePrefixTreeNodeType for further reference.
-         * 
+         *
          * Reimplement this method when deriving a class.
          */
         virtual unsigned char getType() = 0;
@@ -198,7 +198,7 @@ namespace PrefixTree {
          * The node first writes the indices of all its children to the file. They are equipped with placeholders for the
          * file offset of the child nodes, which are unknown till now. They will be filled in once the corresponding node
          * is written. So make sure to traverse the nodes in an order that will write each node before its children.
-         * 
+         *
          * \code
          * Node format:
          *  1. [quint8]         node type
@@ -209,9 +209,9 @@ namespace PrefixTree {
          *  4. [quint32]        the length of the data block
          *  5. [Data]       this nodes data
          * \endcode
-         * 
+         *
          * Notice that all node classes use exactly the same format, only the representation in memory differs. Normaly
-         * this method does not need to be overwritten, since all nodes work the same way, except for the nodes index. 
+         * this method does not need to be overwritten, since all nodes work the same way, except for the nodes index.
          * The index is handled by tmplFilePrefixTreeAbstractNode::writeIndex.
          *
          * For this method to work the Data element of the template needs to implement
@@ -300,14 +300,14 @@ namespace PrefixTree {
 
         /**
          * @brief Moves this node and all its children to a file
-         * 
+         *
          * The nodes are written to a temporary file and removed from memory. They are written to the tree file in case
          * its tmplAbstractFilePrefixTree::writeBinary method is called. Its destructor discards these files.
-         * 
+         *
          * Notice that all pointers to this node and nodes below this one become invalid and can no longer be used.
          * Do not use this method on the root node. Instead call writeBinary on the tree itself. Otherwise there will be
          * many temporary files holding the complete tree, but no one knows how to put them together to actually load it.
-         * 
+         *
          * @warning If you crash the program after calling moveToFile and before calling the parent nodes destructor,
          * 			a temporary file will be left behind in your /tmp/ folder. So clean it from time to time.
          * @see tmplAbstractFilePrefixTree::initVirtualNodes
@@ -348,14 +348,14 @@ namespace PrefixTree {
 
         /**
          * @name Iterator classes and methods
-         * These classes and methods abstract the way the children are stored, since this depends on the actual 
+         * These classes and methods abstract the way the children are stored, since this depends on the actual
          * implementation while the more general methods of tmplFilePrefixTreeAbstractNode should not.
          */
         //@{
         /**
          * @brief An iterator class for virtual childern
-         * 
-         * This iterator introduces an abstraction layer to hide the implementation details of the virtual child 
+         *
+         * This iterator introduces an abstraction layer to hide the implementation details of the virtual child
          * storage methods. Virtual children are child nodes that have been moved to a file. See moveToFile for
          * further details.
          */
@@ -376,7 +376,7 @@ namespace PrefixTree {
 
         /**
          * @brief Returns an iterator pointing to the first virtual child node
-         * 
+         *
          * @warning Memory Leak danger: As for weakBegin/weakEnd you have to delete the pointer returned by this method
          * 			once it is no longer needed.
          */
@@ -384,7 +384,7 @@ namespace PrefixTree {
 
         /**
          * @brief Returns an iterator pointing behind the last virtual child node
-         * 
+         *
          * @warning Memory Leak danger: As for weakBegin/weakEnd you have to delete the pointer returned by this method
          * 			once it is no longer needed.
          */
@@ -392,9 +392,9 @@ namespace PrefixTree {
 
         /**
          * @brief Finds a virtual child node based on its key
-         * 
+         *
          * Returns endVirtual() in case it is not found.
-         * 
+         *
          * @warning Memory Leak danger: As for weakBegin/weakEnd you have to delete the pointer returned by this method
          * 			once it is no longer needed.
          */
@@ -402,7 +402,7 @@ namespace PrefixTree {
 
         /**
          * @brief Inserts a new virtual child node into the list of children
-         * 
+         *
          * This method returns true if an insertion was made
          * @param key The key of the new element
          * @param virtChild The virtual children storage is based on the VirtualChild class
@@ -412,7 +412,7 @@ namespace PrefixTree {
 
         /**
          * @brief Finds and removes the element with the given key
-         * 
+         *
          * This method does nothing if there is no element with that key
          */
         virtual void eraseVirtual(const clsIndex_t &key) = 0;
@@ -429,7 +429,7 @@ namespace PrefixTree {
 
         /**
          * @brief An iterator class for load on demand children
-         * 
+         *
          * This iterator introduces an abstraction layer to hide the implementation details of the load on demand
          * child storage methods. Load on demand children are child nodes that are stored in a file and have not
          * been accessed since the tree was bound to the file. See the various tree constructors for further details.
@@ -451,7 +451,7 @@ namespace PrefixTree {
 
         /**
          * @brief Returns an iterator pointing to the first load on demand child node
-         * 
+         *
          * @warning Memory Leak danger: As for weakBegin/weakEnd you have to delete the pointer returned by this method
          * 			once it is no longer needed.
          */
@@ -459,7 +459,7 @@ namespace PrefixTree {
 
         /**
          * @brief Returns an iterator pointing behind the last load on demand child node
-         * 
+         *
          * @warning Memory Leak danger: As for weakBegin/weakEnd you have to delete the pointer returned by this method
          * 			once it is no longer needed.
          */
@@ -467,9 +467,9 @@ namespace PrefixTree {
 
         /**
          * @brief Finds a load on demand child node based on its key
-         * 
+         *
          * Returns endLod() in case it is not found.
-         * 
+         *
          * @warning Memory Leak danger: As for weakBegin/weakEnd you have to delete the pointer returned by this method
          * 			once it is no longer needed.
          */
@@ -477,7 +477,7 @@ namespace PrefixTree {
 
         /**
          * @brief Inserts a new load on demand child node into the list of children
-         * 
+         *
          * This method returns true if an insertion was made
          * @param key The key of the new element
          * @param position Load on demand nodes are stored using their position in the file
@@ -487,7 +487,7 @@ namespace PrefixTree {
 
         /**
          * @brief Finds and removes the element with the given key
-         * 
+         *
          * This method does nothing if there is no element with that key
          */
         virtual void eraseLod(const clsIndex_t &key) = 0;
@@ -506,19 +506,19 @@ namespace PrefixTree {
     protected:
         /**
          * @brief Creates a new node
-         * 
+         *
          * Creating a new node is not as simple as it seems. The child node needs to be of the proper class. The class is
          * stored in the file, using an unsigned char. However when creating the class the proper template parameters have
          * to be used. They cannot be stored in the file though. For example a vector node cannot create a map node, since
          * the vector node can only provide an unsigned integer as Index class, which does not implement FromBinary or
          * ToBinary. Therefore the node creation itself is implemented in the derived node classes. So a node will inherit
          * its template parameters to its child nodes.
-         * 
+         *
          * The reimplementation of createNode_ is not directly creating the node but calling a static version of the method
          * called sCreateNode. The reason for this is that not only nodes create nodes, but also the tree needs to create
          * a node, the root node. It is not possible to call a member function without an object (the root does not have a
          * parent, therefore there is no object), so this is what the static method is used for.
-         * 
+         *
          * @param pParent The parent node, can be 0 to create a root node (only used with the static version of this method)
          * @param index The new nodes index
          * @param iStream The file based prefix trees input stream
@@ -531,16 +531,16 @@ namespace PrefixTree {
 
         /**
          * @brief Creates a new node and loads its data from the file
-         * 
+         *
          * The type of the new node is stored in the file. It is read and the corresponding node is created. Then
          * the rest of its data is read from the file. The node is also equipped with the index taken from the parents
          * child offset table and the file pointer which will allow the new node to create further child nodes.
          * Do not forget to attach the returned node to the list of children. This cannot be done here, since every node
          * handels its children differently.
-         * 
+         *
          * The node still remembers the input stream from its own creation, and will pass it to its children. This way
          * follow does not need to cope with streams and can focus on the childs index.
-         * 
+         *
          * @param index The new nodes index
          * @param iOffset The file index where to begin reading
          * @return A new node, store it in its parents successor list
@@ -554,14 +554,14 @@ namespace PrefixTree {
             // load the node
             pNode->readBinary(*controlData_->inputStream);
             return dynamic_cast<AbstractNode_*>(pNode);
-        }		
+        }
 
         /**
          * @brief Tries to load a child node from the internal list of loadable successors
-         * 
+         *
          * The child node is identified by its index. If there is a node in the list of loadable successor nodes with
          * that index it will be created and attached as new child node.
-         * 
+         *
          * @param nextIndex The index of the successor node that requested by the caller
          * @return Either a pointer to a new node or zero if there is no successor with that index
          */
@@ -590,18 +590,18 @@ namespace PrefixTree {
 
         /**
          * @brief Load the virtual child node given by \e nextIndex
-         * 
+         *
          * When read only mode is deactivated the user can use follow or followOrExpand to get into virtual child nodes
          * to modify them after they have been moved to a file using moveToFile. In that case the virtual node refered to
          * by \e nextIndex is load from the temporary file and thus becomes accessible. All child nodes of that virtual node
          * will not be loaded into memory, they will instead be moved to individual temporary files, one per node. Then
          * they will be attached to the root node, as virtual children. This way only a single node gets reloaded and the
          * process can be used recursive.
-         * 
+         *
          * @warning This method introduces some overhead by moving data from files to files. Use write only mode for trees
          * 			whenever possible. When you have to, try to keep the number of moveToFile and follow operations on the same
          * 			node (or subtree) as small as possible.
-         * 
+         *
          * @param nextIndex The index of the child node that is to be followed to
          */
         AbstractNode_ *loadVirtualChild_(const clsIndex_t &nextIndex)
@@ -652,8 +652,8 @@ namespace PrefixTree {
                            // Some SW engineering guru probably would kill me for such a comment
                 std::ofstream oStream(filename, std::ofstream::out | std::ofstream::binary);
                 // this maps node positions in the input file to index table offsets in the second file
-                // so if you begin reading a node from a position listed as key in the map, make sure to 
-                // write the current position in the output stream to the position given by the data field 
+                // so if you begin reading a node from a position listed as key in the map, make sure to
+                // write the current position in the output stream to the position given by the data field
                 // of the map (write to the output stream, this is where the index table needs to be updated)
                 std::map<std::streampos, std::streampos> mChildren;
 
@@ -715,7 +715,7 @@ namespace PrefixTree {
                     oStream.write((char*)&dataLength, sizeof(quint32));
                     oStream.write(data, dataLength);
                     delete [] data;
-                }				
+                }
                 oStream.close();
 
                 // attach the temporary file as new virtual child node
@@ -726,7 +726,7 @@ namespace PrefixTree {
             delete itEnd;
 
             // remove the load-on-demand-children (we moved them to temporary files and are not going to load them this way)
-            pSubTreeRoot->clearLod();			
+            pSubTreeRoot->clearLod();
             // attach the new node to the list of successors
             this->insert(nextIndex, pSubTreeRoot);
 
@@ -741,9 +741,9 @@ namespace PrefixTree {
 
         /**
          * @brief Moves this node and all its children to the given file
-         * 
+         *
          * This method implements the recursive part of the method moveToFile.
-         * 
+         *
          * @param tmpfile The stream to be written to
          * @param mOffsets The file offset map, used to set all necessary file indices
          */
@@ -761,11 +761,11 @@ namespace PrefixTree {
 
         /**
          * @brief This notification is called by the child node when it is done with writing itself to a file
-         * 
+         *
          * The child node is removed from the list of successors and instead moved to a different list holding nodes
          * together with the temporary file they were written to. When the tree is written these nodes will be copied
          * from the file.
-         * 
+         *
          * @param child The child node that is calling this method and going to remove itself
          * @param filename The temporary file the node is stored in
          */
@@ -794,17 +794,17 @@ namespace PrefixTree {
 
         /**
          * @brief Writes index table entries for all virtual nodes
-         * 
+         *
          * Using the moveToFile method some nodes might have been moved from memory to a file. That
          * might be the tree file itself or some temporary file. This method will link it to the parent node, either
          * direct when the node was written to the tree file (file offset is already known) or by inserting its index table entry
          * into the \e mVirtualOffsets map (thus making the method importVirtualChildNodes set the index table entries properly).
-         * When this method is called the parent nodes writeBinary is currently writing the index table, so this is how 
+         * When this method is called the parent nodes writeBinary is currently writing the index table, so this is how
          * linking to the parent works.
-         * 
+         *
          * When the method is called \e iChildren is holding the number of child node indices written till now. Make sure
          * to increase this number for every written child.
-         * 
+         *
          * @param oStream The output stream refering to the tree file
          * @param iChildren The number of child node indices written till now; increase it for every written child node
          * @param mVirtualOffsets Stores the index table elements that need to be written once the virtual child nodes are moved to the tree file
@@ -839,16 +839,16 @@ namespace PrefixTree {
 
         /**
          * @brief Moves the virtual child nodes from temporary files into the tree file
-         * 
+         *
          * If there are any child nodes written to a temporary file they will be moved to the main tree file using this method.
          * It is called after writeBinary of the parent node completely wrote its index table and data. So for its (already written)
          * index table to refer to the child nodes that will be written now some of its offset pointers need to be adjusted.
          * This is done using the map mVirtualOffsets, which is holding the child nodes index and corresponding index table offset
          * for all nodes that still need to be attached to their parent node. This does not apply to virtual nodes that were written
          * to the tree node in the first place. Their index was already known to the parent node when it wrote itself.
-         * 
+         *
          * The temporary files will be deleted.
-         * 
+         *
          * @param oStream The output stream refering to the tree file
          * @param mVirtualOffsets The offset map filled by importVirtualChildNodeOffets
          */
@@ -933,21 +933,21 @@ namespace PrefixTree {
      * @var tmplFilePrefixTreeAbstractNode::iMallocOverhead
      * @brief The malloc overhead per data block
      * @todo Find a better way to calculate the malloc overhead.
-     * 
+     *
      * To properly calculate the tree size we also need to keep track of the malloc overhead. To calculate it allocate
      * a huge array of pointers and use new to initialize each of them, then calculate the size of the array and add
-     * the size of all the pointers as well as the size of what the pointers are pointing to. Compile it using your 
-     * compiler and compare the size returned by the process table with the size calculated by your code. The difference 
+     * the size of all the pointers as well as the size of what the pointers are pointing to. Compile it using your
+     * compiler and compare the size returned by the process table with the size calculated by your code. The difference
      * divided by the number of pointers in the array will yield an approximation for the overhead.
-     * 
+     *
      * \code
      *	unsigned long long length = 25000000, i, size;
      *	int **spam = new int*[length];
      *	for(i = 0; i \< length; ++i)
      *		spam[i] = new int;
-     *	
+     *
      *	size = sizeof(spam) + length * sizeof(int*) + length * sizeof(int); // + length * 12; // <-- add the overhead to see if it matches
-     *	
+     *
      *	std::cout << "Size of Array: " << (size / 1024) << " KB" << std::endl;
      *	char tmp[1024];
      *	std::cin.getline(tmp, 1023);
@@ -969,67 +969,67 @@ namespace PrefixTree {
 
     /**
      * @brief Like tmplAbstractPrefixTree but supports working on file based trees
-     * 
+     *
      * The file based prefix tree introduces some new features to the prefix trees:
      * - writing a tree to a file
      * - reading tree nodes on demand from a file
      * - writing tree nodes to a file while building up the tree
      *   - without the option to modify it or its children
      *   - with the option to modify it or its children
-     * 
+     *
      * \section secWrite Writing a tree to a file
-     * When you are done building the tree using the follorOrExpand methods it can be written to a file by calling the 
+     * When you are done building the tree using the follorOrExpand methods it can be written to a file by calling the
      * tmplAbstractFilePrefixTree::writeBinary method. Make sure your Index and Data class offer the following methods
      * \code
      *	void readBinary(std::istream &iStream)
      *	void writeBinary(std::ostream &oStream) const
      * \endcode
-     * Both methods are supposed to read or write your data/index to the current get/put pointer in the stream. 
+     * Both methods are supposed to read or write your data/index to the current get/put pointer in the stream.
      * Your Data class also has to offer a method that returns the size of memory it allocated plus the malloc overhead
      * for each of the pointers/arrays it uses. It must not return its own size (sizeof(*this)), since this is already
      * taken into account by the parent node holding the data/index.
      * \code
      *	size_t getSize() const
      * \endcode
-     * 
+     *
      * \section secRead Reading tree nodes on demand from a file
-     * You have to bind the tree to a file by using the proper constructor, e.g. 
+     * You have to bind the tree to a file by using the proper constructor, e.g.
      * tmplAbstractFilePrefixTree::tmplAbstractFilePrefixTree(const char *strFilename). When this is done you can use the
      * tree nodes tmplFilePrefixTreeAbstractNode::follow method to follow into nodes that may or may not have been loaded into
      * memory, the node will load them itself if they are in the file and not in memory. It will return 0 if it cannot
-     * find the node. I'm not quite sure what happens if you write a load on demand tree using the 
+     * find the node. I'm not quite sure what happens if you write a load on demand tree using the
      * tmplAbstractFilePrefixTree::writeBinary method. It is likely that it will "forget" about all nodes that are in the source
      * tree file but not in memory. If you need to do this check out the tmplFilePrefixTreeAbstractNode::writeBinary method,
      * it has to be extended to import load on demand childs (as it already does with the virtual child nodes). The
      * tmplPrefixTreeAbstractNode::clear and tmplFilePrefixTreeAbstractNode::getSize methods will be usefull with load on demand trees.
-     * 
-     * @note The nodes that can be load from the file as the user requests them are called "load on demand" 
+     *
+     * @note The nodes that can be load from the file as the user requests them are called "load on demand"
      * 		 and are abbreviated as "Lod".
-     * 
+     *
      * \section secMove Writing tree nodes to a file while building up the tree
      * You can move nodes to a file as you build up the tree to make sure you don't run short of memory. The nodes are normally
      * written in depth-first order - however, if you decide to use tmplFilePrefixTreeAbstractNode::moveToFile this order is corrupted.
-     * The node and all its children will be stored in the tree file at once, using depth-first order, and will be connected to its 
+     * The node and all its children will be stored in the tree file at once, using depth-first order, and will be connected to its
      * parent node as it is written.
-     * 
+     *
      * Whenever possible move nodes to a file only if you are sure that you do not need to modify them in the future. In that
      * case some optimizations will allow for a smaller overhead. However, if you have to, you can choose the second method to
      * reload them into memory and modify them.
      *
-     * @note The nodes that have been moved to a file are called "virtual" 
+     * @note The nodes that have been moved to a file are called "virtual"
      * 		 and are abbreviated as "Virtual".
-     * 
-     * 
+     *
+     *
      * \subsection secMoveNoModify Moving nodes using the write only mode
      * This mode is much faster then the other. If you decide to use the tmplFilePrefixTreeAbstractNode::moveToFile method you
      * have to call tmplAbstractFilePrefixTree::initVirtualNodes once, before using moveToFile for the first time (e.g. directly
      * after creating the tree). As parameters use true for writeOnly and the tree file name for filename. It will be opened
-     * and all nodes go in there as their moveToFile method is called. To finalize the file call 
+     * and all nodes go in there as their moveToFile method is called. To finalize the file call
      * tmplAbstractFilePrefixTree::writeBinary, but this time without any parameter. This will write all nodes that still reside
      * in memory and finally close the file. The target file is already known so it is not needed.
-     * 
+     *
      * \subsection secMoveModify Moving nodes to a file allowing later changes
-     * This method is not recommended since it can be quite slow. As with the other mode you call 
+     * This method is not recommended since it can be quite slow. As with the other mode you call
      * tmplAbstractFilePrefixTree::initVirtualNodes once to initialize it. However, this time you pass false as parameter writeOnly
      * and leave the filename zero. If you now use tmplFilePrefixTreeAbstractNode::moveToFile on a node this will create a
      * temporary file and store the subtree below the node and the node itself in it. This will not only make sure the
@@ -1038,12 +1038,12 @@ namespace PrefixTree {
      * will no longer return 0, but it will instead load the node from the file and attach it as child. The temporary file
      * is then split and all child nodes of the node that was just reloaded will be moved to their very own temporary file. This
      * makes the whole process recursive. Maybe this should be modified depending on how these methods are used.
-    * 
+    *
         * The tree and node classes have also been extended by a getSize and a clear method. The getSize method will return the
-        * memory usage of the whole tree or subtree if used on a node in bytes, provided that you properly choose a value for 
+        * memory usage of the whole tree or subtree if used on a node in bytes, provided that you properly choose a value for
         * tmplFilePrefixTreeAbstractNode::iMallocOverhead. The clear method will remove all successor nodes from memory. Use it with
         * load on demand trees. You do not need to use it relation with moveToFile, it will handle successors itself.
-        * 
+        *
         * \section secOverhead Overhead
         * \subsection secOverheadFollow Follow and FollowOrExpand overhead
         * The file based prefix tree extension is designed to introduce as little overhead as possible if it is not used.
@@ -1069,11 +1069,11 @@ namespace PrefixTree {
         * \endcode
             * Both methods will first check their successor vectors/maps if they hold any elements, so if you are not using any
             * of the new features they will be empty and the methods return at once.
-            * 
+            *
             * \subsection secOverheadWrite Write overhead
             * Make sure to use the write only mode for moveToFile whenever possible, this will prevent creation of temporary files
             * and a lot of data movement.
-            * 
+            *
             * \subsection secOverheadGetSize getSize overhead
             * tmplFilePrefixTreeAbstractNode::getSize does not introduce overhead. This makes calls to this method slow, so if it is
             * used a lot an incremental version might be useful.
@@ -1082,16 +1082,16 @@ namespace PrefixTree {
         public tmplAbstractPrefixTree<RootNodeClass>
     {
     public:
-        typedef typename RootNodeClass::AbstractFileNode FileNode;
+        //typedef typename RootNodeClass::AbstractFileNode FileNode;
 
     protected:
         typedef tmplAbstractPrefixTree<RootNodeClass> AbstractTree_;
-        typedef tmplFilePrefixTreeAbstractNode<typename RootNodeClass::Index, typename RootNodeClass::Data> AbstractFileNode_;
+        typedef tmplFilePrefixTreeAbstractNode<typename RootNodeClass::Index_t, typename RootNodeClass::Data_t> AbstractFileNode_;
 
     public:
         /**
          * @brief Default constructor
-         * 
+         *
          * The prefix tree will not be attached to a stream. Use this constructor if you want to create a tree
          * (that can be stored on the hard drive).
          */
@@ -1102,10 +1102,10 @@ namespace PrefixTree {
 
         /**
          * @brief Create a file based prefix tree
-         * 
+         *
          * The file given as \e strFilename will be opened and the tree will try to load missing nodes as follow demands them.
          * The destructor of this class instance will close the file.
-         * 
+         *
          * The constructor will create and load the root node from the file, its type might differ from the type
          * given by this tree.
          *
@@ -1140,10 +1140,10 @@ namespace PrefixTree {
 
         /**
          * @brief Create a prefix tree and attach it to a stream
-         * 
+         *
          * The input stream is supposed to be open and the get pointer set to the first byte of this tree.
          * The tree will load missing nodes as follow demands them. The destructor of this class instance will not close the file.
-         * 
+         *
          * The constructor will create and load the root node from the file, its type might differ from the type
          * given by this tree.
          *
@@ -1160,7 +1160,7 @@ namespace PrefixTree {
 
             createAndLoadRoot_();
         }
-        
+
         void readBinary(std::istream &inStream)
         {
             ownInputStream_ = 0;
@@ -1178,8 +1178,8 @@ namespace PrefixTree {
 
         /**
          * @brief Destructor
-         * 
-         * The destructor will close the input file stream if it was opened using the 
+         *
+         * The destructor will close the input file stream if it was opened using the
          * GMapFilePrefixTree(const char *) constructor.
          */
         ~tmplAbstractFilePrefixTree()
@@ -1194,13 +1194,13 @@ namespace PrefixTree {
     public:
         /**
          * @brief Returns the memory usage of this tree
-         * 
+         *
          * This method calculates the memory usage in bytes by calling tmplFilePrefixTreeAbstractNode::getSize on the root node.
-         * Be aware that this method is slow since the whole tree will be traversed each time it is called. However, if it 
+         * Be aware that this method is slow since the whole tree will be traversed each time it is called. However, if it
          * is not used it does not introduce any overhead.
-         * 
+         *
          * It is possible to calculate the size of a subtree by calling tmplFilePrefixTreeAbstractNode::getSize on its root node.
-         * 
+         *
          * @return Size of the whole tree in bytes
          */
 #if 0
@@ -1221,11 +1221,11 @@ namespace PrefixTree {
 
         /**
          * @brief Writes the tree to a stream
-         * 
+         *
          * Like writeBinary(std::ostream &oStream), but opens the stream for you. If you called initVirtualNodes and specified
          * writeOnly as true then the filename is not used and you can pass an empty string if you like. Instead it will write
          * to the file passed to initVirtualNodes.
-         * 
+         *
          * @param strFilename The name of the file to write to. The file is overwritten if it exists.
          * @see writeBinary(std::ostream &oStream)
          */
@@ -1236,11 +1236,11 @@ namespace PrefixTree {
 
         /**
          * @brief Writes the tree to a stream
-         * 
+         *
          * Like writeBinary(std::ostream &oStream), but opens the stream for you. If you specified writeOnly as true when calling
          * initVirtualNodes, the parameter strFilename is not used and may be 0. Instead this method will write to the file passed
          * to initVirtualNodes.
-         * 
+         *
          * @param strFilename The name of the file to write to. The file is overwritten if it exists.
          * @see writeBinary(std::ostream &oStream)
          */
@@ -1260,7 +1260,7 @@ namespace PrefixTree {
 
                 if (controlData_->closeFile) {
                     // this stream was opened by initVirtualNodes
-                    controlData_->outputStream->close(); 
+                    controlData_->outputStream->close();
                     delete controlData_->outputStream;
                     controlData_->outputStream = 0;
                 }
@@ -1269,15 +1269,15 @@ namespace PrefixTree {
 
         /**
          * @brief Writes the tree to a stream
-         * 
+         *
          * The tree is written in binary format to the stream given as \e oStream. The file begins with the file header.
          * The file header consists of the string stored in HEADER_FILEVERSION followed by the offset to the root node.
-         * 
+         *
          * \code
          *  1. [char 24]    "tmplAbstractPrefixTree v1.0"
          *  2. [quint64]        offset to the root node
          * \endcode
-         * After the header the nodes are written one by one, each using the format specified in 
+         * After the header the nodes are written one by one, each using the format specified in
          * tmplFilePrefixTreeAbstractNode::writeBinary:
          * \code
          * Node format:
@@ -1289,17 +1289,17 @@ namespace PrefixTree {
          *  4. [quint32]        the length of the data block
          *  5. [Data]       this nodes data
          * \endcode
-         * 
+         *
          * Usually they are stored in depth first order, hopefully increasing read spead. However, when some nodes have
          * been written using tmplFilePrefixTreeAbstractNode::moveToFile this is no longer true and the nodes are only
-         * partially ordered. Unless, of course, the nodes were written to temporary files. This enables the tree to 
+         * partially ordered. Unless, of course, the nodes were written to temporary files. This enables the tree to
          * write them in depth first order. See tmplFilePrefixTreeAbstractNode::initVirtualNodes for details on this.
-         * 
+         *
          * @warning If you set writeOnly to true when calling initVirtualNodes then \e do \e not pass a different stream to this
          * 			method then the one opened by initVirtualNodes and stored in the controlData_ structure - in fact do not call
-         * 			this method at all. Use writeBinary(const char *strFilename) and pass 0 as strFilename or 
+         * 			this method at all. Use writeBinary(const char *strFilename) and pass 0 as strFilename or
          * 			writeBinary(const std::string &filename) with an empty string.
-         * 
+         *
          * @param oStream A std:ostream object to write to. The stream should be open.
          */
         void writeBinary(std::ostream &oStream)
@@ -1336,22 +1336,22 @@ namespace PrefixTree {
 
         /**
          * @brief This method initializes virtual nodes and enables moveToFile
-         * 
+         *
          * There are 3 ways to save a tree. First is to use writeBinary to write it to a file in one go. Second is to
          * use moveToFile on some nodes in the tree. They are immediately removed from memory and written to a file.
          * Then call the trees writeBinary method to finalize the file. Third method is to call moveToFile on some nodes
          * but then use the follow methods to regain access to these nodes and modify them. After modifying them they can
          * be stored in a file using moveToFile again, or they can remain in memory. The second and third approach
          * use virtual nodes, so if you want to use them call this methods with the proper parameters.
-         * 
+         *
          * A virtual node is just like a normal node, except that it is stored in a file and cannot be modified without
          * reloading it into memory. Nodes can only be reload into memory if the parameter writeOnly is set to false.
-         * 
+         *
          * With write only mode enabled, the nodes are stored in the tree output file and can no longer be modified.
          * This is fast and does not require additional file operations beyond the ones used to store the tree using
          * writeBinary. However you have to pick a filename for the tree and pass it as \e filename.
          * If write only mode is disabled \e filename is not used.
-         * 
+         *
          * @warning Do not enable or disable virtual nodes after you used moveToFile for the first time. It might have
          * 			unexpected results.
          * @param writeOnly True if you want fast trees without the option to modify nodes moved to a file,
@@ -1396,9 +1396,9 @@ namespace PrefixTree {
     private:
         /**
          * @brief Writes the file header to the given stream
-         * 
+         *
          * The current Version is stored in HEADER_FILEVERSION.
-         * 
+         *
          * @note The header has constant length of 18 characters
          * @param oStream The output stream
          */
@@ -1412,11 +1412,11 @@ namespace PrefixTree {
 
         /**
          * @brief Verifies that the file given as input is of the same version used to compile this program
-         * 
+         *
          * The current Version is 1.0.
-         * 
+         *
          * The current Version is stored in HEADER_FILEVERSION.
-         * 
+         *
          * @note The header has constant length of HEADER_FILEVERSION_SIZE characters
          * @param iStream The input stream
          * @return true if the given file has the same version, false otherwise
@@ -1439,7 +1439,7 @@ namespace PrefixTree {
 
         /**
          * @brief Load the root node from the file
-         * 
+         *
          * The prefix tree constructor is equipping the prefix tree with a root node. Unfortunately this root node does
          * not have the proper type and cannot be used in a file based tree. Therefore it has to be replaced by a new
          * root node.
@@ -1450,7 +1450,7 @@ namespace PrefixTree {
                 return;
 
             // The tmplAbstractPrefixTree already created a root node of some type. That is not the type of node that can
-            // be used in file based prefix trees. The "solution" is to delete the root node and create our own one, 
+            // be used in file based prefix trees. The "solution" is to delete the root node and create our own one,
             // read from the file
             if(this->rootNode_ != 0)
                 delete this->rootNode_;
@@ -1465,7 +1465,7 @@ namespace PrefixTree {
             controlData_ = pNewRoot->GetTreeControlData();
             controlData_->inputStream = inputStream_;
             pNewRoot->readBinary(*controlData_->inputStream);
-            this->rootNode_ = dynamic_cast<typename AbstractTree_::Node*>(pNewRoot);
+            this->rootNode_ = dynamic_cast<typename AbstractTree_::Node_t*>(pNewRoot);
         }
 
     private:

@@ -28,6 +28,8 @@ namespace PrefixTree {
      */
     template <typename clsIndex_t, typename clsData_t> class tmplPrefixTreeAbstractNode {
     public:
+        typedef clsIndex_t Index_t;
+        typedef clsData_t  Data_t;
         typedef tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> AbstractNode;
 
         //! \todo Allow for standard element?
@@ -70,9 +72,9 @@ namespace PrefixTree {
          * NOT define the standard iterator operations. Specially, only
          * functions which alter this class state are provided.
          */
-        class AbstractWeakIterator { 
+        class AbstractWeakIterator {
         public:
-            AbstractWeakIterator () {} 
+            AbstractWeakIterator () {}
             virtual ~AbstractWeakIterator() {}
 
             virtual AbstractWeakIterator *increase() = 0;
@@ -90,13 +92,13 @@ namespace PrefixTree {
         virtual AbstractWeakIterator *weakBegin() = 0;
         //! \warning High memory leak danger: do not compare with node->weakEnd() without storing the pointer!!!
         virtual AbstractWeakIterator *weakEnd() = 0;
-		
+
         /**
          * @brief Inserts the given node into the list of successors
-         * 
+         *
          * Using the index \e index the node given as \e node will be inserted into the list of successors. This
          * method returns true if an insertion was made.
-         * 
+         *
          * @param index The new nodes index
          * @param node The node itself
          * @return True if an insertion was made, false otherwise
@@ -105,20 +107,20 @@ namespace PrefixTree {
 
         /**
          * @brief Removes the node with the given index from the list of successors
-         * 
+         *
          * Just like the STL erase this one does not delete the node that is erased. It is the callers reponsibility to
          * free any memory allocated by the node that is being erased here.
-         * 
+         *
          * @param index The index of the node that is to be removed
          */
         virtual void erase(const clsIndex_t &index) = 0;
 
         /**
          * @brief Delete all successor nodes
-         * 
+         *
          * This method will remove all successor nodes from memory. It will not modify the list of index and file offsets
          * of loadable successor nodes though. For a complete documentation see GAbstractPrefixTree::clear.
-         * 
+         *
          * @see see GAbstractPrefixTree::clear
          */
         virtual void clear() = 0;
@@ -147,24 +149,24 @@ namespace PrefixTree {
      */
     template <class RootNodeClass> class tmplAbstractPrefixTree {
     public:
-        typedef typename RootNodeClass::AbstractNode Node;
+        typedef typename RootNodeClass::AbstractNode Node_t;
 
-        tmplAbstractPrefixTree() : rootNode_(new RootNodeClass(typename Node::Index(), 0)) {}
+        tmplAbstractPrefixTree() : rootNode_(new RootNodeClass(typename Node_t::Index_t(), 0)) {}
         virtual ~tmplAbstractPrefixTree() { delete rootNode_; }
 
-        Node *rootNode() { return rootNode_; }
-        const Node *rootNode() const { return rootNode_; }
+        Node_t *rootNode() { return rootNode_; }
+        const Node_t *rootNode() const { return rootNode_; }
 
-        Node *getOrCreateNode(const std::vector<typename Node::Index> &indexPath) {
-            Node *currentNode = rootNode();
-            for (typename std::vector<typename Node::Index>::const_iterator i = indexPath.begin(); i != indexPath.end(); ++i)
+        Node_t *getOrCreateNode(const std::vector<typename Node_t::Index_t> &indexPath) {
+            Node_t *currentNode = rootNode();
+            for (typename std::vector<typename Node_t::Index_t>::const_iterator i = indexPath.begin(); i != indexPath.end(); ++i)
                 currentNode = currentNode->followOrExpand(*i);
             return currentNode;
         }
 
-        Node *getOrCreateNode(const std::vector<typename Node::Index> &indexPath, const typename Node::Data &standardElement) {
-            Node *currentNode = rootNode();
-            for (typename std::vector<typename Node::Index>::const_iterator i = indexPath.begin(); i != indexPath.end(); ++i)
+        Node_t *getOrCreateNode(const std::vector<typename Node_t::Index_t> &indexPath, const typename Node_t::Data_t &standardElement) {
+            Node_t *currentNode = rootNode();
+            for (typename std::vector<typename Node_t::Index_t>::const_iterator i = indexPath.begin(); i != indexPath.end(); ++i)
                 currentNode = currentNode->followOrExpand(*i, standardElement);
             return currentNode;
         }
@@ -175,16 +177,16 @@ namespace PrefixTree {
         void compact() {
             rootNode_->compact();
         }
-        
+
         class iterator {
         private:
-            typedef typename Node::AbstractWeakIterator WeakIterator_;
+            typedef typename Node_t::AbstractWeakIterator WeakIterator_;
         public:
             //! Initalize an end iterator
             iterator() : currentNode_(0), weakIteratorPath_(), sentinels_() {}
-            
+
             //! Initialize the iterator starting at a node.
-            iterator(Node *n) : currentNode_(n), weakIteratorPath_(), sentinels_() {}
+            iterator(Node_t *n) : currentNode_(n), weakIteratorPath_(), sentinels_() {}
 
             //! Copy constructor
             iterator(const iterator &otherIterator) : weakIteratorPath_(), sentinels_() {
@@ -221,24 +223,24 @@ namespace PrefixTree {
                 return !operator==(otherIterator);
             }
 
-            Node *operator->() {
+            Node_t *operator->() {
                 return currentNode_;
             }
 
-            Node *operator*() {
+            Node_t *operator*() {
                 return currentNode_;
             }
 
-            std::vector<typename Node::Index> getIndexPath() const {
-                std::vector<typename Node::Index> reversePath;
-                for (Node *n = currentNode_; n->up(); n = n->up())
+            std::vector<typename Node_t::Index_t> getIndexPath() const {
+                std::vector<typename Node_t::Index_t> reversePath;
+                for (Node_t *n = currentNode_; n->up(); n = n->up())
                     reversePath.push_back(n->getIndex());
                 std::reverse(reversePath.begin(), reversePath.end());
                 return reversePath;
             }
 
         private:
-            Node *currentNode_;
+            Node_t *currentNode_;
             std::vector<WeakIterator_ *> weakIteratorPath_;
             std::vector<WeakIterator_ *> sentinels_;
 
@@ -284,13 +286,13 @@ namespace PrefixTree {
 
         iterator begin() { return iterator(rootNode_); }
         iterator end() { return iterator(); }
-		
+
         /**
          * @brief Removes all children of the root node from memory
-         * 
+         *
          * This method will remove all nodes from memory (except for the root node). Use this method to clear the tree
          * when loading trees on demand. This way the memory usage can be kept small.
-         * 
+         *
          * Prefix trees are always equipped with a root node. Therefore this method will merely make it delete all its child
          * nodes. When using the file based prefix trees this also makes sure that the root nodes children index and file
          * offset table does not have to be reread.
@@ -298,7 +300,7 @@ namespace PrefixTree {
         void clear() { rootNode_->clear(); }
 
     protected:
-        Node *rootNode_;
+        Node_t *rootNode_;
     };
 }
 }

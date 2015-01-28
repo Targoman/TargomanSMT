@@ -25,7 +25,7 @@ namespace PrefixTree {
         typedef typename Container_::const_iterator ContainerConstIterator_;
         typedef tmplPrefixTreeAbstractNode<unsigned, clsData_t> AbstractNode_;
         typedef typename AbstractNode_::AbstractWeakIterator AbstractWeakIterator_;
-	public:
+    public:
         tmplPrefixTreeVectorNode(unsigned index, AbstractNode_ *predecessor) : AbstractNode_(index, predecessor) {}
         tmplPrefixTreeVectorNode(unsigned index, AbstractNode_ *predecessor, const clsData_t &data) : AbstractNode_(index, predecessor, data) {}
         ~tmplPrefixTreeVectorNode() {
@@ -44,7 +44,7 @@ namespace PrefixTree {
             return returnPointer;
         }
 
-        AbstractNode_ *followOrExpand(const typename AbstractNode_::clsIndex_t &nextIndex) {
+        AbstractNode_ *followOrExpand(const typename AbstractNode_::Index_t &nextIndex) {
             ContainerIterator_ position = binarySearch_(nextIndex);
             if (position == successors_.end() || (*position)->getIndex() != nextIndex) {
                 size_t offset = position - successors_.begin(); // insert probably invalidates the iterator
@@ -54,7 +54,7 @@ namespace PrefixTree {
             return *position;
         }
 
-        AbstractNode_ *followOrExpand(const typename AbstractNode_::clsIndex_t &nextIndex, const clsData_t &standardValue) {
+        AbstractNode_ *followOrExpand(const typename AbstractNode_::Index_t &nextIndex, const clsData_t &standardValue) {
             ContainerIterator_ position = binarySearch_(nextIndex);
             if (position == successors_.end() || (*position)->getIndex() != nextIndex) {
                 size_t offset = position - successors_.begin(); // insert probably invalidates the iterator
@@ -103,7 +103,7 @@ namespace PrefixTree {
 
         AbstractWeakIterator_ *weakBegin() { return new WeakIterator(successors_.begin()); }
         AbstractWeakIterator_ *weakEnd() { return new WeakIterator(successors_.end()); }
-		
+
         bool insert(const unsigned &index, AbstractNode_ *node)
         {
             ContainerIterator_ f = binarySearch_(index);
@@ -114,7 +114,7 @@ namespace PrefixTree {
             return true;
         }
 
-        void erase(const unsigned &index) 
+        void erase(const unsigned &index)
         {
             ContainerIterator_ f = binarySearch_(index);
             if(f != successors_.end() && (*f)->getIndex() == index)
@@ -140,12 +140,12 @@ namespace PrefixTree {
             ContainerConstIterator_ high = successors_.end();
             while (low < high) {
                 ContainerConstIterator_ mid = low + (high - low)/2;
-                if ((*mid)->getIndex() < index){ 
-                    low = mid + 1; 
+                if ((*mid)->getIndex() < index){
+                    low = mid + 1;
                 } else {
                     high = mid;
                 }
-            }   
+            }
             return low;
         }
 
@@ -158,12 +158,12 @@ namespace PrefixTree {
             ContainerIterator_ high = successors_.end();
             while (low < high) {
                 ContainerIterator_ mid = low + (high - low)/2;
-                if ((*mid)->getIndex() < index){ 
-                    low = mid + 1; 
+                if ((*mid)->getIndex() < index){
+                    low = mid + 1;
                 } else {
                     high = mid;
                 }
-            }   
+            }
             return low;
         }
     };
