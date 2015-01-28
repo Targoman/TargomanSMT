@@ -8,7 +8,7 @@
  *************************************************************************/
 /**
   @author S. Mohammad M. Ziabary <smm@ziabary.com>
-  @author Behrooz Vedadian <vedadian@aut.ac.ir>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #include "clsLMSentenceScorer.h"

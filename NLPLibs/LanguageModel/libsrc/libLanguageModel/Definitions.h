@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_NLPLIBS_LM_DEFINITIONS_H

@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -8,7 +8,7 @@
  *************************************************************************/
 /**
   @author S. Mohammad M. Ziabary <smm@ziabary.com>
-  @author Behrooz Vedadian <vedadian@aut.ac.ir>
+  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef CLSLMSENTENCESCORER_H
@@ -31,8 +31,8 @@ public:
 
     void reset();
 
-    Targoman::Common::LogP_t wordProb(const QString& _word, quint8 &_foundedGram);
-    Targoman::Common::LogP_t wordProb(const Targoman::Common::WordIndex_t &_wordIndex, quint8 &_foundedGram);
+    Common::LogP_t wordProb(const QString& _word, quint8 &_foundedGram);
+    Common::LogP_t wordProb(const Common::WordIndex_t &_wordIndex, quint8 &_foundedGram);
 
 private:
     QScopedPointer<Private::clsLMSentenceScorerPrivate> pPrivate;
