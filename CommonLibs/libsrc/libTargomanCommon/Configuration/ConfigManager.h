@@ -8,14 +8,16 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_COMMON_CONFIGURATION_H
-#define TARGOMAN_COMMON_CONFIGURATION_H
+#ifndef TARGOMAN_COMMON_CONFIGMANAGER_H
+#define TARGOMAN_COMMON_CONFIGMANAGER_H
 
 #include <cfloat>
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
+#include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
 
 namespace Targoman {
 namespace Common {
@@ -57,4 +59,4 @@ private:
 }
 }
 }
-#endif // TARGOMAN_COMMON_CONFIGURATION_H
+#endif // TARGOMAN_COMMON_CONFIGMANAGER_H

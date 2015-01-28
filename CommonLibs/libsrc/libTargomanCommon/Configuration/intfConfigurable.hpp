@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_COMMON_CONFIGURATION_INTFCONFIGURABLE_HPP
@@ -50,18 +51,6 @@ protected:
     QString LongSwitch;
     qint8   ArgCount;
 };
-
-
-class intfModule {
-};
-
-typedef intfModule* (*fpModuleInstantiator)();
-
-class clsModuleRegistrar{
-public:
-    clsModuleRegistrar(const QString& _name, fpModuleInstantiator _instantiatior);
-};
-
 
 }
 }
