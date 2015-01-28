@@ -3,15 +3,17 @@
 echo $0 $1 $2 $3
 
 BasePath=$1
-LibTarget=$2
+IncludeTarget=$2
 ConfigTarget=$3
+
+mkdir -pv $IncludeTarget
 
 for Dir in `find $BasePath -type d -not -name Private`
 do 
-  mkdir -p $Dir
+  mkdir -pv $Dir
 done 
 
-cp -vrf --parents `find $BasePath -name *.h -o -name *.hpp` $LibTarget || :
-rm -rvf $LibTarget/$BasePath/Private || :
+cp -vrf --parents `find $BasePath -name *.h -o -name *.hpp` $IncludeTarget || :
+rm -rvf $IncludeTarget/$BasePath/Private || :
 mkdir -p $ConfigTarget  || :
 cp -rvf conf/* ConfigTarget || :
