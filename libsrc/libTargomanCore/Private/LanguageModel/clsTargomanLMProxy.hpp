@@ -16,6 +16,7 @@
 #include "intfLMSentenceScorer.hpp"
 #include "libLanguageModel/clsLMSentenceScorer.h"
 #include "libLanguageModel/clsLanguageModel.h"
+#include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 
 namespace Targoman {
 namespace Core {
@@ -28,12 +29,13 @@ public:
     clsTargomanLMProxy() :
         Targoman::NLPLibs::clsLMSentenceScorer(LM){}
 
-    static intfLMSentenceScorer* newInstance(){return new clsTargomanLMProxy;}
-
 private:
+    static Common::Configuration::intfModule* instantiator(){return new clsTargomanLMProxy;}
     static Targoman::NLPLibs::clsLanguageModel LM;
+    static Common::Configuration::clsModuleRegistrar Registrar;
 };
 
+Common::Configuration::clsModuleRegistrar clsTargomanLMProxy::Registrar("TargomanLM", clsTargomanLMProxy::instantiator());
 }
 }
 }

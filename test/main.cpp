@@ -11,7 +11,7 @@
  */
 
 #include "libTargomanCore/Private/InputDecomposer/clsInput.h"
-#include "libTargomanCore/GlobalConfigs.h"
+#include "libTargomanCore/Private/GlobalConfigs.h"
 #include "libTargomanCommon/Logger.h"
 #include <iostream>
 

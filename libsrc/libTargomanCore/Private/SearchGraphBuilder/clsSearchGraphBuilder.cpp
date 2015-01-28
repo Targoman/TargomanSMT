@@ -29,7 +29,9 @@ void clsSearchGraphBuilder::init()
 
 void clsSearchGraphBuilder::matchPhrase(const QList<InputDecomposer::clsToken *> &_input)
 {
-    //QScopedPointer<LanguageModel::intfLMSentenceScorer> LMScorer(gConfigs.newLMScorerInstance());
+
+    QScopedPointer<LanguageModel::intfLMSentenceScorer> LMScorer(
+                gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>());
 
     //check Qlist vs Vector
     //resize PhraseMatchTable to rest of sentence

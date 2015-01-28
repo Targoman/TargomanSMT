@@ -14,7 +14,7 @@
 #define TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPHRASETABLE_H
 
 #include "intfPhraseTable.hpp"
-#include "libTargomanCommon/Configuration.h"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
 #include "clsRuleNode.h"
 
@@ -45,7 +45,7 @@ public:
     static QString baseConfigPath(){return intfPhraseTable::baseConfigPath() + "/JainePlain";}
 
 protected:
-     static Targoman::Common::clsConfigurable<QString> FileName;
+     static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;
 };
 
 }

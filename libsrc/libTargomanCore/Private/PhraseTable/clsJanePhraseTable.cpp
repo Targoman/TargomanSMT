@@ -12,6 +12,7 @@
 
 #include "clsJanePhraseTable.h"
 #include "libTargomanCommon/Logger.h"
+#include "libTargomanCommon/Configuration/Validators.h"
 
 namespace Targoman {
 namespace Core {
@@ -19,8 +20,9 @@ namespace Private {
 namespace PhraseTable {
 
 using namespace Common;
+using namespace Common::Configuration;
 
-clsConfigurable<QString> clsJanePhraseTable::FileName(clsJanePhraseTable::baseConfigPath() + "/FileName",
+tmplConfigurable<QString> clsJanePhraseTable::FileName(clsJanePhraseTable::baseConfigPath() + "/FileName",
                                                   "Filename where phrase table is stored",
                                                   "",
                                                   new Validators::clsPathValidator(PathAccess::File|PathAccess::Readable));

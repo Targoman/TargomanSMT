@@ -14,27 +14,21 @@
 #define TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
 
 #include "libTargomanCommon/Types.h"
-#include "libTargomanCommon/Configuration.h"
+#include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
 namespace LanguageModel{
 
-
 TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
 
-class intfLMSentenceScorer
+class intfLMSentenceScorer : public Common::Configuration::intfModule
 {
 public:
     virtual void reset() = 0;
     virtual Targoman::Common::LogP_t wordProb(const QString& _word, OUTPUT quint8 &_foundedGram) = 0;
     virtual Targoman::Common::LogP_t wordProb(const Targoman::Common::WordIndex_t &_wordIndex, OUTPUT quint8 &_foundedGram) = 0;
-
-    static const QString& baseConfigPath(){return "LanguageModel";}
-    static void  init(){
-    }
-    //static clsCon
 };
 
 }
