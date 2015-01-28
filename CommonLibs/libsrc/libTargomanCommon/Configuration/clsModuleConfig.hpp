@@ -53,6 +53,10 @@ public:
             throw exConfiguration("Invalid module name <" + this->ActiveModuleName + "> for " + this->configPath());
     }
 
+    template <class Type_t> Type_t* getInstance() const {
+        return static_cast<Type_t*>(this->Instantiatior());
+    }
+
 private:
     QString ActiveModuleName;
     fpModuleInstantiator Instantiatior;

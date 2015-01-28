@@ -52,7 +52,7 @@ private:
     static QSet<QString>    SpecialTags;
 
     //Configuration
-    static Targoman::Common::clsConfigurable<QString> UserDefinedTags;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;
 };
 
 }

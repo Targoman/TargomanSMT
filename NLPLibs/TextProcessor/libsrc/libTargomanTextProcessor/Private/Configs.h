@@ -13,7 +13,8 @@
 #ifndef TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_CONFIGS_H
 #define TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_CONFIGS_H
 
-#include "libTargomanCommon/Configuration.h"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
+#include "libTargomanCommon/Configuration/clsFileBasedConfig.hpp"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -21,10 +22,10 @@ namespace TextProcessor_{
 namespace Private {
 
 struct stuConfigs{
-    static Targoman::Common::clsConfigurable<QString> AbbreviationFile;
-    static Targoman::Common::clsConfigurable<QString> NormalizationFile;
-    static Targoman::Common::clsConfigurable<QString> SpellCorrectorBaseConfigPath;
-    static Targoman::Common::clsFileBasedConfig SpellCorrectorLanguageBasedConfigs;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> AbbreviationFile;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> NormalizationFile;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> SpellCorrectorBaseConfigPath;
+    static Targoman::Common::Configuration::clsFileBasedConfig SpellCorrectorLanguageBasedConfigs;
 }extern Configs;
 
 

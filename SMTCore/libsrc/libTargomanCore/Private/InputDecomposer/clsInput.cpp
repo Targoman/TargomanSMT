@@ -25,9 +25,9 @@ namespace InputDecomposer {
 using namespace Common;
 
 QSet<QString>    clsInput::SpecialTags;
-clsConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
-                                           "User Defined valid XML tags. ",
-                                           ""); //TODO complete description
+Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
+                                                                   "User Defined valid XML tags. ",
+                                                                   ""); //TODO complete description
 
 clsInput::clsInput()
 {

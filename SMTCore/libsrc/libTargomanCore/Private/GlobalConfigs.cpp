@@ -17,24 +17,22 @@ namespace Core {
 namespace Private{
 
 using namespace Common;
+using namespace Common::Configuration;
 
 stuGlobalConfigs gConfigs;
 
-clsConfigurable<QString> stuGlobalConfigs::Separator("/Common/Separator",
+tmplConfigurable<QString> stuGlobalConfigs::Separator("/Common/Separator",
                                             "Separator used on multi field configurations",
                                             ";:;");
-clsConfigurable<QString> stuGlobalConfigs::SourceLanguage("/Language/Source",
+tmplConfigurable<QString> stuGlobalConfigs::SourceLanguage("/Language/Source",
                                             "Source language from which translating",
                                             "en");
-clsConfigurable<QString> stuGlobalConfigs::TargetLanguage("/Language/Destination",
+tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage("/Language/Destination",
                                                           "Destination Language to which translating",
                                                           "fa");
 
-LanguageModel::intfLMSentenceScorer *stuGlobalConfigs::newLMScorerInstance()
-{
-    //TODO
-}
-
+clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM","Language model"); //TODO complete description
+clsModuleConfig         stuGlobalConfigs::PhraseTable("/Modules/PhraseTable","PT"); //TODO complete description
 }
 }
 }

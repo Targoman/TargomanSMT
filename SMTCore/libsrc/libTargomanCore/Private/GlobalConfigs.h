@@ -14,18 +14,21 @@
 #define TARGOMAN_CORE_PRIVATE_GLOBALCONFIGS_H
 
 #include "libTargomanCommon/exTargomanBase.h"
-#include "libTargomanCommon/Configuration.h"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
+#include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
 #include "libTargomanCore/clsTranslator.h"
-#include "LanguageModel/intfLMSentenceScorer.hpp"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
 
 struct stuGlobalConfigs{
-    static Targoman::Common::clsConfigurable<QString> Separator;
-    static Targoman::Common::clsConfigurable<QString> SourceLanguage;
-    static Targoman::Common::clsConfigurable<QString> TargetLanguage;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> Separator;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> SourceLanguage;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> TargetLanguage;
+
+    static Targoman::Common::Configuration::clsModuleConfig          LM;
+    static Targoman::Common::Configuration::clsModuleConfig          PhraseTable;
 };
 
 extern stuGlobalConfigs gConfigs;

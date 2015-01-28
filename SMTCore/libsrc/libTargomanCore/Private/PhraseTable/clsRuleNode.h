@@ -15,7 +15,6 @@
 
 #include <QList>
 #include "clsTargetRule.h"
-#include "libTargomanCommon/Configuration.h"
 
 namespace Targoman {
 namespace Core {

@@ -19,19 +19,19 @@ namespace Private {
 
 stuConfigs Configs;
 
-Targoman::Common::clsConfigurable<QString> stuConfigs::AbbreviationFile(
+Targoman::Common::Configuration::tmplConfigurable<QString> stuConfigs::AbbreviationFile(
         "TextProcessor/AbbreviationFile",
         "File path where abbreviations are stored",
         "");
-Targoman::Common::clsConfigurable<QString> stuConfigs::NormalizationFile(
+Targoman::Common::Configuration::tmplConfigurable<QString> stuConfigs::NormalizationFile(
         "TextProcessor/NormalizationFile",
         "File path where normalization rules are stored",
         "");
-Targoman::Common::clsConfigurable<QString> stuConfigs::SpellCorrectorBaseConfigPath(
+Targoman::Common::Configuration::tmplConfigurable<QString> stuConfigs::SpellCorrectorBaseConfigPath(
         "TextProcessor/SpellCorrectorBaseConfigPath",
         "File path where spell correction dics are stored",
         "");
-Targoman::Common::clsFileBasedConfig       stuConfigs::SpellCorrectorLanguageBasedConfigs(
+Targoman::Common::Configuration::clsFileBasedConfig       stuConfigs::SpellCorrectorLanguageBasedConfigs(
         "TextProcessor/SpellCorrectorLanguageBasedConfigs");
 
 }

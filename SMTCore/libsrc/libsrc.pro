@@ -25,8 +25,8 @@ HEADERS += \
     libTargomanCore/Private/N-BestFinder/clsNBestFinder.h \
     libTargomanCore/Private/OutputComposer/clsOutputComposer.h \
     libTargomanCore/Private/SearchGraphBuilder/clsLexicalHypothesis.h \
-    libTargomanCore/Private/LanguageModel/intfLMSentenceScorer.hpp \
-    libTargomanCore/Private/LanguageModel/clsTargomanLMProxy.hpp
+    libTargomanCore/Private/LanguageModel/clsTargomanLMProxy.hpp \
+    libTargomanCore/Private/LanguageModel/intfLMSentenceScorer.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
