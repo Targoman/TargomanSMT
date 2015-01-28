@@ -35,7 +35,9 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Configuration/tmplConfigurable.h \
     libTargomanCommon/Configuration/Validators.h \
     libTargomanCommon/Private/clsConfigManager_p.h \
-    libTargomanCommon/Configuration/ConfigManager.h
+    libTargomanCommon/Configuration/ConfigManager.h \
+    libTargomanCommon/Configuration/tmplInstantiator.hpp \
+    libTargomanCommon/Configuration/clsModuleConfig.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

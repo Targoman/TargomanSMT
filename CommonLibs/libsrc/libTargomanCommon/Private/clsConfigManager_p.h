@@ -32,6 +32,11 @@ public:
      * option.
      */
     QHash<QString, Configuration::intfConfigurable*>    Configs;
+
+    /**
+     * @brief ModuleInstantiators
+     */
+    QHash<QString, fpModuleInstantiator>             ModuleInstantiators;
     /**
      * @brief In case that we have a config file (.ini file) for arguments of our programs, we put the address of
      * that config file in #ConfigFilePath

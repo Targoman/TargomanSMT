@@ -13,7 +13,7 @@
 #ifndef TARGOMAN_COMMON_CONFIGURATION_CLSFILEBASEDCONFIG_HPP
 #define TARGOMAN_COMMON_CONFIGURATION_CLSFILEBASEDCONFIG_HPP
 
-#include "intfConfigurable.hpp"
+#include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 
 namespace Targoman {
 namespace Common {

@@ -20,6 +20,7 @@
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Configuration/Validators.h"
+#include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
 
 #include <iostream>
 #include <unistd.h>
@@ -30,6 +31,19 @@ static Configuration::tmplConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
 static Configuration::tmplConfigurable<QString> B("/s","fjkdfjkdsfjk",123,
                                                   new Configuration::Validators::clsPathValidator(PathAccess::Dir | PathAccess::Readable));
 
+static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module");
+
+class MLM : Configuration::intfModule{
+public:
+    MLM(){}
+private:
+    static intfModule * instantiator(){
+        return new MLM;
+    }
+    static Configuration::clsModuleRegistrar Registrar;
+};
+
+Configuration::clsModuleRegistrar MLM::Registrar("MLM", MLM::instantiator);
 
 class exSample: public exTargomanBase
 {

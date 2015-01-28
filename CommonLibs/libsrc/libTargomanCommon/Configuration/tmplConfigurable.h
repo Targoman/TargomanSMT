@@ -13,9 +13,9 @@
 #ifndef TARGOMAN_COMMON_CONFIGURATION_TMPLCONFIGURABLE_HPP
 #define TARGOMAN_COMMON_CONFIGURATION_TMPLCONFIGURABLE_HPP
 
-#include "intfConfigurable.hpp"
-#include "ConfigManager.h"
-#include "intfCrossValidate.hpp"
+#include "libTargomanCommon/Configuration/intfConfigurable.hpp"
+#include "libTargomanCommon/Configuration/ConfigManager.h"
+#include "libTargomanCommon/Configuration/intfCrossValidate.hpp"
 
 namespace Targoman {
 namespace Common {
@@ -76,6 +76,7 @@ private:
     QScopedPointer<intfCrossValidate> CrossValidator;
 };
 
+
 /***************************************************************************************/
 #define _SPECIAL_CONFIGURABLE(_type) \
     template <> bool tmplConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
@@ -95,7 +96,7 @@ _SPECIAL_CONFIGURABLE(float)
 _SPECIAL_CONFIGURABLE(QString)
 _SPECIAL_CONFIGURABLE(bool)
 _SPECIAL_CONFIGURABLE(QList<quint8>)
-
+_SPECIAL_CONFIGURABLE(intfModule*)
 
 }
 }

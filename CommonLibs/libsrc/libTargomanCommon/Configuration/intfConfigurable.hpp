@@ -32,7 +32,8 @@ public:
     virtual void        setFromVariant(const QVariant& _value) = 0;
     virtual QVariant    toVariant() const = 0 ;
     virtual bool        validate(const QVariant& _value, QString& _errorMessage) const = 0 ;
-    virtual bool        crossValidate(QString& _errorMessage) const = 0;
+    virtual bool        crossValidate(QString& _errorMessage) const {Q_UNUSED(_errorMessage) return true;}
+    virtual void        finalizeConfig() {}
 
     inline const QString& description()const{return this->Description;}
     inline const QString& shortSwitch()const{return this->ShortSwitch;}
@@ -49,6 +50,18 @@ protected:
     QString LongSwitch;
     qint8   ArgCount;
 };
+
+
+class intfModule {
+};
+
+typedef intfModule* (*fpModuleInstantiator)();
+
+class clsModuleRegistrar{
+public:
+    clsModuleRegistrar(const QString& _name, fpModuleInstantiator _instantiatior);
+};
+
 
 }
 }

@@ -106,6 +106,7 @@ QVariant    tmplConfigurable<QList<quint8> >::toVariant() const{
     return QVariant();
 }
 
+
 }
 }
 }
