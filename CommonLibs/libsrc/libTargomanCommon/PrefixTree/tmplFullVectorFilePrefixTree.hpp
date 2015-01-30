@@ -6,30 +6,30 @@
 #include <fstream>
 #include <map>
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp"
-#include "libTargomanCommon/PrefixTree/tmplVectorPrefixTree.hpp"
+#include "libTargomanCommon/PrefixTree/tmplFullVectorPrefixTree.hpp"
 #include "libTargomanCommon/PrefixTree/tmplVectorFilePrefixTree.hpp"
 #include "libTargomanCommon/PrefixTree/tmplFullVectorPrefixTree.hpp"
-#include "libTargomanCommon/PrefixTree/tmplAbstractFilePrefixTree.hpp"
+#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
 
-namespace Targoman{
-namespace Common{
+namespace Targoman {
+namespace Common {
 namespace PrefixTree {
     /**
      * @brief A tmplPrefixTreeFullVectorNode implementation that can work with file based trees
-     * 
+     *
      * This class supports loading trees on demand.
-     * 
+     *
      * @see GFullVectorFilePrefixTree
      */
-    template <typename clsData_t> class tmplFilePrefixTreeFullVectorNode : public tmplPrefixTreeFullVectorNode<clsData_t>, public tmplFilePrefixTreeAbstractNode<unsigned, clsData_t>
+    template <typename DataClass> class tmplFilePrefixTreeFullVectorNode : public tmplPrefixTreeFullVectorNode<DataClass>, public tmplFilePrefixTreeAbstractNode<unsigned, DataClass>
     {
     protected:
-        typedef tmplPrefixTreeAbstractNode<unsigned, clsData_t> AbstractNode_;
-        typedef tmplPrefixTreeVectorNode<clsData_t> VectorNode_;
-        typedef tmplPrefixTreeFullVectorNode<clsData_t> FullVectorNode_;
-        typedef tmplFilePrefixTreeVectorNode<clsData_t> VectorFileNode_;
-        typedef tmplFilePrefixTreeAbstractNode<unsigned, clsData_t> AbstractFileNode_;
-        typedef tmplFilePrefixTreeFullVectorNode<clsData_t> FullVectorFileNode_;
+        typedef tmplPrefixTreeAbstractNode<unsigned, DataClass> AbstractNode_;
+        typedef tmplPrefixTreeVectorNode<DataClass> VectorNode_;
+        typedef tmplPrefixTreeFullVectorNode<DataClass> FullVectorNode_;
+        typedef tmplFilePrefixTreeVectorNode<DataClass> VectorFileNode_;
+        typedef tmplFilePrefixTreeAbstractNode<unsigned, DataClass> AbstractFileNode_;
+        typedef tmplFilePrefixTreeFullVectorNode<DataClass> FullVectorFileNode_;
         typedef typename FullVectorNode_::Container_::iterator ContainerIterator_;
         typedef typename FullVectorNode_::Container_::const_iterator ContainerConstIterator_;
         typedef typename AbstractNode_::AbstractWeakIterator AbstractWeakIterator_;
@@ -48,7 +48,7 @@ namespace PrefixTree {
     public:
         tmplFilePrefixTreeFullVectorNode(const Index_ &index, AbstractNode_ *predecessor) :
             AbstractNode_(index, predecessor), FullVectorNode_(index, predecessor), AbstractFileNode_(index, predecessor) {}
-        tmplFilePrefixTreeFullVectorNode(const Index_ &index, AbstractNode_ *predecessor, const clsData_t &data) :
+        tmplFilePrefixTreeFullVectorNode(const Index_ &index, AbstractNode_ *predecessor, const DataClass &data) :
             AbstractNode_(index, predecessor, data), FullVectorNode_(index, predecessor, data), AbstractFileNode_(index, predecessor) {}
         ~tmplFilePrefixTreeFullVectorNode()
         {
@@ -75,16 +75,16 @@ namespace PrefixTree {
 
         /**
          * @brief Creates a new node
-         * 
+         *
          * The node type will be read from the stream iStream at position spOffset. The new node will have the index \e index
          * and its parent will be \e pParent. Passing 0 for \e pParent will create a new root node. Only the node will
          * be created, this method will neither read the nodes children from the stream nor its data. However the get pointer
          * position in the input stream will be set to the index table, so calling tmplFilePrefixTreeAbstractNode::readBinary
          * on the newly created node will properly load its data.
-         * 
+         *
          * @note
          * This method is implemented static to allow creation of new nodes without a parent node.
-         * 
+         *
          * @param pParent The nodes parent node, can be 0 for the root node
          * @param index The new nodes index, can be Index() for the root node
          * @param iStream A stream that holds the nodes data, with random get pointer position
@@ -119,13 +119,13 @@ namespace PrefixTree {
 
         /**
          * @brief Follows the path given by \e nextIndex
-         * 
+         *
          * There are two lists of successor nodes that can be indexed by \e nextIndex. One is the index to pointer map
          * defined as tmplPrefixTreeMapNode::successors_, the other is the index to file offset map defined as
-         * tmplFileilePrefixTreeFullVectorNode::vLodChildren_. If the index is not found in the first map this method will search
-         * for it in the second map. In case it is listed there it will be loaded into the first map. Otherwise this method 
+         * tmplFilePrefixTreeFullVectorNode::vLodChildren_. If the index is not found in the first map this method will search
+         * for it in the second map. In case it is listed there it will be loaded into the first map. Otherwise this method
          * returns 0.
-         * 
+         *
          * @param nextIndex The next index on the path, it will identify the child node to be returned by this method
          * @return The child node identified by \e nextIndex or 0 if there is no such node
          * @see tmplFilePrefixTreeAbstractNode::createAndLoadNode_
@@ -160,12 +160,12 @@ namespace PrefixTree {
                 if(!reference) // if failed try to load a virtual node
                     reference = dynamic_cast<VectorFileNode_*>(this->loadVirtualChild_(nextIndex));
                 if(!reference) // if this failed again try to create a new node
-                    reference = new tmplFilePrefixTreeVectorNode<clsData_t>(nextIndex, this); // Note: this is NOT a fullVectorNode
+                    reference = new tmplFilePrefixTreeVectorNode<DataClass>(nextIndex, this); // Note: this is NOT a fullVectorNode
             }
             return reference;
         }
 
-        AbstractNode_ *followOrExpand(const Index_ &nextIndex, const clsData_t &standardValue) {
+        AbstractNode_ *followOrExpand(const Index_ &nextIndex, const DataClass &standardValue) {
             if (FullVectorNode_::successors_.size() <= nextIndex)
                 FullVectorNode_::successors_.resize(nextIndex+1, 0);
 
@@ -177,14 +177,14 @@ namespace PrefixTree {
                 if(!reference) // if failed try to load a virtual node
                     reference = dynamic_cast<VectorFileNode_*>(this->loadVirtualChild_(nextIndex));
                 if(!reference) // if this failed again try to create a new node
-                    reference = new tmplFilePrefixTreeVectorNode<clsData_t>(nextIndex, this, standardValue); // Note: this is NOT a fullVectorNode
+                    reference = new tmplFilePrefixTreeVectorNode<DataClass>(nextIndex, this, standardValue); // Note: this is NOT a fullVectorNode
             }
             return reference;
         }
 
         /**
          * @brief Returns true if this node is a leaf node
-         * 
+         *
          * This method will return true if there are no successors. That means that both the successor list as well as the
          * list of loadable successors in the file are empty.
          */
@@ -193,15 +193,15 @@ namespace PrefixTree {
             return vLodChildren_.empty() && FullVectorNode_::successors_.empty();
         }
 
-        void compact() 
+        void compact()
         {
             FullVectorNode_::compact();
-            tmplShrinkToFitVector(vLodChildren_);
+            shrinkToFitVector(vLodChildren_);
         }
 
         /**
          * @brief Initializes this node by reading its contents from the stream
-         * 
+         *
          * The Data class used in the template need to implement
          * \code
          * void readBinary(std::istream &iStream);
@@ -251,7 +251,7 @@ namespace PrefixTree {
 
         /**
          * @brief This method returns the node type
-         * 
+         *
          * See tmplFilePrefixTreeAbstractNode::FilePrefixTreeNodeType for further reference.
          */
         unsigned char getType()
@@ -288,13 +288,13 @@ namespace PrefixTree {
 
         /**
          * @name Iterator classes and methods
-         * These classes and methods abstract the way the children are stored, since this depends on the actual 
+         * These classes and methods abstract the way the children are stored, since this depends on the actual
          * implementation while the more general methods of tmplFilePrefixTreeAbstractNode should not.
          */
         //@{
         /**
          * @brief Implementation of the virtual child iterator for the vector node class
-         * 
+         *
          * The constructors \e begin iterator is needed by the dereference member method. It has to return an index, even
          * though no index is stored. However it can easily be calculated from the difference of the current iterator
          * and the begin iterator.
@@ -423,7 +423,7 @@ namespace PrefixTree {
 
         /**
          * @brief Implementation of the load on demand child iterator for the vector node class
-         * 
+         *
          * The constructors \e begin iterator is needed by the dereference member method. It has to return an index, even
          * though no index is stored. However it can easily be calculated from the difference of the current iterator
          * and the begin iterator.
@@ -551,39 +551,39 @@ namespace PrefixTree {
     /**
      * @brief Like GFullVectorPrefixTree but supports working on file based trees
      */
-    template <class DataClass> class GFullVectorFilePrefixTree : 
+    template <class DataClass> class tmplFullVectorFilePrefixTree :
         public tmplAbstractFilePrefixTree<tmplFilePrefixTreeFullVectorNode<DataClass> >
     {
     public:
         typedef tmplAbstractFilePrefixTree< tmplFilePrefixTreeFullVectorNode<DataClass> > AbstractFileTree_;
 
     public:
-        GFullVectorFilePrefixTree() : AbstractFileTree_() {};
-        GFullVectorFilePrefixTree(const char *strFilename) : AbstractFileTree_(strFilename) {};
-        GFullVectorFilePrefixTree(std::istream &inStream) : AbstractFileTree_(inStream) {};
+        tmplFullVectorFilePrefixTree() : AbstractFileTree_() {};
+        tmplFullVectorFilePrefixTree(const char *strFilename) : AbstractFileTree_(strFilename) {};
+        tmplFullVectorFilePrefixTree(std::istream &inStream) : AbstractFileTree_(inStream) {};
     };
 }
 }
 }
 
 /**
- * @var Translation::tmplFileilePrefixTreeFullVectorNode::vLodChildren_
+ * @var Translation::tmplFilePrefixTreeFullVectorNode::vLodChildren_
  * @brief Holds the nodes load on demand children
- * 
+ *
  * The prefix tree can be bound to a file. It will then load the nodes child nodes once follow demands them. Of course
  * these child nodes are not in memory, so they cannot be hold in the normal successors vector. Instead they are stored
  * in this vector. The index of a vector element refers to the nodes index (which is unsigned) and the vector element
  * itself is holding the file offset.
- * 
+ *
  * The full vector holds all elements up to the largest seen key so far, even though this will introduce some overhead
  * due to empty elements in the vector. Just as done in the parent class this vector is holding pointers to the actual
  * elements, marking invalid entries by using a zero pointer.
  */
 
 /**
- * @var Translation::tmplFileilePrefixTreeFullVectorNode::vVirtChildren_
+ * @var Translation::tmplFilePrefixTreeFullVectorNode::vVirtChildren_
  * @brief Holds the virtual child nodes, nodes that have been moved to a file
- * 
+ *
  * There are 3 types of nodes. Nodes that are in memory are hold in the parent classes successor vector. Nodes that can
  * be load on demand, as the parents follow method requests this node, are stored in vLodChildren_. There is a third type
  * of nodes: Nodes that have been moved from memory to a file. While the first type of node is used both when creating
@@ -591,7 +591,7 @@ namespace PrefixTree {
  * are only used when the tree is being loaded. The virtual children are the nodes that are used when the tree is being
  * created. If you run out of memory you can just move some nodes to the tree file and continue the trees creation.
  * These nodes can not be stored with the other successor nodes, since they are not in memory and can no longer be accessed.
- * 
+ *
  * The full vector holds all elements up to the largest seen key so far, even though this will introduce some overhead
  * due to empty elements in the vector. Just as done in the parent class this vector is holding pointers to the actual
  * elements, marking invalid entries by using a zero pointer.

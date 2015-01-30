@@ -35,7 +35,7 @@ static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module");
 
 class MLM : Configuration::intfModule{
 public:
-    MLM(){}
+    MLM() : intfModule("MLM"){}
 private:
     static intfModule * instantiator(){
         return new MLM;

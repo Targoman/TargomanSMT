@@ -5,15 +5,9 @@
 #include <map>
 #include <vector>
 
-namespace Targoman{
-namespace Common{
+namespace Targoman {
+namespace Common {
 namespace PrefixTree {
-
-    //! Shrink-to-fit a vector
-    template<class T> inline void tmplShrinkToFitVector(std::vector<T> &v) {
-        std::vector<T>(v).swap(v);
-    }
-
     //! Abstract node class, from which all the other node classes will be descendant from
     /**
      * The key point is that several node classes, each with a different
@@ -26,26 +20,26 @@ namespace PrefixTree {
      * nodes exist. followOrExpand() does the same, but creating nodes as it
      * progresses.
      */
-    template <typename clsIndex_t, typename clsData_t> class tmplPrefixTreeAbstractNode {
+    template <typename IndexClass, typename DataClass> class tmplPrefixTreeAbstractNode {
     public:
-        typedef clsIndex_t Index_t;
-        typedef clsData_t  Data_t;
-        typedef tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> AbstractNode;
+        typedef IndexClass Index;
+        typedef DataClass Data;
+        typedef tmplPrefixTreeAbstractNode<Index, Data> AbstractNode;
 
         //! \todo Allow for standard element?
-        tmplPrefixTreeAbstractNode(const clsIndex_t &index, tmplPrefixTreeAbstractNode *predecessor) : predecessor_(predecessor), myIndex_(index), data_() { }
-        tmplPrefixTreeAbstractNode(const clsIndex_t &index, tmplPrefixTreeAbstractNode *predecessor, const clsData_t &data) : predecessor_(predecessor), myIndex_(index), data_(data) { }
+        tmplPrefixTreeAbstractNode(const Index &index, tmplPrefixTreeAbstractNode *predecessor) : predecessor_(predecessor), myIndex_(index), data_() { }
+        tmplPrefixTreeAbstractNode(const Index &index, tmplPrefixTreeAbstractNode *predecessor, const Data &data) : predecessor_(predecessor), myIndex_(index), data_(data) { }
         virtual ~tmplPrefixTreeAbstractNode() {}
 
-        clsData_t &setData(const clsData_t &data) { data_ = data; return data_; }
-        clsData_t &getData() { return data_; }
-        const clsData_t &getData() const { return data_; }
+        Data &setData(const Data &data) { data_ = data; return data_; }
+        Data &getData() { return data_; }
+        const Data &getData() const { return data_; }
 
-        const clsIndex_t &getIndex() const { return myIndex_; }
+        const Index &getIndex() const { return myIndex_; }
 
-        virtual tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> *follow(const clsIndex_t &nextIndex) const = 0;
-        virtual tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> *followOrExpand(const clsIndex_t &nextIndex) = 0;
-        virtual tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> *followOrExpand(const clsIndex_t &nextIndex, const clsData_t &standardValue) = 0;
+        virtual tmplPrefixTreeAbstractNode<Index, Data> *follow(const Index &nextIndex) const = 0;
+        virtual tmplPrefixTreeAbstractNode<Index, Data> *followOrExpand(const Index &nextIndex) = 0;
+        virtual tmplPrefixTreeAbstractNode<Index, Data> *followOrExpand(const Index &nextIndex, const Data &standardValue) = 0;
 
         tmplPrefixTreeAbstractNode *up() const { return predecessor_; }
 
@@ -103,7 +97,7 @@ namespace PrefixTree {
          * @param node The node itself
          * @return True if an insertion was made, false otherwise
          */
-        virtual bool insert(const clsIndex_t &index, AbstractNode *node) = 0;
+        virtual bool insert(const Index &index, AbstractNode *node) = 0;
 
         /**
          * @brief Removes the node with the given index from the list of successors
@@ -113,7 +107,7 @@ namespace PrefixTree {
          *
          * @param index The index of the node that is to be removed
          */
-        virtual void erase(const clsIndex_t &index) = 0;
+        virtual void erase(const Index &index) = 0;
 
         /**
          * @brief Delete all successor nodes
@@ -127,8 +121,8 @@ namespace PrefixTree {
 
     protected:
         tmplPrefixTreeAbstractNode *predecessor_;
-        clsIndex_t myIndex_;
-        clsData_t data_;
+        Index myIndex_;
+        Data data_;
     };
 
     //! Alternative implementation of a prefix tree, more general and probably cleaner that the original, but incompatible with it.
@@ -149,24 +143,24 @@ namespace PrefixTree {
      */
     template <class RootNodeClass> class tmplAbstractPrefixTree {
     public:
-        typedef typename RootNodeClass::AbstractNode Node_t;
+        typedef typename RootNodeClass::AbstractNode Node;
 
-        tmplAbstractPrefixTree() : rootNode_(new RootNodeClass(typename Node_t::Index_t(), 0)) {}
+        tmplAbstractPrefixTree() : rootNode_(new RootNodeClass(typename Node::Index(), 0)) {}
         virtual ~tmplAbstractPrefixTree() { delete rootNode_; }
 
-        Node_t *rootNode() { return rootNode_; }
-        const Node_t *rootNode() const { return rootNode_; }
+        Node *rootNode() { return rootNode_; }
+        const Node *rootNode() const { return rootNode_; }
 
-        Node_t *getOrCreateNode(const std::vector<typename Node_t::Index_t> &indexPath) {
-            Node_t *currentNode = rootNode();
-            for (typename std::vector<typename Node_t::Index_t>::const_iterator i = indexPath.begin(); i != indexPath.end(); ++i)
+        Node *getOrCreateNode(const std::vector<typename Node::Index> &indexPath) {
+            Node *currentNode = rootNode();
+            for (typename std::vector<typename Node::Index>::const_iterator i = indexPath.begin(); i != indexPath.end(); ++i)
                 currentNode = currentNode->followOrExpand(*i);
             return currentNode;
         }
 
-        Node_t *getOrCreateNode(const std::vector<typename Node_t::Index_t> &indexPath, const typename Node_t::Data_t &standardElement) {
-            Node_t *currentNode = rootNode();
-            for (typename std::vector<typename Node_t::Index_t>::const_iterator i = indexPath.begin(); i != indexPath.end(); ++i)
+        Node *getOrCreateNode(const std::vector<typename Node::Index> &indexPath, const typename Node::Data &standardElement) {
+            Node *currentNode = rootNode();
+            for (typename std::vector<typename Node::Index>::const_iterator i = indexPath.begin(); i != indexPath.end(); ++i)
                 currentNode = currentNode->followOrExpand(*i, standardElement);
             return currentNode;
         }
@@ -180,13 +174,13 @@ namespace PrefixTree {
 
         class iterator {
         private:
-            typedef typename Node_t::AbstractWeakIterator WeakIterator_;
+            typedef typename Node::AbstractWeakIterator WeakIterator_;
         public:
             //! Initalize an end iterator
             iterator() : currentNode_(0), weakIteratorPath_(), sentinels_() {}
 
             //! Initialize the iterator starting at a node.
-            iterator(Node_t *n) : currentNode_(n), weakIteratorPath_(), sentinels_() {}
+            iterator(Node *n) : currentNode_(n), weakIteratorPath_(), sentinels_() {}
 
             //! Copy constructor
             iterator(const iterator &otherIterator) : weakIteratorPath_(), sentinels_() {
@@ -223,24 +217,24 @@ namespace PrefixTree {
                 return !operator==(otherIterator);
             }
 
-            Node_t *operator->() {
+            Node *operator->() {
                 return currentNode_;
             }
 
-            Node_t *operator*() {
+            Node *operator*() {
                 return currentNode_;
             }
 
-            std::vector<typename Node_t::Index_t> getIndexPath() const {
-                std::vector<typename Node_t::Index_t> reversePath;
-                for (Node_t *n = currentNode_; n->up(); n = n->up())
+            std::vector<typename Node::Index> getIndexPath() const {
+                std::vector<typename Node::Index> reversePath;
+                for (Node *n = currentNode_; n->up(); n = n->up())
                     reversePath.push_back(n->getIndex());
                 std::reverse(reversePath.begin(), reversePath.end());
                 return reversePath;
             }
 
         private:
-            Node_t *currentNode_;
+            Node *currentNode_;
             std::vector<WeakIterator_ *> weakIteratorPath_;
             std::vector<WeakIterator_ *> sentinels_;
 
@@ -300,7 +294,7 @@ namespace PrefixTree {
         void clear() { rootNode_->clear(); }
 
     protected:
-        Node_t *rootNode_;
+        Node *rootNode_;
     };
 }
 }

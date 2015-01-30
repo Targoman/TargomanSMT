@@ -15,12 +15,20 @@
 #define TARGOMAN_COMMON_CONFIGURATION_INTFCONFIGURABLEMODULE_HPP
 
 #include <QString>
+#include "libTargomanCommon/Logger.h"
 
 namespace Targoman {
 namespace Common {
 namespace Configuration {
 
 class intfModule {
+public:
+    intfModule(const QString& _name){
+        TARGOMAN_REGISTER_ACTOR(_name)
+    }
+
+protected:
+    QString ActorUUID;
 };
 
 typedef intfModule* (*fpModuleInstantiator)();

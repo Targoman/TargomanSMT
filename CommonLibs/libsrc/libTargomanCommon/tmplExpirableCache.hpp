@@ -33,7 +33,7 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
         {};
 
         tmplExpirableCache(){
-            if (this->MaxItems == 0)
+            if (itmplMaxItems == 0)
                 throw exTargomanInvalidParameter("Max cache Items must be greater than zero");
             this->MaxItems = itmplMaxItems;
             this->TTL = itmplTTL;

@@ -3,9 +3,14 @@
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp"
 
-namespace Targoman{
-namespace Common{
+namespace Targoman {
+namespace Common {
 namespace PrefixTree {
+    //! Shrink-to-fit a vector
+    template<class T> inline void shrinkToFitVector(std::vector<T> &v) {
+        std::vector<T>(v).swap(v);
+    }
+
     //! Node where the successors are stored in a vector
     /**
      * The index for this type of nodes is fixed to be an unsigned. If more
@@ -18,16 +23,16 @@ namespace PrefixTree {
      * to do it rightly we should create a static comparison object, and I am
      * not in the mood of fighting templates about it right now.
      */
-    template <class clsData_t> class tmplPrefixTreeVectorNode : virtual public tmplPrefixTreeAbstractNode<unsigned, clsData_t> {
+    template <class DataClass> class tmplPrefixTreeVectorNode : virtual public tmplPrefixTreeAbstractNode<unsigned, DataClass> {
     protected:
-        typedef std::vector<tmplPrefixTreeAbstractNode<unsigned, clsData_t> *> Container_;
+        typedef std::vector<tmplPrefixTreeAbstractNode<unsigned, DataClass> *> Container_;
         typedef typename Container_::iterator ContainerIterator_;
         typedef typename Container_::const_iterator ContainerConstIterator_;
-        typedef tmplPrefixTreeAbstractNode<unsigned, clsData_t> AbstractNode_;
+        typedef tmplPrefixTreeAbstractNode<unsigned, DataClass> AbstractNode_;
         typedef typename AbstractNode_::AbstractWeakIterator AbstractWeakIterator_;
     public:
         tmplPrefixTreeVectorNode(unsigned index, AbstractNode_ *predecessor) : AbstractNode_(index, predecessor) {}
-        tmplPrefixTreeVectorNode(unsigned index, AbstractNode_ *predecessor, const clsData_t &data) : AbstractNode_(index, predecessor, data) {}
+        tmplPrefixTreeVectorNode(unsigned index, AbstractNode_ *predecessor, const DataClass &data) : AbstractNode_(index, predecessor, data) {}
         ~tmplPrefixTreeVectorNode() {
             for (ContainerIterator_ i = successors_.begin(); i != successors_.end(); ++i)
                 delete *i;
@@ -44,7 +49,7 @@ namespace PrefixTree {
             return returnPointer;
         }
 
-        AbstractNode_ *followOrExpand(const typename AbstractNode_::Index_t &nextIndex) {
+        AbstractNode_ *followOrExpand(const typename AbstractNode_::Index &nextIndex) {
             ContainerIterator_ position = binarySearch_(nextIndex);
             if (position == successors_.end() || (*position)->getIndex() != nextIndex) {
                 size_t offset = position - successors_.begin(); // insert probably invalidates the iterator
@@ -54,7 +59,7 @@ namespace PrefixTree {
             return *position;
         }
 
-        AbstractNode_ *followOrExpand(const typename AbstractNode_::Index_t &nextIndex, const clsData_t &standardValue) {
+        AbstractNode_ *followOrExpand(const typename AbstractNode_::Index &nextIndex, const DataClass &standardValue) {
             ContainerIterator_ position = binarySearch_(nextIndex);
             if (position == successors_.end() || (*position)->getIndex() != nextIndex) {
                 size_t offset = position - successors_.begin(); // insert probably invalidates the iterator
@@ -75,7 +80,7 @@ namespace PrefixTree {
         }
 
         virtual void compact() {
-            tmplShrinkToFitVector(successors_);
+            shrinkToFitVector(successors_);
         }
 
         class WeakIterator : public AbstractWeakIterator_ {
@@ -178,8 +183,9 @@ namespace PrefixTree {
      * Template equivalent: <tt>GAbstractPrefixTree<tmplPrefixTreeVectorNode<DataClass> ></tt>
      * \sa GAbstractPrefixTree
      */
-    template <class clsData_t> class GVectorPrefixTree : public tmplAbstractPrefixTree<tmplPrefixTreeVectorNode<clsData_t> > {};
+    template <class DataClass> class tmplVectorPrefixTree : public tmplAbstractPrefixTree<tmplPrefixTreeVectorNode<DataClass> > {};
 }
 }
 }
+
 #endif

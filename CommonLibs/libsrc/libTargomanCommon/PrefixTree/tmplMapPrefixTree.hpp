@@ -3,25 +3,25 @@
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp"
 
-namespace Targoman{
-namespace Common{
+namespace Targoman {
+namespace Common {
 namespace PrefixTree {
-    template <class clsIndex_t, class clsData_t, class clsCompare_t=std::less<clsIndex_t> > class tmplPrefixTreeMapNode : virtual public tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> {
-	protected:
-        typedef std::map<clsIndex_t, tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> *, clsCompare_t> Container_;
+    template <class Index, class Data, class Compare=std::less<Index> > class tmplPrefixTreeMapNode : virtual public tmplPrefixTreeAbstractNode<Index, Data> {
+    protected:
+        typedef std::map<Index, tmplPrefixTreeAbstractNode<Index, Data> *, Compare> Container_;
         typedef typename Container_::iterator ContainerIterator_;
         typedef typename Container_::const_iterator ContainerConstIterator_;
-        typedef tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> AbstractNode_;
+        typedef tmplPrefixTreeAbstractNode<Index, Data> AbstractNode_;
         typedef typename AbstractNode_::AbstractWeakIterator AbstractWeakIterator_;
     public:
-        tmplPrefixTreeMapNode(const clsIndex_t &index, AbstractNode_ *predecessor) : AbstractNode_(index, predecessor) {}
-        tmplPrefixTreeMapNode(const clsIndex_t &index, AbstractNode_ *predecessor, const clsData_t &data) : AbstractNode_(index, predecessor, data) {}
+        tmplPrefixTreeMapNode(const Index &index, AbstractNode_ *predecessor) : AbstractNode_(index, predecessor) {}
+        tmplPrefixTreeMapNode(const Index &index, AbstractNode_ *predecessor, const Data &data) : AbstractNode_(index, predecessor, data) {}
         ~tmplPrefixTreeMapNode() {
             for (ContainerIterator_ i = successors_.begin(); i != successors_.end(); ++i)
                 delete i->second;
         }
-		
-        AbstractNode_ *follow(const clsIndex_t &nextIndex) const {
+
+        AbstractNode_ *follow(const Index &nextIndex) const {
             ContainerConstIterator_ i = successors_.find(nextIndex);
             AbstractNode_ *returnPointer;
             if (i == successors_.end())
@@ -31,7 +31,7 @@ namespace PrefixTree {
             return returnPointer;
         }
 
-        AbstractNode_ *followOrExpand(const clsIndex_t &nextIndex) {
+        AbstractNode_ *followOrExpand(const Index &nextIndex) {
             ContainerConstIterator_ i = this->successors_.find(nextIndex);
             AbstractNode_ *returnPointer;
             if (i != this->successors_.end())
@@ -44,7 +44,7 @@ namespace PrefixTree {
             return returnPointer;
         }
 
-        AbstractNode_ *followOrExpand(const clsIndex_t &nextIndex, const clsData_t &standardValue) {
+        AbstractNode_ *followOrExpand(const Index &nextIndex, const Data &standardValue) {
             ContainerConstIterator_ i = this->successors_.find(nextIndex);
             AbstractNode_ *returnPointer;
             if (i != this->successors_.end())
@@ -86,16 +86,16 @@ namespace PrefixTree {
 
         AbstractWeakIterator_ *weakBegin() { return new WeakIterator(successors_.begin()); }
         AbstractWeakIterator_ *weakEnd() { return new WeakIterator(successors_.end()); }
-		
-		bool insert(const clsIndex_t &index, AbstractNode_ *node) { return successors_.insert(std::pair<clsIndex_t, AbstractNode_*>(index, node)).second; }
-		void erase(const clsIndex_t &index) { successors_.erase(index); }
-		
-		void clear()
-		{
-			for (ContainerIterator_ i = successors_.begin(); i != successors_.end(); ++i)
-				delete i->second;
-			successors_.clear();
-		}
+
+        bool insert(const Index &index, AbstractNode_ *node) { return successors_.insert(std::pair<Index, AbstractNode_*>(index, node)).second; }
+        void erase(const Index &index) { successors_.erase(index); }
+
+        void clear()
+        {
+            for (ContainerIterator_ i = successors_.begin(); i != successors_.end(); ++i)
+                delete i->second;
+            successors_.clear();
+        }
 
     protected:
         mutable Container_ successors_;
@@ -109,8 +109,8 @@ namespace PrefixTree {
      * Template equivalent: <tt>GAbstractPrefixTree<tmplPrefixTreeMapNode<Index, Data, Compare> ></tt>
      * \sa GAbstractPrefixTree
      */
-    template <class clsIndex_t, class clsData_t, class clsCompare_t=std::less<clsIndex_t> > class tmplMapPrefixTree :
-        public tmplAbstractPrefixTree<tmplPrefixTreeMapNode<clsIndex_t, clsData_t, clsCompare_t> > {};
+    template <class Index, class Data, class Compare=std::less<Index> > class tmplMapPrefixTree :
+        public tmplAbstractPrefixTree<tmplPrefixTreeMapNode<Index, Data, Compare> > {};
 }
 }
 }

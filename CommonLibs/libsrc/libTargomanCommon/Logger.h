@@ -94,6 +94,7 @@ public:
         Q_ASSERT_X(_level < 10, "LogSettings",  "Level must be between 0 to 9");
         if (_level > 9)
             throw exLogger("Logger log Level must be between 0 to 9");
+        return true;
     }
     /**
      * @brief canBeShown

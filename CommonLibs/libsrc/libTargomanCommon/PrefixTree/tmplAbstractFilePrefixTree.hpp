@@ -1,15 +1,16 @@
-#ifndef tmplAbstracT_PREFIX_FILE_TREE_HH
-#define tmplAbstracT_PREFIX_FILE_TREE_HH
+#ifndef GABSTRACT_PREFIX_FILE_TREE_HH
+#define GABSTRACT_PREFIX_FILE_TREE_HH
 
 #include <deque>
 #include <iostream>
 #include <unistd.h>
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp"
-#define HEADER_FILEVERSION "tmplAbstractPrefixTree v1.0"
 
-namespace Targoman{
-namespace Common{
+#define HEADER_FILEVERSION "GAbstractPrefixTree v1.0"
+
+namespace Targoman {
+namespace Common {
 namespace PrefixTree {
     /**
      * @brief Extends the tmplPrefixTreeAbstractNode by file accessing methods
@@ -18,14 +19,14 @@ namespace PrefixTree {
      *
      * @see GMapFilePrefixTree
      */
-    template <class clsIndex_t, class clsData_t> class tmplFilePrefixTreeAbstractNode : virtual public tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t>
+    template <class Index, class Data> class tmplFilePrefixTreeAbstractNode : virtual public tmplPrefixTreeAbstractNode<Index, Data>
     {
     public:
-        typedef tmplFilePrefixTreeAbstractNode<clsIndex_t, clsData_t> AbstractFileNode;
+        typedef tmplFilePrefixTreeAbstractNode<Index, Data> AbstractFileNode;
 
     protected:
-        typedef tmplPrefixTreeAbstractNode<clsIndex_t, clsData_t> AbstractNode_;
-        typedef tmplFilePrefixTreeAbstractNode<clsIndex_t, clsData_t> AbstractFileNode_;
+        typedef tmplPrefixTreeAbstractNode<Index, Data> AbstractNode_;
+        typedef tmplFilePrefixTreeAbstractNode<Index, Data> AbstractFileNode_;
 
     protected:
         /**
@@ -37,9 +38,9 @@ namespace PrefixTree {
         class VirtualChild
         {
         public:
-            VirtualChild(const VirtualChild &other) : isFile(other.isFile), filename(other.filename), pos(other.pos) {}
-            VirtualChild(const std::string &filename) : isFile(true), filename(filename), pos(0) {}
-            VirtualChild(const std::streampos &pos) : isFile(false), filename(""), pos(pos) {}
+            VirtualChild(const VirtualChild &other) : isFile(other.isFile), filename(other.filename), pos(other.pos) {};
+            VirtualChild(const std::string &filename) : isFile(true), filename(filename), pos(0) {};
+            VirtualChild(const std::streampos &pos) : isFile(false), filename(""), pos(pos) {};
 
             bool isFile;			///< True if this child node is stored in a temporary file, the filename member is valid then
             std::string filename;	///< If isFile is true this member is holding the filename of the temporary file holding the node ("" otherwise)
@@ -71,7 +72,7 @@ namespace PrefixTree {
         };
 
     public:
-        tmplFilePrefixTreeAbstractNode(const clsIndex_t &index, AbstractNode_ *predecessor) : AbstractNode_(index, predecessor)
+        tmplFilePrefixTreeAbstractNode(const Index &index, AbstractNode_ *predecessor) : AbstractNode_(index, predecessor)
         {
             if(predecessor != 0)
             {
@@ -85,7 +86,7 @@ namespace PrefixTree {
             }
         }
 
-        tmplFilePrefixTreeAbstractNode(const clsIndex_t &index, AbstractNode_ *predecessor, const clsData_t &data) : AbstractNode_(index, predecessor, data)
+        tmplFilePrefixTreeAbstractNode(const Index &index, AbstractNode_ *predecessor, const Data &data) : AbstractNode_(index, predecessor, data)
         {
             if(predecessor != 0)
             {
@@ -166,7 +167,7 @@ namespace PrefixTree {
          * @param pNode The index that has to be written
          * @param oStream Write to this stream
          */
-        virtual void writeIndex(const clsIndex_t &index, std::ostream &oStream) const = 0;
+        virtual void writeIndex(const Index &index, std::ostream &oStream) const = 0;
 
         /**
          * @brief Reads an index from an input stream
@@ -181,7 +182,7 @@ namespace PrefixTree {
          * @param pNode The index that has to be read
          * @param iStream Read from this stream
          */
-        virtual void readIndex(clsIndex_t &index, std::istream &iStream) const = 0;
+        virtual void readIndex(Index &index, std::istream &iStream) const = 0;
 
         /**
          * @brief This method returns the node type
@@ -272,7 +273,7 @@ namespace PrefixTree {
             delete e;
 
             // the iterator (see above) will only operate on children currently in memory, so handle the virtual child nodes separately
-            std::multimap<clsIndex_t, std::streampos> mVirtualOffsets;	// index table entries still to be set by virtual child nodes
+            std::multimap<Index, std::streampos> mVirtualOffsets;	// index table entries still to be set by virtual child nodes
             importVirtualChildNodeOffsets(oStream, iChildren, mVirtualOffsets);
 
             // now we know the number of children, so write it to the file
@@ -368,7 +369,7 @@ namespace PrefixTree {
 
             virtual VirtualChildAbstractIterator *increase() = 0;
             virtual VirtualChildAbstractIterator *decrease() = 0;
-            virtual std::pair<clsIndex_t, typename AbstractFileNode_::VirtualChild> dereference() const = 0;
+            virtual std::pair<Index, typename AbstractFileNode_::VirtualChild> dereference() const = 0;
 
             virtual bool equals(VirtualChildAbstractIterator *other) const = 0;
             virtual VirtualChildAbstractIterator *operator=(const VirtualChildAbstractIterator &other) = 0;
@@ -398,7 +399,7 @@ namespace PrefixTree {
          * @warning Memory Leak danger: As for weakBegin/weakEnd you have to delete the pointer returned by this method
          * 			once it is no longer needed.
          */
-        virtual VirtualChildAbstractIterator *findVirtual(const clsIndex_t &key) = 0;
+        virtual VirtualChildAbstractIterator *findVirtual(const Index &key) = 0;
 
         /**
          * @brief Inserts a new virtual child node into the list of children
@@ -408,14 +409,14 @@ namespace PrefixTree {
          * @param virtChild The virtual children storage is based on the VirtualChild class
          * @return true if an insertion was made, false otherwise
          */
-        virtual bool insertVirtual(const clsIndex_t &key, const typename AbstractFileNode_::VirtualChild &virtChild) = 0;
+        virtual bool insertVirtual(const Index &key, const typename AbstractFileNode_::VirtualChild &virtChild) = 0;
 
         /**
          * @brief Finds and removes the element with the given key
          *
          * This method does nothing if there is no element with that key
          */
-        virtual void eraseVirtual(const clsIndex_t &key) = 0;
+        virtual void eraseVirtual(const Index &key) = 0;
 
         /**
          * @brief Removes all virtual child nodes from memory
@@ -443,7 +444,7 @@ namespace PrefixTree {
 
             virtual LodChildAbstractIterator *increase() = 0;
             virtual LodChildAbstractIterator *decrease() = 0;
-            virtual std::pair<clsIndex_t, std::streampos> dereference() const = 0;
+            virtual std::pair<Index, std::streampos> dereference() const = 0;
 
             virtual bool equals(LodChildAbstractIterator *other) const = 0;
             virtual LodChildAbstractIterator *operator=(const LodChildAbstractIterator &other) = 0;
@@ -473,7 +474,7 @@ namespace PrefixTree {
          * @warning Memory Leak danger: As for weakBegin/weakEnd you have to delete the pointer returned by this method
          * 			once it is no longer needed.
          */
-        virtual LodChildAbstractIterator *findLod(const clsIndex_t &key) = 0;
+        virtual LodChildAbstractIterator *findLod(const Index &key) = 0;
 
         /**
          * @brief Inserts a new load on demand child node into the list of children
@@ -483,14 +484,14 @@ namespace PrefixTree {
          * @param position Load on demand nodes are stored using their position in the file
          * @return true if an insertion was made, false otherwise
          */
-        virtual bool insertLod(const clsIndex_t &key, const std::streampos &position) = 0;
+        virtual bool insertLod(const Index &key, const std::streampos &position) = 0;
 
         /**
          * @brief Finds and removes the element with the given key
          *
          * This method does nothing if there is no element with that key
          */
-        virtual void eraseLod(const clsIndex_t &key) = 0;
+        virtual void eraseLod(const Index &key) = 0;
 
         /**
          * @brief Removes all load on demand child nodes from memory
@@ -523,11 +524,11 @@ namespace PrefixTree {
          * @param index The new nodes index
          * @param iStream The file based prefix trees input stream
          * @param spOffset File offset of the new node
-         * @see tmplFileilePrefixTreeMapNode::sCreateNode
+         * @see tmplFilePrefixTreeMapNode::sCreateNode
          * @see tmplFilePrefixTreeVectorNode::sCreateNode
-         * @see tmplFileilePrefixTreeFullVectorNode::sCreateNode
+         * @see tmplFilePrefixTreeFullVectorNode::sCreateNode
          */
-        virtual AbstractFileNode_ *createNode_(AbstractNode_ *pParent, const clsIndex_t &index, std::istream &iStream, const std::streampos &spOffset) const = 0;
+        virtual AbstractFileNode_ *createNode_(AbstractNode_ *pParent, const Index &index, std::istream &iStream, const std::streampos &spOffset) const = 0;
 
         /**
          * @brief Creates a new node and loads its data from the file
@@ -545,7 +546,7 @@ namespace PrefixTree {
          * @param iOffset The file index where to begin reading
          * @return A new node, store it in its parents successor list
          */
-        virtual AbstractNode_ *createAndLoadNode_(const clsIndex_t &index, const std::streampos &spOffset) const
+        virtual AbstractNode_ *createAndLoadNode_(const Index &index, const std::streampos &spOffset) const
         {
             AbstractFileNode_ *pNode = createNode_((AbstractNode_*)this, index, *controlData_->inputStream, spOffset);
             if(pNode == 0)
@@ -565,7 +566,7 @@ namespace PrefixTree {
          * @param nextIndex The index of the successor node that requested by the caller
          * @return Either a pointer to a new node or zero if there is no successor with that index
          */
-        AbstractNode_ *loadChild_(const clsIndex_t &nextIndex)
+        AbstractNode_ *loadChild_(const Index &nextIndex)
         {
             if(emptyLod())
                 return 0;
@@ -604,7 +605,7 @@ namespace PrefixTree {
          *
          * @param nextIndex The index of the child node that is to be followed to
          */
-        AbstractNode_ *loadVirtualChild_(const clsIndex_t &nextIndex)
+        AbstractNode_ *loadVirtualChild_(const Index &nextIndex)
         {
             if(emptyVirtual())
                 return 0;
@@ -680,7 +681,7 @@ namespace PrefixTree {
                     // all variables we need to copy a node
                     quint8 nodeType;
                     quint32 numberOfChildren;
-                    clsIndex_t childIndex;
+                    Index childIndex;
                     quint64 childOffset;
                     quint32 dataLength;
                     char *data;
@@ -733,7 +734,7 @@ namespace PrefixTree {
             iStream.close();
             remove(f->dereference().second.filename.c_str());
             delete f;
-            // const_cast due to the const declaration of follow in tmplAbstractPrefixTree.hh and the non-const declaration of eraseVirtual in tmplAbstractFilePrefixTree.hh
+            // const_cast due to the const declaration of follow in GAbstractPrefixTree.hh and the non-const declaration of eraseVirtual in tmplAbstractFilePrefixTree.hh
             eraseVirtual(nextIndex);
 
             return dynamic_cast<AbstractNode_*>(pSubTreeRoot);
@@ -810,7 +811,7 @@ namespace PrefixTree {
          * @param mVirtualOffsets Stores the index table elements that need to be written once the virtual child nodes are moved to the tree file
          * @see writeBinary
          */
-        void importVirtualChildNodeOffsets(std::ostream &oStream, quint32 &iChildren, std::multimap<clsIndex_t, std::streampos> &mVirtualOffsets)
+        void importVirtualChildNodeOffsets(std::ostream &oStream, quint32 &iChildren, std::multimap<Index, std::streampos> &mVirtualOffsets)
         {
             VirtualChildAbstractIterator *it = beginVirtual(), *end = endVirtual();
             for(; !it->equals(end); it->increase(), ++iChildren)
@@ -830,7 +831,7 @@ namespace PrefixTree {
                     quint64 null = 0;
                     oStream.write((char*)&null, sizeof(quint64));
 
-                    mVirtualOffsets.insert(std::pair<clsIndex_t, std::streampos>(it->dereference().first, offset));
+                    mVirtualOffsets.insert(std::pair<Index, std::streampos>(it->dereference().first, offset));
                 }
             }
             delete it;
@@ -852,7 +853,7 @@ namespace PrefixTree {
          * @param oStream The output stream refering to the tree file
          * @param mVirtualOffsets The offset map filled by importVirtualChildNodeOffets
          */
-        void importVirtualChildNodes(std::ostream &oStream, std::multimap<clsIndex_t, std::streampos> &mVirtualOffsets)
+        void importVirtualChildNodes(std::ostream &oStream, std::multimap<Index, std::streampos> &mVirtualOffsets)
         {
             VirtualChildAbstractIterator *it = beginVirtual(), *end = endVirtual();
             for(; !it->equals(end); it->increase())
@@ -865,7 +866,7 @@ namespace PrefixTree {
                 quint64 rootNodeOffset = rootNodeStreamOffset;
 
                 // set the index table entry if necessary
-                typename std::multimap<clsIndex_t, std::streampos>::iterator f = mVirtualOffsets.find(it->dereference().first);
+                typename std::multimap<Index, std::streampos>::iterator f = mVirtualOffsets.find(it->dereference().first);
                 if(f != mVirtualOffsets.end())
                 {
                     oStream.seekp(f->second);
@@ -882,7 +883,7 @@ namespace PrefixTree {
                     // all variables we need to copy a node
                     quint8 nodeType;
                     quint32 numberOfChildren;
-                    clsIndex_t childIndex;
+                    Index childIndex;
                     quint64 childOffset;
                     quint32 dataLength;
                     char *data;
@@ -968,7 +969,7 @@ namespace PrefixTree {
 #endif
 
     /**
-     * @brief Like tmplAbstractPrefixTree but supports working on file based trees
+     * @brief Like GAbstractPrefixTree but supports working on file based trees
      *
      * The file based prefix tree introduces some new features to the prefix trees:
      * - writing a tree to a file
@@ -1047,7 +1048,7 @@ namespace PrefixTree {
         * \section secOverhead Overhead
         * \subsection secOverheadFollow Follow and FollowOrExpand overhead
         * The file based prefix tree extension is designed to introduce as little overhead as possible if it is not used.
-        * Have a look at tmplFileilePrefixTreeMapNode::follow :
+        * Have a look at tmplFilePrefixTreeMapNode::follow :
         * \code
         if (i == MapNode_::successors_.end())
         {
@@ -1082,11 +1083,11 @@ namespace PrefixTree {
         public tmplAbstractPrefixTree<RootNodeClass>
     {
     public:
-        //typedef typename RootNodeClass::AbstractFileNode FileNode;
+        typedef typename RootNodeClass::AbstractFileNode FileNode;
 
     protected:
         typedef tmplAbstractPrefixTree<RootNodeClass> AbstractTree_;
-        typedef tmplFilePrefixTreeAbstractNode<typename RootNodeClass::Index_t, typename RootNodeClass::Data_t> AbstractFileNode_;
+        typedef tmplFilePrefixTreeAbstractNode<typename RootNodeClass::Index, typename RootNodeClass::Data> AbstractFileNode_;
 
     public:
         /**
@@ -1274,7 +1275,7 @@ namespace PrefixTree {
          * The file header consists of the string stored in HEADER_FILEVERSION followed by the offset to the root node.
          *
          * \code
-         *  1. [char 24]    "tmplAbstractPrefixTree v1.0"
+         *  1. [char 24]    "GAbstractPrefixTree v1.0"
          *  2. [quint64]        offset to the root node
          * \endcode
          * After the header the nodes are written one by one, each using the format specified in
@@ -1449,7 +1450,7 @@ namespace PrefixTree {
             if(inputStream_ == 0)
                 return;
 
-            // The tmplAbstractPrefixTree already created a root node of some type. That is not the type of node that can
+            // The GAbstractPrefixTree already created a root node of some type. That is not the type of node that can
             // be used in file based prefix trees. The "solution" is to delete the root node and create our own one,
             // read from the file
             if(this->rootNode_ != 0)
@@ -1465,7 +1466,7 @@ namespace PrefixTree {
             controlData_ = pNewRoot->GetTreeControlData();
             controlData_->inputStream = inputStream_;
             pNewRoot->readBinary(*controlData_->inputStream);
-            this->rootNode_ = dynamic_cast<typename AbstractTree_::Node_t*>(pNewRoot);
+            this->rootNode_ = dynamic_cast<typename AbstractTree_::Node*>(pNewRoot);
         }
 
     private:

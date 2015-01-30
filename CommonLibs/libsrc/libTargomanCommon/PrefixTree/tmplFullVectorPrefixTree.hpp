@@ -4,21 +4,21 @@
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp"
 #include "libTargomanCommon/PrefixTree/tmplVectorPrefixTree.hpp"
 
-namespace Targoman{
-namespace Common{
+namespace Targoman {
+namespace Common {
 namespace PrefixTree {
-    template <typename clsData_t> class tmplPrefixTreeFullVectorNode : virtual public tmplPrefixTreeAbstractNode<unsigned, clsData_t> {
-	protected:
-        typedef std::vector<tmplPrefixTreeVectorNode<clsData_t> *> Container_;
-        typedef tmplPrefixTreeVectorNode<clsData_t> *& ContainerElementReference_;
+template <typename DataClass> class tmplPrefixTreeFullVectorNode : virtual public tmplPrefixTreeAbstractNode<unsigned, DataClass> {
+    protected:
+        typedef std::vector<tmplPrefixTreeVectorNode<DataClass> *> Container_;
+        typedef tmplPrefixTreeVectorNode<DataClass> *& ContainerElementReference_;
         typedef typename Container_::iterator ContainerIterator_;
         typedef typename Container_::const_iterator ContainerConstIterator_;
-        typedef tmplPrefixTreeAbstractNode<unsigned, clsData_t> AbstractNode_;
+        typedef tmplPrefixTreeAbstractNode<unsigned, DataClass> AbstractNode_;
         typedef typename AbstractNode_::AbstractWeakIterator AbstractWeakIterator_;
-        typedef tmplPrefixTreeVectorNode<clsData_t> VectorNode_;
+        typedef tmplPrefixTreeVectorNode<DataClass> VectorNode_;
     public:
         tmplPrefixTreeFullVectorNode(unsigned index, AbstractNode_ *predecessor) : AbstractNode_(index, predecessor) {}
-        tmplPrefixTreeFullVectorNode(unsigned index, AbstractNode_ *predecessor, const clsData_t &data) : AbstractNode_(index, predecessor, data) {}
+        tmplPrefixTreeFullVectorNode(unsigned index, AbstractNode_ *predecessor, const DataClass &data) : AbstractNode_(index, predecessor, data) {}
         ~tmplPrefixTreeFullVectorNode() {
             for (ContainerIterator_ i = successors_.begin(); i != successors_.end(); ++i)
                 delete *i;
@@ -37,15 +37,15 @@ namespace PrefixTree {
             if (successors_.size() <= nextIndex)
                 successors_.resize(nextIndex+1, 0);
             if (!successors_[nextIndex])
-                successors_[nextIndex] = new tmplPrefixTreeVectorNode<clsData_t>(nextIndex, this); // Note: this is NOT a fullVectorNode
+                successors_[nextIndex] = new tmplPrefixTreeVectorNode<DataClass>(nextIndex, this); // Note: this is NOT a fullVectorNode
             return successors_[nextIndex];
         }
 
-        AbstractNode_ *followOrExpand(const unsigned &nextIndex, const clsData_t &standardValue) {
+        AbstractNode_ *followOrExpand(const unsigned &nextIndex, const DataClass &standardValue) {
             if (successors_.size() <= nextIndex)
                 successors_.resize(nextIndex+1, 0);
             if (!successors_[nextIndex])
-                successors_[nextIndex] = new tmplPrefixTreeVectorNode<clsData_t>(nextIndex, this, standardValue); // Note: this is NOT a fullVectorNode
+                successors_[nextIndex] = new tmplPrefixTreeVectorNode<DataClass>(nextIndex, this, standardValue); // Note: this is NOT a fullVectorNode
             return successors_[nextIndex];
         }
 
@@ -72,9 +72,9 @@ namespace PrefixTree {
                     ++successorsIterator_;
             }
 
-            AbstractWeakIterator_ *increase() { 
+            AbstractWeakIterator_ *increase() {
                 do {
-                    ++successorsIterator_; 
+                    ++successorsIterator_;
                 } while (successorsIterator_ != endIterator_ && !*successorsIterator_);
                 return this;
             }
@@ -98,32 +98,32 @@ namespace PrefixTree {
 
         AbstractWeakIterator_ *weakBegin() { return new WeakIterator(successors_.begin(), successors_.end()); }
         AbstractWeakIterator_ *weakEnd() { return new WeakIterator(successors_.end(), successors_.end()); }
-		
-		bool insert(const unsigned &index, AbstractNode_ *node)
-		{
-			// increase the size
-			if(index >= successors_.size())
-				successors_.resize(index + 1, 0);
-			
-			// test if a successor with this index already exists
-			if(successors_[index] != 0)
-				return false;
-			
-			successors_[index] = dynamic_cast<VectorNode_*>(node);
-			return true;
-		}
-		
-		void erase(const unsigned &index) 
-		{
-			successors_[index] = 0;
-		}
-		
-		void clear()
-		{
-			for (ContainerIterator_ i = successors_.begin(); i != successors_.end(); ++i)
-				delete *i;
-			successors_.clear();
-		}
+
+        bool insert(const unsigned &index, AbstractNode_ *node)
+        {
+            // increase the size
+            if(index >= successors_.size())
+                successors_.resize(index + 1, 0);
+
+            // test if a successor with this index already exists
+            if(successors_[index] != 0)
+                return false;
+
+            successors_[index] = dynamic_cast<VectorNode_*>(node);
+            return true;
+        }
+
+        void erase(const unsigned &index)
+        {
+            successors_[index] = 0;
+        }
+
+        void clear()
+        {
+            for (ContainerIterator_ i = successors_.begin(); i != successors_.end(); ++i)
+                delete *i;
+            successors_.clear();
+        }
 
     protected:
         mutable Container_ successors_;
@@ -145,4 +145,5 @@ namespace PrefixTree {
 }
 }
 }
+
 #endif
