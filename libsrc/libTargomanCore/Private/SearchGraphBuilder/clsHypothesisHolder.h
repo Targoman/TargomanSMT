@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSHYPOTHESISHOLDER_H

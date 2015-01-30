@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPHRASETABLE_H
@@ -42,10 +43,9 @@ public:
                                     unsigned _rulesCostsBegin,
                                     size_t _observationHistogramSize);
 
-    static QString baseConfigPath(){return intfPhraseTable::baseConfigPath() + "/JainePlain";}
-
-protected:
-     static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;
+private:
+    static QString baseConfigPath(){return "/JanePlain";}
+    static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;
 };
 
 }

@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #include "clsLexicalHypothesis.h"

@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
@@ -29,13 +30,15 @@ public:
     clsTargomanLMProxy() :
         Targoman::NLPLibs::clsLMSentenceScorer(LM){}
 
+    inline Common::WordIndex_t getWordIndex(const QString& _word){return this->LM.getID(_word);}
+
 private:
-    static Common::Configuration::intfModule* instantiator(){return new clsTargomanLMProxy;}
     static Targoman::NLPLibs::clsLanguageModel LM;
-    static Common::Configuration::clsModuleRegistrar Registrar;
+
+    TARGOMAN_DEFINE_MODULE(clsTargomanLMProxy)
 };
 
-Common::Configuration::clsModuleRegistrar clsTargomanLMProxy::Registrar("TargomanLM", clsTargomanLMProxy::instantiator());
+TARGOMAN_REGISTER_MODULE("TargomanLM", clsTargomanLMProxy)
 }
 }
 }

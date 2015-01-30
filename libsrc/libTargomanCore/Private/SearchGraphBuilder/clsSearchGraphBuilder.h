@@ -8,12 +8,13 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSSEARCHGRAPHBUILDER_H
 #define TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSSEARCHGRAPHBUILDER_H
 
-#include "Private/PhraseTable/clsRuleNode.h"
+#include "Private/PhraseTable/intfPhraseTable.hpp"
 #include "Private/InputDecomposer/clsInput.h"
 
 namespace Targoman{
@@ -31,8 +32,10 @@ public:
     void parseSentence();
 
 private:
-    //QsharedDataArray
-    QList<QVector<PhraseTable::clsRuleNode*> > PhraseMatchTable; //TODO convert to cacheable
+    //TODO maybe QsharedDataArray
+    QList<QVector<const PhraseTable::clsRuleNode*>> PhraseMatchTable; //TODO convert to cacheable
+
+    static PhraseTable::intfPhraseTable& PhraseTable;
 };
 
 }

@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #include "clsTranslator.h"
@@ -32,6 +33,7 @@ clsTranslator::~clsTranslator()
 void clsTranslator::init(const stuTranslatorConfigs& _configs)
 {
     Q_UNUSED(_configs)
+
     InputDecomposer::clsInput::init();
     SearchGraphBuilder::clsSearchGraphBuilder::init();
     NBestFinder::clsNBestFinder::init();

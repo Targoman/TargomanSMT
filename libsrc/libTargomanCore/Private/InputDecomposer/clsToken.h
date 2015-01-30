@@ -18,6 +18,7 @@
 #include <QHash>
 #include "libTargomanCommon/Types.h"
 
+
 namespace Targoman {
 namespace Core {
 namespace Private {
@@ -26,11 +27,20 @@ namespace InputDecomposer {
 class clsToken
 {
 public:
-    clsToken(const QString& _value, const QString& _tagStr = "", const QHash<QString, QString>& _attrs = QHash<QString, QString>()){
+    clsToken(const QString& _value,
+             const Common::WordIndex_t _wordIndex,
+             const QString& _tagStr = "",
+             const QHash<QString, QString>& _attrs = QHash<QString, QString>()){
         this->Value = _value;
+        this->WordIndex = _wordIndex;
         this->TagStr = _tagStr;
         this->Attrs = _attrs;
     }
+
+    inline const QString& value() const {return this->Value;}
+    inline const Common::WordIndex_t& wordIndex() const {return this->WordIndex;}
+    inline const QString& tagStr() const {return this->TagStr;}
+    inline const QHash<QString, QString>& attrs() const {return this->Attrs;}
 
 private:
     QString Value;

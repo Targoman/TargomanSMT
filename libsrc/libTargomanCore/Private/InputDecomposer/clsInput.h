@@ -17,6 +17,9 @@
 #include <QSet>
 
 #include "Private/GlobalConfigs.h"
+#include "libTargomanCommon/Types.h"
+#include "Private/LanguageModel/intfLMSentenceScorer.hpp"
+#include "Private/InputDecomposer/clsToken.h"
 
 namespace Targoman {
 namespace Core {
@@ -24,8 +27,6 @@ namespace Private {
 namespace InputDecomposer {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
-
-class clsToken;
 
 class clsInput
 {
@@ -53,6 +54,7 @@ private:
 
     //Configuration
     static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;
+    static LanguageModel::intfLMSentenceScorer*                       LMScorer;
 };
 
 }
