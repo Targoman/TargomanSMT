@@ -14,7 +14,7 @@
 #define TARGOMAN_NLPLIBS_PRIVATE_ARPAMANAGER_H
 
 #include "../Definitions.h"
-#include "clsBaseModel.hpp"
+#include "intfBaseModel.hpp"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -27,7 +27,7 @@ class ARPAManager
 public:
     static inline ARPAManager& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new ARPAManager));}
 
-    quint8 load(const QString&  _file, clsBaseModel* _model);
+    quint8 load(const QString&  _file, intfBaseModel* _model);
 
 private:
     ARPAManager();

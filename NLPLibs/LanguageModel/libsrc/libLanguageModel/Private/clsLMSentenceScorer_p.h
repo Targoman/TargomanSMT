@@ -15,6 +15,7 @@
 #define TARGOMAN_NLPLIBS_PRIVATE_CLSLMSENTENCESCORER_P_H
 
 #include "../clsLanguageModel.h"
+#include "clsLMSentenceScorer.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -24,9 +25,10 @@ class clsLMSentenceScorerPrivate
 public:
     clsLMSentenceScorerPrivate(const clsLanguageModel& _lm) : LM(_lm){}
 
+    ~clsLMSentenceScorerPrivate();
+
 public:
     const clsLanguageModel& LM;
-    //QVector<WordIndex_t> History;
     QStringList History;
 };
 

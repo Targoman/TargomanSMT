@@ -1,5 +1,5 @@
-#ifndef GFULLVECTOR_PREFIX_TREE_HH
-#define GFULLVECTOR_PREFIX_TREE_HH
+#ifndef TARGOMAN_COMMON_PREFIXTREE_TMPLFULLVECTORPREFIXTREE_HPP
+#define TARGOMAN_COMMON_PREFIXTREE_TMPLFULLVECTORPREFIXTREE_HPP
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp"
 #include "libTargomanCommon/PrefixTree/tmplVectorPrefixTree.hpp"

@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #include "clsRuleNode.h"
@@ -20,9 +21,23 @@ namespace PhraseTable{
 
 using namespace Common;
 
+static clsRuleNodeData SharedNull;
+
 //RulesForSourcePart.cc
-clsRuleNode::clsRuleNode()
+clsRuleNode::clsRuleNode() :
+    d(&SharedNull)
 {
+
+}
+
+clsRuleNode::~clsRuleNode()
+{
+    //Just to suppress compiler error on QSharedDataPointer
+}
+
+bool clsRuleNode::isNull() const
+{
+    return (this->d.data() == &SharedNull);
 }
 
 void clsRuleNode::readBinary(std::istream &input)

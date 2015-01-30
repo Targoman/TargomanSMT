@@ -1,5 +1,5 @@
-#ifndef GFULLVECTOR_PREFIX_FILE_TREE_HH
-#define GFULLVECTOR_PREFIX_FILE_TREE_HH
+#ifndef TARGOMAN_COMMON_PREFIXTREE_TMPLFULLVECTORPREFIXFILETREE_HPP
+#define TARGOMAN_COMMON_PREFIXTREE_TMPLFULLVECTORPREFIXFILETREE_HPP
 
 #include <istream>
 #include <ostream>
@@ -196,7 +196,7 @@ namespace PrefixTree {
         void compact()
         {
             FullVectorNode_::compact();
-            shrinkToFitVector(vLodChildren_);
+           tmplShrinkToFitVector(vLodChildren_);
         }
 
         /**

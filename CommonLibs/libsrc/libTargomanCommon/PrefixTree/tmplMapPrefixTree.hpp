@@ -1,5 +1,5 @@
-#ifndef GMAP_PREFIX_TREE_HH
-#define GMAP_PREFIX_TREE_HH
+#ifndef TARGOMAN_COMMON_PREFIXTREE_TMPLMAP_PREFIX_TREE_HH
+#define TARGOMAN_COMMON_PREFIXTREE_TMPLMAP_PREFIX_TREE_HH
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp"
 

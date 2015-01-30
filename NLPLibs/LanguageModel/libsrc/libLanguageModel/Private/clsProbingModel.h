@@ -14,7 +14,7 @@
 #ifndef TARGOMAN_NLPLIBS_PRIVATE_CLSPROBINGMODEL_H
 #define TARGOMAN_NLPLIBS_PRIVATE_CLSPROBINGMODEL_H
 
-#include "clsBaseModel.hpp"
+#include "intfBaseModel.hpp"
 #include "WeightStructs.hpp"
 #include "../Definitions.h"
 
@@ -24,7 +24,7 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-class clsProbingModel : public clsBaseModel
+class clsProbingModel : public intfBaseModel
 {
     struct stuNGramHash{
         quint64                    HashValueLevel;
@@ -45,14 +45,16 @@ public:
     void setUnknownWordDefaults(Targoman::Common::LogP_t _prob, Targoman::Common::LogP_t _backoff);
     void insert(const char *_ngram, Common::LogP_t _prob, Common::LogP_t _backoff = 0);
     void init(quint32 _maxNGramCount);
-    inline quint64 getID(const char *_word){
+    inline quint64 getID(const char *_word) const {
         return this->lookupNGram(_word).ID;
-    };
+    }
 
+    inline bool isValidIndex(Common::WordIndex_t _index) const {
+        return (quint64)_index < this->HashTableSize + 1;
+    }
     Targoman::Common::LogP_t lookupNGram(const QStringList &_ngram, quint8& _foundedGram) const;
 
-
-    QString getStatsStr(){
+    QString getStatsStr() const {
         return QString("MaxLevel: %1 AverageLevel: %2 QHashed: %3").arg(
                     this->MaxLevel).arg(
                     this->SumLevels / (double)this->NgramCount).arg(
@@ -63,7 +65,6 @@ private:
     stuProbAndBackoffWeights lookupNGram(const char* _ngram) const;
 
 private:
-    //tmplNGramHashTable<stuProbAndBackoffWeights> LMData;
     quint32                     HashTableSize;
     quint32                     NgramCount;
     stuNGramHash*               NGramHashTable;

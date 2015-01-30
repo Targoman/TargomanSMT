@@ -1,5 +1,5 @@
-#ifndef GVECTOR_PREFIX_FILE_TREE_HH
-#define GVECTOR_PREFIX_FILE_TREE_HH
+#ifndef TARGOMAN_COMMON_PREFIXTREE_TMPLVECTORPREFIXFILETREE_HPP
+#define TARGOMAN_COMMON_PREFIXTREE_TMPLVECTORPREFIXFILETREE_HPP
 
 #include <istream>
 #include <ostream>
@@ -180,7 +180,7 @@ namespace PrefixTree {
         void compact()
         {
             VectorNode_::compact();
-            shrinkToFitVector(vLodChildren_);
+            tmplShrinkToFitVector(vLodChildren_);
         }
 
         void writeIndex(const Index_ &index, std::ostream &oStream) const

@@ -17,8 +17,8 @@ HEADERS += \
     libLanguageModel/clsLMSentenceScorer.h \
     libLanguageModel/Private/clsLMSentenceScorer_p.h \
     libLanguageModel/Private/clsProbingModel.h \
-    libLanguageModel/Private/clsBaseModel.hpp \
-    libLanguageModel/Private/WeightStructs.hpp
+    libLanguageModel/Private/WeightStructs.hpp \
+    libLanguageModel/Private/intfBaseModel.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \

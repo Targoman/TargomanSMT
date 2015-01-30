@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #include "clsJanePhraseTable.h"
@@ -32,9 +33,9 @@ clsJanePhraseTable::clsJanePhraseTable(
         /*const Core::Configuration &config,
          *  StaticAlphabetRef sourceAlphabet,
          *  StaticAlphabetRef targetAlphabet,
-         *  bool needCostsNames*/)
+         *  bool needCostsNames*/):
+    intfPhraseTable("JanePTPlain")
 {
-    TARGOMAN_REGISTER_ACTOR("JanePTPlain")
 }
 
 void clsJanePhraseTable::init()

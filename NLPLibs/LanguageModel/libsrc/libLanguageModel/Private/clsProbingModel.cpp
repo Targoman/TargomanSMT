@@ -24,22 +24,27 @@ namespace Private {
 const quint8 MAX_HASH_LEVEL = 32;
 typedef quint64 Hash_t;
 
-clsProbingModel::clsProbingModel() : clsBaseModel(enuMemoryModel::Probing)
+clsProbingModel::clsProbingModel() : intfBaseModel(enuMemoryModel::Probing)
 {
     this->SumLevels = 0;
 }
 
 void clsProbingModel::setUnknownWordDefaults(LogP_t _prob, LogP_t _backoff)
 {
-    if (this->lookupNGram(LM_UNKNOWN_WORD).Prob == 0){
-        this->insert(LM_UNKNOWN_WORD, _prob, _backoff);
-    }
+    this->UnknownWeights.Backoff = _backoff;
+    this->UnknownWeights.Prob = _prob;
 }
 
 void clsProbingModel::insert(const char* _ngram, LogP_t _prob, LogP_t _backoff)
 {
     Hash_t HashLoc, HashValue;
     size_t NGramLen = strlen(_ngram);
+    if (!strcmp(_ngram, LM_UNKNOWN_WORD)){
+        this->UnknownWeights.Backoff = _backoff;
+        this->UnknownWeights.Prob = _prob;
+        return;
+    }
+
     HashLoc = (HashFunctions::murmurHash64(_ngram, NGramLen, 0) % this->HashTableSize) + 1;;
     for (quint8 HashLevel = 0; HashLevel< MAX_HASH_LEVEL; ++HashLevel)
     {
@@ -86,7 +91,7 @@ void clsProbingModel::init(quint32 _maxNGramCount)
     if (this->HashTableSize){
         TargomanInfo(5, "Allocating "<<this->HashTableSize * sizeof(stuNGramHash)<<
                      " Bytes for max "<<this->HashTableSize<<" Items. Curr Items = "<<_maxNGramCount);
-        this->NGramHashTable = new stuNGramHash[this->HashTableSize];
+        this->NGramHashTable = new stuNGramHash[this->HashTableSize + 1];
         TargomanInfo(5, "Allocated");
         this->NgramCount = _maxNGramCount;
     }else
@@ -106,7 +111,7 @@ LogP_t clsProbingModel::lookupNGram(const QStringList& _ngram, quint8& _foundedG
 
     while (true){
         PB = this->lookupNGram(NGram.toUtf8().constData());
-        if (PB.ID != 0){
+        if (PB.ID > 0){
             Prob = PB.Prob;
             Backoff = Constants::LogP_One;
             _foundedGram = CurrGram+1;
@@ -118,7 +123,7 @@ LogP_t clsProbingModel::lookupNGram(const QStringList& _ngram, quint8& _foundedG
         NGram = ((QStringList)_ngram.mid(_ngram.size() - CurrGram - 1)).join(" ");
         NGram2 = ((QStringList)_ngram.mid(_ngram.size() - CurrGram - 1, CurrGram)).join(" ");
         PB = this->lookupNGram(NGram2.toUtf8().constData());
-        if (PB.ID != 0){
+        if (PB.ID > 0){
             Backoff += PB.Backoff;
         }
     }
@@ -143,11 +148,11 @@ stuProbAndBackoffWeights clsProbingModel::lookupNGram(const char *_ngram) const
                         this->NGramHashTable[HashLoc].Prob,
                         this->NGramHashTable[HashLoc].Backoff);
         else if (!this->NGramHashTable[HashLoc].continues())
-            return stuProbAndBackoffWeights();
+            return UnknownWeights;
         HashLoc = (HashValue % this->HashTableSize) + 1;
     }
 
-    return this->RemainingHashes.value(_ngram);
+    return this->RemainingHashes.value(_ngram, UnknownWeights);
 }
 
 }

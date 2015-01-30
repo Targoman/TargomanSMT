@@ -12,7 +12,6 @@
  */
 
 #include "clsLMSentenceScorer.h"
-//#include "Private/clsVocab.hpp"
 #include "Private/clsLMSentenceScorer_p.h"
 
 namespace Targoman {
@@ -38,18 +37,23 @@ void clsLMSentenceScorer::reset()
 
 LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
 {
-        if (Q_UNLIKELY(this->pPrivate->History.isEmpty())){
-                this->pPrivate->History.append(LM_BEGIN_SENTENCE);
-        }else if (Q_LIKELY(this->pPrivate->History.size() >= this->pPrivate->LM.order())){
-            this->pPrivate->History.removeFirst();
-        }
+    if (Q_UNLIKELY(this->pPrivate->History.isEmpty())){
+        this->pPrivate->History.append(LM_BEGIN_SENTENCE);
+    }else if (Q_LIKELY(this->pPrivate->History.size() >= this->pPrivate->LM.order())){
+        this->pPrivate->History.removeFirst();
+    }
 
-        if (this->pPrivate->LM.getID(_word) == 0)
-            this->pPrivate->History.append(LM_UNKNOWN_WORD);
-        else
-            this->pPrivate->History.append(_word);
+    if (this->pPrivate->LM.getID(_word) == 0)
+        this->pPrivate->History.append(LM_UNKNOWN_WORD);
+    else
+        this->pPrivate->History.append(_word);
 
-        return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);
+    return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);
+}
+
+clsLMSentenceScorerPrivate::~clsLMSentenceScorerPrivate()
+{
+    //Just to suppress compiler error using QScoppedPointer
 }
 
 }

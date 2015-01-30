@@ -28,19 +28,11 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuMemoryModel)
     Plain,          //Plain ARPA with no binarization
     Probing,        //probing hash tables
     RestProbing,    //probing hash tables with rest costs
-    Trie,           //trie
-    QuantTrie,      //trie with quantization
-    ArrayTrie,      //trie with array-compressed pointers
-    QuantArrayTrie  //trie with quantization and array-compressed pointers
 TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
     "Auto",
     "Plain",
     "Probing",
     "RestProbing",
-    "Trie",
-    "QuantTrie",
-    "ArrayTrie",
-    "QuantArrayTrie"
 TARGOMAN_DEFINE_ENHANCED_ENUM_END
 
 //Definitions for special string in ARPA file

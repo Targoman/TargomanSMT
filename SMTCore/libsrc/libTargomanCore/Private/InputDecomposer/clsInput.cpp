@@ -8,12 +8,12 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #include <QStringList>
 #include "libTargomanTextProcessor/TextProcessor.h"
 #include "clsInput.h"
-#include "clsToken.h"
 
 using Targoman::NLPLibs::TextProcessor;
 
@@ -28,6 +28,7 @@ QSet<QString>    clsInput::SpecialTags;
 Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
                                                                    "User Defined valid XML tags. ",
                                                                    ""); //TODO complete description
+LanguageModel::intfLMSentenceScorer*                       clsInput::LMScorer = NULL;
 
 clsInput::clsInput()
 {
@@ -45,6 +46,8 @@ void clsInput::init()
             SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
+
+    LMScorer = gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>();
 }
 
 void clsInput::parsePlain(const QString &_inputStr, const QString& _lang)
@@ -66,7 +69,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
 
     if (_inputIXML.contains('<') == false) {
       foreach(const QString& Token, _inputIXML.split(" ", QString::SkipEmptyParts))
-          this->Tokens.append(new clsToken(Token));
+          this->Tokens.append(new clsToken(Token, LMScorer->getWordIndex(Token)));
       return;
     }
 
@@ -105,7 +108,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             }
             NextCharEscaped = false;
             if (this->isSpace(Ch)){
-                this->Tokens.append(new clsToken(Token));
+                this->Tokens.append(new clsToken(Token, LMScorer->getWordIndex(Token)));
                 Token.clear();
             }else if (Ch == '\\'){
                 NextCharEscaped = true;
@@ -195,7 +198,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             else if (Ch == '>'){
                 if (TempStr != TagStr)
                     throw exInput("Invalid closing tag: <"+TempStr+"> while looking for <"+TagStr+">");
-                this->Tokens.append(new clsToken(Token, TagStr, Attributes));
+                this->Tokens.append(new clsToken(Token, LMScorer->getWordIndex(Token), TagStr, Attributes));
                 Token.clear();
                 TempStr.clear();
                 Attributes.clear();

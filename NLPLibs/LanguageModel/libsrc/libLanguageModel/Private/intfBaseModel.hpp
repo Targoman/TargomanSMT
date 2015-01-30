@@ -19,18 +19,17 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-class clsBaseModel
+class intfBaseModel
 {
 public:
-    clsBaseModel(enuMemoryModel::Type _type) : Type(_type){}
+    intfBaseModel(enuMemoryModel::Type _type) : Type(_type){}
 
     virtual void init(quint32 _maxNGramCount) = 0;
     virtual void setUnknownWordDefaults(Targoman::Common::LogP_t _prob, Targoman::Common::LogP_t _backoff)=0;
     virtual void  insert(const char* _ngram, float _prob, float _backoff) = 0;
     virtual Targoman::Common::LogP_t lookupNGram(const QStringList &_ngram, quint8& _foundedGram) const = 0;
-    virtual QString getStatsStr() = 0;
-    virtual quint64 getID(const char* _word) = 0;
-
+    virtual QString getStatsStr() const = 0;
+    virtual quint64 getID(const char* _word) const = 0;
 protected:
     enuMemoryModel::Type  Type;
 };

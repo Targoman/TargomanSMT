@@ -15,7 +15,7 @@
 
 #include "libTargomanCommon/Macros.h"
 #include "../clsLanguageModel.h"
-#include "clsBaseModel.hpp"
+#include "intfBaseModel.hpp"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -29,7 +29,7 @@ public:
 
 public:
     quint8               Order;
-    clsBaseModel*        Model;
+    intfBaseModel*        Model;
 };
 
 

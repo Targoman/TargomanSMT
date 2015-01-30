@@ -32,7 +32,6 @@ public:
     void reset();
 
     Common::LogP_t wordProb(const QString& _word, quint8 &_foundedGram);
-    Common::LogP_t wordProb(const Common::WordIndex_t &_wordIndex, quint8 &_foundedGram);
 
 private:
     QScopedPointer<Private::clsLMSentenceScorerPrivate> pPrivate;

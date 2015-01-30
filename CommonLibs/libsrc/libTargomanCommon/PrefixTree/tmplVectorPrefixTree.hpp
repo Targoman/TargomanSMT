@@ -1,5 +1,5 @@
-#ifndef GVECTOR_PREFIX_TREE_HH
-#define GVECTOR_PREFIX_TREE_HH
+#ifndef TARGOMAN_COMMON_PREFIXTREE_TMPLVECTORPREFIXTREE_HPP
+#define TARGOMAN_COMMON_PREFIXTREE_TMPLVECTORPREFIXTREE_HPP
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp"
 
@@ -7,7 +7,7 @@ namespace Targoman {
 namespace Common {
 namespace PrefixTree {
     //! Shrink-to-fit a vector
-    template<class T> inline void shrinkToFitVector(std::vector<T> &v) {
+    template<class T> inline void tmplShrinkToFitVector(std::vector<T> &v) {
         std::vector<T>(v).swap(v);
     }
 
@@ -80,7 +80,7 @@ namespace PrefixTree {
         }
 
         virtual void compact() {
-            shrinkToFitVector(successors_);
+            tmplShrinkToFitVector(successors_);
         }
 
         class WeakIterator : public AbstractWeakIterator_ {

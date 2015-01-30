@@ -39,11 +39,13 @@ clsLanguageModel::~clsLanguageModel()
 quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_configs)
 {
     if (this->pPrivate->isBinary(_filePath)){
-
+        throw exTargomanNotImplemented("Binary is Not implemented yet");
     }else{
         this->pPrivate->Model = new clsProbingModel();
         this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model);
-        this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob, _configs.UnknownWordDefault.Backoff);
+        this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
+                                                      _configs.UnknownWordDefault.Backoff);
+
     }
     return this->pPrivate->Order;
 }

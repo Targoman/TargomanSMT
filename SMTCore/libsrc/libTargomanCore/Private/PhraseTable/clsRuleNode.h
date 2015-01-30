@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_RULENODE_H
@@ -21,18 +22,28 @@ namespace Core {
 namespace Private {
 namespace PhraseTable{
 
+class clsRuleNodeData : public QSharedData{
+    QList<QSharedDataPointer<clsTargetRule> > TargetRules;
+};
+
 class clsRuleNode
 {
 public:
     clsRuleNode();
+    clsRuleNode(const clsRuleNode & _other) : d(_other.d){}
+    ~clsRuleNode();
 
+    bool isNull() const;
+    static inline clsRuleNode& invalidRuleNode() {return clsRuleNode::InvalidRuleNode;}
 
     // Following functions are needed for the binary input/output
     void readBinary(std::istream &input);
     void writeBinary(std::ostream &output) const;
 
 private:
-    QList<QSharedDataPointer<clsTargetRule> > TargetRules;
+    QSharedDataPointer<clsRuleNodeData> d;
+
+    static clsRuleNode InvalidRuleNode;
 };
 
 }

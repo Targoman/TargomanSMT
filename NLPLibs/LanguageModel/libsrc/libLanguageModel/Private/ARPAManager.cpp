@@ -43,7 +43,7 @@ ARPAManager::ARPAManager()
     TARGOMAN_REGISTER_ACTOR("LM::ARPAManager");
 }
 
-quint8 ARPAManager::load(const QString &_file, clsBaseModel* _model)
+quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
 {
     TargomanLogInfo(5, "Loading ARPA File: " + _file);
 

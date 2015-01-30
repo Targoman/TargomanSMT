@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
@@ -27,8 +28,9 @@ class intfLMSentenceScorer : public Common::Configuration::intfModule
 {
 public:
     virtual void reset() = 0;
-    virtual Targoman::Common::LogP_t wordProb(const QString& _word, OUTPUT quint8 &_foundedGram) = 0;
-    virtual Targoman::Common::LogP_t wordProb(const Targoman::Common::WordIndex_t &_wordIndex, OUTPUT quint8 &_foundedGram) = 0;
+    virtual Common::LogP_t wordProb(const QString& _word, OUTPUT quint8 &_foundedGram) = 0;
+    virtual Common::LogP_t wordProb(const Targoman::Common::WordIndex_t &_wordIndex, OUTPUT quint8 &_foundedGram) = 0;
+    virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
 };
 
 }
