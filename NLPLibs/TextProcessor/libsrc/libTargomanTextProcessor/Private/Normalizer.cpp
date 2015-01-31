@@ -36,7 +36,7 @@ Normalizer::Normalizer()
     initUnicodeNormalizers();
 }
 /**
- * @brief Normalizes a character based on next char, last char,
+ * @brief Normalizes a character based on next char, last char, normalization config file and binary table.
  * @param _char character which should be normalized.
  * @param _nextChar next character
  * @param _interactive whether ask from user to define normal form of a unknown character or not?
@@ -232,6 +232,7 @@ QString Normalizer::normalize(const QChar &_char,
             Char.category() == QChar::Symbol_Other)
         return this->LastChar = Char;
 
+    //Change not resolved characrters interactively by user input.
     if(_interactive){
         std::cout<<"Character <"<<QString(Char).toUtf8().constData()<<">(0x";
         std::cout<<QString::number(Char.unicode(),16).toUpper().toLatin1().constData();
@@ -306,7 +307,13 @@ QString Normalizer::normalize(const QChar &_char,
     else
         return Char;
 }
-
+/**
+ * @brief calls main normalizer function character by character.
+ * @param _string input string
+ * @param _line line number
+ * @param _interactive can user interactively decide not resolve characters or not.
+ * @return Returns normalized string
+ */
 QString Normalizer::normalize(const QString &_string, qint32 _line, bool _interactive)
 {
     QString Normalized;
@@ -320,9 +327,20 @@ QString Normalizer::normalize(const QString &_string, qint32 _line, bool _intera
                                     _string,
                                     i));
     }
+    Normalized = fullTrim(Normalized);
     return Normalized;
 }
 
+/**
+ * @brief adds interactively user inputs to normalization configuration file.
+ * @param _type type of normalization (i.e. whitelist, removingCharacters, ...)
+ * @param _originalChar original character
+ * @param _replacement replacement character which is needed for ReplacingCharacters type.
+ * @exception throws exception if backup of config file can not be created.
+ * @exception throws exception if config file can not be opened.
+ * @exception throws exception if config file is not writable.
+ * @exception throws exception if type of type of normalization is invalid or "Unknown".
+ */
 void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar _replacement)
 {
     QFile ConfigFileOut(this->ConfigFile);
@@ -355,6 +373,8 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
             else if (DicStep == _type)
                 SectionFound=true;
             else if(SectionFound && DicStep != _type){
+                // this happens when we have found correct sectoin, passed all lines of that and found the first line next section.
+                // So we are in the correct place to add config.
                 switch(_type){
                 case enuDicType::NotSure:
                     ConfigFileOut.write(("NEW " + this->char2Str(_originalChar) + "\n").toUtf8());
@@ -400,14 +420,29 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
     ConfigFileOut.close ();
 }
 
+/**
+ * @brief Converts a character to a string (some times hex string) based on input character unicode.
+ * @param _char Input character
+ * @param _hexForced Sould output string necessarily be in hex format or not.
+ * @return Returns output string
+ */
 QString Normalizer::char2Str(const QChar &_char, bool _hexForced)
 {
+    // it doesn't make hex string if _hexForced is not true and input character is of type latin 1 or number. 'equal (=)' character should always be in hex format.
     if (!_hexForced && (_char.isLetterOrNumber() || _char.toLatin1() == _char) && _char != '=')
         return _char;
     else
         return QString("<0x%1>").arg(QString::number(_char.unicode(),16).toLatin1().toUpper().constData());
 }
-
+/**
+ * @brief converts a single or a range of character string to a list of QChars. characters can be in hex format.
+ * @param _str input string
+ * @param _line line number
+ * @param _allowRange does it accept a range of character or not.
+ * @exception throws exception if range conversion is nor allowed, but input string contains a range of characters.
+ * @exception throws exception if input string does not contains a valid input pattern.
+ * @return Returns a list QChars, extracted from input string.
+ */
 QList<QChar> Normalizer::str2QChar(QString _str, quint16 _line, bool _allowRange)
 {
     QList<QChar> Chars;
@@ -429,6 +464,17 @@ QList<QChar> Normalizer::str2QChar(QString _str, quint16 _line, bool _allowRange
     return Chars;
 }
 
+/**
+ * @brief Initializes and loads normalization rules using configuration file.
+ * @param _configFile address of conguration file.
+ * @param _binaryMode does "_cofigFile" is the address of binary table or not.
+ * @exception throws exception if it is unable to open Binary table.
+ * @exception throws exception if binary table is corrupted.
+ * @exception throws exception if it is unable to open configuration file.
+ * @exception throws exception if type of normalization in configuration file is "Unknown".
+ * @exception throws exception if replacemnt type of normalization is not valid.
+ * @exception throws exception we reach end of file before reading eof section in configuration file.
+ */
 void Normalizer::init(const QString &_configFile, bool _binaryMode)
 {
     this->ConfigFile = _configFile;
@@ -556,10 +602,17 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
                         this->ReplacingTable.size()));
 }
 
+/**
+ * @brief Creates binary table. For each character in unicode range, this function finds a normalized form for that and saves normalized form of that in a binary file.
+ * @param _binFilePath Path to save binary table.
+ * @param _interactive Can normalization process be done intractively or not.
+ * @exception throws exception if this function is called when working in binary mode.
+ * @exception throws exception if it could not open file to write binary table.
+ */
 void Normalizer::updateBinTable(const QString &_binFilePath, bool _interactive)
 {
     if (this->BinaryMode)
-        throw exNormalizer("Unable to update binary file whn working in binary mode.");
+        throw exNormalizer("Unable to update binary file when working in binary mode.");
 
     QFile BinFile(_binFilePath);
     BinFile.open(QFile::WriteOnly);
@@ -589,13 +642,17 @@ void Normalizer::updateBinTable(const QString &_binFilePath, bool _interactive)
 
     TargomanLogHappy(5, "Normalization binTable written to" + _binFilePath);
 }
-
+/**
+ * @brief Remove extra non-breaking space after non-joinable characters and before space and trims out side spaces and ZWNJs.
+ * @param _str input string.
+ * @return returns full trimmed string.
+ */
 QString Normalizer::fullTrim(const QString &_str)
 {
     QString Normalized;
 
     for (int i=0; i<_str.trimmed().size(); i++){
-        //Remove extra non-breaking space after non-joinable characters and before space
+        //
         if (_str.at(i) == ARABIC_ZWNJ && ((i>0 &&(
                                               _str.at(i-1).joining() == QChar::Right ||
                                               _str.at(i-1).joining() == QChar::OtherJoining ||
