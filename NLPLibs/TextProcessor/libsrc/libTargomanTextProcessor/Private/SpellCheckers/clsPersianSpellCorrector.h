@@ -38,28 +38,28 @@ private:
     QString processTar_Tarin(const QString& _prefix, const QString& _complexWord, const QString& _postfix);
 
 private:
-    QSet<QString>            Nouns;
-    QSet<QString>            Adjectives;
-    QSet<QString>            CanStartWithBi_Ba;
-    QSet<QString>            CanStartWithNa;
-    QSet<QString>            Space2ZWNJ;
-    QSet<QString>            VerbStemPresent;
-    QSet<QString>            VerbStemPast;
-    QSet<QString>            HamzeAllowed;
+    QSet<QString>            Nouns;                 /**< A set to store all Nouns from Persian SpellCorrector 'Noun' config file. */
+    QSet<QString>            Adjectives;            /**< A set to store all Adjectives from Persian SpellCorrector 'Adjective' config file. */
+    QSet<QString>            CanStartWithBi_Ba;     /**< A set to store all Adjectives that can be started with Bi or Ba from Persian SpellCorrector 'StartWith_Bi_Ba' config file. */
+    QSet<QString>            CanStartWithNa;        /**< A set to store all Adjectives that can be started with Na from Persian SpellCorrector 'StartWith_Na' config file. */
+    QSet<QString>            Space2ZWNJ;            /**< A set to store all compound words that should join to each other with ZWNJ from Persian SpellCorrector 'Space2ZWNJ' config file. */
+    QSet<QString>            VerbStemPresent;       /**< A set to store all present verb stems from Persian SpellCorrector 'verbStemPresent' config file. */
+    QSet<QString>            VerbStemPast;          /**< A set to store all past verb stems from Persian SpellCorrector 'verbStemPast' config file. */
+    QSet<QString>            HamzeAllowed;          /**< A set to store all words that Hamze or Mad is allowed from Persian SpellCorrector 'HamzeOrMadAllowed' config file. */
 
-    QRegExp                  RxInteractiveChars;
-    QRegExp                  RxPresentImperfect;
-    QRegExp                  RxEndPresentImperfect;
-    QRegExp                  RxPastImperfect;
-    QRegExp                  RxEndPastImperfect;
-    QRegExp                  RxEndVerbPerfect;
-    QRegExp                  RxVerbPerfect;
-    QRegExp                  RxHa;
-    QRegExp                  RxEndWithHa;
-    QRegExp                  RxAn;
-    QRegExp                  RxEndWithAn;
-    QRegExp                  RxPossesive;
-    QRegExp                  RxEndWithPossesive;
+    QRegExp                  RxInteractiveChars;    /**< A RegExp to match any interactive chars like ؤ,ئ,إ,أ,آ */
+    QRegExp                  RxPresentImperfect;    /**< A RegExp to match last parts of any present imperfect verb. */
+    QRegExp                  RxEndPresentImperfect; /**< A RegExp to match any present imperfect verb. */
+    QRegExp                  RxPastImperfect;       /**< A RegExp to match last parts of any past imperfect verb. */
+    QRegExp                  RxEndPastImperfect;    /**< A RegExp to match any past imperfect verb. */
+    QRegExp                  RxEndVerbPerfect;      /**< A RegExp to match any perfect verb. */
+    QRegExp                  RxVerbPerfect;         /**< A RegExp to match last parts of any perfect verb. */
+    QRegExp                  RxHa;                  /**< A RegExp to match Persian all variations of 'Ha' plural maker */
+    QRegExp                  RxEndWithHa;           /**< A RegExp to match any Persian plural noun that ends with 'Ha'*/
+    QRegExp                  RxAn;                  /**< A RegExp to match Persian all variations of 'An' plural maker */
+    QRegExp                  RxEndWithAn;           /**< A RegExp to match any Persian plural noun that ends with 'An'*/
+    QRegExp                  RxPossesive;           /**< A RegExp to match all kinds of Persian Possesives*/
+    QRegExp                  RxEndWithPossesive;    /**< A RegExp to match any Persian word that have any variation of possesives*/
 };
 
 }

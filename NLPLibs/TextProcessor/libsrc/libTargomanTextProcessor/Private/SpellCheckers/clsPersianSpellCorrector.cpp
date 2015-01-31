@@ -32,6 +32,9 @@ const QString PERSIAN_An         = QStringLiteral("ان");
 const QString PERSIAN_AlefYe     = QStringLiteral("ای");
 const QString PERSIAN_Noon       = QStringLiteral("ن");
 
+/**
+ * @brief Initializes ConfigTypes list and RegExp data members.
+ */
 clsPersianSpellCorrector::clsPersianSpellCorrector()
 {
     this->Lang                  = "Persian";
@@ -66,6 +69,12 @@ bool clsPersianSpellCorrector::postInit(const QVariantHash _settings)
     return true;
 }
 
+/**
+ * @brief This function process a list of tokens.
+ * @param _tokens list of tokens.
+ * @return returns a unified normalized string or an empty string.
+ */
+
 QString clsPersianSpellCorrector::process(const QStringList &_tokens)
 {
     QString Buffer, Prefix, Postfix;
@@ -83,7 +92,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
         ComplexWord += _tokens.at(i) + ARABIC_ZWNJ;
     }
 
-    ComplexWord.truncate(ComplexWord.size() - 1);
+    ComplexWord.truncate(ComplexWord.size() - 1); // to remove last extra ZWNJ.
 
     if(ComplexWord.endsWith(PERSIAN_HeYe))
         return ComplexWord.mid(0, ComplexWord.length() - 2);
@@ -187,7 +196,7 @@ bool clsPersianSpellCorrector::canBeCheckedInteractive(const QString &_inputWord
 void clsPersianSpellCorrector::storeAutoCorrectTerm(const QString &_from, const QString &_to)
 {
     this->AutoCorrectTerms.insert(_from, _to);
-    //TODO save to file
+    /// @todo save to file
 }
 
 QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString>& _set,

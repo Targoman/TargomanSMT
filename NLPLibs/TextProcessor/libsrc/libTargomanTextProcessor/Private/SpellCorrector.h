@@ -71,6 +71,11 @@ public:
     virtual QString process(const QStringList& _tokens) = 0;
     virtual bool canBeCheckedInteractive(const QString& _inputWord) const = 0;
     virtual void storeAutoCorrectTerm(const QString& _from, const QString& _to) = 0;
+    /**
+     * @brief This function just checks #AutoCorrectTerms HashMap for input token.
+     * @param _token input token.
+     * @return corrected or empty token.
+     */
     virtual QString process(const QString& _token){
         return this->AutoCorrectTerms.value(_token);
     }

@@ -40,5 +40,13 @@ void UnitTest::normalizeText()
     "",
     ""
     ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "خانه ی",
+    "خانه‌ی"
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "می روم",
+    "می‌روم"
+    ));
 
 }
