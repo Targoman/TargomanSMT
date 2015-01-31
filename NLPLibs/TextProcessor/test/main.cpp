@@ -68,7 +68,7 @@ int main(int _argc, char *_argv[])
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
 //                    QStringLiteral("رفته‌‌ام"), false, "fa");
         qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
-                    QStringLiteral("ﻼ"), false, "fa");
+                    QStringLiteral("می رفته بوده باشم و"), false, "fa");
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
 //                    QStringLiteral("a -12asd"), "en", 0, true, true);
 

@@ -27,6 +27,10 @@ namespace Private {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exSpellCorrector, exTextProcessor);
 
+/**
+ * @brief The intfSpellCorrector class is an interface for spell correction tasks.
+ * Language specific spell corrector classes will be derived form this class.
+ */
 class intfSpellCorrector
 {
 protected:
@@ -75,14 +79,14 @@ protected:
     virtual bool postInit(const QVariantHash _settings) = 0;
 
 protected:
-    QHash<QString, QString>           AutoCorrectTerms;
-    QList<stuConfigType>              ConfigTypes;
-    int  MaxAutoCorrectTokens;
-    QString AutoCorrectFile;
-    bool Active;
-    QString Lang;
+    QHash<QString, QString>           AutoCorrectTerms; /**< A list of terms and their correct forms that can be corrected directly.*/
+    QList<stuConfigType>              ConfigTypes;      /**< A list of containers which store spellCorrector configuration data.*/
+    int  MaxAutoCorrectTokens;                          /**< Max number of consecutive words that should be checked in a group, for spell corrector.*/
+    QString AutoCorrectFile;                            /**< Does spell corrector for this language is active or not.  */
+    bool Active;                                        /**< Does spell corrector for this language is active or not.  */
+    QString Lang;                                       /**< Name of Language.  */
 
-    Normalizer& NormalizerInstance; // Faster access to normalizer class
+    Normalizer& NormalizerInstance;                     /**< An instance of Normalizer class for faster access to normalizer class */
 };
 
 class SpellCorrector
@@ -98,9 +102,9 @@ private:
     Q_DISABLE_COPY(SpellCorrector)
 
 private:
-    QHash<QString, intfSpellCorrector*> Processors;
-    static SpellCorrector* Instance;
-    Normalizer& NormalizerInstance; // Faster access to normalizer class
+    QHash<QString, intfSpellCorrector*> Processors;     /**< A HashMap that key is language name and value is its respective language based spell corrector. */
+    static SpellCorrector* Instance;                    /**< Static instnace of spellCorrector class. */
+    Normalizer& NormalizerInstance;                     /**< An instance of Normalizer class for faster access to normalizer class. */
 };
 
 }

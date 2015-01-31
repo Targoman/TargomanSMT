@@ -15,6 +15,7 @@
 #include <QTextStream>
 #include <QFile>
 #include <QStringList>
+#include <QDebug>
 
 #include "SpellCorrector.h"
 
@@ -30,12 +31,20 @@ namespace Private {
 
 SpellCorrector* SpellCorrector::Instance = NULL;
 
+/**
+ * @brief instructor of this class adds default languages data to the #Processors variable.
+ */
 SpellCorrector::SpellCorrector():
     NormalizerInstance(this->NormalizerInstance) //zhnDebug: what is this?
 {
     this->Processors.insert("fa", new clsPersianSpellCorrector);
 }
 
+/**
+ * @brief Initializes all languages that are in _settings variable and delete each language from #Processors if it is not active.
+ * @param _baseConfigPath base config path of all language specific spellCorrectors.
+ * @param _settings input HashMap that its key is language name and its value is language specific settings.
+ */
 void SpellCorrector::init(const QString& _baseConfigPath, const QHash<QString, QVariantHash>& _settings)
 {
     foreach(const QString& Lang, _settings.keys()){
@@ -57,6 +66,16 @@ void SpellCorrector::init(const QString& _baseConfigPath, const QHash<QString, Q
     }
 }
 
+/**
+ * @brief The main function of SpellCorrector class
+ * This function first, corrects all single words.
+ * Then, reprocesses multi token groups of input text to unify valid consecutive tokens.
+ * @param _lang Language name
+ * @param _inputStr Input string
+ * @param _interactive Can spell correction process be done intractively or not.
+ * @return spell corrected string.
+ */
+
 QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, bool _interactive)
 {
     intfSpellCorrector* Processor = this->Processors.value(_lang, NULL);
@@ -69,14 +88,14 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
     QString Normalized;
     QStringList Tokens;
     QStringList MultiWordBuffer;
-    /**/
+
     //Correct all single words
     do{
         Phrase = Output;
         Output.clear();
         Tokens = Phrase.trimmed().replace(DUAL_SPACE," ").replace(DUAL_SPACE," ").split(" ", QString::SkipEmptyParts);
         foreach(const QString& Token, Tokens){
-            Normalized =  Processor->process(Token);
+            Normalized =  Processor->process(Token); // process each token by language based spell corrector.
             if (Normalized.size())
                 Output += Normalized + " ";
             else if (_interactive && Processor->canBeCheckedInteractive(Token)){
@@ -134,19 +153,19 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
                         if ((FromTokenIndex + i) < Tokens.size())
                             MultiWordBuffer.append(Tokens.at(FromTokenIndex+i));
 
-                    if (MultiWordBuffer.size() < MaxTokens - 1) //TODO why -1
+                    if (MultiWordBuffer.size() < MaxTokens - 1)
                         continue;
 
-                    Normalized = Processor->process(MultiWordBuffer);
+                    Normalized = Processor->process(MultiWordBuffer); // if it is unable to unify multi tokens, returns empty string.
                     if (Normalized.size()){
                         Output += Normalized + " ";
                         if (Normalized.split(" ").size() >= MaxTokens){
                             Tokens.removeAt(FromTokenIndex);
                             foreach(const QString& MidTokens, Normalized.split(" ", QString::SkipEmptyParts))
                                 Tokens.insert(FromTokenIndex,MidTokens);
-                            FromTokenIndex--; // As Token at FromTokenIndex has changed so reprocess it
+                            FromTokenIndex--; // As Token at FromTokenIndex has changed so reprocess it. We decrease one, because we will add one in for loop.
                         }else{
-                            FromTokenIndex+=MaxTokens - 1;
+                            FromTokenIndex+=MaxTokens - 1; // increaced FromTokenIndex for MaxTokens to pass unified token and decrease one, because we will add one in for loop.
                             if(FromTokenIndex + 1 == Tokens.size())
                                 HasRemaining = false;
                         }
@@ -169,13 +188,27 @@ intfSpellCorrector::intfSpellCorrector() :
     this->Active = true;
 }
 
+/**
+ * @brief initialize spellCorrector configurations.
+ *
+ * Every language has some specific configurations.
+ * This function can load all configurations of all language specific spellCheckers without any need to overload it in derived classes.
+ * This function also calculates and sets #MaxAutoCorrectTokens and call postInit function language specific spellCorrectors.
+ *
+ * @param _baseConfigPath base address of language specific configuration path.
+ * @param _settings some other language specific settings.
+ * @exception throws exception if it is unable to open a config file.
+ * @exception throws exception if a keyVal config type file, dosn't have a valid data line.
+ * @return Returns true if initialization process is succeded.
+ */
+
 bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash _settings)
 {
     this->Active = _settings.value("Active",true).toBool();
     TargomanInlineInfo(5, "Loading " + this->Lang + " Config file...");
 
     this->MaxAutoCorrectTokens = 0;
-    foreach (const stuConfigType& Config, this->ConfigTypes){
+    foreach (const stuConfigType& Config, this->ConfigTypes){ // #ConfigTypes list is already initiallized in constructor of language specific spellCorrectors.
         QString ConfigFilePath = _baseConfigPath + "/" + this->Lang + "/" + Config.Name + ".tbl";
         QFile ConfigFile(ConfigFilePath);
         ConfigFile.open(QIODevice::ReadOnly);
@@ -210,7 +243,7 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
                     QString Val = this->NormalizerInstance.normalize(Pair[1].trimmed());
                     Config.KeyValStorage->insert(Key, Val);
                     this->MaxAutoCorrectTokens = qMax(this->MaxAutoCorrectTokens,
-                                                      Key.split(" ", QString::SkipEmptyParts).size()); //zhnDebug: what is this?
+                                                      Key.split(" ", QString::SkipEmptyParts).size()); //finds maximum possible tokens, by checking each data line.
                 }
                 else {
                     throw exSpellCorrector(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
@@ -231,7 +264,7 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
                          QString::number(Config.ListStorage->size()) + " Entries");
         }
 
-    this->MaxAutoCorrectTokens = qMax(4, this->MaxAutoCorrectTokens);
+    this->MaxAutoCorrectTokens = qMax(4, this->MaxAutoCorrectTokens); //sets MaxAutoCorrectTokens to 4 if it is set to a number bigger than 4.
     return this->postInit(_settings);
 }
 
