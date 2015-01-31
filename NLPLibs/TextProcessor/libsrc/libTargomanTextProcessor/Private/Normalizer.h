@@ -59,6 +59,9 @@ class Normalizer
 {
 public:
     void init(const QString& _configFile, bool _binaryMode = false);
+    /**
+     * @brief Makes an instance of Normalizer class if it is not instantiated. If it is instantiated, returns that instance.
+     */
     static Normalizer& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new Normalizer));}
 
     QString normalize(const QChar& _char,
@@ -74,6 +77,10 @@ public:
     void updateBinTable(const QString& _binFilePath, bool _interactive = false);
 
     static QString fullTrim(const QString& _str);
+    /**
+     * @brief removes spaces and zero width non joiners from both sides of input string.
+     * @param input string
+     */
     static QString sidesTrim(const QString& _str){
         QString Trimmed = _str.trimmed();
         if (Trimmed.isEmpty())
@@ -95,20 +102,18 @@ private:
     QList<QChar> str2QChar(QString _str, quint16 _line, bool _allowRange = true);
 
 private:
-    static Normalizer*      Instance;
-    QHash<QChar,QString>    ReplacingTable;
-    QList<QVariant>         BinTable;
-    QSet<QChar>             WhiteList;
-    QSet<QChar>             RemovingList;
-    QSet<QChar>             SpaceCharList;
-    QSet<QChar>             ZeroWidthSpaceCharList;
-    QString                 ConfigFile;
-    bool                    BinaryMode;
-    QChar                   LastChar;
-    QStringList             NormalizedDiacritics;
-    QString                 PersianChars;
-    QRegExp                 RxDetokenDQuote;
-    QRegExp                 RxDetokenQuote;
+    static Normalizer*      Instance;                   /** < Static instnace of normalizer class */
+    QHash<QChar,QString>    ReplacingTable;             /** < A Map to contain chars that should be replaced. Content of this variable will be added using Normalization config file. */
+    QList<QVariant>         BinTable;                   /** < A List that has normalize form of all character. Index of normal form of each character in this list, is its unicode value.*/
+    QSet<QChar>             WhiteList;                  /** < A Set to contain valid chars. Content of this variable will be added using Normalization config file. */
+    QSet<QChar>             RemovingList;               /** < A Set to contain invalid chars. Content of this variable will be added using Normalization config file. */
+    QSet<QChar>             SpaceCharList;              /** < A Set to contain all kind of spaces chars. Content of this variable will be added using Normalization config file. */
+    QSet<QChar>             ZeroWidthSpaceCharList;     /** < A Set to contain all kind of zero width spaces chars. Content of this variable will be added using Normalization config file. */
+    QString                 ConfigFile;                 /** < Configuration file address */
+    bool                    BinaryMode;                 /** < If Normalization data is in binary mode this variable will be true.*/
+    QChar                   LastChar;                   /** < Last character in normalization process.*/
+    QRegExp                 RxDetokenDQuote;            /** < A Regular expression to detokenize Double Quote characters. */
+    QRegExp                 RxDetokenQuote;             /** < A Regular expression to detokenize Quote characters. */
 };
 
 }

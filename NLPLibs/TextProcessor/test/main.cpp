@@ -61,10 +61,14 @@ int main(int _argc, char *_argv[])
 //                    QStringLiteral("من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند"), false, "fa");
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
 //                    QStringLiteral("آذربایجان‌شرقی"), false, "fa");
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+//                    QStringLiteral("نامردیهایشان"), false, "fa");
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+//                    QStringLiteral("بیمعرفتها"), false, "fa");
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+//                    QStringLiteral("رفته‌‌ام"), false, "fa");
         qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
-                    QStringLiteral("نامردیهایشان"), false, "fa");
-        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
-                    QStringLiteral("بیمعرفتها"), false, "fa");
+                    QStringLiteral("ﻼ"), false, "fa");
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
 //                    QStringLiteral("a -12asd"), "en", 0, true, true);
 

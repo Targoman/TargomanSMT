@@ -20,6 +20,9 @@
 
 #include "Unicode.hpp"
 
+//zhnDebug:
+#include <QtDebug>
+
 namespace Targoman {
 namespace NLPLibs {
 namespace TextProcessor_{
@@ -32,7 +35,17 @@ Normalizer::Normalizer()
 {
     initUnicodeNormalizers();
 }
-
+/**
+ * @brief Normalizes a character based on next char, last char,
+ * @param _char character which should be normalized.
+ * @param _nextChar next character
+ * @param _interactive whether ask from user to define normal form of a unknown character or not?
+ * @param _line line number
+ * @param _phrase whole word.
+ * @param _charPos character position.
+ * @param _skipRecheck whether normalize again after normalization or not.
+ * @return normalized form of character.
+ */
 QString Normalizer::normalize(const QChar &_char,
                               const QChar &_nextChar,
                               bool _interactive,
@@ -42,24 +55,24 @@ QString Normalizer::normalize(const QChar &_char,
                               bool _skipRecheck)
 {
     QChar Char = _char;
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////                    Multi Char Normalizers                           ///
-    ////////////////////////////////////////////////////////////////////////////
-    //Remove extra non-breaking space after non-joinable characters and before space
+    bool NextCharIsNotLeftJoinable = (_nextChar.isSpace() ||
+                                      _nextChar.isSymbol() ||
+                                      _nextChar.isDigit() ||
+                                      _nextChar.isPunct() ||
+                                      _nextChar.isNull());
+    // //////////////////////////////////////////////////////////////////////////
+    // //                    Multi Char Normalizers                           ///
+    // //////////////////////////////////////////////////////////////////////////
+    // Remove extra non-breaking space after non-joinable characters and before space
     if (Char == ARABIC_ZWNJ && (
-                this->LastChar.joining() == QChar::Right ||
+                this->LastChar.joining() == QChar::Right ||         //character that join just from their right side. like: د,ر,ا
                 this->LastChar.joining() == QChar::OtherJoining ||
                 this->LastChar.isSpace() ||
                 this->LastChar.isSymbol() ||
                 this->LastChar.isDigit()||
                 this->LastChar.isPunct() ||
                 this->LastChar.isNull() ||
-                _nextChar.isSpace() ||
-                _nextChar.isSymbol() ||
-                _nextChar.isDigit() ||
-                _nextChar.isPunct() ||
-                _nextChar.isNull())){
+                NextCharIsNotLeftJoinable)){
         this->LastChar = QChar();
         return "";
     }
@@ -74,45 +87,39 @@ QString Normalizer::normalize(const QChar &_char,
     if (Char == QChar(0x202b) && LastChar == QChar(0x202c))
         return this->normalize(this->LastChar = ARABIC_ZWNJ, _nextChar, false, _line, _phrase, _charPos);
 
-    //Convert thousand separators to comma
+    //Convert thousand separators to comma //zhnDebug: Arabic Thousand Seperator is same glyph as comma in some fonts like Tahoma. we can handle it.
     if (LastChar.isDigit() && _nextChar.isDigit() && (
-                Char == QChar(0x066C) ||
-                Char == QChar(0xCB99)))
+                Char == QChar(0x066C) || // Arabic Thousand Seperator
+                Char == QChar(0xCB99)))  // some weird Thousand Seperator
         return this->LastChar = ',';
 
     //Convert special decimal point
     if (LastChar.isDigit() && _nextChar.isDigit() && (
-                Char == QChar(0xC2B7)))
+                Char == QChar(0xC2B7))) // some weird decimal point
         return this->LastChar = '.';
 
+    //convert ye hamze, if it is in its isolated or last form, to ye hamze.
     if (Char == ARABIC_YE_HAMZA && (
-                _nextChar.isSpace() ||
-                _nextChar.isSymbol() ||
-                _nextChar.isDigit() ||
-                _nextChar.isPunct() ||
-                _nextChar.isNull()))
+                NextCharIsNotLeftJoinable))
         return this->LastChar = ARABIC_YE;
 
+    //convert alef hamza down or alef hamza up, if it is in its isolated or last form, to alef.
     if ((Char == ARABIC_ALEF_HAMZA_DOWN || Char == ARABIC_ALEF_HAMZA_UP) && (
-                _nextChar.isSpace() ||
-                _nextChar.isSymbol() ||
-                _nextChar.isDigit() ||
-                _nextChar.isPunct() ||
-                _nextChar.isNull()))
+                NextCharIsNotLeftJoinable))
         return this->LastChar = ARABIC_ALEF;
 
-    ////////////////////////////////////////////////////////////////////////////
-    ////                        Using Binary Table                           ///
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
+    // //                        Using Binary Table                           ///
+    // //////////////////////////////////////////////////////////////////////////
     if (this->BinaryMode){
         Q_ASSERT_X(this->BinTable.size(), "Initialized", "Seems that normalizer is not initialized");
         QString Normalized;
         if (Char == ARABIC_ZWNJ ||
-            Char == QChar(0x202c) ||
-            Char == QChar(0x202b) ||
-            Char == QChar(0x066C) ||
-            Char == QChar(0xCB99) ||
-            Char == QChar(0xC2B7))
+            Char == QChar(0x202c) || // Pop Directional Format
+            Char == QChar(0x202b) || // Right-to-Left Embedding
+            Char == QChar(0x066C) || // Arabic Thousand Seperator
+            Char == QChar(0xCB99) || // some weird Thousand Seperator
+            Char == QChar(0xC2B7))   // some weird decimal point
             Normalized = Char;
         else
             Normalized = this->BinTable.at(Char.unicode()).toString();
@@ -137,14 +144,14 @@ QString Normalizer::normalize(const QChar &_char,
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    ////                       Single Char Normalizers                       ///
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
+    // //                       Single Char Normalizers                       ///
+    // //////////////////////////////////////////////////////////////////////////
 
     //Special characters
     if (Char == '\t' ||
-            Char == QChar(0xFFFF) ||
-            Char == QChar(0x7F))
+            Char == QChar(0xFFFF) || // Noncharacter
+            Char == QChar(0x7F))     // delete character
         return " ";
 
     //Digits must be converted to ascii
@@ -178,7 +185,7 @@ QString Normalizer::normalize(const QChar &_char,
     if (this->ZeroWidthSpaceCharList.contains(Char))
         return this->normalize(this->LastChar = ARABIC_ZWNJ, _nextChar, false, _line, _phrase, _charPos);
 
-    //Convert characcters based on Normalization table
+    //Convert characters based on Normalization table
     if (this->ReplacingTable.contains(Char)){
         QString Buff = this->ReplacingTable.value(Char);
         if (Buff.size() > 1){
@@ -196,6 +203,7 @@ QString Normalizer::normalize(const QChar &_char,
         return "";
     }
 
+    //convert any non assigned character to empty set symbol.
     if (Char.category() == QChar::Other_NotAssigned ||
             Char.category() == QChar::Other_PrivateUse ||
             Char.category() == QChar::Other_Surrogate)
@@ -204,11 +212,10 @@ QString Normalizer::normalize(const QChar &_char,
     if (_skipRecheck)
         return Char;
 
-    enuUnicodeCharScripts::Type CharacterScript = (enuUnicodeCharScripts::Type)Char.script();
 
     //Check if there are sepcial normalizers
-    if (ScriptBasedNormalizers[CharacterScript]){
-        QString Normalized = ScriptBasedNormalizers[CharacterScript](Char.unicode());
+    if (QCharScriptToNormalizerMap[Char.script()]){
+        QString Normalized = QCharScriptToNormalizerMap[Char.script()](Char.unicode());
         if (Normalized.size()){
             this->LastChar = Normalized.at(Normalized.size() - 1);
             if (Normalized.size() > 1)
@@ -228,8 +235,8 @@ QString Normalizer::normalize(const QChar &_char,
     if(_interactive){
         std::cout<<"Character <"<<QString(Char).toUtf8().constData()<<">(0x";
         std::cout<<QString::number(Char.unicode(),16).toUpper().toLatin1().constData();
-        std::cout<<")["<<QCHAR_UNICOE_CATEGORIES[Char.category()]<<"] [";
-        std::cout<<enuUnicodeCharScripts::toStr(CharacterScript);
+        std::cout<<")["<<QCharCategorytToStringMap[Char.category()]<<"] [";
+        std::cout<<QCharScriptToStringMap[Char.script()];
         std::cout<<"]could not be found in any list. What to do?"<<std::endl;
         std::cout<<"Line: "<<_line<<": "<<std::endl;
         std::cout<<_phrase.toUtf8().constData()<<std::endl;
@@ -272,8 +279,8 @@ QString Normalizer::normalize(const QChar &_char,
 
                 std::cout<<"Normalize <"<<QString(Char).toUtf8().constData()<<">(0x";
                 std::cout<<QString::number(Char.unicode(),16).toUpper().toLatin1().constData();
-                std::cout<<")["<<QCHAR_UNICOE_CATEGORIES[Char.category()]<<"] [";
-                std::cout<<enuUnicodeCharScripts::toStr(CharacterScript);
+                std::cout<<")["<<QCharCategorytToStringMap[Char.category()]<<"] [";
+                std::cout<<QCharScriptToStringMap[Char.script()] ;
                 std::cout<<"] to: "<<std::endl;
                 std::cin >>Buffer;
                 QString TempBuffer = QString::fromUtf8(Buffer.c_str());
@@ -362,10 +369,8 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
                                             ToBeWritten.startsWith("<0x") ?
                                                 QString("{%1}").arg(_originalChar) :
                                                 this->char2Str(_originalChar, true)).arg(
-                                            QCHAR_UNICOE_CATEGORIES[_originalChar.category()]).arg(
-                                enuUnicodeCharScripts::toStr(
-                                    (enuUnicodeCharScripts::Type)
-                                    _originalChar.script())).toUtf8());
+                                            QCharCategorytToStringMap[_originalChar.category()].c_str()).arg(
+                                            QCharScriptToStringMap[_originalChar.script()].c_str()).toUtf8());
                 }
                     break;
                 case enuDicType::ReplacingCharacter:

@@ -8,6 +8,7 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author S. Saeed Torabzadeh <saeed.torabzadeh@gmail.com>
  */
 
 #ifndef TARGOMAN_NLPLIBS_TEXTPROCESSOR_PRIVATE_UNICODE_HPP
@@ -31,182 +32,128 @@ namespace NLPLibs {
 namespace TextProcessor_{
 namespace Private {
 
-//More info on http://www.fileformat.info/info/unicode/category
-const char* QCHAR_UNICOE_CATEGORIES[]={
-    "QChar::NoCategory",                ///0
-    "QChar::Mark_NonSpacing",           ///1
-    "QChar::Mark_SpacingCombining",     ///2
-    "QChar::Mark_Enclosing",            ///3
-    "QChar::Number_DecimalDigit",       ///4
-    "QChar::Number_Letter",             ///5
-    "QChar::Number_Other",              ///6
-    "QChar::Separator_Space",           ///7
-    "QChar::Separator_Line",            ///8
-    "QChar::Separator_Paragraph",       ///9
-    "QChar::Other_Control",             ///10
-    "QChar::Other_Format",              ///11
-    "QChar::Other_Surrogate",           ///12
-    "QChar::Other_PrivateUse",          ///13
-    "QChar::Other_NotAssigned",         ///14
-    "QChar::Letter_Uppercase",          ///15
-    "QChar::Letter_Lowercase",          ///16
-    "QChar::Letter_Titlecase",          ///17
-    "QChar::Letter_Modifier",           ///18
-    "QChar::Letter_Other",              ///19
-    "QChar::Punctuation_Connector",     ///20
-    "QChar::Punctuation_Dash",          ///21
-    "QChar::Punctuation_Open",          ///22
-    "QChar::Punctuation_Close",         ///23
-    "QChar::Punctuation_InitialQuote",  ///24
-    "QChar::Punctuation_FinalQuote",    ///25
-    "QChar::Punctuation_Other",         ///26
-    "QChar::Symbol_Math",               ///27
-    "QChar::Symbol_Currency",           ///28
-    "QChar::Symbol_Modifier",           ///29
-    "QChar::Symbol_Other"               ///30
+static QMap<QChar::Category, std::string> QCharCategorytToStringMap {
+    {QChar::Mark_NonSpacing, "QChar::Mark_NonSpacing"},
+    {QChar::Mark_SpacingCombining, "QChar::Mark_SpacingCombining"},
+    {QChar::Mark_Enclosing, "QChar::Mark_Enclosing"},
+    {QChar::Number_DecimalDigit, "QChar::Number_DecimalDigit"},
+    {QChar::Number_Letter, "QChar::Number_Letter"},
+    {QChar::Number_Other, "QChar::Number_Other"},
+    {QChar::Separator_Space, "QChar::Separator_Space"},
+    {QChar::Separator_Line, "QChar::Separator_Line"},
+    {QChar::Separator_Paragraph, "QChar::Separator_Paragraph"},
+    {QChar::Other_Control, "QChar::Other_Control"},
+    {QChar::Other_Format, "QChar::Other_Format"},
+    {QChar::Other_Surrogate, "QChar::Other_Surrogate"},
+    {QChar::Other_PrivateUse, "QChar::Other_PrivateUse"},
+    {QChar::Other_NotAssigned, "QChar::Other_NotAssigned"}
 };
 
-// See http://www.unicode.org/reports/tr24/tr24-5.html
-//Following strings are compatible with Qt implementation of unicode Tables
-//@see $QTSOURCE/src/corelib/tools/qunicodetables_p.h
-
-TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuUnicodeCharScripts)
-    Common,       //0
-    Greek,        //1
-    Cyrillic,     //3
-    Armenian,     //4
-    Hebrew,       //5
-    Arabic,       //6
-    Syriac,       //7
-    Thaana,       //8
-    Devanagari,   //9
-    Bengali,      //10
-    Gurmukhi,     //11
-    Gujarati,     //12
-    Oriya,        //13
-    Tamil,        //14
-    Telugu,       //15
-    Kannada,      //16
-    Malayalam,    //17
-    Sinhala,      //18
-    Thai,         //19
-    Lao,          //20
-    Tibetan,      //21
-    Myanmar,      //22
-    Georgian,     //23
-    Hangul,       //24
-    Ogham,        //25
-    Runic,        //26
-    Khmer,        //27
-    Nko,          //28
-    Inherited,    //29
-    ScriptCount,  //30
-    Latin,        //31
-    Ethiopic,     //32
-    Cherokee,     //33
-    CanadianAboriginal,   //34
-    Mongolian,    //35
-    Hiragana,     //36
-    Katakana,     //37
-    Bopomofo,     //38
-    Han,          //39
-    Yi,           //40
-    OldItalic,    //41
-    Gothic,       //42
-    Deseret,      //43
-    Tagalog,      //44
-    Hanunoo,      //45
-    Buhid,        //46
-    Tagbanwa,     //47
-    Limbu,        //48
-    TaiLe,        //49
-    LinearB,      //50
-    Ugaritic,     //51
-    Shavian,      //52
-    Osmanya,      //53
-    Cypriot,      //54
-    Braille,      //55
-    Buginese,     //56
-    Coptic,       //57
-    NewTaiLue,    //58
-    Glagolitic,   //59
-    Tifinagh,     //60
-    SylotiNagri,  //61
-    OldPersian,   //62
-    Kharoshthi,   //63
-    Balinese,     //64
-    Cuneiform,    //65
-    Phoenician,   //66
-    PhagsPa       //67
-TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
-    "Common",       //0
-    "Greek",        //1
-    "Cyrillic",     //3
-    "Armenian",     //4
-    "Hebrew",       //5
-    "Arabic",       //6
-    "Syriac",       //7
-    "Thaana",       //8
-    "Devanagari",   //9
-    "Bengali",      //10
-    "Gurmukhi",     //11
-    "Gujarati",     //12
-    "Oriya",        //13
-    "Tamil",        //14
-    "Telugu",       //15
-    "Kannada",      //16
-    "Malayalam",    //17
-    "Sinhala",      //18
-    "Thai",         //19
-    "Lao",          //20
-    "Tibetan",      //21
-    "Myanmar",      //22
-    "Georgian",     //23
-    "Hangul",       //24
-    "Ogham",        //25
-    "Runic",        //26
-    "Khmer",        //27
-    "Nko",          //28
-    "Inherited",    //29
-    "ScriptCount",  //30
-    "Latin",        //31
-    "Ethiopic",     //32
-    "Cherokee",     //33
-    "CanadianAboriginal",   //34
-    "Mongolian",    //35
-    "Hiragana",     //36
-    "Katakana",     //37
-    "Bopomofo",     //38
-    "Han",          //39
-    "Yi",           //40
-    "OldItalic",    //41
-    "Gothic",       //42
-    "Deseret",      //43
-    "Tagalog",      //44
-    "Hanunoo",      //45
-    "Buhid",        //46
-    "Tagbanwa",     //47
-    "Limbu",        //48
-    "TaiLe",        //49
-    "LinearB",      //50
-    "Ugaritic",     //51
-    "Shavian",      //52
-    "Osmanya",      //53
-    "Cypriot",      //54
-    "Braille",      //55
-    "Buginese",     //56
-    "Coptic",       //57
-    "NewTaiLue",    //58
-    "Glagolitic",   //59
-    "Tifinagh",     //60
-    "SylotiNagri",  //61
-    "OldPersian",   //62
-    "Kharoshthi",   //63
-    "Balinese",     //64
-    "Cuneiform",    //65
-    "Phoenician",   //66
-    "PhagsPa"       //67
-TARGOMAN_DEFINE_ENHANCED_ENUM_END
+static QMap<QChar::Script, std::string> QCharScriptToStringMap {
+    {QChar::Script_Unknown,"Unknown"},
+    {QChar::Script_Inherited,"Inherited"},
+    {QChar::Script_Common,"Common"},
+    {QChar::Script_Latin,"Latin"},
+    {QChar::Script_Greek,"Greek"},
+    {QChar::Script_Cyrillic,"Cyrillic"},
+    {QChar::Script_Armenian,"Armenian"},
+    {QChar::Script_Hebrew,"Hebrew"},
+    {QChar::Script_Arabic,"Arabic"},
+    {QChar::Script_Syriac,"Syriac"},
+    {QChar::Script_Thaana,"Thaana"},
+    {QChar::Script_Devanagari,"Devanagari"},
+    {QChar::Script_Bengali,"Bengali"},
+    {QChar::Script_Gurmukhi,"Gurmukhi"},
+    {QChar::Script_Gujarati,"Gujarati"},
+    {QChar::Script_Oriya,"Oriya"},
+    {QChar::Script_Tamil,"Tamil"},
+    {QChar::Script_Telugu,"Telugu"},
+    {QChar::Script_Kannada,"Kannada"},
+    {QChar::Script_Malayalam,"Malayalam"},
+    {QChar::Script_Sinhala,"Sinhala"},
+    {QChar::Script_Thai,"Thai"},
+    {QChar::Script_Lao,"Lao"},
+    {QChar::Script_Tibetan,"Tibetan"},
+    {QChar::Script_Myanmar,"Myanmar"},
+    {QChar::Script_Georgian,"Georgian"},
+    {QChar::Script_Hangul,"Hangul"},
+    {QChar::Script_Ethiopic,"Ethiopic"},
+    {QChar::Script_Cherokee,"Cherokee"},
+    {QChar::Script_CanadianAboriginal,"CanadianAboriginal"},
+    {QChar::Script_Ogham,"Ogham"},
+    {QChar::Script_Runic,"Runic"},
+    {QChar::Script_Khmer,"Khmer"},
+    {QChar::Script_Mongolian,"Mongolian"},
+    {QChar::Script_Hiragana,"Hiragana"},
+    {QChar::Script_Katakana,"Katakana"},
+    {QChar::Script_Bopomofo,"Bopomofo"},
+    {QChar::Script_Han,"Han"},
+    {QChar::Script_Yi,"Yi"},
+    {QChar::Script_OldItalic,"OldItalic"},
+    {QChar::Script_Gothic,"Gothic"},
+    {QChar::Script_Deseret,"Deseret"},
+    {QChar::Script_Tagalog,"Tagalog"},
+    {QChar::Script_Hanunoo,"Hanunoo"},
+    {QChar::Script_Buhid,"Buhid"},
+    {QChar::Script_Tagbanwa,"Tagbanwa"},
+    {QChar::Script_Coptic,"Coptic"},
+    {QChar::Script_Limbu,"Limbu"},
+    {QChar::Script_TaiLe,"TaiLe"},
+    {QChar::Script_LinearB,"LinearB"},
+    {QChar::Script_Ugaritic,"Ugaritic"},
+    {QChar::Script_Shavian,"Shavian"},
+    {QChar::Script_Osmanya,"Osmanya"},
+    {QChar::Script_Cypriot,"Cypriot"},
+    {QChar::Script_Braille,"Braille"},
+    {QChar::Script_Buginese,"Buginese"},
+    {QChar::Script_NewTaiLue,"NewTaiLue"},
+    {QChar::Script_Glagolitic,"Glagolitic"},
+    {QChar::Script_Tifinagh,"Tifinagh"},
+    {QChar::Script_SylotiNagri,"SylotiNagri"},
+    {QChar::Script_OldPersian,"OldPersian"},
+    {QChar::Script_Kharoshthi,"Kharoshthi"},
+    {QChar::Script_Balinese,"Balinese"},
+    {QChar::Script_Cuneiform,"Cuneiform"},
+    {QChar::Script_Phoenician,"Phoenician"},
+    {QChar::Script_PhagsPa,"PhagsPa"},
+    {QChar::Script_Nko,"Nko"},
+    {QChar::Script_Sundanese,"Sundanese"},
+    {QChar::Script_Lepcha,"Lepcha"},
+    {QChar::Script_OlChiki,"OlChiki"},
+    {QChar::Script_Vai,"Vai"},
+    {QChar::Script_Saurashtra,"Saurashtra"},
+    {QChar::Script_KayahLi,"KayahLi"},
+    {QChar::Script_Rejang,"Rejang"},
+    {QChar::Script_Lycian,"Lycian"},
+    {QChar::Script_Carian,"Carian"},
+    {QChar::Script_Lydian,"Lydian"},
+    {QChar::Script_Cham,"Cham"},
+    {QChar::Script_TaiTham,"TaiTham"},
+    {QChar::Script_TaiViet,"TaiViet"},
+    {QChar::Script_Avestan,"Avestan"},
+    {QChar::Script_EgyptianHieroglyphs,"EgyptianHieroglyphs"},
+    {QChar::Script_Samaritan,"Samaritan"},
+    {QChar::Script_Lisu,"Lisu"},
+    {QChar::Script_Bamum,"Bamum"},
+    {QChar::Script_Javanese,"Javanese"},
+    {QChar::Script_MeeteiMayek,"MeeteiMayek"},
+    {QChar::Script_ImperialAramaic,"ImperialAramaic"},
+    {QChar::Script_OldSouthArabian,"OldSouthArabian"},
+    {QChar::Script_InscriptionalParthian,"InscriptionalParthian"},
+    {QChar::Script_InscriptionalPahlavi,"InscriptionalPahlavi"},
+    {QChar::Script_OldTurkic,"OldTurkic"},
+    {QChar::Script_Kaithi,"Kaithi"},
+    {QChar::Script_Batak,"Batak"},
+    {QChar::Script_Brahmi,"Brahmi"},
+    {QChar::Script_Mandaic,"Mandaic"},
+    {QChar::Script_Chakma,"Chakma"},
+    {QChar::Script_MeroiticCursive,"MeroiticCursive"},
+    {QChar::Script_MeroiticHieroglyphs,"MeroiticHieroglyphs"},
+    {QChar::Script_Miao,"Miao"},
+    {QChar::Script_Sharada,"Sharada"},
+    {QChar::Script_SoraSompeng,"SoraSompeng"},
+    {QChar::Script_Takri,"Takri"}
+};
 
 typedef QHash<uint, QString> UnicodeNormalizationMap_t;
 typedef QString (*ScriptBasedNormalizer)(uint);
@@ -1199,8 +1146,6 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0xFE84,QString::fromUtf8("أ"));
 
     UN_Arabic.insert(0x673,QString::fromUtf8("إ"));
-    UN_Arabic.insert(0x673,QString::fromUtf8("إ"));
-    UN_Arabic.insert(0x673,QString::fromUtf8("إ"));
     UN_Arabic.insert(0xFE87,QString::fromUtf8("إ"));
     UN_Arabic.insert(0xFE88,QString::fromUtf8("إ"));
 
@@ -1214,21 +1159,21 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x754,QString::fromUtf8("ب"));
     UN_Arabic.insert(0x755,QString::fromUtf8("ب"));
     UN_Arabic.insert(0x756,QString::fromUtf8("ب"));
-    UN_Arabic.insert(0xFB52,QString::fromUtf8("ب"));
-    UN_Arabic.insert(0xFB53,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFB52,QString::fromUtf8("ب") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB53,QString::fromUtf8("ب") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB54,QString::fromUtf8("ب"));
     UN_Arabic.insert(0xFB55,QString::fromUtf8("ب"));
-    UN_Arabic.insert(0xFE8F,QString::fromUtf8("ب"));
-    UN_Arabic.insert(0xFE90,QString::fromUtf8("ب"));
+    UN_Arabic.insert(0xFE8F,QString::fromUtf8("ب") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFE90,QString::fromUtf8("ب") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFE91,QString::fromUtf8("ب"));
     UN_Arabic.insert(0xFE92,QString::fromUtf8("ب"));
 
-    UN_Arabic.insert(0xFB56,QString::fromUtf8("پ"));
-    UN_Arabic.insert(0xFB57,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB56,QString::fromUtf8("پ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB57,QString::fromUtf8("پ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB58,QString::fromUtf8("پ"));
     UN_Arabic.insert(0xFB59,QString::fromUtf8("پ"));
-    UN_Arabic.insert(0xFB5A,QString::fromUtf8("پ"));
-    UN_Arabic.insert(0xFB5B,QString::fromUtf8("پ"));
+    UN_Arabic.insert(0xFB5A,QString::fromUtf8("پ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB5B,QString::fromUtf8("پ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB5C,QString::fromUtf8("پ"));
     UN_Arabic.insert(0xFB5D,QString::fromUtf8("پ"));
 
@@ -1237,54 +1182,54 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x67C,QString::fromUtf8("ت"));
     UN_Arabic.insert(0x67F,QString::fromUtf8("ت"));
     UN_Arabic.insert(0x753,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFB5E,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFB5F,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB5E,QString::fromUtf8("ت") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB5F,QString::fromUtf8("ت") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB60,QString::fromUtf8("ت"));
     UN_Arabic.insert(0xFB61,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFB62,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFB63,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFB64,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFB65,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFB66,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFB67,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFB66,QString::fromUtf8("ت") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB67,QString::fromUtf8("ت") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB68,QString::fromUtf8("ت"));
     UN_Arabic.insert(0xFB69,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFE95,QString::fromUtf8("ت"));
-    UN_Arabic.insert(0xFE96,QString::fromUtf8("ت"));
+    UN_Arabic.insert(0xFE95,QString::fromUtf8("ت") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFE96,QString::fromUtf8("ت") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFE97,QString::fromUtf8("ت"));
     UN_Arabic.insert(0xFE98,QString::fromUtf8("ت"));
 
     UN_Arabic.insert(0x67D,QString::fromUtf8("ث"));
     UN_Arabic.insert(0x751,QString::fromUtf8("ث"));
-    UN_Arabic.insert(0xFE99,QString::fromUtf8("ث"));
-    UN_Arabic.insert(0xFE9A,QString::fromUtf8("ث"));
+    UN_Arabic.insert(0xFE99,QString::fromUtf8("ث") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFE9A,QString::fromUtf8("ث") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFE9B,QString::fromUtf8("ث"));
     UN_Arabic.insert(0xFE9C,QString::fromUtf8("ث"));
+    UN_Arabic.insert(0xFB62,QString::fromUtf8("ث") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB63,QString::fromUtf8("ث") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB64,QString::fromUtf8("ث"));
+    UN_Arabic.insert(0xFB65,QString::fromUtf8("ث"));
+
 
     UN_Arabic.insert(0x683,QString::fromUtf8("ج"));
     UN_Arabic.insert(0x684,QString::fromUtf8("ج"));
-    UN_Arabic.insert(0xFB72,QString::fromUtf8("ج"));
-    UN_Arabic.insert(0xFB73,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB72,QString::fromUtf8("ج") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB73,QString::fromUtf8("ج") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB74,QString::fromUtf8("ج"));
     UN_Arabic.insert(0xFB75,QString::fromUtf8("ج"));
-    UN_Arabic.insert(0xFB76,QString::fromUtf8("ج"));
-    UN_Arabic.insert(0xFB77,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB76,QString::fromUtf8("ج") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB77,QString::fromUtf8("ج") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB78,QString::fromUtf8("ج"));
-    UN_Arabic.insert(0xFE9D,QString::fromUtf8("ج"));
-    UN_Arabic.insert(0xFE9E,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFB79,QString::fromUtf8("ج"));
+    UN_Arabic.insert(0xFE9D,QString::fromUtf8("ج") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFE9E,QString::fromUtf8("ج") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFE9F,QString::fromUtf8("ج"));
     UN_Arabic.insert(0xFEA0,QString::fromUtf8("ج"));
 
     UN_Arabic.insert(0x687,QString::fromUtf8("چ"));
     UN_Arabic.insert(0x6BF,QString::fromUtf8("چ"));
-    UN_Arabic.insert(0xFB78,QString::fromUtf8("چ"));
-    UN_Arabic.insert(0xFB79,QString::fromUtf8("چ"));
-    UN_Arabic.insert(0xFB7A,QString::fromUtf8("چ"));
-    UN_Arabic.insert(0xFB7B,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB7A,QString::fromUtf8("چ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB7B,QString::fromUtf8("چ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB7C,QString::fromUtf8("چ"));
     UN_Arabic.insert(0xFB7D,QString::fromUtf8("چ"));
-    UN_Arabic.insert(0xFB7E,QString::fromUtf8("چ"));
-    UN_Arabic.insert(0xFB7F,QString::fromUtf8("چ"));
+    UN_Arabic.insert(0xFB7E,QString::fromUtf8("چ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB7F,QString::fromUtf8("چ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB80,QString::fromUtf8("چ"));
     UN_Arabic.insert(0xFB81,QString::fromUtf8("چ"));
 
@@ -1295,13 +1240,13 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x758,QString::fromUtf8("ح"));
     UN_Arabic.insert(0x76D,QString::fromUtf8("ح"));
     UN_Arabic.insert(0x76E,QString::fromUtf8("ح"));
-    UN_Arabic.insert(0xFEA1,QString::fromUtf8("ح"));
-    UN_Arabic.insert(0xFEA2,QString::fromUtf8("ح"));
+    UN_Arabic.insert(0xFEA1,QString::fromUtf8("ح") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEA2,QString::fromUtf8("ح") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEA3,QString::fromUtf8("ح"));
     UN_Arabic.insert(0xFEA4,QString::fromUtf8("ح"));
 
-    UN_Arabic.insert(0xFEA5,QString::fromUtf8("خ"));
-    UN_Arabic.insert(0xFEA6,QString::fromUtf8("خ"));
+    UN_Arabic.insert(0xFEA5,QString::fromUtf8("خ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEA6,QString::fromUtf8("خ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEA7,QString::fromUtf8("خ"));
     UN_Arabic.insert(0xFEA8,QString::fromUtf8("خ"));
 
@@ -1359,40 +1304,39 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x69A,QString::fromUtf8("س"));
     UN_Arabic.insert(0x69B,QString::fromUtf8("س"));
     UN_Arabic.insert(0x75C,QString::fromUtf8("س"));
-    UN_Arabic.insert(0x76C,QString::fromUtf8("س"));
-    UN_Arabic.insert(0xFEB1,QString::fromUtf8("س"));
-    UN_Arabic.insert(0xFEB2,QString::fromUtf8("س"));
+    UN_Arabic.insert(0xFEB1,QString::fromUtf8("س") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEB2,QString::fromUtf8("س") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEB3,QString::fromUtf8("س"));
     UN_Arabic.insert(0xFEB4,QString::fromUtf8("س"));
 
     UN_Arabic.insert(0x69C,QString::fromUtf8("ش"));
     UN_Arabic.insert(0x6FA,QString::fromUtf8("ش"));
-    UN_Arabic.insert(0xFEB5,QString::fromUtf8("ش"));
-    UN_Arabic.insert(0xFEB6,QString::fromUtf8("ش"));
+    UN_Arabic.insert(0xFEB5,QString::fromUtf8("ش") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEB6,QString::fromUtf8("ش") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEB7,QString::fromUtf8("ش"));
     UN_Arabic.insert(0xFEB8,QString::fromUtf8("ش"));
 
     UN_Arabic.insert(0x69D,QString::fromUtf8("ص"));
     UN_Arabic.insert(0x69E,QString::fromUtf8("ص"));
-    UN_Arabic.insert(0xFEB9,QString::fromUtf8("ص"));
-    UN_Arabic.insert(0xFEBA,QString::fromUtf8("ص"));
+    UN_Arabic.insert(0xFEB9,QString::fromUtf8("ص") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEBA,QString::fromUtf8("ص") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEBB,QString::fromUtf8("ص"));
     UN_Arabic.insert(0xFEBC,QString::fromUtf8("ص"));
 
     UN_Arabic.insert(0x6FB,QString::fromUtf8("ض"));
-    UN_Arabic.insert(0xFEBD,QString::fromUtf8("ض"));
-    UN_Arabic.insert(0xFEBE,QString::fromUtf8("ض"));
+    UN_Arabic.insert(0xFEBD,QString::fromUtf8("ض") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEBE,QString::fromUtf8("ض") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEBF,QString::fromUtf8("ض"));
     UN_Arabic.insert(0xFEC0,QString::fromUtf8("ض"));
 
     UN_Arabic.insert(0x69F,QString::fromUtf8("ط"));
-    UN_Arabic.insert(0xFEC1,QString::fromUtf8("ط"));
-    UN_Arabic.insert(0xFEC2,QString::fromUtf8("ط"));
+    UN_Arabic.insert(0xFEC1,QString::fromUtf8("ط") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEC2,QString::fromUtf8("ط") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEC3,QString::fromUtf8("ط"));
     UN_Arabic.insert(0xFEC4,QString::fromUtf8("ط"));
 
-    UN_Arabic.insert(0xFEC5,QString::fromUtf8("ظ"));
-    UN_Arabic.insert(0xFEC6,QString::fromUtf8("ظ"));
+    UN_Arabic.insert(0xFEC5,QString::fromUtf8("ظ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEC6,QString::fromUtf8("ظ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEC7,QString::fromUtf8("ظ"));
     UN_Arabic.insert(0xFEC8,QString::fromUtf8("ظ"));
 
@@ -1400,14 +1344,14 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x75D,QString::fromUtf8("ع"));
     UN_Arabic.insert(0x75E,QString::fromUtf8("ع"));
     UN_Arabic.insert(0x75F,QString::fromUtf8("ع"));
-    UN_Arabic.insert(0xFEC9,QString::fromUtf8("ع"));
-    UN_Arabic.insert(0xFECA,QString::fromUtf8("ع"));
+    UN_Arabic.insert(0xFEC9,QString::fromUtf8("ع") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFECA,QString::fromUtf8("ع") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFECB,QString::fromUtf8("ع"));
     UN_Arabic.insert(0xFECC,QString::fromUtf8("ع"));
 
     UN_Arabic.insert(0x6FC,QString::fromUtf8("غ"));
-    UN_Arabic.insert(0xFECD,QString::fromUtf8("غ"));
-    UN_Arabic.insert(0xFECE,QString::fromUtf8("غ"));
+    UN_Arabic.insert(0xFECD,QString::fromUtf8("غ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFECE,QString::fromUtf8("غ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFECF,QString::fromUtf8("غ"));
     UN_Arabic.insert(0xFED0,QString::fromUtf8("غ"));
 
@@ -1419,24 +1363,24 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6A6,QString::fromUtf8("ف"));
     UN_Arabic.insert(0x760,QString::fromUtf8("ف"));
     UN_Arabic.insert(0x761,QString::fromUtf8("ف"));
-    UN_Arabic.insert(0xFB6A,QString::fromUtf8("ف"));
-    UN_Arabic.insert(0xFB6B,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB6A,QString::fromUtf8("ف") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB6B,QString::fromUtf8("ف") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB6C,QString::fromUtf8("ف"));
     UN_Arabic.insert(0xFB6D,QString::fromUtf8("ف"));
-    UN_Arabic.insert(0xFB6E,QString::fromUtf8("ف"));
-    UN_Arabic.insert(0xFB6F,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFB6E,QString::fromUtf8("ف") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB6F,QString::fromUtf8("ف") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB70,QString::fromUtf8("ف"));
     UN_Arabic.insert(0xFB71,QString::fromUtf8("ف"));
-    UN_Arabic.insert(0xFED1,QString::fromUtf8("ف"));
-    UN_Arabic.insert(0xFED2,QString::fromUtf8("ف"));
+    UN_Arabic.insert(0xFED1,QString::fromUtf8("ف") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFED2,QString::fromUtf8("ف") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFED3,QString::fromUtf8("ف"));
     UN_Arabic.insert(0xFED4,QString::fromUtf8("ف"));
 
     UN_Arabic.insert(0x66F,QString::fromUtf8("ق"));
     UN_Arabic.insert(0x6A7,QString::fromUtf8("ق"));
     UN_Arabic.insert(0x6A8,QString::fromUtf8("ق"));
-    UN_Arabic.insert(0xFED5,QString::fromUtf8("ق"));
-    UN_Arabic.insert(0xFED6,QString::fromUtf8("ق"));
+    UN_Arabic.insert(0xFED5,QString::fromUtf8("ق") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFED6,QString::fromUtf8("ق") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFED7,QString::fromUtf8("ق"));
     UN_Arabic.insert(0xFED8,QString::fromUtf8("ق"));
 
@@ -1453,16 +1397,16 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x763,QString::fromUtf8("ک"));
     UN_Arabic.insert(0x764,QString::fromUtf8("ک"));
     UN_Arabic.insert(0x76F,QString::fromUtf8("ک"));
-    UN_Arabic.insert(0xFB8E,QString::fromUtf8("ک"));
-    UN_Arabic.insert(0xFB8F,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFB8E,QString::fromUtf8("ک") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB8F,QString::fromUtf8("ک") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB90,QString::fromUtf8("ک"));
     UN_Arabic.insert(0xFB91,QString::fromUtf8("ک"));
-    UN_Arabic.insert(0xFBD3,QString::fromUtf8("ک"));
-    UN_Arabic.insert(0xFBD4,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFBD3,QString::fromUtf8("ک") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBD4,QString::fromUtf8("ک") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFBD5,QString::fromUtf8("ک"));
     UN_Arabic.insert(0xFBD6,QString::fromUtf8("ک"));
-    UN_Arabic.insert(0xFED9,QString::fromUtf8("ک"));
-    UN_Arabic.insert(0xFEDA,QString::fromUtf8("ک"));
+    UN_Arabic.insert(0xFED9,QString::fromUtf8("ک") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEDA,QString::fromUtf8("ک") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEDB,QString::fromUtf8("ک"));
     UN_Arabic.insert(0xFEDC,QString::fromUtf8("ک"));
 
@@ -1471,16 +1415,16 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6B2,QString::fromUtf8("گ"));
     UN_Arabic.insert(0x6B3,QString::fromUtf8("گ"));
     UN_Arabic.insert(0x6B4,QString::fromUtf8("گ"));
-    UN_Arabic.insert(0xFB92,QString::fromUtf8("گ"));
-    UN_Arabic.insert(0xFB93,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB92,QString::fromUtf8("گ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB93,QString::fromUtf8("گ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB94,QString::fromUtf8("گ"));
     UN_Arabic.insert(0xFB95,QString::fromUtf8("گ"));
-    UN_Arabic.insert(0xFB96,QString::fromUtf8("گ"));
-    UN_Arabic.insert(0xFB97,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB96,QString::fromUtf8("گ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB97,QString::fromUtf8("گ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB98,QString::fromUtf8("گ"));
     UN_Arabic.insert(0xFB99,QString::fromUtf8("گ"));
-    UN_Arabic.insert(0xFB9A,QString::fromUtf8("گ"));
-    UN_Arabic.insert(0xFB9B,QString::fromUtf8("گ"));
+    UN_Arabic.insert(0xFB9A,QString::fromUtf8("گ") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB9B,QString::fromUtf8("گ") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFB9C,QString::fromUtf8("گ"));
     UN_Arabic.insert(0xFB9D,QString::fromUtf8("گ"));
 
@@ -1489,16 +1433,16 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6B7,QString::fromUtf8("ل"));
     UN_Arabic.insert(0x6B8,QString::fromUtf8("ل"));
     UN_Arabic.insert(0x76A,QString::fromUtf8("ل"));
-    UN_Arabic.insert(0xFEDD,QString::fromUtf8("ل"));
-    UN_Arabic.insert(0xFEDE,QString::fromUtf8("ل"));
+    UN_Arabic.insert(0xFEDD,QString::fromUtf8("ل") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEDE,QString::fromUtf8("ل") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEDF,QString::fromUtf8("ل"));
     UN_Arabic.insert(0xFEE0,QString::fromUtf8("ل"));
 
     UN_Arabic.insert(0x6FE,QString::fromUtf8("م"));
     UN_Arabic.insert(0x765,QString::fromUtf8("م"));
     UN_Arabic.insert(0x766,QString::fromUtf8("م"));
-    UN_Arabic.insert(0xFEE1,QString::fromUtf8("م"));
-    UN_Arabic.insert(0xFEE2,QString::fromUtf8("م"));
+    UN_Arabic.insert(0xFEE1,QString::fromUtf8("م") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEE2,QString::fromUtf8("م") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEE3,QString::fromUtf8("م"));
     UN_Arabic.insert(0xFEE4,QString::fromUtf8("م"));
 
@@ -1510,16 +1454,14 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x767,QString::fromUtf8("ن"));
     UN_Arabic.insert(0x768,QString::fromUtf8("ن"));
     UN_Arabic.insert(0x769,QString::fromUtf8("ن"));
-    UN_Arabic.insert(0xFB9E,QString::fromUtf8("ن"));
-    UN_Arabic.insert(0xFB9F,QString::fromUtf8("ن"));
-    UN_Arabic.insert(0xFB9E,QString::fromUtf8("ن"));
-    UN_Arabic.insert(0xFB9F,QString::fromUtf8("ن"));
-    UN_Arabic.insert(0xFBA0,QString::fromUtf8("ن"));
-    UN_Arabic.insert(0xFBA1,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFB9E,QString::fromUtf8("ن") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFB9F,QString::fromUtf8("ن") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBA0,QString::fromUtf8("ن") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBA1,QString::fromUtf8("ن") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFBA2,QString::fromUtf8("ن"));
     UN_Arabic.insert(0xFBA3,QString::fromUtf8("ن"));
-    UN_Arabic.insert(0xFEE5,QString::fromUtf8("ن"));
-    UN_Arabic.insert(0xFEE6,QString::fromUtf8("ن"));
+    UN_Arabic.insert(0xFEE5,QString::fromUtf8("ن") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEE6,QString::fromUtf8("ن") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEE7,QString::fromUtf8("ن"));
     UN_Arabic.insert(0xFEE8,QString::fromUtf8("ن"));
 
@@ -1560,23 +1502,22 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6C2,QString::fromUtf8("ه"));
     UN_Arabic.insert(0x6C3,QString::fromUtf8("ه"));
     UN_Arabic.insert(0x6D5,QString::fromUtf8("ه"));
-    UN_Arabic.insert(0xFBA4,QString::fromUtf8("ه"));
-    UN_Arabic.insert(0xFBA5,QString::fromUtf8("ه"));
-    UN_Arabic.insert(0xFBA6,QString::fromUtf8("ه"));
-    UN_Arabic.insert(0xFBA7,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBA4,QString::fromUtf8("ه") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBA5,QString::fromUtf8("ه") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBA6,QString::fromUtf8("ه") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBA7,QString::fromUtf8("ه") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFBA8,QString::fromUtf8("ه"));
     UN_Arabic.insert(0xFBA9,QString::fromUtf8("ه"));
-    UN_Arabic.insert(0xFBAA,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFBAA,QString::fromUtf8("ه") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFBAB,QString::fromUtf8("ه"));
     UN_Arabic.insert(0xFBAC,QString::fromUtf8("ه"));
     UN_Arabic.insert(0xFBAD,QString::fromUtf8("ه"));
     UN_Arabic.insert(0xFE93,QString::fromUtf8("ه"));
     UN_Arabic.insert(0xFE94,QString::fromUtf8("ه"));
-    UN_Arabic.insert(0xFEE9,QString::fromUtf8("ه"));
-    UN_Arabic.insert(0xFEEA,QString::fromUtf8("ه"));
+    UN_Arabic.insert(0xFEE9,QString::fromUtf8("ه") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEEA,QString::fromUtf8("ه") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEEB,QString::fromUtf8("ه"));
     UN_Arabic.insert(0xFEEC,QString::fromUtf8("ه"));
-    UN_Arabic.insert(0xFEED,QString::fromUtf8("ه"));
 
     UN_Arabic.insert(0x620,QString::fromUtf8("ی"));
     UN_Arabic.insert(0x63D,QString::fromUtf8("ی"));
@@ -1592,22 +1533,22 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0x6D1,QString::fromUtf8("ی"));
     UN_Arabic.insert(0x6D2,QString::fromUtf8("ی"));
     UN_Arabic.insert(0x6D3,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFBAE,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFBAF,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFBB0,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFBB1,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFBE4,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFBE5,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBAE,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBAF,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBB0,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBB1,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBE4,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBE5,QString::fromUtf8("ی") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFBE6,QString::fromUtf8("ی"));
     UN_Arabic.insert(0xFBE7,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFBFC,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFBFD,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFBFC,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFBFD,QString::fromUtf8("ی") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFBFE,QString::fromUtf8("ی"));
     UN_Arabic.insert(0xFBFF,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFEEF,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFEF0,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFEF1,QString::fromUtf8("ی"));
-    UN_Arabic.insert(0xFEF2,QString::fromUtf8("ی"));
+    UN_Arabic.insert(0xFEEF,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEF0,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEF1,QString::fromUtf8("ی") + ARABIC_ZWNJ);
+    UN_Arabic.insert(0xFEF2,QString::fromUtf8("ی") + ARABIC_ZWNJ);
     UN_Arabic.insert(0xFEF3,QString::fromUtf8("ی"));
     UN_Arabic.insert(0xFEF4,QString::fromUtf8("ی"));
 
@@ -1631,8 +1572,6 @@ void initUnicodeNormalizers(){
     UN_Arabic.insert(0xFBF9,QString::fromUtf8("ئ"));
     UN_Arabic.insert(0xFBFA,QString::fromUtf8("ئ"));
     UN_Arabic.insert(0xFBFB,QString::fromUtf8("ئ"));
-    UN_Arabic.insert(0xFBFC,QString::fromUtf8("ئ"));
-    UN_Arabic.insert(0xFBFD,QString::fromUtf8("ئ"));
     UN_Arabic.insert(0xFC5D,QString::fromUtf8("ئ"));
     UN_Arabic.insert(0xFE89,QString::fromUtf8("ئ"));
     UN_Arabic.insert(0xFE8A,QString::fromUtf8("ئ"));
@@ -2221,6 +2160,113 @@ QString arabicNormalizer(uint _ucs4){
     return unicodeNormalize(_ucs4, UN_Arabic, false);
 }
 
+static QMap<QChar::Script, ScriptBasedNormalizer> QCharScriptToNormalizerMap {
+    {QChar::Script_Unknown, NULL},
+    {QChar::Script_Inherited, NULL},
+    {QChar::Script_Common, latin2Ascii},
+    {QChar::Script_Latin, latin2Ascii},
+    {QChar::Script_Greek, greek2Ascii},
+    {QChar::Script_Cyrillic, cyrillic2Ascii},
+    {QChar::Script_Armenian, armenina2Ascii},
+    {QChar::Script_Hebrew, acceptAll},
+    {QChar::Script_Arabic, arabicNormalizer},
+    {QChar::Script_Syriac, acceptAll},
+    {QChar::Script_Thaana, acceptAll},
+    {QChar::Script_Devanagari, acceptAll},
+    {QChar::Script_Bengali, acceptAll},
+    {QChar::Script_Gurmukhi, acceptAll},
+    {QChar::Script_Gujarati, acceptAll},
+    {QChar::Script_Oriya, acceptAll},
+    {QChar::Script_Tamil, acceptAll},
+    {QChar::Script_Telugu, acceptAll},
+    {QChar::Script_Kannada, acceptAll},
+    {QChar::Script_Malayalam, acceptAll},
+    {QChar::Script_Sinhala, acceptAll},
+    {QChar::Script_Thai, acceptAll},
+    {QChar::Script_Lao, acceptAll},
+    {QChar::Script_Tibetan, acceptAll},
+    {QChar::Script_Myanmar, acceptAll},
+    {QChar::Script_Georgian, acceptAll},
+    {QChar::Script_Hangul, acceptAll},
+    {QChar::Script_Ethiopic, NULL},
+    {QChar::Script_Cherokee, NULL},
+    {QChar::Script_CanadianAboriginal, NULL},
+    {QChar::Script_Ogham, acceptAll},
+    {QChar::Script_Runic, acceptAll},
+    {QChar::Script_Khmer, acceptAll},
+    {QChar::Script_Mongolian, NULL},
+    {QChar::Script_Hiragana, NULL},
+    {QChar::Script_Katakana, NULL},
+    {QChar::Script_Bopomofo, NULL},
+    {QChar::Script_Han, NULL},
+    {QChar::Script_Yi, NULL},
+    {QChar::Script_OldItalic, NULL},
+    {QChar::Script_Gothic, NULL},
+    {QChar::Script_Deseret, NULL},
+    {QChar::Script_Tagalog, NULL},
+    {QChar::Script_Hanunoo, NULL},
+    {QChar::Script_Buhid, NULL},
+    {QChar::Script_Tagbanwa, NULL},
+    {QChar::Script_Coptic, NULL},
+    {QChar::Script_Limbu, NULL},
+    {QChar::Script_TaiLe, NULL},
+    {QChar::Script_LinearB, NULL},
+    {QChar::Script_Ugaritic, NULL},
+    {QChar::Script_Shavian, NULL},
+    {QChar::Script_Osmanya, NULL},
+    {QChar::Script_Cypriot, NULL},
+    {QChar::Script_Braille, acceptAll},
+    {QChar::Script_Buginese, NULL},
+    {QChar::Script_NewTaiLue, NULL},
+    {QChar::Script_Glagolitic, NULL},
+    {QChar::Script_Tifinagh, NULL},
+    {QChar::Script_SylotiNagri, NULL},
+    {QChar::Script_OldPersian, NULL},
+    {QChar::Script_Kharoshthi, NULL},
+    {QChar::Script_Balinese, NULL},
+    {QChar::Script_Cuneiform, NULL},
+    {QChar::Script_Phoenician, NULL},
+    {QChar::Script_PhagsPa, NULL},
+    {QChar::Script_Nko, acceptAll},
+    {QChar::Script_Sundanese, NULL},
+    {QChar::Script_Lepcha, NULL},
+    {QChar::Script_OlChiki, NULL},
+    {QChar::Script_Vai, NULL},
+    {QChar::Script_Saurashtra, NULL},
+    {QChar::Script_KayahLi, NULL},
+    {QChar::Script_Rejang, NULL},
+    {QChar::Script_Lycian, NULL},
+    {QChar::Script_Carian, NULL},
+    {QChar::Script_Lydian, NULL},
+    {QChar::Script_Cham, NULL},
+    {QChar::Script_TaiTham, NULL},
+    {QChar::Script_TaiViet, NULL},
+    {QChar::Script_Avestan, NULL},
+    {QChar::Script_EgyptianHieroglyphs, NULL},
+    {QChar::Script_Samaritan, NULL},
+    {QChar::Script_Lisu, NULL},
+    {QChar::Script_Bamum, NULL},
+    {QChar::Script_Javanese, NULL},
+    {QChar::Script_MeeteiMayek, NULL},
+    {QChar::Script_ImperialAramaic, NULL},
+    {QChar::Script_OldSouthArabian, NULL},
+    {QChar::Script_InscriptionalParthian, NULL},
+    {QChar::Script_InscriptionalPahlavi, NULL},
+    {QChar::Script_OldTurkic, NULL},
+    {QChar::Script_Kaithi, NULL},
+    {QChar::Script_Batak, NULL},
+    {QChar::Script_Brahmi, NULL},
+    {QChar::Script_Mandaic, NULL},
+    {QChar::Script_Chakma, NULL},
+    {QChar::Script_MeroiticCursive, NULL},
+    {QChar::Script_MeroiticHieroglyphs, NULL},
+    {QChar::Script_Miao, NULL},
+    {QChar::Script_Sharada, NULL},
+    {QChar::Script_SoraSompeng, NULL},
+    {QChar::Script_Takri, NULL}
+};
+
+/*
 const ScriptBasedNormalizer ScriptBasedNormalizers[]={
     latin2Ascii,//    Common,       //0
     greek2Ascii,//    Greek,        //1
@@ -2290,6 +2336,7 @@ const ScriptBasedNormalizer ScriptBasedNormalizers[]={
     NULL,//    Phoenician,   //66
     NULL,//    PhagsPa       //67
 };
+*/
 
 }
 }
