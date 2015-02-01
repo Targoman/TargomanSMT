@@ -118,6 +118,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
         Prefix = Buffer.mid(0,2);
         Buffer.remove(0,2); //Remove Bi
 
+
         //zhnDebug: ناخوبیهایشان
         Buffer = this->processStartingWithBi_Ba_Na(this->CanStartWithBi_Ba, Prefix, Buffer);
         if (Buffer.size())
@@ -182,6 +183,12 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
     return this->processTar_Tarin("", ComplexWord, "");
 }
 
+/**
+ * @brief this function decide huristicly wethere input word is suspious for interactivly checking or not.
+ * @param _inputWord input word.
+ * @return true if suspicious else false.
+ */
+
 bool clsPersianSpellCorrector::canBeCheckedInteractive(const QString &_inputWord) const
 {
     return false; //Temporarily ignored
@@ -193,11 +200,17 @@ bool clsPersianSpellCorrector::canBeCheckedInteractive(const QString &_inputWord
             this->AutoCorrectTerms.values().contains(_inputWord) == false;
 }
 
+/**
+ * @brief This function adds new terms to #AutoCorrectTerms variable.
+ * @param _from wrong word that we want to be corrected automatically.
+ * @param _to correct word.
+ */
 void clsPersianSpellCorrector::storeAutoCorrectTerm(const QString &_from, const QString &_to)
 {
     this->AutoCorrectTerms.insert(_from, _to);
     /// @todo save to file
 }
+
 
 QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString>& _set,
                                                               const QString &_prefix,
@@ -259,9 +272,9 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
     if(this->VerbStemPresent.contains(Buffer))
         return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
     Postfix = Normalizer::sidesTrim(Postfix.remove(0,Buffer.size()));
+    // special if for verbs like می زند
     if (Postfix.size() && Postfix.startsWith(PERSIAN_Noon)){
         Buffer = Normalizer::sidesTrim(Buffer.append(PERSIAN_Noon));
-        //zhnDebug: can not understand the logic of it.
         if(this->VerbStemPresent.contains(Buffer))
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
     }
