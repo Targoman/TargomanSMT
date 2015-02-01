@@ -42,7 +42,7 @@ void UnitTest::normalizeText()
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "می خورده‌بودم",
-    "می‌خورده‌ باشم"
+    "می‌خورده‌ بودم"
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "نا مردهایشان",

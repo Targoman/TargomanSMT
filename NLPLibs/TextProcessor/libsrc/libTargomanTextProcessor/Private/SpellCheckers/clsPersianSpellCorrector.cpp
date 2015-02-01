@@ -286,6 +286,7 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
         return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
 
     Postfix.remove(0,Buffer.size());
+    // special if for verbs like می زند
     if (Postfix.size() && Postfix.startsWith(PERSIAN_Noon)){
         Buffer = Normalizer::sidesTrim(Buffer.append(PERSIAN_Noon));
         if(this->VerbStemPast.contains(Buffer))

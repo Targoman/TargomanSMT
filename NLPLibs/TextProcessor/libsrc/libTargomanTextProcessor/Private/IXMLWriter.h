@@ -27,9 +27,19 @@ namespace Private {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exIXMLWriter, exTextProcessor);
 
+/**
+ * @brief The IXMLWriter class, provides some functions to convert input text to inline XML format.
+ *
+ * This function detects special contents of a text (like email adresses, abbreviations, dates, ...) and tags them in ixml format.
+ * The main goal of this class is to distinguish stop-word dots from dots that are between letters of abreviations or dots that are after numbers in ordered lists.
+ * Other functionalities and tags have lower importance for us.
+ */
 class IXMLWriter
 {
 public:
+    /**
+     * @brief Makes (if needed) and return an initialized instance of this class.
+     */
     static IXMLWriter& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new IXMLWriter));}
     void init(const QString &_configFile);
 
@@ -57,18 +67,18 @@ private:
 
 
 private:
-    static IXMLWriter*      Instance;
+    static IXMLWriter*      Instance;       /**< static instance of this class */
 
     QTextStream* TempStream;
     QTextStream* InStream;
     QTextStream* FinalOutStream;
 
-    QRegExp RxURL;
-    QRegExp RxEmail;
+    QRegExp RxURL;                          /** A Regular expression to detect URLs*/
+    QRegExp RxEmail;                        /** A Regular expression to detect email addresses*/
 
     QRegExp RxAbbr;
     QRegExp RxAbbrDotless;
-    QRegExp RxAbbrDic;
+    QRegExp RxAbbrDic;                      /** A set of Abbriviation which will be loaded from dictionaty */
 
     QRegExp RxMultiDots;
 
@@ -82,15 +92,15 @@ private:
     QRegExp RxUnderlineSeparator;
     QRegExp RxNumberLeft;
     QRegExp RxNumberRight;
-    QRegExp RxNumbering;
+    QRegExp RxNumbering;                    /** A Regular expression to detect any kind of number. It helps to see wethere it is number or not. More specific RegExp will be used to detect variation of numbers.*/
     QRegExp RxPersianLatin;
     QRegExp RxPersianNumber;
     QRegExp RxLatinPersian;
-    QRegExp RxNumberValidator;
-    QRegExp RxURLValidator;
+    QRegExp RxNumberValidator;              /** A Regular expression to detect URLs*/
+    QRegExp RxURLValidator;                 /** A Regular expression to detect a line containing a URL*/
 
-    Normalizer& NormalizerInstance;
-    SpellCorrector& SpellCorrectorInstance;
+    Normalizer& NormalizerInstance;         /** An instance of Normalizer class for faster access */
+    SpellCorrector& SpellCorrectorInstance; /** An instance of SpellCorrector class for faster access */
 };
 
 }

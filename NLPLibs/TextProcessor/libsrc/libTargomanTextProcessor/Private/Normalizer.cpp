@@ -35,6 +35,16 @@ Normalizer::Normalizer()
 {
     initUnicodeNormalizers();
 }
+
+#define POP_DIRECTIONAL_FORMATTING      QChar(0x202c)
+#define RIGHT_TO_LEFT_EMBEDDING         QChar(0x202b)
+#define LEFT_TO_RIGHT_EMBEDDING         QChar(0x202a)
+#define ARABIC_THOUSAND_SEPERATOR       QChar(0x066C)
+#define WEIRD_THOUSAND_SEPERATOR        QChar(0xCB99)
+#define WEIRD_DECIMAL_POINT             QChar(0xC2B7)
+#define ARABIC_DECIMAL_POINT            QChar(0x066B)
+
+
 /**
  * @brief Normalizes a character based on next char, last char, normalization config file and binary table.
  * @param _char character which should be normalized.
@@ -73,29 +83,30 @@ QString Normalizer::normalize(const QChar &_char,
                 this->LastChar.isPunct() ||
                 this->LastChar.isNull() ||
                 NextCharIsNotLeftJoinable)){
-        this->LastChar = QChar();
         return "";
     }
 
     //Temporarily accept [POP DIRECTIONAL FORMATTING] character as it maybe used for ZWNJ
-    if (Char == QChar(0x202c)){
+    if (Char == POP_DIRECTIONAL_FORMATTING){
         this->LastChar = Char;
         return "";
     }
 
     //Convert special ZWNJ to ZWNJ
-    if (Char == QChar(0x202b) && LastChar == QChar(0x202c))
+    if (Char == RIGHT_TO_LEFT_EMBEDDING && LastChar == POP_DIRECTIONAL_FORMATTING)
         return this->normalize(this->LastChar = ARABIC_ZWNJ, _nextChar, false, _line, _phrase, _charPos);
 
     //Convert thousand separators to comma //zhnDebug: Arabic Thousand Seperator is same glyph as comma in some fonts like Tahoma. we can handle it.
     if (LastChar.isDigit() && _nextChar.isDigit() && (
-                Char == QChar(0x066C) || // Arabic Thousand Seperator
-                Char == QChar(0xCB99)))  // some weird Thousand Seperator
+                Char == ARABIC_THOUSAND_SEPERATOR ||
+                Char == WEIRD_THOUSAND_SEPERATOR))
         return this->LastChar = ',';
 
     //Convert special decimal point
     if (LastChar.isDigit() && _nextChar.isDigit() && (
-                Char == QChar(0xC2B7))) // some weird decimal point
+                Char == WEIRD_DECIMAL_POINT ||
+                Char == ARABIC_DECIMAL_POINT
+                ))
         return this->LastChar = '.';
 
     //convert ye hamze, if it is in its isolated or last form, to ye hamze.
@@ -115,31 +126,34 @@ QString Normalizer::normalize(const QChar &_char,
         Q_ASSERT_X(this->BinTable.size(), "Initialized", "Seems that normalizer is not initialized");
         QString Normalized;
         if (Char == ARABIC_ZWNJ ||
-            Char == QChar(0x202c) || // Pop Directional Format
-            Char == QChar(0x202b) || // Right-to-Left Embedding
-            Char == QChar(0x066C) || // Arabic Thousand Seperator
-            Char == QChar(0xCB99) || // some weird Thousand Seperator
-            Char == QChar(0xC2B7))   // some weird decimal point
+            Char == POP_DIRECTIONAL_FORMATTING ||
+            Char == RIGHT_TO_LEFT_EMBEDDING ||
+            Char == ARABIC_THOUSAND_SEPERATOR ||
+            Char == WEIRD_THOUSAND_SEPERATOR ||
+            Char == WEIRD_DECIMAL_POINT)
             Normalized = Char;
         else
             Normalized = this->BinTable.at(Char.unicode()).toString();
 
         if (Normalized.size()){
-            if (Normalized.size() > 1){
+
+            if (_skipRecheck) {
                 this->LastChar = Normalized.at(Normalized.size() - 1);
                 return Normalized;
             }
-            else if (_skipRecheck){
-                return Normalized;
-                this->LastChar = Normalized.at(Normalized.size() - 1);
-            }else{
-                Normalized  = this->normalize(Normalized.at(0),
-                                       _nextChar, true, _line, _phrase, _charPos, true);
-
-                return Normalized;
+            else {
+                for (int i=0; i < Normalized.size(); i++) {
+                    Normalized[i] = this->LastChar =  this->normalize(Normalized.at(i),
+                                                        ((i + 1) < Normalized.size() ? Normalized.at(i+1) : _nextChar),
+                                                        _interactive,
+                                                        _line,
+                                                        _phrase,
+                                                        _charPos,
+                                                        true
+                                                        )[0];
+                }
             }
         }else{
-            this->LastChar = QChar();
             return "";
         }
     }
@@ -173,7 +187,6 @@ QString Normalizer::normalize(const QChar &_char,
 
     //Remove characters defined in config file
     if (this->RemovingList.contains(Char)){
-        this->LastChar = QChar();
         return "";
     }
 
@@ -199,7 +212,6 @@ QString Normalizer::normalize(const QChar &_char,
     if (Char.category() == QChar::Letter_Modifier ||
             Char.category() == QChar::Mark_NonSpacing ||
             Char.category() == QChar::Symbol_Modifier){
-        this->LastChar = QChar();
         return "";
     }
 
@@ -210,19 +222,21 @@ QString Normalizer::normalize(const QChar &_char,
         return this->LastChar = SYMBOL_REMOVED;
 
     if (_skipRecheck)
-        return Char;
+        return this->LastChar = Char;
 
 
     //Check if there are sepcial normalizers
     if (QCharScriptToNormalizerMap[Char.script()]){
         QString Normalized = QCharScriptToNormalizerMap[Char.script()](Char.unicode());
-        if (Normalized.size()){
-            this->LastChar = Normalized.at(Normalized.size() - 1);
-            if (Normalized.size() > 1)
-                return Normalized;
-            else
-                return this->normalize(this->LastChar = Normalized.at(0),
-                                       _nextChar, false, _line, _phrase, _charPos, true);
+        for (int i=0; i < Normalized.size(); i++) {
+            Normalized[i] = this->LastChar =  this->normalize(Normalized.at(i),
+                                                ((i + 1) < Normalized.size() ? Normalized.at(i+1) : _nextChar),
+                                                _interactive,
+                                                _line,
+                                                _phrase,
+                                                _charPos,
+                                                true
+                                                )[0];
         }
     }
 
@@ -327,8 +341,7 @@ QString Normalizer::normalize(const QString &_string, qint32 _line, bool _intera
                                     _string,
                                     i));
     }
-    Normalized = fullTrim(Normalized);
-    return Normalized;
+    return fullTrim(Normalized);
 }
 
 /**

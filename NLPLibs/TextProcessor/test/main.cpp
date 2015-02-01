@@ -67,8 +67,12 @@ int main(int _argc, char *_argv[])
 //                    QStringLiteral("بیمعرفتها"), false, "fa");
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
 //                    QStringLiteral("رفته‌‌ام"), false, "fa");
-        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
-                    QStringLiteral("نا مردیهایشان"), false, "fa");
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+//                    QStringLiteral("نا مردهایشان"), false, "fa");
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+//                    QStringLiteral("می خورم"), false, "fa");
+        qDebug() << Targoman::NLPLibs::TextProcessor::instance().text2IXML(QStringLiteral("123. saeed tor234 الف."), "en");
+
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
 //                    QStringLiteral("a -12asd"), "en", 0, true, true);
 
