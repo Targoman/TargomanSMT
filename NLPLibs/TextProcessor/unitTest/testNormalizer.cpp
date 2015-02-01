@@ -25,22 +25,6 @@ void UnitTest::normalizeText()
     "من با دم خود می‌گفتم که بامعرفت‌ترین‌هایشان هم نارفیق بوده‌اند"
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
-    "",
-    ""
-    ));
-    QVERIFY(VERIFY_NORMALIZE("fa",
-    "",
-    ""
-    ));
-    QVERIFY(VERIFY_NORMALIZE("fa",
-    "",
-    ""
-    ));
-    QVERIFY(VERIFY_NORMALIZE("fa",
-    "",
-    ""
-    ));
-    QVERIFY(VERIFY_NORMALIZE("fa",
     "خانه ی",
     "خانه‌ی"
     ));
@@ -48,5 +32,34 @@ void UnitTest::normalizeText()
     "می روم",
     "می‌روم"
     ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "میخوردم",
+    "می‌خوردم"
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "می خورده‌ام",
+    "می‌خورده‌ام"
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "می خورده‌بودم",
+    "می‌خورده‌ باشم"
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "نا مردهایشان",
+    "نامردهایشان"
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "نامردهایشان",
+    "نامردهایشان"
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "نا مردترینشان",
+    "نامردترینشان"
+    ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "نا مردیهایشان",
+    "نامردیهایشان"
+    ));
+
 
 }

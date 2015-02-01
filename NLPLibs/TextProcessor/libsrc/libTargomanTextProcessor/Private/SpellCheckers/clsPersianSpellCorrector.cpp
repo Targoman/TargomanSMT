@@ -95,7 +95,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
     ComplexWord.truncate(ComplexWord.size() - 1); // to remove last extra ZWNJ.
 
     if(ComplexWord.endsWith(PERSIAN_HeYe))
-        return ComplexWord.mid(0, ComplexWord.length() - 2);
+        return ComplexWord.mid(0, ComplexWord.length() - 2); //zhnDebug: why do we do this?
     if (ComplexWord.startsWith(PERSIAN_Mi)){
         //جداسازی «می» چسبیده به فعل
         Buffer = this->processVerbs(ComplexWord.mid(0,2), ComplexWord.mid(2));
@@ -113,7 +113,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
     if(ComplexWord.startsWith(PERSIAN_Bi) ||
        ComplexWord.startsWith(PERSIAN_Ba) ||
        ComplexWord.startsWith(PERSIAN_Na)){
-        //جداسازی «بی» چسبیده به صفت
+        //جداسازی «بی،با،نا» چسبیده به صفت
         Buffer = ComplexWord;
         Prefix = Buffer.mid(0,2);
         Buffer.remove(0,2); //Remove Bi
@@ -219,7 +219,8 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
 
         Buffer = Normalizer::sidesTrim(Buffer);
         if (Postfix.size() &&
-                _set.contains(Buffer))
+                _set.contains(Buffer)) //zhnDebug: ye nakareh should be removed first. has bug with بی شعوریهایشان
+                                       //zhnDebug: why just match with _set? makes bugs for نامردهایشان
             return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_ZWNJ + Postfix);
 
         Buffer = this->processTar_Tarin(_prefix + ARABIC_ZWNJ, Buffer, Postfix);
