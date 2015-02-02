@@ -16,16 +16,20 @@ HEADERS += \
     libLanguageModel/Private/ARPAManager.h \
     libLanguageModel/clsLMSentenceScorer.h \
     libLanguageModel/Private/clsLMSentenceScorer_p.h \
-    libLanguageModel/Private/clsProbingModel.h \
     libLanguageModel/Private/WeightStructs.hpp \
-    libLanguageModel/Private/intfBaseModel.hpp
+    libLanguageModel/Private/intfBaseModel.hpp \
+    libLanguageModel/Private/clsAbstractProbingModel.h \
+    libLanguageModel/Private/clsStringBasedProbingModel.h \
+    libLanguageModel/Private/clsIndexBasedProbingModel.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
     libLanguageModel/clsLanguageModel.cpp \
     libLanguageModel/Private/ARPAManager.cpp \
     libLanguageModel/clsLMSentenceScorer.cpp \
-    libLanguageModel/Private/clsProbingModel.cpp
+    libLanguageModel/Private/clsAbstractProbingModel.cpp \
+    libLanguageModel/Private/clsStringBasedProbingModel.cpp \
+    libLanguageModel/Private/clsIndexBasedProbingModel.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

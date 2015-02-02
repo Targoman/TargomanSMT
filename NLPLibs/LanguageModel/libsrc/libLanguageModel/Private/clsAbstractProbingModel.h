@@ -24,7 +24,12 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-class clsProbingModel : public intfBaseModel
+const quint8  MAX_HASH_LEVEL = 32;
+const quint64 HASHVALUE_CONTAINER = 0xFFFFFFFFFFFFFF80LL;
+typedef quint64 Hash_t;
+
+
+class clsAbstractProbingModel : public intfBaseModel
 {
     struct stuNGramHash{
         quint64                    HashValueLevel;
@@ -33,26 +38,31 @@ class clsProbingModel : public intfBaseModel
         std::string*               Original;
 
         inline void setHashLevel(quint8 _level){
-            this->HashValueLevel = (this->HashValueLevel & 0xFFFFFFFFFFFFFFE0LL) + (_level & 0x1F); }
+            Q_ASSERT(_level <= 0x1F);
+            this->HashValueLevel = (this->HashValueLevel & (HASHVALUE_CONTAINER | 0x40 | 0x20)) + (_level & 0x1F); }
         inline quint8  hashLevel(){ return this->HashValueLevel & 0x1F; }
-        inline quint64 hashValue(){ return this->HashValueLevel & 0xFFFFFFFFFFFFFFC0LL; }
+        inline quint64 hashValue(){ return this->HashValueLevel & HASHVALUE_CONTAINER; }
         inline bool    continues(){ return this->HashValueLevel & 0x20; }
         inline void    setContinues(){ this->HashValueLevel |= 0x20; }
+        inline bool    isMultiIndex(){ return this->HashValueLevel & 0x40; }
+        inline void    setMultiIndex(){ this->HashValueLevel |= 0x40; }
     };
 
 public:
-    clsProbingModel();
+    clsAbstractProbingModel();
     void setUnknownWordDefaults(Targoman::Common::LogP_t _prob, Targoman::Common::LogP_t _backoff);
-    void insert(const char *_ngram, Common::LogP_t _prob, Common::LogP_t _backoff = 0);
+    virtual void insert(const char *_ngram, quint8 _order, Common::LogP_t _prob, Common::LogP_t _backoff = 0);
     void init(quint32 _maxNGramCount);
     inline quint64 getID(const char *_word) const {
-        return this->lookupNGram(_word).ID;
+        return this->getNGramWeights(_word).ID;
     }
 
     inline bool isValidIndex(Common::WordIndex_t _index) const {
         return (quint64)_index < this->HashTableSize + 1;
     }
-    Targoman::Common::LogP_t lookupNGram(const QStringList &_ngram, quint8& _foundedGram) const;
+
+    virtual Targoman::Common::LogP_t lookupNGram(const QStringList &_ngram, quint8& _foundedGram) const = 0;
+    virtual Targoman::Common::LogP_t lookupNGram(const QList<Common::WordIndex_t> &_ngram, quint8& _foundedGram) const = 0;
 
     QString getStatsStr() const {
         return QString("MaxLevel: %1 AverageLevel: %2 QHashed: %3").arg(
@@ -61,10 +71,10 @@ public:
                     this->RemainingHashes.size());
     }
 
-private:
-    stuProbAndBackoffWeights lookupNGram(const char* _ngram) const;
+protected:
+    stuProbAndBackoffWeights getNGramWeights(const char* _ngram, bool _justSingle = false) const;
 
-private:
+protected:
     quint32                     HashTableSize;
     quint32                     NgramCount;
     stuNGramHash*               NGramHashTable;

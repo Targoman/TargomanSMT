@@ -17,7 +17,8 @@
 #include "Private/ARPAManager.h"
 
 /// Different Language Models
-#include "Private/clsProbingModel.h"
+#include "Private/clsStringBasedProbingModel.h"
+#include "Private/clsIndexBasedProbingModel.h"
 
 using namespace Targoman::Common;
 
@@ -41,11 +42,17 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
     if (this->pPrivate->isBinary(_filePath)){
         throw exTargomanNotImplemented("Binary is Not implemented yet");
     }else{
-        this->pPrivate->Model = new clsProbingModel();
+#if 1
+        this->pPrivate->Model = new clsIndexBasedProbingModel();
+#else
+        this->pPrivate->Model = new clsStringBasedProbingModel();
+#endif
         this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model);
         this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
                                                       _configs.UnknownWordDefault.Backoff);
 
+        LM_BEGIN_SENTENCE_WINDEX = this->pPrivate->Model->getID(LM_BEGIN_SENTENCE);
+        LM_END_SENTENCE_WINDEX   = this->pPrivate->Model->getID(LM_END_SENTENCE);
     }
     return this->pPrivate->Order;
 }
@@ -76,7 +83,7 @@ const char* LM_UNKNOWN_WORD = "<unk>";
 const char* LM_BEGIN_SENTENCE = "<s>";
 const char* LM_END_SENTENCE = "</s>";
 
-//Defined here initialized in Private/Vocab.hpp
+//Defined here initialized in Private/ArpaManager.hpp
 WordIndex_t LM_UNKNOWN_WINDEX;
 WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
 WordIndex_t LM_END_SENTENCE_WINDEX;

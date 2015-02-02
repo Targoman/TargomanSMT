@@ -63,7 +63,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
     size_t Pos;
 
     const char* StartOfNGram, *EndOfNGram, *StartOfBackoff;
-    Targoman::Common::clsCmdProgressBar ProgressBar;
+    Common::clsCmdProgressBar ProgressBar;
 
     while (std::getline(File, LineString)) {
         ++LineNo;
@@ -73,7 +73,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
                                     LineNo).arg(
                                     LM_MAX_VALID_ARPA_LINE));
 
-        Targoman::Common::fastTrimStdString(LineString);
+        Common::fastTrimStdString(LineString);
 
         if (LineString.empty() || LineString.at(0) == '#')
             continue;
@@ -153,37 +153,37 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
                 if (Count > NGramCounts.value(NGramOrder))
                     throw exARPAManager(QString("There are more Items specified for Ngram=%1 than specified: %2 vs %3").arg(
                                             NGramOrder).arg(Count).arg(NGramCounts.value(NGramOrder)));
-                Prob = Targoman::Common::fastASCII2Float(LineString.c_str(), Pos);
+                Prob = Common::fastASCII2Float(LineString.c_str(), Pos);
                 if (Prob > 0)
                     throw exARPAManager(QString("Invalid positive probaility at line : %1").arg(LineNo));
 
                 EndOfNGram = LineString.c_str() + Pos;
-                Targoman::Common::fastSkip2NonSpace(EndOfNGram);
+                Common::fastSkip2NonSpace(EndOfNGram);
                 StartOfNGram = EndOfNGram;
                 if (!*EndOfNGram)
                     throw exARPAManager(QString("Invalid count of Tokens 1 vs 0"));
-                Targoman::Common::fastSkip2Space(EndOfNGram);
+                Common::fastSkip2Space(EndOfNGram);
                 for (int i=1; i<NGramOrder; ++i){
-                    Targoman::Common::fastSkip2NonSpace(++EndOfNGram);
+                    Common::fastSkip2NonSpace(++EndOfNGram);
                     if (!*EndOfNGram)
                         throw exARPAManager(QString("Invalid count of Tokens %1 vs %2 at line: %3").arg(
                                                 i).arg(
                                                 NGramOrder).arg(
                                                 LineNo));
-                    Targoman::Common::fastSkip2Space(EndOfNGram);
+                    Common::fastSkip2Space(EndOfNGram);
                 }
                 *((char*)EndOfNGram) = '\0';
 
                 if (EndOfNGram - LineString.c_str() < (qint64)LineString.size()){
                     StartOfBackoff = EndOfNGram+1;
-                    Targoman::Common::fastSkip2NonSpace(StartOfBackoff);
-                    Backoff = Targoman::Common::fastASCII2Float(StartOfBackoff, Dummy);
+                    Common::fastSkip2NonSpace(StartOfBackoff);
+                    Backoff = Common::fastASCII2Float(StartOfBackoff, Dummy);
                 }else
                     Backoff = 0;
                 if (Prob >=0)
                     throw exARPAManager(QString("Invalid Positive backoff at line: %1").arg(LineNo));
 
-                _model->insert(StartOfNGram, Prob, Backoff);
+                _model->insert(StartOfNGram, NGramOrder, Prob, Backoff);
                 ++Count;
                 ProgressBar.setValue(Count);
             }
@@ -191,6 +191,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
             break;
         }
     }
+
     TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
 
     return MaxGram;

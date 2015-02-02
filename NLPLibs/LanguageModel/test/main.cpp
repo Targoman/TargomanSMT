@@ -16,6 +16,7 @@
 #include "libTargomanCommon/CmdIO.h"
 #include "libLanguageModel/clsLanguageModel.h"
 #include "libLanguageModel/clsLMSentenceScorer.h"
+#include "libTargomanCommon/Logger.h"
 
 #include <fstream>
 #include <ctime>
@@ -27,6 +28,10 @@ int main(int argc, char *argv[])
     clsLanguageModel LM;
     try {
         Targoman::Common::TARGOMAN_IO_SETTINGS.Info.setLevel(5);
+        Targoman::Common::Logger::instance().setVisible();
+        Targoman::Common::Logger::instance().setActive();
+
+
         qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "./test.arpa");
         clsLMSentenceScorer SS(LM);
         QString Sentence =

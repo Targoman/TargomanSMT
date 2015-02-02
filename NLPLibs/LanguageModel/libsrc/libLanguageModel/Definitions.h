@@ -39,6 +39,9 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_END
 extern const char* LM_UNKNOWN_WORD;
 extern const char* LM_BEGIN_SENTENCE;
 extern const char* LM_END_SENTENCE;
+extern Common::WordIndex_t LM_UNKNOWN_WINDEX;
+extern Common::WordIndex_t LM_BEGIN_SENTENCE_WINDEX;
+extern Common::WordIndex_t LM_END_SENTENCE_WINDEX;
 
 //This constant is used to quickly check whether input file is valid ARPA plain text file or not.
 //Total lenght of an ARPA must be less than indicated number
