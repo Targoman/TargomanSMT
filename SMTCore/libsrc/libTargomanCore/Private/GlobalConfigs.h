@@ -28,8 +28,13 @@ struct stuGlobalConfigs{
     static Targoman::Common::Configuration::tmplConfigurable<QString> SourceLanguage;
     static Targoman::Common::Configuration::tmplConfigurable<QString> TargetLanguage;
 
+
+    static Targoman::Common::Configuration::tmplConfigurable<QString> TargetLanguage;
+
     static Targoman::Common::Configuration::clsModuleConfig          LM;
     static Targoman::Common::Configuration::clsModuleConfig          PhraseTable;
+
+
 };
 
 extern stuGlobalConfigs gConfigs;

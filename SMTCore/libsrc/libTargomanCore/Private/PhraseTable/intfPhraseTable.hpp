@@ -27,19 +27,6 @@ namespace PhraseTable{
 TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
 
 typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<clsRuleNode> RulesPrefixTree_t;
-//typedef ::Core::tmplFullVectorFilePrefixTree<clsRuleNode> RulesPrefixTree_t;
-/*
-class clsRulesPrefixTreeNode : RulesPrefixTree_t::Node{
-public:
-    const clsRulesPrefixTreeNode& follow(Common::WordIndex_t _index){return clsRulesPrefixTreeNode::invalidPTNode();}
-    clsRuleNode& getData(){return clsRuleNode::invalidRuleNode();}
-    inline bool isValid(){return true;}
-
-    static clsRulesPrefixTreeNode& invalidPTNode(){return NullNode;}
-private:
-    static clsRulesPrefixTreeNode NullNode;
-};
-*/
 
 class intfPhraseTable : public Common::Configuration::intfModule
 {
@@ -47,15 +34,16 @@ public:
     intfPhraseTable(const QString& _typeName):
         intfModule(_typeName){}
 
+    ~intfPhraseTable(){}
     virtual void init() = 0;
     virtual void newSentence() = 0;
     virtual bool isBinary() = 0;
     virtual RulesPrefixTree_t& getPrefixTree(){
-        this->PrefixTree;
+        return this->PrefixTree;
     }
 
 private:
-    RulesPrefixTree_t PrefixTree;
+    QScopedPointer<RulesPrefixTree_t> PrefixTree;
 };
 
 

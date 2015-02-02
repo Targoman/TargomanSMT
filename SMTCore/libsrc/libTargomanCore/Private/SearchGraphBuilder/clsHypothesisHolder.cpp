@@ -12,6 +12,7 @@
  */
 
 #include "clsHypothesisHolder.h"
+#include "libTargomanCommon/exTargomanBase.h"
 
 namespace Targoman{
 namespace Core {
@@ -20,6 +21,21 @@ namespace SearchGraphBuilder {
 
 clsHypothesisHolder::clsHypothesisHolder()
 {
+}
+
+void clsHypothesisHolder::clear()
+{
+    this->Cardinalities.clear();
+    this->Cardinalities.append(clsCardinality::rootCoverageContainer());
+
+    //
+}
+
+void clsHypothesisHolder::resize(size_t _size)
+{
+    this->Cardinalities.resize(_size);
+
+    throw Common::exTargomanMustBeImplemented("");
 }
 
 }

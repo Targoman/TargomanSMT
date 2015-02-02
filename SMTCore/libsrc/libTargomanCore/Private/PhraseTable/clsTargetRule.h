@@ -27,11 +27,20 @@ class clsTargetRule : public QSharedData
 public:
     clsTargetRule();
 
+    Common::Cost_t getPhraseCost();
+    inline Common::WordIndex_t operator [](int _index){
+        return this->TargetPhrase.at(_index);
+    }
+
+    inline size_t size(){
+        return this->TargetPhrase.size();
+    }
+
 private:
 
 private:
     mutable QList<Common::WordIndex_t> TargetPhrase;
-    mutable QList<Common::LogP_t>      Costs;
+    mutable QList<Common::Cost_t>      Costs;
 
     mutable Common::LogP_t  AllCosts;
     mutable bool            AllCostsComputed;

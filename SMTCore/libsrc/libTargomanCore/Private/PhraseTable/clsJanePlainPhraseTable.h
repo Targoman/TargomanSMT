@@ -26,10 +26,11 @@ namespace PhraseTable {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exJanePhraseTable, exPhraseTable);
 
-class clsJanePhraseTable : intfPhraseTable
+class clsJanePlainPhraseTable : intfPhraseTable
 {
 public:
-    clsJanePhraseTable();
+    clsJanePlainPhraseTable();
+    ~clsJanePlainPhraseTable();
 
     virtual void init();
 
@@ -44,10 +45,11 @@ public:
                                     size_t _observationHistogramSize);
 
 private:
-    static QString baseConfigPath(){return "/JanePlain";}
     static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;
+    TARGOMAN_DEFINE_MODULE("JanePTPlain", clsJanePlainPhraseTable)
 };
 
+TARGOMAN_REGISTER_MODULE(clsJanePlainPhraseTable)
 }
 }
 }

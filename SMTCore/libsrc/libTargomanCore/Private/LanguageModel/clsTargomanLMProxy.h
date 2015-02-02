@@ -27,18 +27,21 @@ namespace LanguageModel{
 class clsTargomanLMProxy :
         public intfLMSentenceScorer, public Targoman::NLPLibs::clsLMSentenceScorer{
 public:
-    clsTargomanLMProxy() :
-        Targoman::NLPLibs::clsLMSentenceScorer(LM){}
+    clsTargomanLMProxy();
+    inline void reset(){Targoman::NLPLibs::clsLMSentenceScorer::reset();}
+    inline Common::LogP_t wordProb(const QString& _word, OUTPUT quint8 &_foundedGram){
+        Targoman::NLPLibs::clsLMSentenceScorer::wordProb(_word,_foundedGram);
+    }
 
     inline Common::WordIndex_t getWordIndex(const QString& _word){return this->LM.getID(_word);}
 
 private:
     static Targoman::NLPLibs::clsLanguageModel LM;
 
-    TARGOMAN_DEFINE_MODULE(clsTargomanLMProxy)
+    TARGOMAN_DEFINE_MODULE("TargomanLM", clsTargomanLMProxy)
 };
 
-TARGOMAN_REGISTER_MODULE("TargomanLM", clsTargomanLMProxy)
+TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy)
 }
 }
 }
