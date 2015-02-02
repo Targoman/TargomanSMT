@@ -11,29 +11,28 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSCOVERAGECONTAINER_H
-#define TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSCOVERAGECONTAINER_H
+#include "clsCardinality.h"
 
 namespace Targoman{
 namespace Core {
 namespace Private{
 namespace SearchGraphBuilder {
 
-class clsCoverageContainer
+clsCardinality::clsCardinality()
 {
-public:
-    clsCoverageContainer();
-
-private:
-    //QHash<QBitArray,
-    //LexicalHypothesisContainerMap lexicalHypothesisContainerMap_;
-  //  size_t ReorderingHistogramSize;
-  //  size_t LexicalHistogramSize;
-};
-
-}
-}
-}
 }
 
-#endif // TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSCOVERAGECONTAINER_H
+void clsCardinality::performReorderingPruning()
+{
+    //TODO
+}
+
+bool clsCardinality::mustBePruned(Common::Cost_t _cost) const
+{
+    //TODO
+}
+
+}
+}
+}
+}

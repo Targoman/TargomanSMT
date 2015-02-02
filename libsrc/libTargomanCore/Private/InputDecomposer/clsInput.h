@@ -28,6 +28,8 @@ namespace InputDecomposer {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
 
+typedef QList<clsToken *> Sentence_t;
+
 class clsInput
 {
 public:
@@ -41,7 +43,7 @@ public:
     void parseRichIXML(const QString& _inputIXML, bool _normalize, const QString &_lang = "");
 
     void clear();
-    inline const QList<clsToken*>& tokens(){return this->Tokens;}
+    inline const Sentence_t& tokens(){return this->Tokens;}
 
 private:
     inline bool isSpace(const QChar& _ch){
@@ -49,7 +51,7 @@ private:
     }
 
 private:
-    QList<clsToken*> Tokens;
+    Sentence_t Tokens;
     static QSet<QString>    SpecialTags;
 
     //Configuration

@@ -16,6 +16,9 @@
 
 #include "libTargomanCommon/Types.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
+#include "libTargomanCommon/exTargomanBase.h"
+#include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
+#include "Private/GlobalConfigs.h"
 
 namespace Targoman {
 namespace Core {
@@ -27,10 +30,15 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
 class intfLMSentenceScorer : public Common::Configuration::intfModule
 {
 public:
+    intfLMSentenceScorer(const QString& _name):
+        intfModule(_name){}
+    virtual void initHistory(const intfLMSentenceScorer& _oldScorer) = 0;
     virtual void reset() = 0;
-    virtual Common::LogP_t wordProb(const QString& _word, OUTPUT quint8 &_foundedGram) = 0;
-    virtual Common::LogP_t wordProb(const Targoman::Common::WordIndex_t &_wordIndex, OUTPUT quint8 &_foundedGram) = 0;
+    virtual Common::LogP_t wordProb(const QString& _word) = 0;
+    virtual Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) = 0;
     virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
+
+    virtual Common::WordIndex_t endOfSentence()= 0;
 };
 
 }

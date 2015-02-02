@@ -14,8 +14,10 @@
 #ifndef TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSHYPOTHESISHOLDER_H
 #define TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSHYPOTHESISHOLDER_H
 
-#include <QList>
-#include "clsCoverageContainer.h"
+#include <QVector>
+#include "clsCardinality.h"
+#include "clsSearchGraphNode.h"
+#include "libTargomanCommon/Types.h"
 
 namespace Targoman{
 namespace Core {
@@ -26,9 +28,24 @@ class clsHypothesisHolder
 {
 public:
     clsHypothesisHolder();
+    void clear();
+    void resize(size_t _size);
+
+    inline const clsSearchGraphNode& getRootNode() const{
+        return this->Cardinalities[0][clsCardinality::EmptyCoverage].bestNode();
+    }
+
+    inline clsCardinality& operator [](size_t _index){
+        return this->Cardinalities[_index];
+    }
+
+    /*inline const QVector<clsCoverageContainer>& cardinalityContainer(){
+        return this->CardinalityContainer;
+    }*/
 
 private:
-    QList<clsCoverageContainer> CardinalityContainer;
+    QVector<clsCardinality> Cardinalities;
+
 };
 
 }

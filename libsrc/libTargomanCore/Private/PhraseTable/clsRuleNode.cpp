@@ -35,7 +35,7 @@ clsRuleNode::~clsRuleNode()
     //Just to suppress compiler error on QSharedDataPointer
 }
 
-bool clsRuleNode::isNull() const
+bool clsRuleNode::isInvalid() const
 {
     return (this->d.data() == &SharedNull);
 }

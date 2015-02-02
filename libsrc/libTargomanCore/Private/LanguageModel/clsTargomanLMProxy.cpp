@@ -11,15 +11,18 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#include "clsCoverageContainer.h"
+#include "clsTargomanLMProxy.h"
 
-namespace Targoman{
+namespace Targoman {
 namespace Core {
-namespace Private{
-namespace SearchGraphBuilder {
+namespace Private {
+namespace LanguageModel{
 
-clsCoverageContainer::clsCoverageContainer()
-{
+Targoman::NLPLibs::clsLanguageModel clsTargomanLMProxy::LM;
+
+clsTargomanLMProxy::clsTargomanLMProxy() :
+    intfLMSentenceScorer(clsTargomanLMProxy::moduleName()), Targoman::NLPLibs::clsLMSentenceScorer(LM){
+
 }
 
 }

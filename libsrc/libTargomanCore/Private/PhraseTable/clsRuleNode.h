@@ -33,12 +33,15 @@ public:
     clsRuleNode(const clsRuleNode & _other) : d(_other.d){}
     ~clsRuleNode();
 
-    bool isNull() const;
+    bool isInvalid() const;
     static inline clsRuleNode& invalidRuleNode() {return clsRuleNode::InvalidRuleNode;}
 
     // Following functions are needed for the binary input/output
     void readBinary(std::istream &input);
     void writeBinary(std::ostream &output) const;
+    inline const QList<QSharedDataPointer<clsTargetRule> >& targetRules() const {
+        return this->d->TargetRules;//TODO OJO
+    }
 
 private:
     QSharedDataPointer<clsRuleNodeData> d;
