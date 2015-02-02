@@ -15,6 +15,7 @@
 #define TARGOMAN_COMMON_HASHFUNCTIONS_H
 
 #include <QtCore>
+#include "libTargomanCommon/Types.h"
 
 namespace Targoman {
 namespace Common {
@@ -98,6 +99,33 @@ public:
         case 1: Hash ^= (quint64)(Data2[0]);
                 Hash *= Constant1;
         };
+
+        Hash ^= Hash >> Remain1;
+        Hash *= Constant1;
+        Hash ^= Hash >> Remain1;
+
+        return Hash;
+    }
+
+    //Modified version of MurmurHash3 to work on list of integers
+    static quint64 murmurHash64(QList<Common::WordIndex_t> _data, int _level = 0){
+        const quint64 Constant1 = 0xc6a4a7935bd1e995LLU;
+        const int Remain1 = 47;
+
+        quint64 Hash = TargomanHashKeys[_level % TargomanHashKeysCount] ^ ((_data.length() + _level) * Constant1);
+
+        foreach (Common::WordIndex_t WIndex , _data){
+          quint64 K = WIndex;
+
+          K *= Constant1;
+          K ^= K >> Remain1;
+          K *= Constant1;
+
+          Hash ^= K;
+          Hash *= Constant1;
+        }
+
+        Hash *= Constant1;
 
         Hash ^= Hash >> Remain1;
         Hash *= Constant1;

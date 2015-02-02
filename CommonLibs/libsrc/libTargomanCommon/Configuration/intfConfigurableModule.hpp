@@ -38,13 +38,15 @@ public:
     clsModuleRegistrar(const QString& _name, fpModuleInstantiator _instantiatior);
 };
 
-#define TARGOMAN_DEFINE_MODULE(_class) \
+#define TARGOMAN_DEFINE_MODULE(_name, _class) \
+private: \
+    static inline QString moduleName(){return QStringLiteral(_name);}  \
     static Targoman::Common::Configuration::intfModule* instantiator(){return new _class;} \
+    static QString baseConfigPath(){return "/" + moduleName();} \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
 
-#define TARGOMAN_REGISTER_MODULE(_name, _class) \
-    Common::Configuration::clsModuleRegistrar clsTargomanLMProxy::Registrar(_name, _class::instantiator());
-
+#define TARGOMAN_REGISTER_MODULE(_class) \
+    Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), _class::instantiator);
 }
 }
 }

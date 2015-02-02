@@ -38,7 +38,10 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Configuration/ConfigManager.h \
     libTargomanCommon/Configuration/tmplInstantiator.hpp \
     libTargomanCommon/Configuration/clsModuleConfig.hpp \
-    libTargomanCommon/Configuration/intfConfigurableModule.hpp
+    libTargomanCommon/Configuration/intfConfigurableModule.hpp \
+    libTargomanCommon/CompressedStream/clsCompressedInputStream.h \
+    libTargomanCommon/CompressedStream/clsCompressedOutputStream.h \
+    libTargomanCommon/CompressedStream/clsCompressedStreamBuff.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -51,7 +54,10 @@ SOURCES += \
     libTargomanCommon/clsCmdProgressBar.cpp \
     libTargomanCommon/Configuration/tmplConfigurable.cpp \
     libTargomanCommon/Configuration/Validators.cpp \
-    libTargomanCommon/Configuration/ConfigManager.cpp
+    libTargomanCommon/Configuration/ConfigManager.cpp \
+    libTargomanCommon/CompressedStream/clsCompressedInputStream.cpp \
+    libTargomanCommon/CompressedStream/clsCompressedOutputStream.cpp \
+    libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp
 
 OTHER_FILES +=
 

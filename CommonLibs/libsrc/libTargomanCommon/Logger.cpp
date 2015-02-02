@@ -32,11 +32,11 @@ Logger* Logger::Instance = NULL;
 Logger::Logger(QObject *parent) :
     QObject(parent),pPrivate(new Private::LoggerPrivate)
 {
-    this->pPrivate->LogSettings[enuLogType::Debug].setLevel(0);
-    this->pPrivate->LogSettings[enuLogType::Error].setLevel(0);
-    this->pPrivate->LogSettings[enuLogType::Warning].setLevel(0);
-    this->pPrivate->LogSettings[enuLogType::Info].setLevel(0);
-    this->pPrivate->LogSettings[enuLogType::Happy].setLevel(0);
+    this->pPrivate->LogSettings[enuLogType::Debug].setLevel(9);
+    this->pPrivate->LogSettings[enuLogType::Error].setLevel(9);
+    this->pPrivate->LogSettings[enuLogType::Warning].setLevel(9);
+    this->pPrivate->LogSettings[enuLogType::Info].setLevel(9);
+    this->pPrivate->LogSettings[enuLogType::Happy].setLevel(9);
     this->registerActor(&this->pPrivate->ActorUUID,"BaseLogger");
 }
 
