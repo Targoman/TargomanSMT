@@ -133,7 +133,7 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
         }
     }while(Output.trimmed() != Phrase.trimmed());
 
-    //Process Phrase starting to convert all bi-tokens then tri-tokens, so on until there are no more changes
+    //Process Phrase, processing all bi-tokens then tri-tokens, so on until there are no more changes
     //Re-process whole phrase until there are no more changes
     do{
         FinalPhrase = Output;
@@ -165,7 +165,7 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
                                 Tokens.insert(FromTokenIndex,MidTokens);
                             FromTokenIndex--; // As Token at FromTokenIndex has changed so reprocess it. We decrease one, because we will add one in for loop.
                         }else{
-                            FromTokenIndex+=MaxTokens - 1; // increaced FromTokenIndex for MaxTokens to pass unified token and decrease one, because we will add one in for loop.
+                            FromTokenIndex+=MaxTokens - 1; // increased FromTokenIndex for MaxTokens to pass unified token and decrease one, because we will add one in for loop.
                             if(FromTokenIndex + 1 == Tokens.size())
                                 HasRemaining = false;
                         }

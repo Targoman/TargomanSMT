@@ -77,7 +77,16 @@ public:
      * @return corrected or empty token.
      */
     virtual QString process(const QString& _token){
-        return this->AutoCorrectTerms.value(_token);
+        QString Normalized = this->AutoCorrectTerms.value(_token);
+        if (Normalized.size()){
+            QString SpellCorrected = this->process(QStringList()<<Normalized);
+            if (SpellCorrected.size())
+                return SpellCorrected;
+            else
+                return Normalized;
+        }else{
+            return this->process(QStringList()<<_token);
+        }
     }
 
 protected:

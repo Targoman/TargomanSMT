@@ -69,8 +69,10 @@ int main(int _argc, char *_argv[])
 //                    QStringLiteral("رفته‌‌ام"), false, "fa");
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
 //                    QStringLiteral("نا مردهایشان"), false, "fa");
-//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
-//                    QStringLiteral("می خورم"), false, "fa");
+        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+                    QStringLiteral("میخورم"), false, "fa");/**/
+        /*qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+                    QStringLiteral("می خورم"), false, "fa");/**/
         qDebug() << Targoman::NLPLibs::TextProcessor::instance().text2IXML(QStringLiteral("123. saeed tor234 الف."), "en");
 
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
@@ -131,7 +133,7 @@ int main(int _argc, char *_argv[])
                                  "INTACT" :
                                  QString("{%1}").arg(Normalized))).toUtf8().constData()<<std::endl;
         }/**/
-//        while(1);
+        while(1);
     }catch(Targoman::Common::exTargomanBase &e){
         qDebug()<<e.what();
     }
