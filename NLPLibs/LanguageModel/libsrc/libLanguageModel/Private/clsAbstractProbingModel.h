@@ -35,7 +35,6 @@ class clsAbstractProbingModel : public intfBaseModel
         quint64                    HashValueLevel;
         Targoman::Common::LogP_t   Prob;
         Targoman::Common::LogP_t   Backoff;
-        std::string*               Original;
 
         inline void setHashLevel(quint8 _level){
             Q_ASSERT(_level <= 0x1F);

@@ -26,12 +26,16 @@ namespace Private {
 class clsLMSentenceScorer
 {
 public:
-    clsLMSentenceScorer(const clsLanguageModel& _lm);
+    clsLMSentenceScorer(const clsLanguageModel& _lm, bool _stringBased = false);
     ~clsLMSentenceScorer();
 
     void reset();
 
-    Common::LogP_t wordProb(const QString& _word, quint8 &_foundedGram);
+    Common::LogP_t wordProb(const QString& _word, OUTPUT quint8 &_foundedGram);
+    Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex, OUTPUT quint8& _foundedGram);
+    Common::WordIndex_t wordIndex(const QString& _word);
+    inline Common::WordIndex_t endOfSentence(){return LM_END_SENTENCE_WINDEX;}
+    void initHistory(const clsLMSentenceScorer& _oldScorer);
 
 private:
     QScopedPointer<Private::clsLMSentenceScorerPrivate> pPrivate;

@@ -20,6 +20,7 @@
 namespace Targoman {
 namespace NLPLibs {
 namespace Private {
+
 class clsLMSentenceScorerPrivate
 {
 public:
@@ -29,7 +30,9 @@ public:
 
 public:
     const clsLanguageModel& LM;
-    QStringList History;
+
+    QStringList StringBasedHistory;
+    QList<Common::WordIndex_t> IndexBasedHistory;
 };
 
 }

@@ -20,7 +20,7 @@ namespace NLPLibs {
 using namespace Private;
 using namespace Targoman::Common;
 
-clsLMSentenceScorer::clsLMSentenceScorer(const clsLanguageModel &_lm) :
+clsLMSentenceScorer::clsLMSentenceScorer(const clsLanguageModel &_lm, bool _stringBased) :
     pPrivate(new clsLMSentenceScorerPrivate(_lm))
 {
 }
@@ -32,23 +32,48 @@ clsLMSentenceScorer::~clsLMSentenceScorer()
 
 void clsLMSentenceScorer::reset()
 {
-    this->pPrivate->History.clear();
+    this->pPrivate->StringBasedHistory.clear();
 }
 
 LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
 {
-    if (Q_UNLIKELY(this->pPrivate->History.isEmpty())){
-        this->pPrivate->History.append(LM_BEGIN_SENTENCE);
-    }else if (Q_LIKELY(this->pPrivate->History.size() >= this->pPrivate->LM.order())){
-        this->pPrivate->History.removeFirst();
+    if (Q_UNLIKELY(this->pPrivate->StringBasedHistory.isEmpty())){
+        this->pPrivate->StringBasedHistory.append(LM_BEGIN_SENTENCE);
+    }else if (Q_LIKELY(this->pPrivate->StringBasedHistory.size() >= this->pPrivate->LM.order())){
+        this->pPrivate->StringBasedHistory.removeFirst();
     }
 
     if (this->pPrivate->LM.getID(_word) == 0)
-        this->pPrivate->History.append(LM_UNKNOWN_WORD);
+        this->pPrivate->StringBasedHistory.append(LM_UNKNOWN_WORD);
     else
-        this->pPrivate->History.append(_word);
+        this->pPrivate->StringBasedHistory.append(_word);
 
-    return this->pPrivate->LM.lookupNGram(this->pPrivate->History, _foundedGram);
+    return this->pPrivate->LM.lookupNGram(this->pPrivate->StringBasedHistory, _foundedGram);
+}
+
+LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t &_wordIndex, quint8& _foundedGram)
+{
+    if (Q_UNLIKELY(this->pPrivate->IndexBasedHistory.isEmpty())){
+        this->pPrivate->IndexBasedHistory.append(LM_BEGIN_SENTENCE_WINDEX);
+    }else if (Q_LIKELY(this->pPrivate->IndexBasedHistory.size() >= this->pPrivate->LM.order())){
+        this->pPrivate->IndexBasedHistory.removeFirst();
+    }
+
+    this->pPrivate->IndexBasedHistory.append(_wordIndex);
+
+    return this->pPrivate->LM.lookupNGram(this->pPrivate->IndexBasedHistory, _foundedGram);
+}
+
+void clsLMSentenceScorer::initHistory(const clsLMSentenceScorer &_oldScorer)
+{
+    this->pPrivate->StringBasedHistory = _oldScorer.pPrivate->StringBasedHistory;
+    this->pPrivate->IndexBasedHistory = _oldScorer.pPrivate->IndexBasedHistory;
+}
+
+
+WordIndex_t clsLMSentenceScorer::wordIndex(const QString &_word)
+{
+    return this->pPrivate->LM.getID(_word);
 }
 
 clsLMSentenceScorerPrivate::~clsLMSentenceScorerPrivate()

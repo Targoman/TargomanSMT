@@ -78,6 +78,11 @@ LogP_t clsLanguageModel::lookupNGram(const QStringList & _ngram, quint8& _founde
     return this->pPrivate->Model->lookupNGram(_ngram, _foundedGram);
 }
 
+LogP_t clsLanguageModel::lookupNGram(const QList<WordIndex_t> & _ngram, quint8& _foundedGram) const
+{
+    return this->pPrivate->Model->lookupNGram(_ngram, _foundedGram);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 const char* LM_UNKNOWN_WORD = "<unk>";
 const char* LM_BEGIN_SENTENCE = "<s>";

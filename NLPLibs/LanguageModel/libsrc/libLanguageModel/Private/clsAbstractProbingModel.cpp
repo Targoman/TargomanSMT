@@ -55,19 +55,16 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
         if (this->NGramHashTable[HashLoc].HashValueLevel){
             if (this->NGramHashTable[HashLoc].hashValue() == (HashValue & HASHVALUE_CONTAINER) &&
                     this->NGramHashTable[HashLoc].hashLevel() == HashLevel-1)
-                throw exLanguageModel(QString("Fatal Collision found on: %1 vs %5 (%2, %3, %4)").arg(
+                throw exLanguageModel(QString("Fatal Collision found on: %1 (%2, %3, %4)").arg(
                                           _ngram).arg(
                                           HashLoc).arg(
                                           this->NGramHashTable[HashLoc].hashValue()).arg(
-                                          HashLevel).arg(
-                                          this->NGramHashTable[HashLoc].Original->c_str()));
+                                          HashLevel));
             this->NGramHashTable[HashLoc].setContinues();
         }else{
             this->NGramHashTable[HashLoc].HashValueLevel = (HashValue & HASHVALUE_CONTAINER) + HashLevel-1;
             this->NGramHashTable[HashLoc].Prob      = _prob;
             this->NGramHashTable[HashLoc].Backoff   = _backoff;
-            //            this->NGramHashTable[HashLoc].Original  = new std::string;
-            //            *this->NGramHashTable[HashLoc].Original = _ngram;
 
             this->MaxLevel = qMax(this->MaxLevel, HashLevel);
             this->SumLevels += HashLevel;
