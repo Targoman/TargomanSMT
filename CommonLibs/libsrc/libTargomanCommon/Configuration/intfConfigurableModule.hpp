@@ -69,7 +69,7 @@ private: \
 
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
-                      stuInstantiator(_class::instantiator,true)); \
+                      stuInstantiator(_class::instance,true)); \
     _class* _class::Instance = NULL;
 }
 }
