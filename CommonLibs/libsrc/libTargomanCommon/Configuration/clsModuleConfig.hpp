@@ -60,7 +60,7 @@ public:
 
 private:
     QString ActiveModuleName;
-    fpModuleInstantiator Instantiatior;
+    fpModuleInstantiator_t Instantiatior;
 };
 
 }

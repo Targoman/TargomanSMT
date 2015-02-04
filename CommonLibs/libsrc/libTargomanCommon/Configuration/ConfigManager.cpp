@@ -72,15 +72,15 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     ///check configFileile and load everything
     //////////////////////////////////////////////////
     if (this->pPrivate->ConfigFilePath.size()){
-        QSettings ConfigFileile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
+        QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
 
-        foreach (const QString& Key, ConfigFileile.allKeys()){
+        foreach (const QString& Key, ConfigFile.allKeys()){
             if (this->pPrivate->Configs.contains(Key) == false){
                 QString BasePath = Key;
                 bool Found = false;
                 while(BasePath.contains("/")){
                     BasePath.truncate(BasePath.lastIndexOf("/"));
-                    if (this->pPrivate->Configs.value(BasePath)->argCount() < 0){
+                    if (this->pPrivate->Configs.value(BasePath)->canBemanaged()  == false){
                         Found = true;
                         break;
                     }
@@ -92,7 +92,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                     throw exConfiguration("Configuration path <"+Key+"> is not registered");
             }
             intfConfigurable* ConfigItem  = this->pPrivate->Configs[Key];
-            QVariant Value = ConfigFileile.value(Key);
+            QVariant Value = ConfigFile.value(Key);
             if (ConfigItem->validate(Value, ErrorMessage) == false)
                 throw exConfiguration(ErrorMessage);
             else
@@ -151,6 +151,16 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         ConfigItem->finalizeConfig();
     }
 
+    //////////////////////////////////////////////////
+    ///marshall all singletons
+    //////////////////////////////////////////////////
+    QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
+    foreach (const QString& Section, ConfigFile.childGroups()){
+        stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(Section);
+        if (Instantiator.IsSingleton && Instantiator.fpMethod)
+            Instantiator.fpMethod();
+    }
+
     this->pPrivate->Initialized = true;
 }
 
@@ -168,7 +178,7 @@ void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
     this->pPrivate->Configs.insert(_path, _item);
 }
 
-void ConfigManager::addModuleInstantiaor(const QString _name, fpModuleInstantiator _instantiator)
+void ConfigManager::addModuleInstantiaor(const QString _name, const stuInstantiator &_instantiator)
 {
     if (this->pPrivate->Configs.contains(_name))
         throw exConfiguration("Duplicate Module Name: " + _name);
@@ -187,12 +197,16 @@ QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default
         return _default;
 }
 
-fpModuleInstantiator ConfigManager::getInstantiator(const QString &_name) const
+fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) const
 {
     if (this->pPrivate->Initialized == false)
         throw exConfiguration("Configuration is not initialized yet.");
 
-    return this->pPrivate->ModuleInstantiators.value(_name, NULL);
+    stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(_name);
+    if (Instantiator.IsSingleton)
+        throw exConfiguration(_name + " Is a singleton module and can not be reinstantiated");
+
+    return Instantiator.fpMethod;
 }
 /***********************************************************************************************/
 void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
@@ -244,7 +258,7 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
 }
 
 /***********************************************************************************************/
-clsModuleRegistrar::clsModuleRegistrar(const QString &_name, fpModuleInstantiator _instantiatior){
+clsModuleRegistrar::clsModuleRegistrar(const QString &_name, stuInstantiator _instantiatior){
     ConfigManager::instance().addModuleInstantiaor(_name, _instantiatior);
 }
 

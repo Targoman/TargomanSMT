@@ -43,9 +43,9 @@ public:
     void init(const QString &_license, const QStringList &_arguments = QStringList());
     void save2File(const QString&  _fileName, bool _backup);
     void addConfig(const QString _path, intfConfigurable* _item);
-    void addModuleInstantiaor(const QString _name, fpModuleInstantiator _instantiator);
+    void addModuleInstantiaor(const QString _name, const stuInstantiator& _instantiator);
     QVariant getConfig(const QString& _path, const QVariant &_default = QVariant()) const;
-    fpModuleInstantiator getInstantiator(const QString& _name) const;
+    fpModuleInstantiator_t getInstantiator(const QString& _name) const;
 
 private:
     ConfigManager();

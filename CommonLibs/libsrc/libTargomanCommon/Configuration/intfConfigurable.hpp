@@ -40,6 +40,7 @@ public:
     inline const QString& shortSwitch()const{return this->ShortSwitch;}
     inline const QString& shortHelp()const{return this->ShortHelp;}
     inline const QString& longSwitch()const{return this->LongSwitch;}
+    inline bool  canBemanaged() {return this->ArgCount >= 0;}
     inline qint8 argCount()const{return this->ArgCount;}
     inline const QString& configPath()const{return this->ConfigPath;}
 

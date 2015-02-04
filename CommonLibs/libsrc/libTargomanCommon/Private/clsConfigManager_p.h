@@ -36,7 +36,8 @@ public:
     /**
      * @brief ModuleInstantiators
      */
-    QHash<QString, fpModuleInstantiator>             ModuleInstantiators;
+    QHash<QString, stuInstantiator>                     ModuleInstantiators;
+
     /**
      * @brief In case that we have a config file (.ini file) for arguments of our programs, we put the address of
      * that config file in #ConfigFilePath
