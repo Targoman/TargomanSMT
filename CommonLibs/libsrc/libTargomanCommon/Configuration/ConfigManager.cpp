@@ -71,9 +71,10 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     //////////////////////////////////////////////////
     ///check configFileile and load everything
     //////////////////////////////////////////////////
+    QStringList SingletonModules;
     if (this->pPrivate->ConfigFilePath.size()){
         QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
-
+        ConfigFileChildGroups = ConfigFile.childGroups();
         foreach (const QString& Key, ConfigFile.allKeys()){
             if (this->pPrivate->Configs.contains(Key) == false){
                 QString BasePath = Key;
@@ -130,6 +131,10 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                         throw exConfiguration(ErrorMessage);
                     else
                         ConfigItemIter.value()->setFromVariant(Value.trimmed());
+                }else if (KeyIter->startsWith("--") && this->pPrivate->ModuleInstantiators.value(KeyIter->mid(2)).IsSingleton){
+                    SingletonModules.append(KeyIter->mid(2));
+                }else{
+                    throw exConfiguration("Unrecognized argument: " + *KeyIter);
                 }
             }
         }else
@@ -154,8 +159,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     //////////////////////////////////////////////////
     ///marshall all singletons
     //////////////////////////////////////////////////
-    QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
-    foreach (const QString& Section, ConfigFile.childGroups()){
+
+    foreach (const QString& Section, ){
         stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(Section);
         if (Instantiator.IsSingleton && Instantiator.fpMethod)
             Instantiator.fpMethod();
