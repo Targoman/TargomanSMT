@@ -32,10 +32,19 @@ public:
     void storeAutoCorrectTerm(const QString& _from, const QString& _to);
 
 private:
-    QString processStartingWithBi_Ba_Na(const QSet<QString>& _set, const QString& _prefix, const QString& _postfix);
-    QString processVerbs(const QString& _prefix, const QString _postfix);
-    QString processHa(const QString& _prefix, const QString& _complexWord, const QString& _postfix);
-    QString processTar_Tarin(const QString& _prefix, const QString& _complexWord, const QString& _postfix);
+    QString processStartingWithBi_Ba_Na(const QSet<QString>& _set,
+                                        const QString& _prefix,
+                                        const QString& _postfix);
+    QString processVerbs(const QString& _prefix,
+                         const QString _postfix);
+    QString processHa(const QString& _prefix,
+                      const QString& _complexWord,
+                      const QString& _postfix);
+    QString processTar_Tarin(const QSet<QString> &_set,
+                             const QString& _prefix,
+                             const QString& _complexWord,
+                             const QString& _postfix,
+                             bool _checkVerb = true);
 
 private:
     QSet<QString>            Nouns;                 /**< A set to store all Nouns from Persian SpellCorrector 'Noun' config file. */
@@ -52,6 +61,8 @@ private:
     QRegExp                  RxEndPresentImperfect; /**< A RegExp to match any present imperfect verb. */
     QRegExp                  RxPastImperfect;       /**< A RegExp to match last parts of any past imperfect verb. */
     QRegExp                  RxEndPastImperfect;    /**< A RegExp to match any past imperfect verb. */
+    QRegExp                  RxPastPerfect;         /**< A RegExp to match last parts of any past perfect verb. */
+    QRegExp                  RxEndPastPerfect;    /**< A RegExp to match any past imperfect verb. */
     QRegExp                  RxEndVerbPerfect;      /**< A RegExp to match any perfect verb. */
     QRegExp                  RxVerbPerfect;         /**< A RegExp to match last parts of any perfect verb. */
     QRegExp                  RxHa;                  /**< A RegExp to match Persian all variations of 'Ha' plural maker */

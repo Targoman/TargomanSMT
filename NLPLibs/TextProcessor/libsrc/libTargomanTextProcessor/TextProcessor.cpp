@@ -180,6 +180,7 @@ QString TextProcessor::normalizeText(const QString _input, bool _interactive, co
         Output = SpellCorrector::instance().process(LangCode, Output, _interactive);
     }
 
+    Output = Normalizer::fullTrim(Output);
     return Output;
 }
 

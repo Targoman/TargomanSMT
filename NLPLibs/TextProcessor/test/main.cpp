@@ -56,9 +56,10 @@ int main(int _argc, char *_argv[])
 
 
 //        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin", true);
-
-//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
-//                    QStringLiteral("من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند"), false, "fa");
+          qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+                    QStringLiteral("نا مردترینشان"), false, "fa");/**/
+        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+                    QStringLiteral("من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند"), false, "fa");/**/
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
 //                    QStringLiteral("آذربایجان‌شرقی"), false, "fa");
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
@@ -76,7 +77,7 @@ int main(int _argc, char *_argv[])
         qDebug() << Targoman::NLPLibs::TextProcessor::instance().text2IXML(QStringLiteral("123. saeed tor234 الف."), "en");
 
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
-//                    QStringLiteral("a -12asd"), "en", 0, true, true);
+//                    QStringLiteral("a -12asd"), "en", 0, true, true);/**/
 
         /*
         while(1);

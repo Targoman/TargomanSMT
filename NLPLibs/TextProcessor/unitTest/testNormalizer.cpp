@@ -21,12 +21,12 @@ using namespace Targoman::NLPLibs;
 void UnitTest::normalizeText()
 {
     QVERIFY(VERIFY_NORMALIZE("fa",
-    "من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند",
+    "من با دم خود میگفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند",
     "من با دم خود می‌گفتم که بامعرفت‌ترین‌هایشان هم نارفیق بوده‌اند"
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "خانه ی",
-    "خانه‌ی"
+    "خانه"
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "می روم",
@@ -42,7 +42,7 @@ void UnitTest::normalizeText()
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "می خورده‌بودم",
-    "می‌خورده‌ بودم"
+    "می‌خورده‌بودم"
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "نا مردهایشان",
@@ -54,12 +54,18 @@ void UnitTest::normalizeText()
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "نا مردترینشان",
-    "نامردترینشان"
+    "نامردترین‌شان"
     ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "نا مردیهایشان",
-    "نامردیهایشان"
+    "نامردی‌هایشان"
     ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "بی شعوری ها یشان",
+    "بی‌شعوری‌هایشان"
+    ));
+
+
 
 
 }
