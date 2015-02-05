@@ -46,7 +46,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         return;
     }
     //////////////////////////////////////////////////
-    ///check arguments for configFileile path or set default cogFileplFile path
+    ///check arguments for configFile path or set default cogFileplFile path
     //////////////////////////////////////////////////
     if (_arguments.count("-c") + _arguments.count("--config") > 1)
         throw exConfiguration("Invalid multiple ConfigManager file definition");
@@ -63,13 +63,13 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     if (this->pPrivate->ConfigFilePath.isEmpty()){
         this->pPrivate->ConfigFilePath = QCoreApplication::applicationDirPath() + QCoreApplication::applicationName() + ".ini";
         if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false){
-            TargomanWarn(1, "No ConfigFileile can be found. It is absolutely recomended to write one. Use --save to create one");
+            TargomanWarn(1, "No ConfigFile can be found. It is absolutely recomended to write one. Use --save to create one");
             this->pPrivate->ConfigFilePath.clear();
         }
     }
 
     //////////////////////////////////////////////////
-    ///check configFileile and load everything
+    ///check configFile and load everything
     //////////////////////////////////////////////////
     QStringList Modules;
     if (this->pPrivate->ConfigFilePath.size()){
@@ -159,7 +159,6 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     //////////////////////////////////////////////////
     ///marshall all singletons
     //////////////////////////////////////////////////
-
     foreach (const QString& Module, Modules){
         stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(Module);
         if (Instantiator.IsSingleton && Instantiator.fpMethod)

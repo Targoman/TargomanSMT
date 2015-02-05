@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright © 2012-2014, Targoman.com
+# Copyright © 2012-2015, Targoman.com
 #
 # Published under the terms of TCRL(Targoman Community Research License)
 # You can find a copy of the license file with distributed source or
@@ -64,11 +64,11 @@ OTHER_FILES +=
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 ################################################################################
-ConfigFileile = $$BasePath/Configs.pri
-!exists($$ConfigFileile){
-error("**** libsrc: Unable to find Configuration file $$ConfigFileile ****")
+ConfigFile = $$BasePath/Configs.pri
+!exists($$ConfigFile){
+error("**** libsrc: Unable to find Configuration file $$ConfigFile ****")
 }
-include ($$ConfigFileile)
+include ($$ConfigFile)
 
 TEMPLATE = lib
 TARGET = $$ProjectName
@@ -85,5 +85,6 @@ build_static {
 }
 
 QMAKE_POST_LINK += $$BaseOutput/linuxPostBuild.sh lib$$ProjectName $$BaseLibraryIncludeFolder $$BaseConfigFolder
+
 
 

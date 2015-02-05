@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -30,7 +30,6 @@ void UnitTest::initTestCase(){
     PersianSpellCorrector.insert("Active", true);
     Configs.SpellCorrectorLanguageBasedConfigs.insert("fa", PersianSpellCorrector);
     Targoman::NLPLibs::TextProcessor::instance().init(Configs);
-
 }
 
 QTEST_MAIN(UnitTest)

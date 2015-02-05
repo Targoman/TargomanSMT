@@ -16,4 +16,4 @@ done
 cp -vrf --parents `find $BasePath -name *.h -o -name *.hpp` $IncludeTarget || :
 rm -rvf $IncludeTarget/$BasePath/Private || :
 mkdir -p $ConfigTarget  || :
-cp -rvf conf/* ConfigTarget || :
+cp -rvf conf/* $ConfigTarget || :

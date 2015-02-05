@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright © 2012-2014, Targoman.com
+# Copyright © 2012-2015, Targoman.com
 #
 # Published under the terms of TCRL(Targoman Community Research License)
 # You can find a copy of the license file with distributed source or
@@ -18,17 +18,18 @@ SOURCES += \
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 ################################################################################
-ConfigFileile = $$BasePath/Configs.pri
-!exists($$ConfigFileile){
-error("**** libsrc: Unable to find Configuration file $$ConfigFileile ****")
+ConfigFile = $$BasePath/Configs.pri
+!exists($$ConfigFile){
+error("**** libsrc: Unable to find Configuration file $$ConfigFile ****")
 }
-include ($$ConfigFileile)
+include ($$ConfigFile)
 
 TEMPLATE = app
 TARGET = test_$$ProjectName
 DESTDIR = $$BaseTestBinFolder
 OBJECTS_DIR = $$BaseBuildFolder/obj
 MOC_DIR = $$BaseBuildFolder/moc
-INCLUDEPATH += $$BasePath/libsrc
+INCLUDEPATH += $$BasePath/libsrc \
+               $$BasePath/libsrc/lib$$ProjectName
 QMAKE_LIBDIR += $$BaseLibraryFolder
 LIBS += -l$$ProjectName

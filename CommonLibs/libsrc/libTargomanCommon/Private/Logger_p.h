@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -49,7 +49,7 @@ public:
     void rotateLog();
 
 public:
-    QFile   LogFileile;
+    QFile   LogFile;
     clsLogSettings* LogSettings; /**< a pointer to clsLogSettings class, which specifies level of details of log files  */
     quint64 MaxFileSize;
     bool GlobalSettings; /**< first bit of this boolian defines whether it is active or not and second bit defines whether it is visible or not*/
