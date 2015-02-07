@@ -99,7 +99,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
     quint32       LineNo = 0, Count = 0;
     float         Prob, Backoff;
     bool          IsOK;
-    enuParseState::Type ParseState = enuParseState::Looking4Start; // looking for \data\
+    enuParseState::Type ParseState = enuParseState::Looking4Start;
     QVector<quint32> NGramCounts;
     size_t Dummy;
     size_t Pos;
