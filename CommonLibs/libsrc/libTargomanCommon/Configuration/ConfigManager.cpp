@@ -35,6 +35,26 @@ ConfigManager::~ConfigManager()
     //Defined just to suppress compiler error on QScoppedPointer
 }
 
+/**
+ * @brief Initializes configuration managment.
+ *
+ * First, checks arguments for configFile path or set default configFile path. Second, checks configFile and loads all module names and sets configurable values (calls setFromvariant function of that configurable) after validating them.
+ * Then, checks arguments and overrides settings. In the next step, it cross validates all config items, then calls finalizeItem for each config.
+ * Finally, initializes singleton modules.
+ * @note: content of Configs Map of #pPrivate is inserted in constructor methods of intfConfigurable.
+ * @note: Each module has a static member of clsModuleRegistrar instance which will be constructed before main function. using that constructor that module insert itself in ModuleInstantiators Map of #pPrivate.
+ *
+ * @param _arguments list of arguments in QStringList format.
+ * @exception throws exception if multiple configuration file defined
+ * @exception throws exception if config option has no file name
+ * @exception throws exception if config path not found or can not be read
+ * @exception throws exception if a configurable in config file is not registered
+ * @exception throws exception if a configurable could not be validated
+ * @exception throws exception if not enough parameters is provided for a switch
+ * @exception throws exception if invalid or unrecognized arguments are provided for switch
+ * @exception throws exception if every configurable could not be cross validated
+ */
+
 void ConfigManager::init(const QString& _license, const QStringList &_arguments)
 {
     QString ErrorMessage;
@@ -45,9 +65,9 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         exit(1);
         return;
     }
-    //////////////////////////////////////////////////
-    ///check arguments for configFile path or set default cogFileplFile path
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    // /check arguments for configFile path or set default cogFileplFile path
+    // ////////////////////////////////////////////////
     if (_arguments.count("-c") + _arguments.count("--config") > 1)
         throw exConfiguration("Invalid multiple ConfigManager file definition");
 
@@ -68,9 +88,9 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         }
     }
 
-    //////////////////////////////////////////////////
-    ///check configFile and load everything
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    // /check configFile and load everything
+    // ////////////////////////////////////////////////
     QStringList Modules;
     if (this->pPrivate->ConfigFilePath.size()){
         QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
@@ -81,11 +101,10 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                 bool Found = false;
                 while(BasePath.contains("/")){
                     BasePath.truncate(BasePath.lastIndexOf("/"));
-                    if (this->pPrivate->Configs.value(BasePath)->canBemanaged()  == false){
+                    if (this->pPrivate->Configs.value(BasePath)->canBemanaged() == false){ // zhnDebug: what is this?
                         Found = true;
                         break;
                     }
-
                 }
                 if (Found)
                     continue; // Continue to next key
@@ -101,9 +120,9 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         }
     }
 
-    //////////////////////////////////////////////////
-    ///check arguments and override settings
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    // /check arguments and override settings
+    // ////////////////////////////////////////////////
     for (auto KeyIter = _arguments.begin();
          KeyIter != _arguments.end();
          KeyIter++){
@@ -132,33 +151,33 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                     else
                         ConfigItemIter.value()->setFromVariant(Value.trimmed());
                 }else if (KeyIter->startsWith("--") && this->pPrivate->ModuleInstantiators.value(KeyIter->mid(2)).IsSingleton){
-                    Modules.append(KeyIter->mid(2));
+                    Modules.append(KeyIter->mid(2)); //zhnDebug: check if it is repetitive.
                 }else{
-                    throw exConfiguration("Unrecognized argument: " + *KeyIter);
+                    throw exConfiguration("Unrecognized argument: " + *KeyIter); //zhnDebug: this should be after for loop, I think
                 }
             }
         }else
             throw exConfiguration("invalid argument <"+*KeyIter+">");
     }
 
-    //////////////////////////////////////////////////
-    ///validate all config items
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    // /validate all config items
+    // ////////////////////////////////////////////////
     foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
         if (ConfigItem->crossValidate(ErrorMessage) == false)
             throw exConfiguration(ErrorMessage);
     }
 
-    //////////////////////////////////////////////////
-    ///finalize all config items
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    // /finalize all config items (for module configurables, this puts instantiator function of module to Instatiator member of that.)
+    // ////////////////////////////////////////////////
     foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
         ConfigItem->finalizeConfig();
     }
 
-    //////////////////////////////////////////////////
-    ///marshall all singletons
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    // /marshal all singletons
+    // ////////////////////////////////////////////////
     foreach (const QString& Module, Modules){
         stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(Module);
         if (Instantiator.IsSingleton && Instantiator.fpMethod)
@@ -168,12 +187,26 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     this->pPrivate->Initialized = true;
 }
 
+
+/**
+ * @brief save current configuration to ini file (not implimented yet).
+ * @param _fileName name of file to save.
+ * @param _backup save backup option.
+ */
+
 void ConfigManager::save2File(const QString &_fileName, bool _backup)
 {
     Q_UNUSED(_fileName)
     Q_UNUSED(_backup)
-    //TODO implement me
+    ///@todo implement me
 }
+
+/**
+ * @brief Registers new configurations
+ * @param _path configuration path
+ * @param _item configurable item
+ * @exception throws exception if a path for a configurable already exists.
+ */
 
 void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
 {
@@ -182,12 +215,26 @@ void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
     this->pPrivate->Configs.insert(_path, _item);
 }
 
+/**
+ * @brief Registers new modules.
+ * @param _name         Name of module
+ * @param _instantiator A structure to encapsulate module instantiator and whether it is singleton or not.
+ * @exception throws exception if a name for a module already exists.
+ */
+
 void ConfigManager::addModuleInstantiaor(const QString _name, const stuInstantiator &_instantiator)
 {
     if (this->pPrivate->Configs.contains(_name))
         throw exConfiguration("Duplicate Module Name: " + _name);
     this->pPrivate->ModuleInstantiators.insert(_name, _instantiator);
 }
+
+/**
+ * @brief gives value of a configurable in QVariant format.
+ * @param _path     path of configurable (key in config registery Map).
+ * @param _default  default value if value could not be convert to variant.
+ * @exception throws exception configuration class is not initialized yet.
+ */
 
 QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default) const
 {
@@ -200,6 +247,13 @@ QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default
     else
         return _default;
 }
+
+/**
+ * @brief gives instantiator function of a module.
+ * @param _name     Name of module.
+ * @exception throws exception if ConfigManager is not initialized yet.
+ * @exception throws exception if input module is singleton.
+ */
 
 fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) const
 {
@@ -239,7 +293,9 @@ void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
 }
 
 /***********************************************************************************************/
-
+/**
+ * @brief constructor of intfConfigurable. this is where each configurable inserts its instantiator to config Map of pPrivate member of ConfigManager class.
+ */
 intfConfigurable::intfConfigurable(const QString &_configPath,
                                    const QString &_description,
                                    const QString &_shortSwitch,
@@ -262,6 +318,9 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
 }
 
 /***********************************************************************************************/
+/**
+ * @brief constructor of clsModuleRegistrar. this is where each module inserts its instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
+ */
 clsModuleRegistrar::clsModuleRegistrar(const QString &_name, stuInstantiator _instantiatior){
     ConfigManager::instance().addModuleInstantiaor(_name, _instantiatior);
 }

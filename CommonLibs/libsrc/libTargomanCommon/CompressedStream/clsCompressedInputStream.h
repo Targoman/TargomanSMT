@@ -28,12 +28,10 @@ namespace CompressedStream {
 
 class clsCompressedStreamBuff;
 
-// ----------------------------------------------------------------------------
-// User classes. Use CompressedInputStream and CompressedOutputStream analogously to ifstream and
-// ofstream respectively. They read and write files based on the gz*
-// function interface of the zlib. Files are compatible with gzip compression.
-// ----------------------------------------------------------------------------
-
+/**
+ * @brief The clsCompressedInputStream class is analogously to ifstream. They read and write files based on the gz*
+ * function interface of the zlib. Files are compatible with gzip compression.
+ */
 class clsCompressedInputStream : public std::istream
 {
 public:

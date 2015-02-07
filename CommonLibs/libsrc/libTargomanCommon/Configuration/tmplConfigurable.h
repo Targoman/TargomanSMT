@@ -51,19 +51,29 @@ public:
             throw;
         }
     }
-
+    /**
+     * @brief This function will be overloaded for every type (such as int, float ,...).
+     * This function converts input value from QVariant to a specific type based on overloaded implementation.
+     */
     virtual inline void setFromVariant(const QVariant& _value){
         throw exTargomanMustBeImplemented("setFromVariant for "+this->ConfigPath+" Not Implemented");
     }
-
+    /**
+     * @brief convert #value variable to QVariant type.
+     */
     virtual inline QVariant    toVariant() const{
         return QVariant(this->Value);
     }
-
+    /**
+     * @brief This function will be overloaded for every type (such as int, float ,...)
+     * This function validate value of input value.
+     */
     virtual inline bool        validate(const QVariant& _value, QString& _errorMessage) const{
         return true;
     }
-
+    /**
+     * @brief if cross validator function is prepared that function will be called, else returns true.
+     */
     virtual inline bool        crossValidate(QString& _errorMessage) const{
         return Q_LIKELY(this->CrossValidator) ? this->CrossValidator->validate(*this, _errorMessage) : true;
     }
@@ -78,6 +88,9 @@ private:
 
 
 /***************************************************************************************/
+/**
+ * @def _SPECIAL_CONFIGURABLE type specific validate and setFromVariant functions signiture.
+ */
 #define _SPECIAL_CONFIGURABLE(_type) \
     template <> bool tmplConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
     template <> void tmplConfigurable<_type>::setFromVariant(const QVariant& _value);

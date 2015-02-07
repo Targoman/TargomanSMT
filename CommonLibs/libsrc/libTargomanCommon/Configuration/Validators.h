@@ -21,6 +21,9 @@ namespace Common {
 namespace Configuration {
 
 namespace Validators {
+    /**
+     * @brief The clsPathValidator class overloads intfCrossValidate that can be used for path(string) configurables
+     */
     class clsPathValidator : public intfCrossValidate{
     public:
         clsPathValidator(PathAccess::Options _requiredAccess);
@@ -30,6 +33,9 @@ namespace Validators {
         PathAccess::Options RequiredAccess;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief The clsIntValidator class overloads intfCrossValidate that can be used for int configurables
+     */
     class clsIntValidator : public intfCrossValidate{
     public:
         clsIntValidator(qint64 _min, qint64 _max);
@@ -39,6 +45,9 @@ namespace Validators {
         qint64 Max,Min;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief The clsUIntValidator class overloads intfCrossValidate that can be used for uint configurables
+     */
     class clsUIntValidator : public intfCrossValidate{
     public:
         clsUIntValidator(quint64 _min, quint64 _max);
@@ -48,6 +57,9 @@ namespace Validators {
         quint64 Max,Min;
     };
     ///////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief The clsDoubleValidator class overloads intfCrossValidate that can be used for double configurables
+     */
     class clsDoubleValidator : public intfCrossValidate{
     public:
         clsDoubleValidator(double _min, double _max);

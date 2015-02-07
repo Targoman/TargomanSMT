@@ -40,13 +40,11 @@ private:
     int flushBuffer();
 
 private:
-    static const int bufferSize = 47+256;    // size of data buff
-    // totals 512 bytes under g++ for CompressedInputStream at the end.
-
-    gzFile           File;               // file handle for compressed file
-    char             buffer[bufferSize]; // data buffer
-    char             Opened;             // open/close state of stream
-    int              Mode;              // I/O mode
+    static const int bufferSize = 47+256;   /**<  size of data buff (totals 512 bytes under g++ for CompressedInputStream at the end.)*/
+    gzFile           File;                  /**< file handle for compressed file */
+    char             buffer[bufferSize];    /**< data buffer */
+    char             Opened;                /**< open/close state of stream */
+    int              Mode;                  /**< I/O mode */
 
 
 };

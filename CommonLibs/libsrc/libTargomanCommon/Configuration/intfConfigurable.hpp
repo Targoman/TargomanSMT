@@ -20,7 +20,12 @@
 namespace Targoman {
 namespace Common {
 namespace Configuration {
-
+/**
+ * @brief This class is an interface for all kinds of configurables. Configurables are options and configurations of programs.
+ *
+ * This class and derivations of this class manage and holds informations of configurables.
+ * This class and its derivations is used as value of Configs Map of clsConfigurationPrivate class.
+ */
 class intfConfigurable
 {
 public:
@@ -52,15 +57,15 @@ public:
     /**
      * @brief validate Pure virtual method used to validate configurable items. This method will be called on first
      * alloation and change
-     * @param _value Value to be validated
-     * @param _errorMessage An storage to report why it was invalid
+     * @param[in] _value Value to be validated
+     * @param[out] _errorMessage An storage to report why it was invalid
      * @return true if _value is validated else false
      */
     virtual bool        validate(const QVariant& _value, QString& _errorMessage) const = 0 ;
     /**
      * @brief crossValidate Pure virtual method used to post validate configurable item. this method will be called after all
      *                      Configuration items are filled.
-     * @param _errorMessage  An storage to report why it was invalid
+     * @param[out] _errorMessage  An storage to report why it was invalid
      * @return true if vilidated else false
      */
     virtual bool        crossValidate(QString& _errorMessage) const {Q_UNUSED(_errorMessage) return true;}
@@ -78,12 +83,12 @@ public:
     inline const QString& configPath()const{return this->ConfigPath;}
 
 protected:
-    QString ConfigPath;
-    QString Description;
-    QString ShortSwitch;
-    QString ShortHelp;
-    QString LongSwitch;
-    qint8   ArgCount;
+    QString ConfigPath;     /**< Config path of the configurable item. Path is used to access Item by name or via configuration file */
+    QString Description;    /**< Description of the configurable item. this will also be used as Long Help String*/
+    QString ShortSwitch;    /**< (Optional) Short switch to configure item via arguments */
+    QString ShortHelp;      /**< (Optional) Argument structure to be shown when printing help*/
+    QString LongSwitch;     /**< (Optional) Long switch to be used to configure item via program arguments*/
+    qint8   ArgCount;       /**< Number of arguments for this configurable */
 };
 
 }

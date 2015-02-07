@@ -20,7 +20,9 @@
 namespace Targoman {
 namespace Common {
 namespace Configuration {
-
+/**
+ * @brief This is the base class for all module classes.
+ */
 class intfModule {
 public:
     intfModule(const QString& _name){
@@ -30,9 +32,14 @@ public:
 protected:
     QString ActorUUID;
 };
-
+/**
+ * fpModuleInstantiator_t is function pointer to functions that returns pointer of intfModule (or its derivations) and have no argumnt.
+ */
 typedef intfModule* (*fpModuleInstantiator_t)();
 
+/**
+ * @brief This struct encapsulates modules's instantiator function pointer and wethere it is singleton or not.
+ */
 struct stuInstantiator{
     fpModuleInstantiator_t fpMethod;
     bool                 IsSingleton;
@@ -42,18 +49,29 @@ struct stuInstantiator{
         this->IsSingleton = _isSingleton;
     }
 };
-
+/**
+ * @brief This class is defined to make a static member of it in module class because we wanted its constructor to be called before main function.
+ * In its constructor, the module that has a member of this class, inserts its instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
+ */
 class clsModuleRegistrar{
 public:
     clsModuleRegistrar(const QString& _name, stuInstantiator _instantiatior);
 };
-
+/**
+ * @def TARGOMAN_DEFINE_MODULE adds three function and one data member to not singleton module classes.
+ * Registrar member is the static member that is of type clsModuleRegistrar and will be instantiated before main to insert module instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
+ */
 #define TARGOMAN_DEFINE_MODULE(_name, _class) \
 private: \
     static inline QString moduleName(){return QStringLiteral(_name);}  \
     static inline _class* instantiator(){return new _class;} \
     static inline QString baseConfigPath(){return "/" + moduleName();} \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
+
+/**
+ * @def TARGOMAN_DEFINE_SINGLETONMODULE adds three function and two data member to singleton module classes.
+ * Registrar member is the static member that is of type clsModuleRegistrar and will be instantiated before main to insert module instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
+ */
 
 #define TARGOMAN_DEFINE_SINGLETONMODULE(_name, _class) \
 private: \
@@ -63,9 +81,16 @@ private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
     static _class* Instance;
 
+/**
+ * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for non singleton classes.
+ */
 #define TARGOMAN_REGISTER_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
                       stuInstantiator(_class::instantiator,false));
+
+/**
+ * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for singleton classes. Also makes a null instance of class.
+ */
 
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
