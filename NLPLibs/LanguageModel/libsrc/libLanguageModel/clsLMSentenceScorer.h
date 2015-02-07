@@ -23,6 +23,10 @@ namespace Private {
     class clsLMSentenceScorerPrivate;
 }
 
+/**
+ * @brief This class manages history of sentence itself and gives score of a sentence.
+ */
+
 class clsLMSentenceScorer
 {
 public:

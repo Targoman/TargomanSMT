@@ -28,8 +28,8 @@ public:
     bool isBinary(const QString& _file);
 
 public:
-    quint8               Order;
-    intfBaseModel*        Model;
+    quint8               Order;     /**< Order of NGram */
+    intfBaseModel*        Model;    /**< instance of NGram Model */
 };
 
 

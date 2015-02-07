@@ -20,6 +20,9 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
+/**
+ * @brief This class is a derivation of clsAbstractProbingModel class which overloads and adds some function to faciliate storage and retrieval of index based language models.
+ */
 class clsIndexBasedProbingModel : public clsAbstractProbingModel
 {
 public:

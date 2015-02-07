@@ -91,7 +91,7 @@ IXMLWriter::IXMLWriter() :
                                                   "(?:M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3}))|"
                                                   "(?:الف|[a-zA-Z]|[ابپتثجچهخدذرزژسشصضطظعغفقکگلمنوهی])"
                                                   "))*"
-                                                  "(?:[\\-\\.\\s\\)>\"])"
+                                                  "(?:[\\-\\.\\s\\)>])"
                                                   ")"));
 
     this->RxOrdinalNumber = QRegExp("((?:\\b)(?:1st|2nd|3rd|\\d+th)(?:\\b))");
@@ -145,6 +145,8 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
                                  bool _interactive,
                                  bool _useSpellCorrector)
 {
+    if(_inStr.trimmed().isEmpty())
+        return "";
     QString InputPhrase, OutputPhrase;
     InputPhrase += _inStr;
 
@@ -238,7 +240,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     InputPhrase = OutputPhrase;
     OutputPhrase.clear();
     foreach (const QChar& Char, InputPhrase){
-        if (Char.isLetterOrNumber() == false){
+        if (!Char.isLetterOrNumber() && Char != ARABIC_ZWNJ){
             OutputPhrase.append(' ');
             OutputPhrase.append(Char);
             OutputPhrase.append(' ');

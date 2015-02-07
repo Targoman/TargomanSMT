@@ -22,16 +22,20 @@ struct stuProb {
     float Prob;
 };
 
+/**
+ * @struct A structure for encapsulating data from hash table.
+ */
 struct stuProbAndBackoffWeights {
-  quint64 ID;
-  float Prob;
-  float Backoff;
+  quint64 ID;       /**< index of NGram in hash table */
+  float Prob;       /**< probablity of NGram */
+  float Backoff;    /**< backoff weights of NGram */
   inline stuProbAndBackoffWeights(quint64 _id = 0, float _prob = 0, float _backoff = 0){
       this->Prob = _prob;
       this->Backoff = _backoff;
       this->ID = _id;
   }
 };
+
 
 struct stuProbBackoffAndRestWeights {
   float Prob;

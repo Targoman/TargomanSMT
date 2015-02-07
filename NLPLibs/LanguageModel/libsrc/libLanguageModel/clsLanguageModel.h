@@ -24,7 +24,9 @@ namespace NLPLibs {
 namespace Private {
     class clsLanguageModelPrivate;
 }
-
+/**
+ * @brief This class manages loaded language model.
+ */
 class clsLanguageModel
 {
 public:

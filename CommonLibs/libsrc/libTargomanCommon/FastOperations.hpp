@@ -38,6 +38,10 @@ inline quint64 rotl64 ( quint32 x, qint8 r )
   return (x << r) | (x >> (64 - r));
 }
 
+/**
+ * @param _str Input string
+ * @return Returns trimmed string
+ */
 inline std::string& fastTrimStdString(std::string& _str){
     const char* StrPtr = _str.c_str();
     char* EndStr = (char*)StrPtr + _str.size();
@@ -68,6 +72,12 @@ inline std::string& fastTrimStdString(std::string& _str){
 #define IS_WHITE_SPACE(c) ((c) == ' ' || (c) == '\t')
 #define IS_VALID_DIGIT(c) ((c) >= '0' && (c) <= '9')
 
+/**
+ * @brief fastASCII2Float converts Char* string to float string.
+ * @param[in] pFloatString input string.
+ * @param[out] _lastPos last position of float number in the string.
+ * @return returns converted float number.
+ */
 inline float fastASCII2Float (const char *pFloatString, size_t& _lastPos)
 {
     qint64 IntValue, Scale = 1;
@@ -103,7 +113,10 @@ inline float fastASCII2Float (const char *pFloatString, size_t& _lastPos)
     // Return signed and scaled floating point result.
     return ((float)(Sign * IntValue))/(float)Scale;
 }
-
+/**
+ * @param[in, out] _str input and output string.
+ * @return returns pointer of first character that is not space.
+ */
 inline const char* fastSkip2NonSpace(const char*& _str){
     while(*_str)
         if(*_str == ' ' || *_str == '\t' || *_str == '\r' || *_str == '\n')
@@ -112,6 +125,11 @@ inline const char* fastSkip2NonSpace(const char*& _str){
             return _str;
     return _str;
 }
+
+/**
+ * @param[in, out] _str input and output string.
+ * @return returns pointer of first character that is space.
+ */
 
 inline const char* fastSkip2Space(const char*& _str){
     while(*_str)

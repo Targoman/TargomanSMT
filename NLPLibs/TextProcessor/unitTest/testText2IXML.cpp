@@ -92,5 +92,13 @@ void UnitTest::text2IXML()
     QVERIFY(VERIFY_TXT2IXML("fa","می دهند", "می‌دهند"));
     QVERIFY(VERIFY_TXT2IXML("fa","اویزه", "آویزه"));
     QVERIFY(VERIFY_TXT2IXML("fa","غیبگو تر", "غیبگوتر"));
+    QVERIFY(VERIFY_TXT2IXML("fa",
+                            "\"کوری\"",
+                            "\" کوری \""
+                            ));
+    QVERIFY(VERIFY_TXT2IXML("fa",
+                            "",
+                            ""
+                            ));
 }
 

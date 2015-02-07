@@ -850,6 +850,28 @@ void initUnicodeNormalizers(){
     UN_Latin.insert(0x2A8, "tc"); // "ʨ"
     UN_Latin.insert(0x2AB, "tz"); // "ʫ"
 
+    UN_Latin.insert(0x1D00, "A");
+    UN_Latin.insert(0x1D01, "AE");
+    UN_Latin.insert(0x1D03, "B");
+    UN_Latin.insert(0x1D04, "C");
+    UN_Latin.insert(0x1D05, "D");
+    UN_Latin.insert(0x1D06, "D");
+    UN_Latin.insert(0x1D07, "E");
+    UN_Latin.insert(0x1D09, "!");
+    UN_Latin.insert(0x1D0A, "J");
+    UN_Latin.insert(0x1D0B, "K");
+    UN_Latin.insert(0x1D0C, "L");
+    UN_Latin.insert(0x1D0D, "M");
+    UN_Latin.insert(0x1D0F, "o");
+    UN_Latin.insert(0x1D18, "P");
+    UN_Latin.insert(0x1D1B, "T");
+    UN_Latin.insert(0x1D1C, "U");
+    UN_Latin.insert(0x1D20, "V");
+    UN_Latin.insert(0x1D21, "W");
+    UN_Latin.insert(0x1D22, "Z");
+
+
+
     UN_Latin.insert(0x2103,QString::fromUtf8("°C"));
     UN_Latin.insert(0x2109,QString::fromUtf8("°F"));
     UN_Latin.insert(0x210E, "h"); // "h"

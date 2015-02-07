@@ -21,6 +21,11 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
+
+/**
+ * @brief The main functionality of This class is for storing history of words.
+ */
+
 class clsLMSentenceScorerPrivate
 {
 public:
@@ -29,10 +34,9 @@ public:
     ~clsLMSentenceScorerPrivate();
 
 public:
-    const clsLanguageModel& LM;
-
-    QStringList StringBasedHistory;
-    QList<Common::WordIndex_t> IndexBasedHistory;
+    const clsLanguageModel& LM;     				/**< An instance of  clsLanguageModel class */
+    QStringList StringBasedHistory; 				/**< History of seen words */
+    QList<Common::WordIndex_t> IndexBasedHistory;	/**< History of seen indices */
 };
 
 }

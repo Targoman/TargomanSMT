@@ -43,6 +43,7 @@ Normalizer::Normalizer()
 #define WEIRD_THOUSAND_SEPERATOR        QChar(0xCB99)
 #define WEIRD_DECIMAL_POINT             QChar(0xC2B7)
 #define ARABIC_DECIMAL_POINT            QChar(0x066B)
+#define ARABIC_TATWEEL                  QChar(0x0640)
 
 
 /**
@@ -91,6 +92,13 @@ QString Normalizer::normalize(const QChar &_char,
         this->LastChar = Char;
         return "";
     }
+
+    //Convert wrong tatweels to dash.
+    if(_nextChar.isDigit() || this->LastChar.isDigit() ||
+       _nextChar.isPunct() || this->LastChar.isPunct() ||
+       _nextChar.script() == QChar::Script_Latin || this->LastChar.script() == QChar::Script_Latin)
+        if(Char == ARABIC_TATWEEL)
+            return this->LastChar = '-';
 
     //Convert special ZWNJ to ZWNJ
     if (Char == RIGHT_TO_LEFT_EMBEDDING && LastChar == POP_DIRECTIONAL_FORMATTING)
@@ -142,16 +150,21 @@ QString Normalizer::normalize(const QChar &_char,
                 return Normalized;
             }
             else {
-                for (int i=0; i < Normalized.size(); i++) {
-                    Normalized[i] = this->LastChar =  this->normalize(Normalized.at(i),
-                                                        ((i + 1) < Normalized.size() ? Normalized.at(i+1) : _nextChar),
-                                                        _interactive,
-                                                        _line,
-                                                        _phrase,
-                                                        _charPos,
-                                                        true
-                                                        )[0];
+                QString TempNormalized = Normalized;
+                Normalized.clear();
+                for (int i = 0; i < TempNormalized.size(); i++) {
+                    QString NormalizedChar = this->normalize(TempNormalized.at(i),
+                                                             ((i + 1) < TempNormalized.size() ? TempNormalized.at(i+1) : _nextChar),
+                                                             _interactive,
+                                                             _line,
+                                                             _phrase,
+                                                             _charPos,
+                                                             true
+                                                             );
+                    if(NormalizedChar.size())
+                        Normalized.append(this->LastChar =  NormalizedChar[0]);
                 }
+                return Normalized;
             }
         }else{
             return "";
@@ -226,18 +239,23 @@ QString Normalizer::normalize(const QChar &_char,
 
 
     //Check if there are sepcial normalizers
+
     if (QCharScriptToNormalizerMap[Char.script()]){
-        QString Normalized = QCharScriptToNormalizerMap[Char.script()](Char.unicode());
-        for (int i=0; i < Normalized.size(); i++) {
-            Normalized[i] = this->LastChar =  this->normalize(Normalized.at(i),
-                                                ((i + 1) < Normalized.size() ? Normalized.at(i+1) : _nextChar),
-                                                _interactive,
-                                                _line,
-                                                _phrase,
-                                                _charPos,
-                                                true
-                                                )[0];
+        QString TempNormalized = QCharScriptToNormalizerMap[Char.script()](Char.unicode());
+        QString Normalized;
+        for (int i=0; i < TempNormalized.size(); i++) {
+            QString NormalizedChar = this->normalize(TempNormalized.at(i),
+                                                     ((i + 1) < TempNormalized.size() ? TempNormalized.at(i+1) : _nextChar),
+                                                     _interactive,
+                                                     _line,
+                                                     _phrase,
+                                                     _charPos,
+                                                     true
+                                                     );
+            if(NormalizedChar.size())
+                Normalized.append(this->LastChar =  NormalizedChar[0]);
         }
+        return Normalized;
     }
 
     //Accept Currency, Math and special symbol characters
@@ -333,13 +351,13 @@ QString Normalizer::normalize(const QString &_string, qint32 _line, bool _intera
     QString Normalized;
     this->LastChar = QChar();
     for (int i=0; i<_string.size(); i++){
-        Normalized.append(
-                    this->normalize(_string.at(i),
-                                    ((i + 1) < _string.size() ? _string.at(i+1) : QChar('\n')),
-                                    _interactive,
-                                    _line,
-                                    _string,
-                                    i));
+        QString normalizedCharString = this->normalize(_string.at(i),
+                                                       ((i + 1) < _string.size() ? _string.at(i+1) : QChar('\n')),
+                                                       _interactive,
+                                                       _line,
+                                                       _string,
+                                                       i);
+        Normalized.append(normalizedCharString);
     }
     return fullTrim(Normalized);
 }

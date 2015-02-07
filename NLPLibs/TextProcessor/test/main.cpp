@@ -54,7 +54,44 @@ int main(int _argc, char *_argv[])
         Targoman::NLPLibs::TextProcessor::instance().init(Configs);
 
 
-
+        QFile inputFile("/home/saeed/Desktop/MobinaProject/PDFEngine/Samples/Koori320.txt");
+        QFile outputFile("/home/saeed/Desktop/MobinaProject/PDFEngine/Samples/Koori320IXML.txt");
+        QTextStream out(&outputFile);
+        out.setCodec("UTF-8");
+        outputFile.open(QIODevice::WriteOnly);
+        if (inputFile.open(QIODevice::ReadOnly))
+        {
+           QTextStream in(&inputFile);
+           in.setCodec("UTF-8");
+           while ( !in.atEnd() )
+           {
+              QString line = in.readLine();
+//              QStringList tokens = line.split(" ");
+//              foreach(QString token, tokens)
+//              {
+//                  qDebug() << "before normalization: " << token;
+//                  for(int characterIndex = 0; characterIndex < token.size(); characterIndex++)
+//                  {
+//                      QChar character = token[characterIndex];
+//                      qDebug() << character.unicode() << ": " << character;
+//                  }
+//                  QString normalizedToken = Targoman::NLPLibs::TextProcessor::instance().normalizeText(token, true);
+//                  qDebug() << "after normalization:  " << normalizedToken;
+//                  for(int characterIndex = 0; characterIndex < normalizedToken.size(); characterIndex++)
+//                  {
+//                      QChar character = normalizedToken[characterIndex];
+//                      qDebug() << character.unicode() << ": " << character;
+//                  }
+//                  qDebug() << "___________________________________";
+//              }
+//              QString normalizedLine = Targoman::NLPLibs::TextProcessor::instance().normalizeText(line, true);
+              QString normalizedLine = Targoman::NLPLibs::TextProcessor::instance().text2IXML(line, "en", 0, false, false);
+//              qDebug() << normalizedLine;
+              out << normalizedLine << "\n";
+           }
+           inputFile.close();
+           outputFile.close();
+        }
 //        Targoman::NLPLibs::Private::Normalizer::instance().init("/tmp/Normalization.bin", true);
           qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
                     QStringLiteral("نا مردترینشان"), false, "fa");/**/
@@ -70,14 +107,24 @@ int main(int _argc, char *_argv[])
 //                    QStringLiteral("رفته‌‌ام"), false, "fa");
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
 //                    QStringLiteral("نا مردهایشان"), false, "fa");
+
+//        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
+//                    QStringLiteral("\"کوری\""), false, "");
+//        qDebug() << Targoman::NLPLibs::TextProcessor::instance().text2IXML(QStringLiteral("123. saeed tor234 الف."), "en");
+
         qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
                     QStringLiteral("میخورم"), false, "fa");/**/
         /*qDebug()<<Targoman::NLPLibs::TextProcessor::instance().normalizeText(
                     QStringLiteral("می خورم"), false, "fa");/**/
         qDebug() << Targoman::NLPLibs::TextProcessor::instance().text2IXML(QStringLiteral("123. saeed tor234 الف."), "en");
 
+
 //        qDebug()<<Targoman::NLPLibs::TextProcessor::instance().text2IXML(
+
+//                    QStringLiteral(" "), "en", 0, true, true);
+
 //                    QStringLiteral("a -12asd"), "en", 0, true, true);/**/
+
 
         /*
         while(1);

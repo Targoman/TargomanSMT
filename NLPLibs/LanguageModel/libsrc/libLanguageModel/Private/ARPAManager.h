@@ -22,6 +22,9 @@ namespace Private {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exARPAManager, exLanguageModel);
 
+/**
+ * @brief Main functionality of this class is for loading language model ARPA files.
+ */
 class ARPAManager
 {
 public:
@@ -34,7 +37,7 @@ private:
     Q_DISABLE_COPY(ARPAManager)
 
 private:
-    static ARPAManager* Instance;
+    static ARPAManager* Instance; /**< A static pointer member of this class.*/
 };
 
 }

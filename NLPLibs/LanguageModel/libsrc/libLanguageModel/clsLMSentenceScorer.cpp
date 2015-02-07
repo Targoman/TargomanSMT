@@ -35,6 +35,13 @@ void clsLMSentenceScorer::reset()
     this->pPrivate->StringBasedHistory.clear();
 }
 
+/**
+ * @brief calculates word probability based on previous words.
+ * @param _word         input word
+ * @param _foundedGram  order of NGram that was existed in Hash Table.
+ * @return              probablity of NGram.
+ */
+
 LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
 {
     if (Q_UNLIKELY(this->pPrivate->StringBasedHistory.isEmpty())){

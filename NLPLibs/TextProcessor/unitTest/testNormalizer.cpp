@@ -60,12 +60,15 @@ void UnitTest::normalizeText()
     "نا مردیهایشان",
     "نامردی‌هایشان"
     ));
+
+    QVERIFY(VERIFY_NORMALIZE("",
+    "ﺍﺟﺘﻤﺎﻋﯽ ـ ﺳﻴﺎﺳﯽ",
+    "اجتماعی - سیاسی"
+    ));
+
     QVERIFY(VERIFY_NORMALIZE("fa",
     "بی شعوری ها یشان",
     "بی‌شعوری‌هایشان"
     ));
-
-
-
 
 }

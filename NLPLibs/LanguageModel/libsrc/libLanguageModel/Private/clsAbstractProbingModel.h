@@ -31,19 +31,37 @@ typedef quint64 Hash_t;
 
 class clsAbstractProbingModel : public intfBaseModel
 {
+    /**
+     * @struct Our hash table is from this type.
+     */
     struct stuNGramHash{
+        /**
+         * @brief HashValueLevel
+         * The first lowest 5 bits of this variable, is for recording hash level (which can save a level between 0-31).
+         * The Sixth bit of this variable is for continue flag (which specifies whether another value in hash table, have guessed this occupied place for its location or not).
+         * The Seven bit of this variable is for multiIndex flag (which specifies whether value of cell is hash of a multi gram or unigram).
+         * The remaining 57 bits of this variable is for recording hash value of Ngram.
+         */
         quint64                    HashValueLevel;
-        Targoman::Common::LogP_t   Prob;
-        Targoman::Common::LogP_t   Backoff;
+        
+        Targoman::Common::LogP_t   Prob;                /**< The probability of NGram. */
+        Targoman::Common::LogP_t   Backoff;             /**< The Weight of Backoff. */
 
+        /** @brief Sets level of hashing in #HashValueLevel . */
         inline void setHashLevel(quint8 _level){
             Q_ASSERT(_level <= 0x1F);
             this->HashValueLevel = (this->HashValueLevel & (HASHVALUE_CONTAINER | 0x40 | 0x20)) + (_level & 0x1F); }
+        /** @return returns level of hashing from #HashValueLevel. */
         inline quint8  hashLevel(){ return this->HashValueLevel & 0x1F; }
+        /** @return returns hash value from #HashValueLevel. */
         inline quint64 hashValue(){ return this->HashValueLevel & HASHVALUE_CONTAINER; }
+        /** @brief Does continue flag of cell is set or not. */
         inline bool    continues(){ return this->HashValueLevel & 0x20; }
+        /** @brief Sets continue flag of cell in #HashValueLevel. */
         inline void    setContinues(){ this->HashValueLevel |= 0x20; }
+        /** @brief Does continue flag of cell is set or not. */
         inline bool    isMultiIndex(){ return this->HashValueLevel & 0x40; }
+        /** @brief Sets continue flag of cell in #HashValueLevel. */
         inline void    setMultiIndex(){ this->HashValueLevel |= 0x40; }
     };
 
@@ -74,13 +92,13 @@ protected:
     stuProbAndBackoffWeights getNGramWeights(const char* _ngram, bool _justSingle = false) const;
 
 protected:
-    quint32                     HashTableSize;
-    quint32                     NgramCount;
-    stuNGramHash*               NGramHashTable;
-    QHash<QString, stuProbAndBackoffWeights> RemainingHashes;
-    stuProbAndBackoffWeights    UnknownWeights;
-    quint8                      MaxLevel;
-    quint64                     SumLevels;
+    quint32                     HashTableSize;                  /**< Size of hash table. */
+    quint32                     NgramCount;                     /**< Max NGram Existed in language model. */
+    stuNGramHash*               NGramHashTable;                 /**< Hash table of NGram. */
+    QHash<QString, stuProbAndBackoffWeights> RemainingHashes;   /**< A QHash container to insert NGram that can not be inserted in #NGramHashTable. */
+    stuProbAndBackoffWeights    UnknownWeights;                 /**< Weight of unknown word. */
+    quint8                      MaxLevel;                       /**< Maximum level that was needed during inserting NGrams in #NGramHashTable . */
+    quint64                     SumLevels;                      /**< sum of levels of hash levels, calculated during inserting NGrams in #NGramHashTable . */
 };
 
 }

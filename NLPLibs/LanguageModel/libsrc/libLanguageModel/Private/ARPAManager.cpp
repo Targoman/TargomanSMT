@@ -43,6 +43,48 @@ ARPAManager::ARPAManager()
     TARGOMAN_REGISTER_ACTOR("LM::ARPAManager");
 }
 
+/**
+ * @brief Loads     language model _file to _model.
+ *
+ * This is a sample of a ARPA language model:
+ *
+ * # Language models start with this tag.
+ * \data\
+ * # The first part of ARPA file, shows number of word(s) in each Gram.
+ * ngram 1=7
+ * ngram 2=7
+ *
+ * # In rest of the file, for each Gram these data are shown for each NGram:
+ * # In the first column -log propabilty of NGram is shown.
+ * # In the second column the string of NGram is shown.
+ * # In the third column backoff weight of NGram is shown. Backoff weights are required only for those N-grams that form a prefix of longer N-grams in the model. The highest-order N-grams in particular will not need backoff weights (they would be useless).
+ *
+ * \1-grams:
+ * -1.0000 <UNK>	-0.2553
+ * -98.9366 <s>	 -0.3064
+ * -1.0000 </s>	 0.0000
+ * -0.6990 wood	 -0.2553
+ * -0.6990 cindy	-0.2553
+ * -0.6990 pittsburgh		-0.2553
+ * -0.6990 jean	 -0.1973
+ *
+ * \2-grams:
+ * -0.2553 <UNK> wood
+ * -0.2553 <s> <UNK>
+ * -0.2553 wood pittsburgh
+ * -0.2553 cindy jean
+ * -0.2553 pittsburgh cindy
+ * -0.5563 jean </s>
+ * -0.5563 jean wood
+ *
+ * # In the last part of ARPA file, there is this tag.
+ * \end\
+ *
+ * @param _file     address of language model file.
+ * @param _model    language model to initialized from model file.
+ * @return returns  order of n-gram
+ */
+
 quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
 {
     TargomanLogInfo(5, "Loading ARPA File: " + _file);
@@ -57,7 +99,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
     quint32       LineNo = 0, Count = 0;
     float         Prob, Backoff;
     bool          IsOK;
-    enuParseState::Type ParseState = enuParseState::Looking4Start;
+    enuParseState::Type ParseState = enuParseState::Looking4Start; // looking for \data\
     QVector<quint32> NGramCounts;
     size_t Dummy;
     size_t Pos;
