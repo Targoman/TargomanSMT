@@ -16,6 +16,7 @@
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/Configuration/intfCrossValidate.hpp"
+#include "libTargomanCommon/Macros.h"
 
 namespace Targoman {
 namespace Common {
@@ -24,7 +25,7 @@ namespace Configuration {
 /**
  * @brief The clsConfigurable template is used to store and validate different configurable items
  */
-template <class Type_t> class tmplConfigurable : public intfConfigurable
+template <class Type_t, bool ... _rest> class tmplConfigurable : public intfConfigurable
 {
 public:
     tmplConfigurable(const QString&  _configPath,
@@ -55,6 +56,16 @@ public:
      * @brief This function will be overloaded for every type (such as int, float ,...).
      * This function converts input value from QVariant to a specific type based on overloaded implementation.
      */
+    tmplConfigurable(tmplConfigurable<Type_t>&& _other) :
+        intfConfigurable(_other.ConfigPath,
+                         _other.Description,
+                         _other.ShortSwitch,
+                         _other.ShortHelp,
+                         _other.LongSwitch){
+        this->Value = _other.Value;
+        this->CrossValidator.swap(_other.CrossValidator);
+    }
+
     virtual inline void setFromVariant(const QVariant& _value){
         throw exTargomanMustBeImplemented("setFromVariant for "+this->ConfigPath+" Not Implemented");
     }
@@ -92,8 +103,8 @@ private:
  * @def _SPECIAL_CONFIGURABLE type specific validate and setFromVariant functions signiture.
  */
 #define _SPECIAL_CONFIGURABLE(_type) \
-    template <> bool tmplConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
-    template <> void tmplConfigurable<_type>::setFromVariant(const QVariant& _value);
+    template <> bool Targoman::Common::Configuration::tmplConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
+    template <> void Targoman::Common::Configuration::tmplConfigurable<_type>::setFromVariant(const QVariant& _value);
 
 /***************************************************************************************/
 _SPECIAL_CONFIGURABLE(qint8)
@@ -108,8 +119,8 @@ _SPECIAL_CONFIGURABLE(double)
 _SPECIAL_CONFIGURABLE(float)
 _SPECIAL_CONFIGURABLE(QString)
 _SPECIAL_CONFIGURABLE(bool)
-_SPECIAL_CONFIGURABLE(QList<quint8>)
-_SPECIAL_CONFIGURABLE(intfModule*)
+_SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA false) /* Used on normal regex matching */
+_SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA true) /* Used on wildcard matching */
 
 }
 }

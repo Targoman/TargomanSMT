@@ -14,6 +14,7 @@
 #define TARGOMAN_COMMON_MACROS_H_
 
 #include <string>
+#include <QString>
 #include <cstring>
 
 /********************************************************************************************
@@ -82,18 +83,18 @@
  ********************************************************************************************/
 #ifdef TARGOMAN_SHOW_DEBUG
     #define TARGOMAN_LIBRARY_VERSION \
-    extern "C" std::string getTargomanLibVersion() { \
-      return std::string("Version: ") + \
-             std::string(TARGOMAN_M2STR(PROJ_VERSION)) + \
-             std::string(" [DEBUG] Last Build: ") + \
-             std::string(__DATE__);}
+    extern "C" QString getTargomanLibVersion() { \
+      return QString("Version: ") + \
+             QString(TARGOMAN_M2STR(PROJ_VERSION)) + \
+             QString(" [DEBUG] Last Build: ") + \
+             QString(__DATE__);}
 #else
     #define TARGOMAN_LIBRARY_VERSION \
-    extern "C" std::string getTargomanLibVersion() { \
-      return std::string("Version: ") + \
-             std::string(TARGOMAN_M2STR(PROJ_VERSION)) + \
-             std::string(" [RELEASE] Last Build: ") + \
-             std::string(__DATE__);}
+    extern "C" QString getTargomanLibVersion() { \
+      return QString("Version: ") + \
+             QString(TARGOMAN_M2STR(PROJ_VERSION)) + \
+             QString(" [RELEASE] Last Build: ") + \
+             v(__DATE__);}
 #endif
 
 /********************************************************************************************
@@ -126,6 +127,7 @@
  *     All the enumerations defined by this macro will have a default member named Unknown numbered -1.
  *     You must not set default values for enumerations. Enumeration will start from 0.
  */
+//TODO change this to VA_ARGS ENUM
 #define TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(_name) \
 namespace _name { enum Type { Unknown = -1,
 
@@ -166,6 +168,13 @@ namespace _name { enum Type { Unknown = -1,
     return Unknown; \
     toEnum(""); \
   } \
+  inline static QString listOptions(){ \
+    QString Options = "( "; \
+    int EnumSize = getCount(); \
+    for(int i=0; i< EnumSize - 1; i++) \
+        Options += QString("%1 | ").arg(Strings[i]); \
+    return Options + Strings[EnumSize - 1] + " )"; \
+  } \
 }
 
 /********************************************************************************************
@@ -174,5 +183,6 @@ namespace _name { enum Type { Unknown = -1,
 #define fastToLower(c)  ((c >= 'A' && c <= 'Z') ? c + 0x20 : c)
 #define fastToUpper(c)  ((c >= 'a' && c <= 'z') ? c - 0x20 : c)
 #define BIG_CONSTANT(x) (x##LLU)
+#define MACRO_SAFE_COMMA ,
 
 #endif /* TARGOMAN_COMMON_MACROS_H_ */

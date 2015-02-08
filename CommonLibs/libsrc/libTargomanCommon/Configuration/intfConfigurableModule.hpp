@@ -64,7 +64,7 @@ public:
 #define TARGOMAN_DEFINE_MODULE(_name, _class) \
 private: \
     static inline QString moduleName(){return QStringLiteral(_name);}  \
-    static inline _class* instantiator(){return new _class;} \
+    static inline intfModule* instantiator(){return new _class;} \
     static inline QString baseConfigPath(){return "/" + moduleName();} \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
 
@@ -76,7 +76,7 @@ private: \
 #define TARGOMAN_DEFINE_SINGLETONMODULE(_name, _class) \
 private: \
     static inline QString moduleName(){return QStringLiteral(_name);}  \
-    static inline _class* instance(){return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
+    static inline intfModule* instance(){return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
     static inline QString baseConfigPath(){return "/" + moduleName();} \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
     static _class* Instance;
@@ -86,7 +86,7 @@ private: \
  */
 #define TARGOMAN_REGISTER_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
-                      stuInstantiator(_class::instantiator,false));
+                      Targoman::Common::Configuration::stuInstantiator(_class::instantiator,false));
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for singleton classes. Also makes a null instance of class.
@@ -94,7 +94,7 @@ private: \
 
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
-                      stuInstantiator(_class::instance,true)); \
+                      Targoman::Common::Configuration::stuInstantiator(_class::instance,true)); \
     _class* _class::Instance = NULL;
 }
 }

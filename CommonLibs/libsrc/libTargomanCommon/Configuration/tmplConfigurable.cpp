@@ -84,28 +84,51 @@ void tmplConfigurable<bool>::setFromVariant(const QVariant& _value){
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
 
-//////QList<quint8>
+//////QRegExp
 template <>
-bool tmplConfigurable<QList<quint8> >::validate(const QVariant&, QString& )const {
-    Q_ASSERT_X (0, "QList<QVariant>", "Check Validation");return true;
+bool tmplConfigurable<QRegExp, false>::validate(const QVariant& _value, QString& _errorMessage) const{
+    if (_value.canConvert(QVariant::RegExp) == false) {
+        _errorMessage = "Unable to convert" + _value.toString() + " to regex.";
+        return false;
+    }else{
+        QRegExp TempRegex(_value.toString());
+        if (TempRegex.isValid() == false){
+            _errorMessage = "Invalid regex pattern: " + TempRegex.errorString();
+            return false;
+        }else
+        return true;
+    }
+
 }
 template <>
-void tmplConfigurable<QList<quint8> >::setFromVariant(const QVariant& _value){
+void tmplConfigurable<QRegExp, false>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
-    if (this->validate(_value, ErrorMessage)) {
-        foreach (const QString& Value, _value.toString().split(" ")){
-
-            this->Value.append(Value.toUInt());
-        }
-    }
+    if (this->validate(_value, ErrorMessage))this->Value = _value.value<QRegExp>();
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
-template <>
-QVariant    tmplConfigurable<QList<quint8> >::toVariant() const{
-    Q_ASSERT_X (0, "QList<QVariant>", "toVariant");
-    return QVariant();
-}
 
+//////QRegExp when used as wildcard
+template <>
+bool tmplConfigurable<QRegExp, true>::validate(const QVariant& _value, QString& _errorMessage) const{
+    if (_value.canConvert(QVariant::RegExp) == false) {
+        _errorMessage = "Unable to convert" + _value.toString() + " to regex.";
+        return false;
+    }else{
+        QRegExp TempRegex(_value.toString(), Qt::CaseSensitive);
+        if (TempRegex.isValid() == false){
+            _errorMessage = "Invalid regex pattern: " + TempRegex.errorString();
+            return false;
+        }else
+        return true;
+    }
+
+}
+template <>
+void tmplConfigurable<QRegExp, true>::setFromVariant(const QVariant& _value){
+    QString ErrorMessage;
+    if (this->validate(_value, ErrorMessage))this->Value = _value.value<QRegExp>();
+    else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
+}
 
 }
 }
