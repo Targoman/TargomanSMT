@@ -68,18 +68,12 @@ class clsSample
   }
 };
 
-TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuTest)
-Val0,
-Val1,
-Val2,
-Val3
-TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
-"Val0",
-"Val1",
-"Val2",
-"Val3"
-TARGOMAN_DEFINE_ENHANCED_ENUM_END
-
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuTest,
+                              Val0,
+                              Val1,
+                              Val2,
+                              Val3
+                              )
 
 void checkOutput()
 {

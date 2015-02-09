@@ -36,7 +36,6 @@ public:
                          _shortSwitch,
                          _shortHelp,
                          _LongSwitch){
-        this->ArgCount = -1; //zhnDebug: why it is -1?
     }
     virtual inline void setFromVariant(const QVariant& _var){
         this->ActiveModuleName = _var.toString();

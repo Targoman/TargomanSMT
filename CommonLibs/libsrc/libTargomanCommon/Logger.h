@@ -28,26 +28,26 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
 
 /** @brief below macro must be used to generate new UUID and register actor */
 #define TARGOMAN_REGISTER_ACTOR(_actorName) \
-  Targoman::Common::Logger::instance().registerActor(&ActorUUID, _actorName);
+    Targoman::Common::Logger::instance().registerActor(&ActorUUID, _actorName);
 
 /** @brief These are helper macros to ease usage of Logger */
 #define TargomanLogWarn(_level, _message) \
-  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Warning, _level, _message);
+    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Warning, _level, _message);
 
 #define TargomanLogInfo( _level, _message) \
-  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Info, _level, _message);
+    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Info, _level, _message);
 
 #define TargomanLogError( _message) \
-  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Error, 9, _message);
+    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Error, 9, _message);
 
 #define TargomanLogDebug(_level, _message) \
-  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, _level, _message);
+    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, _level, _message);
 
 #define TargomanLogHappy(_level, _message) \
-  Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Happy, _level, _message);
+    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Happy, _level, _message);
 
 namespace Private {
-    class LoggerPrivate;
+class LoggerPrivate;
 }
 
 /**
@@ -58,19 +58,13 @@ namespace Private {
  * @value  Debug
  * @value  Happy
  **/
-TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuLogType)
-    Info,
-    Warning,
-    Error,
-    Debug,
-    Happy
-TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
-    "Info ",
-    "Warn ",
-    "Error",
-    "Debug",
-    "Happy"
-TARGOMAN_DEFINE_ENHANCED_ENUM_END
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuLogType,
+                              Info,
+                              Warning,
+                              Error,
+                              Debug,
+                              Happy
+                              )
 
 /**
  * @class clsLogSettings
@@ -79,7 +73,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM_END
  */
 class clsLogSettings
 {
-public:
+    public:
     /**
      * @brief Constructor sets level of details at highest level.
      */
@@ -111,7 +105,7 @@ public:
         this->Details = (this->Details & 0xF0) + _level;
     }
 
-private:
+    private:
     quint8 Details; /**< This variable is used for setting level of details in log file. Just higher bits of this variable is used*/
 };
 
@@ -120,13 +114,13 @@ private:
  */
 struct stuLogMessage
 {
-  QDateTime DateTime;
-  QString   ActorID;
-  enuLogType::Type Type;
-  quint8 Level;
-  QString Message;
+    QDateTime DateTime;
+    QString   ActorID;
+    enuLogType::Type Type;
+    quint8 Level;
+    QString Message;
 
-  /**
+    /**
    * @brief stuLogMessage Helper method/constructor of stuLogMessage to be used to create new Log Struct
    * @param _actorID ID of the actor who has generated the log. This will be mapped to his name by different modules
    * @param _type Type of the Log baesed on \a enuLogType enumeration
@@ -134,18 +128,18 @@ struct stuLogMessage
    * @param _message Message of the log
    * @param _dateTime Date and time of the generated Log. This will be stored to File/DB instead of the write time
    */
-  stuLogMessage(QString   _actorID,
-                enuLogType::Type _type,
-                quint8 _level,
-                QString _message,
-                QDateTime _dateTime = QDateTime::currentDateTime())
-  {
-    this->DateTime = _dateTime;
-    this->ActorID = _actorID;
-    this->Type = _type;
-    this->Level = _level;
-    this->Message = _message;
-  }
+    stuLogMessage(QString   _actorID,
+                  enuLogType::Type _type,
+                  quint8 _level,
+                  QString _message,
+                  QDateTime _dateTime = QDateTime::currentDateTime())
+    {
+        this->DateTime = _dateTime;
+        this->ActorID = _actorID;
+        this->Type = _type;
+        this->Level = _level;
+        this->Message = _message;
+    }
 };
 
 /**
@@ -219,24 +213,24 @@ public:
     void setVisible(bool _state = true);
 
     bool isVisible();
-  private:
+private:
     /**
      * @brief sets all kinds logSettings levels to lowest level.
      */
     Logger(QObject *parent=0);
 
-  signals:
+signals:
     void sigLogAdded(const QDateTime& _time,
                      QString          _actorID,
                      enuLogType::Type _type,
                      quint8           _level,
                      const QString& _message);
 
-  private:
-      static Logger* Instance;
-      QScopedPointer<Targoman::Common::Private::LoggerPrivate> pPrivate;
+private:
+    static Logger* Instance;
+    QScopedPointer<Targoman::Common::Private::LoggerPrivate> pPrivate;
 
-      friend class Targoman::Common::Private::LoggerPrivate;
+    friend class Targoman::Common::Private::LoggerPrivate;
 };
 
 }
