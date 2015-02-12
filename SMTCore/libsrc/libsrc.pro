@@ -14,7 +14,6 @@ HEADERS += \
     libTargomanCore/Private/InputDecomposer/clsToken.h \
     libTargomanCore/clsTranslator.h \
     libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphBuilder.h \
-    libTargomanCore/Private/SearchGraphBuilder/clsHypothesisHolder.h \
     libTargomanCore/Private/clsTranslator_p.h \
     libTargomanCore/Private/GlobalConfigs.h \
     libTargomanCore/Private/N-BestFinder/clsNBestFinder.h \
@@ -30,13 +29,13 @@ HEADERS += \
     libTargomanCore/Private/RuleTable/clsTargetRule.h \
     libTargomanCore/Private/RuleTable/clsJanePlainRuleTable.h \
     libTargomanCore/Private/RuleTable/intfRuleTable.hpp \
-    libTargomanCore/Private/FeatureFunctions/PhraseTable/PhraseTable.h
+    libTargomanCore/Private/FeatureFunctions/PhraseTable/PhraseTable.h \
+    libTargomanCore/Private/SearchGraphBuilder/clsHypothesisHolder.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
     libTargomanCore/Private/InputDecomposer/clsInput.cpp \
     libTargomanCore/clsTranslator.cpp \
-    libTargomanCore/Private/SearchGraphBuilder/clsHypothesisHolder.cpp \
     libTargomanCore/Private/GlobalConfigs.cpp \
     libTargomanCore/Private/N-BestFinder/clsNBestFinder.cpp \
     libTargomanCore/Private/OutputComposer/clsOutputComposer.cpp \

@@ -40,9 +40,14 @@ public:
 class clsHypothesisHolder
 {
 public:
-    clsHypothesisHolder();
-    void clear();
-    void resize(size_t _size);
+    clsHypothesisHolder() {}
+    void clear() {
+        this->Data->Cardinalities.clear();
+        this->Data->Cardinalities.append(clsCardinality::rootCoverageContainer());
+    }
+    void resize(size_t _size) {
+            this->Data->Cardinalities.resize(_size);
+    }
 
     inline const clsSearchGraphNode& getRootNode(){
         return this->Data->Cardinalities[0][clsCardinality::EmptyCoverage].bestNode();

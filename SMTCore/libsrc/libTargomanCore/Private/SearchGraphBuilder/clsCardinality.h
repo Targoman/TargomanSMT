@@ -59,7 +59,7 @@ public:
     clsCardinality();
 
     inline clsLexicalHypothesis& operator [] (const Coverage_t& _coverage){
-        return this->Data->LexicalHypothesisContainer[_coverage];//, TODO default this is same as get or create
+        return this->Data->LexicalHypothesisContainer[_coverage];
     }
 
     inline size_t isEmpty(){
