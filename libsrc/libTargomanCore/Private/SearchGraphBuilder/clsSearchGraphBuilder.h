@@ -17,7 +17,7 @@
 #include "Private/RuleTable/intfRuleTable.hpp"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "Private/InputDecomposer/clsInput.h"
-#include "clsHypothesisHolder.h"
+#include "clsHypothesisHolder.hpp"
 #include "clsSearchGraphNode.h"
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
 
