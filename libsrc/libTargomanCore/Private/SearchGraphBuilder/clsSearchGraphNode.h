@@ -30,8 +30,7 @@ class clsSearchGraphNodeData;
 class clsSearchGraphNode
 {
 public:
-    clsSearchGraphNode()
-    {/*TODO*/}
+    clsSearchGraphNode();
 
     clsSearchGraphNode(const clsSearchGraphNode _prevNode,
             const RuleTable::clsTargetRule& _targetRule,
@@ -69,8 +68,16 @@ class clsSearchGraphNodeData : public QSharedData
 {
 public:
     clsSearchGraphNodeData() :
+        IsFinal(false),
+        Cost(0),
+        RestCost(0),
         TargetRule(RuleTable::InvalidTargetRule),
-        IsRecombined(false)
+        IsRecombined(false),
+        Coverage(Coverage_t()),
+        SourceRangeBegin(0),
+        SourceRangeEnd(0),
+        LMScorer(gConfigs.EmptyLMScorer),
+        PrevNode(*((clsSearchGraphNode*)NULL))
     {}
 
     clsSearchGraphNodeData(clsSearchGraphNode _prevNode,
@@ -88,12 +95,12 @@ public:
         Cost(_cost),
         RestCost(_restCost),
         TargetRule(_targetRule),
+        IsRecombined(false),
         Coverage(_newCoverage),
         SourceRangeBegin(_startPos),
         SourceRangeEnd(_endPos),
         LMScorer(_lmscorer),
-        PrevNode(_prevNode),
-        IsRecombined(false)
+        PrevNode(_prevNode)
     {
         Q_UNUSED(_reorderingJumpCost) // used when training
         Q_UNUSED(_lmCost)// used when training
@@ -105,12 +112,13 @@ public:
         Cost(_other.Cost),
         RestCost(_other.RestCost),
         TargetRule(_other.TargetRule),
+        IsRecombined(_other.IsRecombined),
         Coverage(_other.Coverage),
         SourceRangeBegin(_other.SourceRangeBegin),
         SourceRangeEnd(_other.SourceRangeEnd),
         LMScorer(_other.LMScorer.data()),
         PrevNode(_other.PrevNode),
-        IsRecombined(_other.IsRecombined)
+        CombinedNodes(_other.CombinedNodes)
     {}
 
     ~clsSearchGraphNodeData();
@@ -150,6 +158,8 @@ inline const clsSearchGraphNode&  clsSearchGraphNode::prevNode() const {return t
 inline const RuleTable::clsTargetRule& clsSearchGraphNode::targetRule() const {return this->Data->TargetRule;}
 inline const Coverage_t&    clsSearchGraphNode::coverage() const{return this->Data->Coverage;}
 inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecombined;}
+
+//static clsSearchGraphNode InvalidSearchGraphNode;
 
 }
 }

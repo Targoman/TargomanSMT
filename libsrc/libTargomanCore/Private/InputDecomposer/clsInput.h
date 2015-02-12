@@ -56,7 +56,6 @@ private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;
     static Targoman::Common::Configuration::tmplConfigurable<bool>    IsIXML;
     static Targoman::Common::Configuration::tmplConfigurable<bool>    DoNormalize;
-    static LanguageModel::intfLMSentenceScorer*                       LMScorer;
 };
 
 }

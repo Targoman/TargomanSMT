@@ -61,9 +61,9 @@ void LexicalReordering::initialize()
     }
 }
 
-void LexicalReordering::newSentence(const InputDecomposer::Sentence_t &inputSentence)
+void LexicalReordering::newSentence(const InputDecomposer::Sentence_t &_inputSentence)
 {
-
+    Q_UNUSED(_inputSentence)
 }
 
 Common::Cost_t LexicalReordering::scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
@@ -83,6 +83,9 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNode(SearchGraphBuilder::clsSe
 
 Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart, unsigned _sourceEnd, const RuleTable::clsTargetRule &_targetRule)
 {
+    Q_UNUSED(_sourceStart)
+    Q_UNUSED(_sourceEnd)
+
     Cost_t Cost = 0;
     for (int i = enuLexicalReorderingFields::LeftMonotone; i<= enuLexicalReorderingFields::LeftDiscontinous; ++i){
         Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();

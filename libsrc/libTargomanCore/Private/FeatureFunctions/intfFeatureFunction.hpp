@@ -44,7 +44,7 @@ public:
     }
 
     virtual void initialize()  = 0;
-    virtual void newSentence(const InputDecomposer::Sentence_t &inputSentence) {}
+    virtual void newSentence(const InputDecomposer::Sentence_t &_inputSentence) {Q_UNUSED(_inputSentence)}
 
     /*
      * This can be called to score the new hypothesis and initialize its state correctly.
@@ -56,13 +56,19 @@ public:
     //This is to add an approximate cost to the future cost heuristic in SCSS
     virtual Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                               unsigned _sourceEnd,
-                                              const RuleTable::clsTargetRule& _targetPhrase) const{
+                                              const RuleTable::clsTargetRule& _targetRule) const{
+        Q_UNUSED(_sourceStart)
+        Q_UNUSED(_sourceEnd)
+        Q_UNUSED(_targetRule)
         return 0;
     }
 
     virtual Common::Cost_t getTargetRuleCost(unsigned _sourceStart,
-                                       unsigned _sourceEnd,
-                                       const RuleTable::clsTargetRule& _targetPhrase) const {
+                                             unsigned _sourceEnd,
+                                             const RuleTable::clsTargetRule& _targetPhrase) const {
+        Q_UNUSED(_sourceStart)
+        Q_UNUSED(_sourceEnd)
+        Q_UNUSED(_targetPhrase)
         throw Common::exTargomanNotImplemented("getTargetRuleCost must be implemented in subclasses");
     }
 

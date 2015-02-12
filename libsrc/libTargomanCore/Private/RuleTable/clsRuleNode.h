@@ -49,8 +49,8 @@ public:
     }
 
     // Following functions are needed for the binary input/output
-    void readBinary(std::istream &input);
-    void writeBinary(std::ostream &output) const;
+    void readBinary(std::istream &_input);
+    void writeBinary(std::ostream &_output) const;
 
 private:
     QExplicitlySharedDataPointer<clsRuleNodeData> Data;

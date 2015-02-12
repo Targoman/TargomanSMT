@@ -35,8 +35,6 @@ clsLexicalHypothesis::clsLexicalHypothesis()
 
 bool clsLexicalHypothesis::mustBePruned(Cost_t _totalCost)
 {
-    // TODO: compare with or without rest costs? check wheter restcost is stored in node
-
     return !( this->Data->Nodes.isEmpty() ||
               (this->LexicalMaxHistogramSize.value() == 0 ||
                this->Data->Nodes.size() < this->LexicalMaxHistogramSize.value() ||
@@ -55,7 +53,7 @@ Cost_t clsLexicalHypothesis::getBestCost() const
 bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
 {
     size_t InsertionPos=this->Data->Nodes.size();
-    for (size_t i=0; i<this->Data->Nodes.size(); ++i) {
+    for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
         clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
         if (HypoNode.haveSameFuture(_node)){
             if (gConfigs.KeepRecombined.value()){
@@ -76,10 +74,9 @@ bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
 
     if (this->LexicalMaxHistogramSize.value() > 0 &&
             this->Data->Nodes.size() > this->LexicalMaxHistogramSize.value()){
-        if (InsertionPos >= this->Data->Nodes.size())
+        if (InsertionPos >= (size_t)this->Data->Nodes.size())
             return false;
 
-        //TODO check if this deletes searchgraph node
         this->Data->Nodes.takeLast();
     }
 

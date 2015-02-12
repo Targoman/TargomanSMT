@@ -29,6 +29,7 @@ class clsLexicalHypothesisData :public QSharedData
 public:
     clsLexicalHypothesisData(){}
     clsLexicalHypothesisData(clsLexicalHypothesisData &_other):
+        QSharedData(_other),
         Nodes(_other.Nodes)
     {}
     ~clsLexicalHypothesisData(){}

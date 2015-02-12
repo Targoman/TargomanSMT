@@ -24,10 +24,37 @@
 
 using namespace std;
 
+class clsData : public QSharedData{
+public:
+    clsData(int i): A(i){}
+    ~clsData() {
+       cout<<(void*)this<<" "<<A<<" Deleted !!!!!"<<endl;
+    }
+    int A;
+};
 
+class clsClass
+{
+public:
+    clsClass(int i):Data(new clsData(i)) {}
+    void setA(int i){Data->A = i;}
+
+    QSharedDataPointer<clsData> Data;
+};
 
 int main(int argc, char *argv[])
 {
+    QList<clsClass> A;
+
+    A.append(clsClass(5));
+    if (true){
+        clsClass B = A.first();
+        B.setA(111);
+    }
+    A.append(clsClass(7));
+    A.takeFirst();
+
+    cout<<"Finished"<<endl;
 }
 
 

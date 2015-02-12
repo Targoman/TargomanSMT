@@ -12,6 +12,7 @@
  */
 
 #include "GlobalConfigs.h"
+#include "Private/LanguageModel/intfLMSentenceScorer.hpp"
 
 namespace Targoman {
 namespace Core {
@@ -42,6 +43,8 @@ QMap<QString, FeatureFunction::intfFeatureFunction*>       stuGlobalConfigs::Act
 
 clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM","Language model"); //TODO complete description
 clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable","RT"); //TODO complete description
+Targoman::Core::Private::LanguageModel::intfLMSentenceScorer*  stuGlobalConfigs::EmptyLMScorer;
+
 }
 }
 }

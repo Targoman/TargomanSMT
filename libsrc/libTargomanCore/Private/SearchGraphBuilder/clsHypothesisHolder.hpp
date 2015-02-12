@@ -29,6 +29,7 @@ class clsHypothesisHolderData : public QSharedData
 public:
     clsHypothesisHolderData(){}
     clsHypothesisHolderData(const clsHypothesisHolderData& _other):
+        QSharedData(_other),
         Cardinalities(_other.Cardinalities)
     {}
     ~clsHypothesisHolderData() {}

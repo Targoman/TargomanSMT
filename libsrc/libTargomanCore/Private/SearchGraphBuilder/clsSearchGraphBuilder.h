@@ -33,6 +33,7 @@ public:
         Sentence(_sentence)
     {}
     clsSearchGraphBuilderData(const clsSearchGraphBuilderData& _other):
+        QSharedData(_other),
         PhraseMatchTable(_other.PhraseMatchTable),
         RootNode(_other.RootNode),
         GoalNode(_other.GoalNode),
@@ -68,19 +69,19 @@ public:
     void matchPhrase();
     bool parseSentence();
 
-    Common::Cost_t computeReorderingJumpCost(size_t JumpWidth);
+    Common::Cost_t computeReorderingJumpCost(size_t JumpWidth) const;
 private:
     void initializePhraseRestCostsMatrix();
-    Common::Cost_t calculateRestCost(Coverage_t _coverage, quint16 _lastPos) const;
-    Common::Cost_t computePhraseRestCosts(Coverage_t _coverage) const;
-    Common::Cost_t computeReorderingRestCosts(Coverage_t _coverage, quint16 _lastPos) const;
+    Common::Cost_t calculateRestCost(const Coverage_t& _coverage, quint16 _lastPos) const;
+    Common::Cost_t computePhraseRestCosts(const Coverage_t& _coverage) const;
+    Common::Cost_t computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const;
     void initializeRestCostsMatrix();
 
 private:
     QExplicitlySharedDataPointer<clsSearchGraphBuilderData> Data;
 
-    static RuleTable::intfRuleTable*     pRuleTable;
-    static FeatureFunction::intfFeatureFunction*           PhraseTable;
+    static RuleTable::intfRuleTable*                       pRuleTable;
+    static FeatureFunction::intfFeatureFunction*           pPhraseTable;
     static Common::Configuration::tmplConfigurable<quint8> ReorderingConstraintMaximumRuns;
     static Common::Configuration::tmplConfigurable<bool>   DoComputeReorderingRestCosts;
     static Common::Configuration::tmplConfigurable<bool>   PruneAtStage2;

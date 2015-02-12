@@ -63,17 +63,17 @@ public:
     }
 
     Common::Cost_t  field(size_t _index) const{
-        Q_ASSERT(_index < this->Data->Fields.size());
+        Q_ASSERT(_index < (size_t)this->Data->Fields.size());
         return this->Data->Fields.at(_index);
     }
 
     Common::Cost_t precomputedValue(size_t _index) const{
-        Q_ASSERT(_index < this->Data->PrecomputedValues.size());
+        Q_ASSERT(_index < (size_t)this->Data->PrecomputedValues.size());
         return this->Data->PrecomputedValues.at(_index);
     }
 
     void setPrecomputedValue(size_t _index, Common::Cost_t _value){
-        Q_ASSERT(_index < this->Data->PrecomputedValues.size());
+        Q_ASSERT(_index < (size_t)this->Data->PrecomputedValues.size());
         this->Data->PrecomputedValues[_index] = _value;
     }
 
@@ -99,7 +99,7 @@ private:
     static  size_t                          DefaultPrecomputedValuesSize;
 };
 
-static clsTargetRule InvalidTargetRule;
+extern clsTargetRule InvalidTargetRule;
 
 }
 }
