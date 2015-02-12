@@ -50,13 +50,13 @@ class clsTranslatorPrivate;
 class clsTranslator
 {
 public:
-    clsTranslator();
+    clsTranslator(const QString &_inputStr);
     ~clsTranslator();
 
     static void init(const stuTranslatorConfigs& _configs);
 
     //Input language is predefined
-    stuTranslationOutput translate(const QString& _inputStr);
+    stuTranslationOutput translate();
 
 private:
     QScopedPointer<Private::clsTranslatorPrivate> pPrivate;

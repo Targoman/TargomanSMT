@@ -19,7 +19,14 @@ namespace Private{
 namespace SearchGraphBuilder {
 
 using namespace Common;
+using namespace Common::Configuration;
+
 const Cost_t PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST = 1e10;
+tmplConfigurable<quint8> clsLexicalHypothesis::LexicalMaxHistogramSize(
+        "/SearchGraphBuilder/LexicalMaxHistogramSize",
+        "TODO",
+        0
+        );
 
 clsLexicalHypothesis::clsLexicalHypothesis()
 {
@@ -30,24 +37,62 @@ bool clsLexicalHypothesis::mustBePruned(Cost_t _totalCost)
 {
     // TODO: compare with or without rest costs? check wheter restcost is stored in node
 
-    return !( this->Nodes.isEmpty() ||
-               (this->LexicalMaxHistogramSize.value() == 0 ||
-               this->Nodes.size() < this->LexicalMaxHistogramSize.value() ||
-               _totalCost < this->Nodes.last().getTotalCost()));
+    return !( this->Data->Nodes.isEmpty() ||
+              (this->LexicalMaxHistogramSize.value() == 0 ||
+               this->Data->Nodes.size() < this->LexicalMaxHistogramSize.value() ||
+               _totalCost < this->Data->Nodes.last().getTotalCost()));
 
 }
 
 Cost_t clsLexicalHypothesis::getBestCost() const
 {
-    if (this->Nodes.isEmpty())
+    if (this->Data->Nodes.isEmpty())
         return PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST;
 
     return this->bestNode().getCost();
 }
 
-void clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode *_node)
+bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
 {
-    //TODO  bool LexicalHypothesisContainer::insertHypothesis(SourceCardinalitySynchronousSearchNode *node)
+    size_t InsertionPos=this->Data->Nodes.size();
+    for (size_t i=0; i<this->Data->Nodes.size(); ++i) {
+        clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
+        if (HypoNode.haveSameFuture(_node)){
+            if (gConfigs.KeepRecombined.value()){
+                HypoNode.recombine(_node);
+                return true;
+            }else{
+                if(HypoNode.getTotalCost() > _node.getTotalCost()){
+                    this->Data->Nodes.removeAt(i);
+                    InsertionPos = i;
+                    break;
+                }else{
+                    return false;
+                }
+            }
+        }else if(HypoNode.getTotalCost() > _node.getTotalCost())
+            InsertionPos = i;
+    }
+
+    if (this->LexicalMaxHistogramSize.value() > 0 &&
+            this->Data->Nodes.size() > this->LexicalMaxHistogramSize.value()){
+        if (InsertionPos >= this->Data->Nodes.size())
+            return false;
+
+        //TODO check if this deletes searchgraph node
+        this->Data->Nodes.takeLast();
+    }
+
+    this->Data->Nodes.insert(InsertionPos,_node);
+    return true;
+}
+
+void clsLexicalHypothesis::finalizeRecombination()
+{
+    while (this->nodes().size() > 1) {
+        this->Data->Nodes[0].recombine(this->Data->Nodes[1]);
+        this->Data->Nodes.removeAt(1);
+    }
 }
 
 }

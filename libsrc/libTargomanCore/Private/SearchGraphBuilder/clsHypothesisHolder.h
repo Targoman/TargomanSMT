@@ -24,6 +24,19 @@ namespace Core {
 namespace Private{
 namespace SearchGraphBuilder {
 
+class clsHypothesisHolderData : public QSharedData
+{
+public:
+    clsHypothesisHolderData(){}
+    clsHypothesisHolderData(const clsHypothesisHolderData& _other):
+        Cardinalities(_other.Cardinalities)
+    {}
+    ~clsHypothesisHolderData() {}
+
+public:
+    QVector<clsCardinality> Cardinalities;
+};
+
 class clsHypothesisHolder
 {
 public:
@@ -31,12 +44,12 @@ public:
     void clear();
     void resize(size_t _size);
 
-    inline const clsSearchGraphNode& getRootNode() const{
-        return this->Cardinalities[0][clsCardinality::EmptyCoverage].bestNode();
+    inline const clsSearchGraphNode& getRootNode(){
+        return this->Data->Cardinalities[0][clsCardinality::EmptyCoverage].bestNode();
     }
 
     inline clsCardinality& operator [](size_t _index){
-        return this->Cardinalities[_index];
+        return this->Data->Cardinalities[_index];
     }
 
     /*inline const QVector<clsCoverageContainer>& cardinalityContainer(){
@@ -44,7 +57,7 @@ public:
     }*/
 
 private:
-    QVector<clsCardinality> Cardinalities;
+    QExplicitlySharedDataPointer<clsHypothesisHolderData> Data;
 
 };
 

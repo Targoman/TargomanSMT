@@ -23,18 +23,22 @@ namespace Targoman {
 namespace Core {
 namespace Private {
 
+namespace FeatureFunction{
+class intfFeatureFunction;
+}
+
 struct stuGlobalConfigs{
     static Targoman::Common::Configuration::tmplConfigurable<QString> Separator;
     static Targoman::Common::Configuration::tmplConfigurable<QString> SourceLanguage;
     static Targoman::Common::Configuration::tmplConfigurable<QString> TargetLanguage;
 
 
-    static Targoman::Common::Configuration::tmplConfigurable<QString> TargetLanguage;
+    static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;
 
     static Targoman::Common::Configuration::clsModuleConfig          LM;
-    static Targoman::Common::Configuration::clsModuleConfig          PhraseTable;
+    static Targoman::Common::Configuration::clsModuleConfig          RuleTable;
 
-
+    static QMap<QString, FeatureFunction::intfFeatureFunction*>       ActiveFeatureFunctions;
 };
 
 extern stuGlobalConfigs gConfigs;

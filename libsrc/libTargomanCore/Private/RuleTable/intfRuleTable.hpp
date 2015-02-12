@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -11,38 +11,36 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFPHRASETABLE_H
-#define TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFPHRASETABLE_H
+#ifndef TARGOMAN_CORE_PRIVATE_RULETABLE_INTFRULETABLE_H
+#define TARGOMAN_CORE_PRIVATE_RULETABLE_INTFRULETABLE_H
 
 #include "libTargomanCommon/Macros.h"
 #include "Private/InputDecomposer/clsInput.h"
-#include "Private/PhraseTable/clsRuleNode.h"
-#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
+#include "Private/RuleTable/clsRuleNode.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace PhraseTable{
+namespace RuleTable{
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
+typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;
 
-typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<clsRuleNode> RulesPrefixTree_t;
-
-class intfPhraseTable : public Common::Configuration::intfModule
+class intfRuleTable : public Common::Configuration::intfModule
 {
 public:
-    intfPhraseTable(const QString& _typeName):
+    intfRuleTable(const QString& _typeName):
         intfModule(_typeName){}
 
-    ~intfPhraseTable(){}
+    ~intfRuleTable(){}
+
     virtual void init() = 0;
     virtual void newSentence() = 0;
     virtual bool isBinary() = 0;
-    virtual RulesPrefixTree_t& getPrefixTree(){
-        return this->PrefixTree;
+    virtual RuleTable::RulesPrefixTree_t& getPrefixTree(){
+        return *this->PrefixTree;
     }
 
-private:
+protected:
     QScopedPointer<RulesPrefixTree_t> PrefixTree;
 };
 
@@ -52,4 +50,4 @@ private:
 }
 }
 
-#endif // TARGOMAN_CORE_PRIVATE_PHRASETABLE_INTFPHRASETABLE_H
+#endif // TARGOMAN_CORE_PRIVATE_RULETABLE_INTFRULETABLE_H

@@ -12,32 +12,24 @@
  */
 
 #include "clsRuleNode.h"
-#include "intfPhraseTable.hpp"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace PhraseTable{
+namespace RuleTable{
 
 using namespace Common;
 
-static clsRuleNodeData SharedNull;
+static clsRuleNodeData InvalidRuleNodeData;
 
 //RulesForSourcePart.cc
 clsRuleNode::clsRuleNode() :
-    d(&SharedNull)
-{
-
-}
-
-clsRuleNode::~clsRuleNode()
-{
-    //Just to suppress compiler error on QSharedDataPointer
-}
+    Data(&InvalidRuleNodeData)
+{}
 
 bool clsRuleNode::isInvalid() const
 {
-    return (this->d.data() == &SharedNull);
+    return (this->Data.data() == &InvalidRuleNodeData);
 }
 
 void clsRuleNode::readBinary(std::istream &input)

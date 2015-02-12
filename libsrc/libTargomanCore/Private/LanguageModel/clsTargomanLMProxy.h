@@ -29,11 +29,23 @@ class clsTargomanLMProxy :
 public:
     clsTargomanLMProxy();
     inline void reset(){Targoman::NLPLibs::clsLMSentenceScorer::reset();}
-    inline Common::LogP_t wordProb(const QString& _word, OUTPUT quint8 &_foundedGram){
-        Targoman::NLPLibs::clsLMSentenceScorer::wordProb(_word,_foundedGram);
+
+    inline Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) {
+        quint8 Dummy;
+        return Targoman::NLPLibs::clsLMSentenceScorer::wordProb(_wordIndex, Dummy);
     }
 
     inline Common::WordIndex_t getWordIndex(const QString& _word){return this->LM.getID(_word);}
+
+    inline Common::WordIndex_t endOfSentence(){return Targoman::NLPLibs::clsLMSentenceScorer::endOfSentence();}
+    virtual void initHistory(const intfLMSentenceScorer& _oldScorer){
+        //TODO
+    }
+
+    bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const{
+        //TODO
+    }
+
 
 private:
     static Targoman::NLPLibs::clsLanguageModel LM;
@@ -41,7 +53,6 @@ private:
     TARGOMAN_DEFINE_MODULE("TargomanLM", clsTargomanLMProxy)
 };
 
-TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy)
 }
 }
 }

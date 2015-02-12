@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -28,15 +28,24 @@ QSet<QString>    clsInput::SpecialTags;
 Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
                                                                    "User Defined valid XML tags. ",
                                                                    ""); //TODO complete description
+Configuration::tmplConfigurable<bool>    clsInput::IsIXML("Input/IsIXML",
+                                                          "Input is in Plain text or IXML format",
+                                                          false);
+Configuration::tmplConfigurable<bool>    clsInput::DoNormalize("Input/DoNormalize",
+                                                             "Normalize Input or let it unchanged",
+                                                             true);
+
 LanguageModel::intfLMSentenceScorer*                       clsInput::LMScorer = NULL;
 
-clsInput::clsInput()
+clsInput::clsInput(const QString &_inputStr)
 {
-}
-
-clsInput::~clsInput()
-{
-    this->clear();
+    if (this->IsIXML.value()) {
+        if (this->DoNormalize.value())
+            this->parseRichIXML(_inputStr,true, gConfigs.SourceLanguage.value());
+        else
+            this->parseRichIXML(_inputStr);
+    }else
+        this->parsePlain(_inputStr, gConfigs.SourceLanguage.value());
 }
 
 void clsInput::init()
@@ -65,11 +74,9 @@ void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize, const Q
 
 void clsInput::parseRichIXML(const QString &_inputIXML)
 {
-    this->clear();
-
     if (_inputIXML.contains('<') == false) {
       foreach(const QString& Token, _inputIXML.split(" ", QString::SkipEmptyParts))
-          this->Tokens.append(new clsToken(Token, LMScorer->getWordIndex(Token)));
+          this->Tokens.append(clsToken(Token, LMScorer->getWordIndex(Token)));
       return;
     }
 
@@ -108,7 +115,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             }
             NextCharEscaped = false;
             if (this->isSpace(Ch)){
-                this->Tokens.append(new clsToken(Token, LMScorer->getWordIndex(Token)));
+                this->Tokens.append(clsToken(Token, LMScorer->getWordIndex(Token)));
                 Token.clear();
             }else if (Ch == '\\'){
                 NextCharEscaped = true;
@@ -198,7 +205,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             else if (Ch == '>'){
                 if (TempStr != TagStr)
                     throw exInput("Invalid closing tag: <"+TempStr+"> while looking for <"+TagStr+">");
-                this->Tokens.append(new clsToken(Token, LMScorer->getWordIndex(Token), TagStr, Attributes));
+                this->Tokens.append(clsToken(Token, LMScorer->getWordIndex(Token), TagStr, Attributes));
                 Token.clear();
                 TempStr.clear();
                 Attributes.clear();
@@ -226,12 +233,6 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
     case CollectAttrValue:
         throw exInput("XML Tag: <"+TagStr+"> Attribute: <"+AttrName+"> value not closed");
     }
-}
-
-void clsInput::clear()
-{
-    while(this->Tokens.size())
-        delete this->Tokens.takeFirst();
 }
 
 }

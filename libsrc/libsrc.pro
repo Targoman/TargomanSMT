@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright © 2012-2014, Targoman.com
+# Copyright © 2012-2015, Targoman.com
 #
 # Published under the terms of TCRL(Targoman Community Research License)
 # You can find a copy of the license file with distributed source or
@@ -11,10 +11,7 @@ BasePath = ".."
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 HEADERS += \
     libTargomanCore/Private/InputDecomposer/clsInput.h \
-    libTargomanCore/Private/PhraseTable/intfPhraseTable.hpp \
     libTargomanCore/Private/InputDecomposer/clsToken.h \
-    libTargomanCore/Private/PhraseTable/clsTargetRule.h \
-    libTargomanCore/Private/PhraseTable/clsRuleNode.h \
     libTargomanCore/clsTranslator.h \
     libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphBuilder.h \
     libTargomanCore/Private/SearchGraphBuilder/clsHypothesisHolder.h \
@@ -24,27 +21,35 @@ HEADERS += \
     libTargomanCore/Private/OutputComposer/clsOutputComposer.h \
     libTargomanCore/Private/SearchGraphBuilder/clsLexicalHypothesis.h \
     libTargomanCore/Private/LanguageModel/intfLMSentenceScorer.hpp \
-    libTargomanCore/Private/PhraseTable/clsJanePlainPhraseTable.h \
     libTargomanCore/Private/LanguageModel/clsTargomanLMProxy.h \
     libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphNode.h \
-    libTargomanCore/Private/SearchGraphBuilder/clsCardinality.h
+    libTargomanCore/Private/SearchGraphBuilder/clsCardinality.h \
+    libTargomanCore/Private/FeatureFunctions/intfFeatureFunction.hpp \
+    libTargomanCore/Private/FeatureFunctions/LexicalReordering/LexicalReordering.h \
+    libTargomanCore/Private/RuleTable/clsRuleNode.h \
+    libTargomanCore/Private/RuleTable/clsTargetRule.h \
+    libTargomanCore/Private/RuleTable/clsJanePlainRuleTable.h \
+    libTargomanCore/Private/RuleTable/intfRuleTable.hpp \
+    libTargomanCore/Private/FeatureFunctions/PhraseTable/PhraseTable.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
     libTargomanCore/Private/InputDecomposer/clsInput.cpp \
-    libTargomanCore/Private/PhraseTable/clsTargetRule.cpp \
-    libTargomanCore/Private/PhraseTable/clsRuleNode.cpp \
     libTargomanCore/clsTranslator.cpp \
-    libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphBuilder.cpp \
     libTargomanCore/Private/SearchGraphBuilder/clsHypothesisHolder.cpp \
     libTargomanCore/Private/GlobalConfigs.cpp \
     libTargomanCore/Private/N-BestFinder/clsNBestFinder.cpp \
     libTargomanCore/Private/OutputComposer/clsOutputComposer.cpp \
     libTargomanCore/Private/SearchGraphBuilder/clsLexicalHypothesis.cpp \
-    libTargomanCore/Private/PhraseTable/clsJanePlainPhraseTable.cpp \
     libTargomanCore/Private/LanguageModel/clsTargomanLMProxy.cpp \
     libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphNode.cpp \
-    libTargomanCore/Private/SearchGraphBuilder/clsCardinality.cpp
+    libTargomanCore/Private/SearchGraphBuilder/clsCardinality.cpp \
+    libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphBuilder.cpp \
+    libTargomanCore/Private/FeatureFunctions/LexicalReordering/LexicalReordering.cpp \
+    libTargomanCore/Private/RuleTable/clsRuleNode.cpp \
+    libTargomanCore/Private/RuleTable/clsTargetRule.cpp \
+    libTargomanCore/Private/RuleTable/clsJanePlainRuleTable.cpp \
+    libTargomanCore/Private/FeatureFunctions/PhraseTable/PhraseTable.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=
