@@ -56,7 +56,7 @@ tmplConfigurable<double> clsSearchGraphBuilder::ScalingFactorReorderingJump(
         "TODO",
         "TODO");
 
-FeatureFunction::intfFeatureFunction*  clsSearchGraphBuilder::PhraseTable = NULL;
+FeatureFunction::intfFeatureFunction*  clsSearchGraphBuilder::pPhraseTable = NULL;
 RuleTable::intfRuleTable*              clsSearchGraphBuilder::pRuleTable = NULL;
 
 /**********************************************************************************/
@@ -68,16 +68,16 @@ void clsSearchGraphBuilder::init()
 {
     clsSearchGraphBuilder::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
     clsSearchGraphBuilder::pRuleTable->init();
-    clsSearchGraphBuilder::PhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
+    clsSearchGraphBuilder::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 }
 
 void clsSearchGraphBuilder::matchPhrase()
 {
-    for (size_t FirstPosition = 0; FirstPosition < this->Data->Sentence.size(); ++FirstPosition) {
+    for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseMatchTable.append(QVector<clsRuleNode>(this->Data->Sentence.size() - FirstPosition));
         RulesPrefixTree_t::Node* PrevNode = this->pRuleTable->getPrefixTree().rootNode();
         //Max PhraseTable order will be implicitly checked by follow
-        for (size_t LastPosition = FirstPosition; LastPosition < this->Data->Sentence.size() ; ++LastPosition){
+        for (size_t LastPosition = FirstPosition; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
             PrevNode = PrevNode->follow(this->Data->Sentence.at(LastPosition).wordIndex());
             if (PrevNode == NULL)
                 break; // appending next word breaks phrase lookup
@@ -91,7 +91,7 @@ void clsSearchGraphBuilder::matchPhrase()
     }
 }
 
-Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth)
+Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
 {
     Cost_t ReorderingJumpCosts = JumpWidth;
 
@@ -114,7 +114,6 @@ bool clsSearchGraphBuilder::parseSentence()
     int PrunedAt2 = 0;
     int PrunedAt3 = 0;
     int PrunedAt4 = 0;
-    int PrunedAt5 = 0;
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
         bool IsFinal = NewCardinality == this->Data->Sentence.size();
@@ -146,13 +145,13 @@ bool clsSearchGraphBuilder::parseSentence()
                  * this is not implemented here.
                  */
 
-                for (size_t StartPos = 0; StartPos < this->Data->Sentence.size() - NewPhraseCardinality; ++StartPos){
+                for (size_t StartPos = 0; StartPos < (size_t)this->Data->Sentence.size() - NewPhraseCardinality; ++StartPos){
                     unsigned LastPhrasePos = StartPos + NewPhraseCardinality;
                     //log() << "start position: "<< startPosition << "\n";
 
                     // skip if phrase coverage is not compatible with previous sentence coverage
                     bool SkipStep = false;
-                    for (int i= StartPos; i<LastPhrasePos; ++i)
+                    for (size_t i= StartPos; i<LastPhrasePos; ++i)
                         if (PrevCoverage.testBit(i)){
                             SkipStep = true;
                             break;
@@ -162,7 +161,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
                     // generate new coverage vector, containing the new coverage
                     Coverage_t NewCoverage(PrevCoverage);
-                    for (int i=StartPos; i<LastPhrasePos; ++i)
+                    for (size_t i=StartPos; i<LastPhrasePos; ++i)
                         NewCoverage.setBit(i);
 
                     //Compute number of transitions from 0 to 1 in NewCoverage bit vector
@@ -170,7 +169,7 @@ bool clsSearchGraphBuilder::parseSentence()
                     int Last = 0;
                     int Runs = 0;
 
-                    for(unsigned i=0;i<NewCoverage.size();++i) {
+                    for(unsigned i=0;i<(size_t)NewCoverage.size();++i) {
                         bool Curr=NewCoverage.testBit(i);
                         if(Last==Curr) continue;
                         if(Last) Last=0;
@@ -186,18 +185,16 @@ bool clsSearchGraphBuilder::parseSentence()
                         continue;
 
                     Cost_t RestCost =  this->calculateRestCost(NewCoverage, LastPhrasePos);
-
-                    clsLexicalHypothesis& NewLexHypoContainer =
-                            this->Data->HypothesisHolder[NewCardinality][NewCoverage];
-
-                    Cost_t BaseCost = RestCost +
-                            clsSearchGraphBuilder::PhraseTable->getTargetRuleCost(
+                    Cost_t BestCandidateCost = clsSearchGraphBuilder::pPhraseTable->getTargetRuleCost(
                                 0,
                                 0,
                                 PhraseCandidates.targetRules().first());
 
+                    clsLexicalHypothesis& NewLexHypoContainer =
+                            this->Data->HypothesisHolder[NewCardinality][NewCoverage];
+
                     if (this->PruneAtStage2.value() && NewLexHypoContainer.mustBePruned(
-                                BaseCost + PrevLexHypoContainer.getBestCost())){
+                                BestCandidateCost + RestCost + PrevLexHypoContainer.getBestCost())){
                         PrunedAt2++;
                         continue;
                     }
@@ -225,22 +222,19 @@ bool clsSearchGraphBuilder::parseSentence()
                         //log() << "reorderingJumpCosts = " << reorderingJumpCosts<< "\n";
 
                         foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
-                            Cost_t HypoBaseCost = BaseCost + PrevLexHypoNode.getCost() + ScaledReorderingJumpCost;
+                            Cost_t HypoBaseCost =
+                                    RestCost +
+                                    PrevLexHypoNode.getCost() +
+                                    ScaledReorderingJumpCost;
 
                             //log() << "restCosts = " << restCosts << "\n";
                             //log() << "getBestPhraseCosts_(phraseCandidates) = " << getBestPhraseCosts_(phraseCandidates) << "\n";
                             //log() << "previousLexicalHypothesisNode->getFirstBestCost() = " << previousLexicalHypothesisNode->getFirstBestCost() << "\n";
-                            if (this->PruneAtStage3.value() && NewLexHypoContainer.mustBePruned(HypoBaseCost)){
+                            if (this->PruneAtStage3.value() &&
+                                    NewLexHypoContainer.mustBePruned(HypoBaseCost + BestCandidateCost)){
                                 PrunedAt3++;
                                 continue;
                             }
-
-                            // TODO: NASTY, instead save costs without best phrase costs?
-                            HypoBaseCost -=
-                                    clsSearchGraphBuilder::PhraseTable->getTargetRuleCost(
-                                        0,
-                                        0,
-                                        PhraseCandidates.targetRules().first());
 
                             intfLMSentenceScorer* LMScorer = gConfigs.LM.getInstance<intfLMSentenceScorer>();
                             LMScorer->initHistory(PrevLexHypoNode.lmScorer());
@@ -248,33 +242,26 @@ bool clsSearchGraphBuilder::parseSentence()
                             size_t MaxCandidates = qMin((int)this->ObservationHistogramSize.value(),
                                                         PhraseCandidates.targetRules().size());
 
-
-                            /*TODO Maybe it must be deleted
-                             * for (std::vector<SecondaryModel *>::const_iterator m = secondaryModels_->begin();
-                                 m != secondaryModels_->end(); ++m)
-                            {
-                                (*m)->setCurrentState(*previousLexicalHypothesisNode);
-                            }*/
-
                             for(size_t i = 0; i<MaxCandidates; ++i){
                                 //log() << "phraseCandidate "<< phraseCandidateNumber << "\n";
                                 //log() << "phraseCandidate "<< phraseCandidateNumber << ": "<< targetPart<<"\n";
                                 //log() << "hypothesisBaseCosts = " << hypothesisBaseCosts << "\n";
                                 const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
                                 Cost_t PhraseCost =
-                                        clsSearchGraphBuilder::PhraseTable->getTargetRuleCost(
+                                        clsSearchGraphBuilder::pPhraseTable->getTargetRuleCost(
                                             0,
                                             0,
                                             CurrentPhraseCandidate);
                                 //log() << "phraseCosts = " << phraseCosts << "\n";
 
-                                if (this->PruneAtStage4.value() && NewLexHypoContainer.mustBePruned(HypoBaseCost + PhraseCost)){
+                                if (this->PruneAtStage4.value() &&
+                                        NewLexHypoContainer.mustBePruned(HypoBaseCost + PhraseCost)){
                                     PrunedAt4++;
                                     break;
                                 }
 
                                 Cost_t LMCost = 0;
-                                for (int j=0; j<CurrentPhraseCandidate.size(); ++j)
+                                for (size_t j=0; j<CurrentPhraseCandidate.size(); ++j)
                                     LMScorer->wordProb(CurrentPhraseCandidate.at(j));
 
                                 Cost_t CurrCost = PrevLexHypoNode.getCost() + PhraseCost + ScaledReorderingJumpCost;
@@ -284,7 +271,8 @@ bool clsSearchGraphBuilder::parseSentence()
                                 if (IsFinal){
                                     LMCost += LMScorer->wordProb(LMScorer->endOfSentence());
                                     size_t FinalJumpWidth = qAbs(this->Data->Sentence.size() - LastPhrasePos);
-                                    FinalJumpCost = this->computeReorderingJumpCost(FinalJumpWidth);
+                                    FinalJumpCost = this->computeReorderingJumpCost(FinalJumpWidth) *
+                                            clsSearchGraphBuilder::ScalingFactorReorderingJump.value();
                                     //addtoSeparateCosts ignored
                                 }
 
@@ -300,7 +288,7 @@ bool clsSearchGraphBuilder::parseSentence()
                                 clsSearchGraphNode* NewHypoNode =
                                         new clsSearchGraphNode(PrevLexHypoNode,
                                                                CurrentPhraseCandidate,
-                                                               CurrCost + FinalJumpCost * ScalingFactorReorderingJump.value(),
+                                                               CurrCost + FinalJumpCost,
                                                                ReorderingJumpCosts,
                                                                RestCost,
                                                                LMCost,
@@ -358,7 +346,7 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
     for (int i=0; i<this->Data->Sentence.size(); ++i)
         this->Data->RestCostMatrix[i].resize(this->Data->Sentence.size());
 
-    for(size_t FirstPosition = 0; FirstPosition < this->Data->Sentence.size(); ++FirstPosition){
+    for(size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition){
         size_t MaxLength = qMin(this->Data->Sentence.size() - FirstPosition, (size_t)this->Data->MaxMatchingSourcePhraseCardinality);
         for(size_t Length = 1; Length <= MaxLength; ++Length){
             clsRuleNode& PhraseCandidates = this->Data->PhraseMatchTable[FirstPosition][Length-1];
@@ -368,7 +356,7 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
             Cost_t BestCost = INFINITY;
 
             for (size_t i= 0;
-                 i< PhraseCandidates.targetRules().size() &&
+                 i< (size_t)PhraseCandidates.targetRules().size() &&
                  i< this->ObservationHistogramSize.value();
                  ++i ){
 
@@ -383,8 +371,8 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
         }
     }
 
-    for(size_t Length = 2; Length <= this->Data->Sentence.size(); ++Length)
-      for(size_t FirstPosition = 0; FirstPosition + Length <= this->Data->Sentence.size(); ++FirstPosition)
+    for(size_t Length = 2; Length <= (size_t)this->Data->Sentence.size(); ++Length)
+      for(size_t FirstPosition = 0; FirstPosition + Length <= (size_t)this->Data->Sentence.size(); ++FirstPosition)
         for(size_t SplitPosition = 1; SplitPosition < Length; ++SplitPosition){
             Cost_t SumSplit = this->Data->RestCostMatrix[FirstPosition][SplitPosition - 1] +
                     this->Data->RestCostMatrix[FirstPosition + SplitPosition][Length - 1 - SplitPosition];
@@ -394,7 +382,7 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
         }
 }
 
-Common::Cost_t clsSearchGraphBuilder::calculateRestCost(Coverage_t _coverage, quint16 _lastPos) const
+Common::Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t &_coverage, quint16 _lastPos) const
 {
     Cost_t RestCosts = this->computePhraseRestCosts(_coverage);
     //log() << "rest costs from matrix: " << restCosts << "\n";
@@ -405,30 +393,55 @@ Common::Cost_t clsSearchGraphBuilder::calculateRestCost(Coverage_t _coverage, qu
     return RestCosts;
 }
 
-Common::Cost_t clsSearchGraphBuilder::computePhraseRestCosts(Coverage_t _coverage) const
+Common::Cost_t clsSearchGraphBuilder::computePhraseRestCosts(const Coverage_t &_coverage) const
 {
-    /*Cost_t RestCosts = 0.0;
-    size_t StartPosition = 0, length = 0;
+    Cost_t RestCosts = 0.0;
+    size_t StartPosition = 0;
+    size_t Length = 0;
 
-    for(size_t i=0; i < coverageVector.size(); ++i)
-      if(!coverageVector[i])
-      {
-        if(length == 0) StartPosition = i;
-        ++length;
-      }
-      else if(length)
-      {
-        RestCosts += restCostsMatrix_[StartPosition][length-1];
-        length = 0;
-      }
-    if(length)
-      RestCosts += restCostsMatrix_[StartPosition][length-1];
-    return RestCosts;*/
+    for(size_t i=0; i < (size_t)_coverage.size(); ++i)
+        if(_coverage.testBit(i) == false){
+            if(Length == 0)
+                StartPosition = i;
+            ++Length;
+        }else if(Length){
+            RestCosts += this->Data->RestCostMatrix[StartPosition][Length-1];
+            Length = 0;
+        }
+    if(Length)
+        RestCosts += this->Data->RestCostMatrix[StartPosition][Length-1];
+    return RestCosts;
 }
 
-Common::Cost_t clsSearchGraphBuilder::computeReorderingRestCosts(Coverage_t _coverage, quint16 _lastPos) const
+Common::Cost_t clsSearchGraphBuilder::computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const
 {
+    Cost_t Sum = 0.0;
+    bool LastPositionCovered = false;
+    bool CurrentPositionCovered = false;
+    bool NextPositionCovered = _coverage.at(0);
+    size_t InputSentenceSize = _coverage.size();
+    size_t JumpWidth = 0;
 
+    size_t Position = 0;
+    for(; Position < InputSentenceSize; ++Position)
+    {
+        LastPositionCovered = CurrentPositionCovered;
+        CurrentPositionCovered = NextPositionCovered;
+        NextPositionCovered = (Position + 1 == InputSentenceSize || _coverage.at(Position + 1));
+
+        if( (Position == 0 || LastPositionCovered) && CurrentPositionCovered == 0 )
+        {
+            JumpWidth = std::abs((int)(_lastPos - Position));
+            Sum += this->computeReorderingJumpCost(JumpWidth);
+        }
+
+        if(Position > 0 && CurrentPositionCovered == 0 && NextPositionCovered )
+            _lastPos = Position + 1;
+    }
+    JumpWidth = std::abs((int)(_lastPos - Position));
+    Sum += this->computeReorderingJumpCost(JumpWidth);;
+    Q_ASSERT(Sum >= 0);
+    return clsSearchGraphBuilder::ScalingFactorReorderingJump.value() * Sum;
 }
 
 }

@@ -77,15 +77,18 @@ PhraseTable::PhraseTable():
 
 Common::Cost_t PhraseTable::getApproximateCost(unsigned _sourceStart,
                                                unsigned _sourceEnd,
-                                               const RuleTable::clsTargetRule &_targetPhrase) const
+                                               const RuleTable::clsTargetRule &_targetRule) const
 {
- //TODO
+    return this->getTargetRuleCost(_sourceStart, _sourceEnd, _targetRule);
 }
 
 Cost_t PhraseTable::getTargetRuleCost(unsigned _sourceStart,
                                       unsigned _sourceEnd,
                                       const RuleTable::clsTargetRule &_targetRule) const
 {
+    Q_UNUSED(_sourceStart)
+    Q_UNUSED(_sourceEnd)
+
     Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
     if (Cost == -INFINITY){
         Cost = 0;

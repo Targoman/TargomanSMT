@@ -35,6 +35,8 @@ void clsTranslator::init(const stuTranslatorConfigs& _configs)
 {
     Q_UNUSED(_configs)
 
+    gConfigs.EmptyLMScorer = gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>();
+
     FeatureFunction::PhraseTable::instance();
     InputDecomposer::clsInput::init();
     SearchGraphBuilder::clsSearchGraphBuilder::init();

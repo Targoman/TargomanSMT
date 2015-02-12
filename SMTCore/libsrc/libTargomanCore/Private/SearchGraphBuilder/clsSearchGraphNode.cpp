@@ -21,6 +21,13 @@ namespace SearchGraphBuilder {
 
 using namespace RuleTable;
 
+clsSearchGraphNodeData InvalidSearchGraphNodeData;
+
+clsSearchGraphNode::clsSearchGraphNode():
+    Data(&InvalidSearchGraphNodeData)
+{
+
+}
 
 clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode _prevNode,
                                        const clsTargetRule &_targetRule,
@@ -46,9 +53,10 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode _prevNode,
              _isFinal,
              _lmscorer))
 {
-
-    //    firstBestHyperEdge_ = 0;//TODO
-
+    //TODO Seems that this must be moved to SearchGraphBuilder.
+    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions){
+        this->Data->Cost += FF->scoreSearchGraphNode(*this);
+    }
 }
 
 template<class Class_t, class Container_t, typename Functor_t>

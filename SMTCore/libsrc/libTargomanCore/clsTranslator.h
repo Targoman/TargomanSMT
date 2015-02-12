@@ -27,7 +27,11 @@ struct stuTranslationOutput{
     struct stuCharacterRange{
         quint16 Start;
         quint16 End;
-        //Todo Assert
+        stuCharacterRange(quint16 _start = 0, quint16 _end = 0){
+            Q_ASSERT(_start <= _end);
+            this->Start = _start;
+            this->End = _end;
+        }
     };
 
     struct stuMetaInfo{

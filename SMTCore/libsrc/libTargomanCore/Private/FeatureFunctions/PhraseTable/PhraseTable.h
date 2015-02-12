@@ -44,12 +44,15 @@ class PhraseTable : public intfFeatureFunction
     void initialize();
 
     inline Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const{
-        return this->getTargetRuleCost(0,0,_newHypothesisNode.targetRule());
+        Q_UNUSED(_newHypothesisNode)
+        return 0; //This will return zero to distinguish betwwen phrase table ans other feature funtions.
+        //TODO NASTY!!!!
+        //this->getTargetRuleCost(0,0,_newHypothesisNode.targetRule());
     }
 
     Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                       unsigned _sourceEnd,
-                                      const RuleTable::clsTargetRule& _targetPhrase) const;
+                                      const RuleTable::clsTargetRule& _targetRule) const;
     Common::Cost_t getTargetRuleCost(unsigned _sourceStart,
                                      unsigned _sourceEnd,
                                      const RuleTable::clsTargetRule &_targetRule) const;

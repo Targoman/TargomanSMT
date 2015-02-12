@@ -39,10 +39,13 @@ public:
 
     inline Common::WordIndex_t endOfSentence(){return Targoman::NLPLibs::clsLMSentenceScorer::endOfSentence();}
     virtual void initHistory(const intfLMSentenceScorer& _oldScorer){
+        Q_UNUSED(_oldScorer)
         //TODO
     }
 
     bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const{
+        Q_UNUSED(_otherScorer)
+        return true;
         //TODO
     }
 

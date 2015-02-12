@@ -51,6 +51,10 @@ void clsJanePlainRuleTable::partialSortRuleTreesWithLM(const std::vector<double>
                                                 unsigned _rulesCostsBegin,
                                                 size_t _observationHistogramSize)
 {
+//TODO
+    Q_UNUSED(_scalingFactors)
+    Q_UNUSED(_rulesCostsBegin)
+    Q_UNUSED(_observationHistogramSize)
 
 }
 

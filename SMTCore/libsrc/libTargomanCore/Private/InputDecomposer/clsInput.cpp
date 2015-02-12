@@ -35,8 +35,6 @@ Configuration::tmplConfigurable<bool>    clsInput::DoNormalize("Input/DoNormaliz
                                                              "Normalize Input or let it unchanged",
                                                              true);
 
-LanguageModel::intfLMSentenceScorer*                       clsInput::LMScorer = NULL;
-
 clsInput::clsInput(const QString &_inputStr)
 {
     if (this->IsIXML.value()) {
@@ -55,8 +53,6 @@ void clsInput::init()
             SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
-
-    LMScorer = gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>();
 }
 
 void clsInput::parsePlain(const QString &_inputStr, const QString& _lang)
@@ -76,7 +72,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
 {
     if (_inputIXML.contains('<') == false) {
       foreach(const QString& Token, _inputIXML.split(" ", QString::SkipEmptyParts))
-          this->Tokens.append(clsToken(Token, LMScorer->getWordIndex(Token)));
+          this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token)));
       return;
     }
 
@@ -115,7 +111,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             }
             NextCharEscaped = false;
             if (this->isSpace(Ch)){
-                this->Tokens.append(clsToken(Token, LMScorer->getWordIndex(Token)));
+                this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token)));
                 Token.clear();
             }else if (Ch == '\\'){
                 NextCharEscaped = true;
@@ -205,7 +201,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             else if (Ch == '>'){
                 if (TempStr != TagStr)
                     throw exInput("Invalid closing tag: <"+TempStr+"> while looking for <"+TagStr+">");
-                this->Tokens.append(clsToken(Token, LMScorer->getWordIndex(Token), TagStr, Attributes));
+                this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token), TagStr, Attributes));
                 Token.clear();
                 TempStr.clear();
                 Attributes.clear();

@@ -32,13 +32,15 @@ bool clsRuleNode::isInvalid() const
     return (this->Data.data() == &InvalidRuleNodeData);
 }
 
-void clsRuleNode::readBinary(std::istream &input)
+void clsRuleNode::readBinary(std::istream &_input)
 {
+    Q_UNUSED(_input)
 //TODO
 }
 
-void clsRuleNode::writeBinary(std::ostream &output) const
+void clsRuleNode::writeBinary(std::ostream &_output) const
 {
+    Q_UNUSED(_output)
 //TODO
 }
 

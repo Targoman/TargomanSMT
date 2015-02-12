@@ -27,6 +27,10 @@ namespace FeatureFunction{
 class intfFeatureFunction;
 }
 
+namespace LanguageModel {
+class intfLMSentenceScorer;
+}
+
 struct stuGlobalConfigs{
     static Targoman::Common::Configuration::tmplConfigurable<QString> Separator;
     static Targoman::Common::Configuration::tmplConfigurable<QString> SourceLanguage;
@@ -37,6 +41,8 @@ struct stuGlobalConfigs{
 
     static Targoman::Common::Configuration::clsModuleConfig          LM;
     static Targoman::Common::Configuration::clsModuleConfig          RuleTable;
+
+    static Targoman::Core::Private::LanguageModel::intfLMSentenceScorer*  EmptyLMScorer;
 
     static QMap<QString, FeatureFunction::intfFeatureFunction*>       ActiveFeatureFunctions;
 };
