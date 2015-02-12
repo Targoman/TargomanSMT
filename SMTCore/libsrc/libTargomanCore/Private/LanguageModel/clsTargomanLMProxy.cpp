@@ -22,8 +22,14 @@ Targoman::NLPLibs::clsLanguageModel clsTargomanLMProxy::LM;
 TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy)
 
 clsTargomanLMProxy::clsTargomanLMProxy() :
-    intfLMSentenceScorer(clsTargomanLMProxy::moduleName()), Targoman::NLPLibs::clsLMSentenceScorer(LM){
+    intfLMSentenceScorer(clsTargomanLMProxy::moduleName()),
+    LMSentenceScorer(new Targoman::NLPLibs::clsLMSentenceScorer(clsTargomanLMProxy::LM)){
 
+}
+
+clsTargomanLMProxy::~clsTargomanLMProxy()
+{
+  //Just to suppress compiler error on using QScoppedPointer
 }
 
 }

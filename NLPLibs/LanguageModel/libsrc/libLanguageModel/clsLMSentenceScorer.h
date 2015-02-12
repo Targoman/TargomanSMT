@@ -30,7 +30,7 @@ namespace Private {
 class clsLMSentenceScorer
 {
 public:
-    clsLMSentenceScorer(const clsLanguageModel& _lm, bool _stringBased = false);
+    clsLMSentenceScorer(const clsLanguageModel& _lm);
     ~clsLMSentenceScorer();
 
     void reset();
@@ -40,6 +40,7 @@ public:
     Common::WordIndex_t wordIndex(const QString& _word);
     inline Common::WordIndex_t endOfSentence(){return LM_END_SENTENCE_WINDEX;}
     void initHistory(const clsLMSentenceScorer& _oldScorer);
+    bool haveSameHistoryAs(const clsLMSentenceScorer& _oldScorer);
 
 private:
     QScopedPointer<Private::clsLMSentenceScorerPrivate> pPrivate;

@@ -27,6 +27,8 @@ public:
     Common::LogP_t lookupNGram(const QStringList &_ngram, quint8 &_foundedGram) const;
     Common::LogP_t lookupNGram(const QList<Common::WordIndex_t> &_ngram, quint8 &_foundedGram) const
     {
+        Q_UNUSED(_ngram)
+        Q_UNUSED(_foundedGram)
         throw Common::exTargomanNotImplemented("NgramLookup by WordIndex not implemented yet");
     }
 };

@@ -20,7 +20,7 @@ namespace NLPLibs {
 using namespace Private;
 using namespace Targoman::Common;
 
-clsLMSentenceScorer::clsLMSentenceScorer(const clsLanguageModel &_lm, bool _stringBased) :
+clsLMSentenceScorer::clsLMSentenceScorer(const clsLanguageModel &_lm) :
     pPrivate(new clsLMSentenceScorerPrivate(_lm))
 {
 }
@@ -77,6 +77,11 @@ void clsLMSentenceScorer::initHistory(const clsLMSentenceScorer &_oldScorer)
     this->pPrivate->IndexBasedHistory = _oldScorer.pPrivate->IndexBasedHistory;
 }
 
+bool clsLMSentenceScorer::haveSameHistoryAs(const clsLMSentenceScorer &_oldScorer)
+{
+    return this->pPrivate->IndexBasedHistory == _oldScorer.pPrivate->IndexBasedHistory &&
+            this->pPrivate->StringBasedHistory == _oldScorer.pPrivate->StringBasedHistory;
+}
 
 WordIndex_t clsLMSentenceScorer::wordIndex(const QString &_word)
 {
