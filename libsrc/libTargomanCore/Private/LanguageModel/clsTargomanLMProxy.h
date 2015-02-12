@@ -24,35 +24,34 @@ namespace Core {
 namespace Private {
 namespace LanguageModel{
 
-class clsTargomanLMProxy :
-        public intfLMSentenceScorer, public Targoman::NLPLibs::clsLMSentenceScorer{
+class clsTargomanLMProxy : public intfLMSentenceScorer
+{
 public:
     clsTargomanLMProxy();
-    inline void reset(){Targoman::NLPLibs::clsLMSentenceScorer::reset();}
+    ~clsTargomanLMProxy();
+    inline void reset(){this->LMSentenceScorer->reset();}
 
     inline Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) {
         quint8 Dummy;
-        return Targoman::NLPLibs::clsLMSentenceScorer::wordProb(_wordIndex, Dummy);
+        return this->LMSentenceScorer->wordProb(_wordIndex, Dummy);
     }
 
     inline Common::WordIndex_t getWordIndex(const QString& _word){return this->LM.getID(_word);}
 
-    inline Common::WordIndex_t endOfSentence(){return Targoman::NLPLibs::clsLMSentenceScorer::endOfSentence();}
-    virtual void initHistory(const intfLMSentenceScorer& _oldScorer){
-        Q_UNUSED(_oldScorer)
-        //TODO
+    inline Common::WordIndex_t endOfSentence(){return this->LMSentenceScorer->endOfSentence();}
+    inline void initHistory(const intfLMSentenceScorer& _oldScorer){
+        this->LMSentenceScorer->initHistory(*(dynamic_cast<const clsTargomanLMProxy&>(_oldScorer).LMSentenceScorer));
     }
 
     bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const{
-        Q_UNUSED(_otherScorer)
-        return true;
-        //TODO
+        return this->LMSentenceScorer->haveSameHistoryAs(
+                    *(dynamic_cast<const clsTargomanLMProxy&>(_otherScorer).LMSentenceScorer));
     }
 
 
 private:
     static Targoman::NLPLibs::clsLanguageModel LM;
-
+    QScopedPointer<Targoman::NLPLibs::clsLMSentenceScorer> LMSentenceScorer;
     TARGOMAN_DEFINE_MODULE("TargomanLM", clsTargomanLMProxy)
 };
 
