@@ -11,42 +11,49 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_RULENODE_H
-#define TARGOMAN_CORE_PRIVATE_PHRASETABLE_RULENODE_H
+#ifndef TARGOMAN_CORE_PRIVATE_RULETABLE_RULENODE_H
+#define TARGOMAN_CORE_PRIVATE_RULETABLE_RULENODE_H
 
 #include <QList>
 #include "clsTargetRule.h"
+#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace PhraseTable{
+namespace RuleTable{
 
 class clsRuleNodeData : public QSharedData{
-    QList<QSharedDataPointer<clsTargetRule> > TargetRules;
+public:
+    clsRuleNodeData(){}
+    clsRuleNodeData(const clsRuleNodeData& _other):
+        QSharedData(_other),
+        TargetRules(_other.TargetRules)
+    {}
+    ~clsRuleNodeData(){}
+
+public:
+    QList<clsTargetRule> TargetRules;
 };
 
 class clsRuleNode
 {
 public:
     clsRuleNode();
-    clsRuleNode(const clsRuleNode & _other) : d(_other.d){}
-    ~clsRuleNode();
+    clsRuleNode(int ){} // TODO must be implemented in order to validate RuleNode
+    clsRuleNode(const clsRuleNode & _other) : Data(_other.Data){}
 
     bool isInvalid() const;
-    static inline clsRuleNode& invalidRuleNode() {return clsRuleNode::InvalidRuleNode;}
+    inline QList<clsTargetRule>& targetRules() {
+        return this->Data->TargetRules;
+    }
 
     // Following functions are needed for the binary input/output
     void readBinary(std::istream &input);
     void writeBinary(std::ostream &output) const;
-    inline const QList<QSharedDataPointer<clsTargetRule> >& targetRules() const {
-        return this->d->TargetRules;//TODO OJO
-    }
 
 private:
-    QSharedDataPointer<clsRuleNodeData> d;
-
-    static clsRuleNode InvalidRuleNode;
+    QExplicitlySharedDataPointer<clsRuleNodeData> Data;
 };
 
 }
@@ -54,4 +61,4 @@ private:
 }
 }
 
-#endif // TARGOMAN_CORE_PRIVATE_PHRASETABLE_RULENODE_H
+#endif // TARGOMAN_CORE_PRIVATE_RULETABLE_RULENODE_H

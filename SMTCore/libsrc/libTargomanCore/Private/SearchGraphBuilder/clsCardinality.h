@@ -18,6 +18,7 @@
 #include <QBitArray>
 #include "clsLexicalHypothesis.h"
 
+
 namespace Targoman{
 namespace Core {
 namespace Private{
@@ -26,51 +27,69 @@ namespace SearchGraphBuilder {
 typedef QBitArray Coverage_t;
 typedef QHash<Coverage_t, clsLexicalHypothesis> LexicalHypothesisContainer_t;
 
+class clsCardinalityData : public QSharedData
+{
+    struct stuWorstCosSearchGraphNode{
+        LexicalHypothesisContainer_t::Iterator ConatinerIter;
+        QList<clsSearchGraphNode>::Iterator    NodeIter;
+        Common::Cost_t                         Cost;
+    };
+
+public:
+    clsCardinalityData(){
+        this->WorstNode.Cost = INFINITY;
+        this->TotalSearchGraphNodeCount = 0;
+    }
+
+    clsCardinalityData(const clsCardinalityData& _other) :
+        QSharedData(_other),
+        LexicalHypothesisContainer(_other.LexicalHypothesisContainer)
+    {}
+    ~clsCardinalityData(){}
+
+public:
+    LexicalHypothesisContainer_t LexicalHypothesisContainer;
+    size_t                       TotalSearchGraphNodeCount;
+    stuWorstCosSearchGraphNode   WorstNode;
+};
+
 class clsCardinality
 {
 public:
     clsCardinality();
 
-    inline const clsLexicalHypothesis& operator [] (const Coverage_t& _coverage){
-        return this->LexicalHypothesisContainer.value(_coverage/*, TODO default*/);
+    inline clsLexicalHypothesis& operator [] (const Coverage_t& _coverage){
+        return this->Data->LexicalHypothesisContainer[_coverage];//, TODO default this is same as get or create
     }
 
     inline size_t isEmpty(){
-        return this->LexicalHypothesisContainer.isEmpty();
+        return this->Data->LexicalHypothesisContainer.isEmpty();
     }
 
-    inline const LexicalHypothesisContainer_t& lexicalHypotheses(){
-        return this->LexicalHypothesisContainer;
+    inline LexicalHypothesisContainer_t& lexicalHypotheses(){
+        return this->Data->LexicalHypothesisContainer;
     }
 
     inline static clsCardinality rootCoverageContainer(){
         clsCardinality CoverageContainer;
-        CoverageContainer.LexicalHypothesisContainer.insert(clsCardinality::EmptyCoverage,
+        CoverageContainer.Data->LexicalHypothesisContainer.insert(clsCardinality::EmptyCoverage,
                                                             clsLexicalHypothesis::rootLexicalHypothesis());
         return CoverageContainer;
-
-        //TODO OJO
     }
 
     void remove(Coverage_t _coverage){
-        this->LexicalHypothesisContainer.remove(_coverage);
+        this->Data->LexicalHypothesisContainer.remove(_coverage);
     }
 
-    void performReorderingPruning();
-    bool mustBePruned(Common::Cost_t _cost) const;
-    clsLexicalHypothesis& getOrCreateLexicalHypothesisContainer(Coverage_t _coverage){
-        return this->LexicalHypothesisContainer[_coverage];
-    }
+    bool mustBePruned(Common::Cost_t _cost);
+    void updateWorstNode(const Coverage_t& _coverage, const clsSearchGraphNode& _node);
 
 public:
     static Coverage_t EmptyCoverage;
+    static Common::Configuration::tmplConfigurable<quint8> ReorderingHistogramSize;
 
 private:
-    LexicalHypothesisContainer_t LexicalHypothesisContainer;
-
-    //LexicalHypothesisContainerMap lexicalHypothesisContainerMap_;
-  //  size_t ReorderingHistogramSize;
-  //  size_t LexicalHistogramSize;
+    QExplicitlySharedDataPointer<clsCardinalityData> Data;
 };
 
 }

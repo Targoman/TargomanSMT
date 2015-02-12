@@ -27,23 +27,15 @@ namespace Private {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exNormalizer, exTextProcessor);
 
-TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuDicType)
-    WhiteList,
-    ReplacingCharacter,
-    RemovingCharcters,
-    SpaceCharacters,
-    ZeroWidthSpaceCharacters,
-    NotSure,
-    EndOfFile
-TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
-    "WhiteList",
-    "ReplacingCharacters",
-    "RemovingCharacters",
-    "SpaceCharacters",
-    "ZeroWidthSpaceCharacters",
-    "NotSure",
-    "EOF"
-TARGOMAN_DEFINE_ENHANCED_ENUM_END
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuDicType,
+                              WhiteList,
+                              ReplacingCharacter,
+                              RemovingCharcters,
+                              SpaceCharacters,
+                              ZeroWidthSpaceCharacters,
+                              NotSure,
+                              EndOfFile
+                              )
 
 #define ARABIC_ZWNJ                QChar(0x200C)
 #define ARABIC_YE                  QChar(0x06CC)

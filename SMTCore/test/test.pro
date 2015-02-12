@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright © 2012-2014, Targoman.com
+# Copyright © 2012-2015, Targoman.com
 #
 # Published under the terms of TCRL(Targoman Community Research License)
 # You can find a copy of the license file with distributed source or
@@ -30,6 +30,6 @@ DESTDIR = $$BaseTestBinFolder
 OBJECTS_DIR = $$BaseBuildFolder/obj
 MOC_DIR = $$BaseBuildFolder/moc
 INCLUDEPATH += $$BasePath/libsrc \
-               $$BasePath/libsrc/lib$$ProjectName \
+               $$BasePath/libsrc/lib$$ProjectName
 QMAKE_LIBDIR += $$BaseLibraryFolder
-LIBS += -l$$ProjectName
+#LIBS += -l$$ProjectName

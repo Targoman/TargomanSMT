@@ -23,17 +23,12 @@ namespace NLPLibs {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exLanguageModel, Targoman::Common::exTargomanBase);
 
-TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuMemoryModel)
-    Auto,           //Auto-detected based on LM file
-    Plain,          //Plain ARPA with no binarization
-    Probing,        //probing hash tables
-    RestProbing,    //probing hash tables with rest costs
-TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
-    "Auto",
-    "Plain",
-    "Probing",
-    "RestProbing",
-TARGOMAN_DEFINE_ENHANCED_ENUM_END
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuMemoryModel,
+                              Auto,           //Auto-detected based on LM file
+                              Plain,          //Plain ARPA with no binarization
+                              Probing,        //probing hash tables
+                              RestProbing,    //probing hash tables with rest costs
+                              )
 
 //Definitions for special string in ARPA file
 extern const char* LM_UNKNOWN_WORD;

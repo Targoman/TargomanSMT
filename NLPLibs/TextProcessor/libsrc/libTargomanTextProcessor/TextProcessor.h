@@ -22,30 +22,18 @@
 namespace Targoman {
 namespace NLPLibs {
 
-TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuTextTags)
-    Number,
-    SpecialNumber,
-    Email,
-    URL,
-    Abbreviation,
-    OrderedListItem,
-    Time,
-    Date,
-    Ordinals,
-    Symbol
-TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
-    "num",
-    "nums",
-    "email",
-    "url",
-    "abbr",
-    "oli",
-    "time",
-    "date",
-    "ord",
-    "sym"
-TARGOMAN_DEFINE_ENHANCED_ENUM_END
-
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuTextTags,
+                              Number,
+                              SpecialNumber,
+                              Email,
+                              URL,
+                              Abbreviation,
+                              OrderedListItem,
+                              Time,
+                              Date,
+                              Ordinals,
+                              Symbol
+                              )
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTextProcessor, Targoman::Common::exTargomanBase);
 
 //Used by Logger Methods

@@ -14,14 +14,15 @@
 #include "clsTranslator.h"
 
 #include "Private/clsTranslator_p.h"
+#include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
 
 namespace Targoman{
 namespace Core {
 
 using namespace Private;
 
-clsTranslator::clsTranslator() :
-    pPrivate(new Private::clsTranslatorPrivate)
+clsTranslator::clsTranslator(const QString &_inputStr) :
+    pPrivate(new Private::clsTranslatorPrivate(_inputStr))
 {
 }
 
@@ -34,19 +35,20 @@ void clsTranslator::init(const stuTranslatorConfigs& _configs)
 {
     Q_UNUSED(_configs)
 
+    FeatureFunction::PhraseTable::instance();
     InputDecomposer::clsInput::init();
     SearchGraphBuilder::clsSearchGraphBuilder::init();
     NBestFinder::clsNBestFinder::init();
     OutputComposer::clsOutputComposer::init();
 }
 
-stuTranslationOutput clsTranslator::translate(const QString &_inputStr)
+stuTranslationOutput clsTranslator::translate()
 {
     if (!this->pPrivate->Initialized)
         throw exTargomanCore("Translator is not initialized");
 
-    this->pPrivate->Input->parsePlain(_inputStr, gConfigs.SourceLanguage.value());
-    this->pPrivate->SGB->matchPhrase(this->pPrivate->Input->tokens());
+    //Input was decomposed in constructor
+    this->pPrivate->SGB->matchPhrase();
     this->pPrivate->SGB->parseSentence();
 
     stuTranslationOutput Output;

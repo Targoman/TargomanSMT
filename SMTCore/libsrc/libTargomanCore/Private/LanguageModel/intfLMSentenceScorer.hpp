@@ -25,7 +25,7 @@ namespace Core {
 namespace Private {
 namespace LanguageModel{
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exTargomanCore);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);
 
 class intfLMSentenceScorer : public Common::Configuration::intfModule
 {
@@ -34,11 +34,12 @@ public:
         intfModule(_name){}
     virtual void initHistory(const intfLMSentenceScorer& _oldScorer) = 0;
     virtual void reset() = 0;
-    virtual Common::LogP_t wordProb(const QString& _word) = 0;
+    //virtual Common::LogP_t wordProb(const QString& _word) = 0;
     virtual Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) = 0;
     virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
 
     virtual Common::WordIndex_t endOfSentence()= 0;
+    virtual bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const = 0;
 };
 
 }

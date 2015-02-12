@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright © 2012-2014, Targoman.com
+ * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
  * You can find a copy of the license file with distributed source or
@@ -28,24 +28,22 @@ namespace InputDecomposer {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
 
-typedef QList<clsToken *> Sentence_t;
+typedef QList<clsToken> Sentence_t;
 
 class clsInput
 {
 public:
-    clsInput();
-    ~clsInput();
+    clsInput(const QString& _inputStr);
 
     static void init();
 
-    void parsePlain(const QString& _inputStr, const QString& _lang = "");
-    void parseRichIXML(const QString& _inputIXML);
-    void parseRichIXML(const QString& _inputIXML, bool _normalize, const QString &_lang = "");
-
-    void clear();
     inline const Sentence_t& tokens(){return this->Tokens;}
 
 private:
+    void parsePlain(const QString &_inputStr, const QString& _lang);
+    void parseRichIXML(const QString& _inputIXML);
+    void parseRichIXML(const QString& _inputIXML, bool _normalize, const QString &_lang = "");
+
     inline bool isSpace(const QChar& _ch){
         return _ch == ' ';// || _ch == '\n' || _ch == '\t';
     }
@@ -56,6 +54,8 @@ private:
 
     //Configuration
     static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;
+    static Targoman::Common::Configuration::tmplConfigurable<bool>    IsIXML;
+    static Targoman::Common::Configuration::tmplConfigurable<bool>    DoNormalize;
     static LanguageModel::intfLMSentenceScorer*                       LMScorer;
 };
 

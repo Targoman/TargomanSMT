@@ -25,16 +25,16 @@ clsHypothesisHolder::clsHypothesisHolder()
 
 void clsHypothesisHolder::clear()
 {
-    this->Cardinalities.clear();
-    this->Cardinalities.append(clsCardinality::rootCoverageContainer());
+    this->Data->Cardinalities.clear();
+    this->Data->Cardinalities.append(clsCardinality::rootCoverageContainer());
 
-    //
+    //TODO
 }
 
 void clsHypothesisHolder::resize(size_t _size)
 {
-    this->Cardinalities.resize(_size);
-
+    this->Data->Cardinalities.resize(_size);
+//TODO
     throw Common::exTargomanMustBeImplemented("");
 }
 

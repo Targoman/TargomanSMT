@@ -19,6 +19,7 @@ namespace Private {
 namespace LanguageModel{
 
 Targoman::NLPLibs::clsLanguageModel clsTargomanLMProxy::LM;
+TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy)
 
 clsTargomanLMProxy::clsTargomanLMProxy() :
     intfLMSentenceScorer(clsTargomanLMProxy::moduleName()), Targoman::NLPLibs::clsLMSentenceScorer(LM){

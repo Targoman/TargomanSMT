@@ -74,9 +74,10 @@ private: \
  */
 
 #define TARGOMAN_DEFINE_SINGLETONMODULE(_name, _class) \
+public: \
+    static inline intfModule* instance(){return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
 private: \
     static inline QString moduleName(){return QStringLiteral(_name);}  \
-    static inline intfModule* instance(){return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
     static inline QString baseConfigPath(){return "/" + moduleName();} \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
     static _class* Instance;

@@ -11,26 +11,26 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPHRASETABLE_H
-#define TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPHRASETABLE_H
+#ifndef TARGOMAN_CORE_PRIVATE_RULETABLE_CLSJANERULETABLE_H
+#define TARGOMAN_CORE_PRIVATE_RULETABLE_CLSJANERULETABLE_H
 
-#include "intfPhraseTable.hpp"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
+#include "intfRuleTable.hpp"
 #include "clsRuleNode.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace PhraseTable {
+namespace RuleTable {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exJanePhraseTable, exPhraseTable);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exJanePhraseTable, exRuleTable);
 
-class clsJanePlainPhraseTable : intfPhraseTable
+class clsJanePlainRuleTable : intfRuleTable
 {
 public:
-    clsJanePlainPhraseTable();
-    ~clsJanePlainPhraseTable();
+    clsJanePlainRuleTable();
+    ~clsJanePlainRuleTable();
 
     virtual void init();
 
@@ -46,12 +46,11 @@ public:
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;
-    TARGOMAN_DEFINE_MODULE("JanePTPlain", clsJanePlainPhraseTable)
+    TARGOMAN_DEFINE_MODULE("JanePTPlain", clsJanePlainRuleTable)
 };
 
-TARGOMAN_REGISTER_MODULE(clsJanePlainPhraseTable)
 }
 }
 }
 }
-#endif // TARGOMAN_CORE_PRIVATE_PHRASETABLE_CLSJANEPHRASETABLE_H
+#endif // TARGOMAN_CORE_PRIVATE_RULETABLE_CLSJANERULETABLE_H

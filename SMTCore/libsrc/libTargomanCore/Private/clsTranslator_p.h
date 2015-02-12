@@ -26,9 +26,9 @@ namespace Private{
 
 class clsTranslatorPrivate{
 public:
-    clsTranslatorPrivate() :
-        Input(new InputDecomposer::clsInput),
-        SGB(new SearchGraphBuilder::clsSearchGraphBuilder),
+    clsTranslatorPrivate(const QString & _inputStr) :
+        Input(new InputDecomposer::clsInput (_inputStr)),
+        SGB(new SearchGraphBuilder::clsSearchGraphBuilder(Input->tokens())),
         NBF(new NBestFinder::clsNBestFinder),
         OutComposer(new OutputComposer::clsOutputComposer){
         this->Initialized = false;

@@ -9,7 +9,6 @@
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
-
 #include "libTargomanCommon/CmdIO.h"
 #include "libTargomanCommon/Logger.h"
 #include "libTargomanCommon/exTargomanBase.h"
@@ -19,7 +18,7 @@
 #include "libTargomanCommon/HashFunctions.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/Validators.h"
+#include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
 
 #include <iostream>
@@ -28,8 +27,16 @@
 using namespace Targoman::Common;
 
 static Configuration::tmplConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
-static Configuration::tmplConfigurable<QString> B("/s","fjkdfjkdsfjk",123,
-                                                  new Configuration::Validators::clsPathValidator(PathAccess::Dir | PathAccess::Readable));
+static Configuration::tmplConfigurable<QString> B("/s","fjkdfjkdsfjk","123",
+                                                  Configuration::Validators::tmplPathAccessValidator<PathAccess::Dir | PathAccess::Readable>);
+
+static Configuration::tmplConfigurable<double> C("/s2","fjkdfjkdsfjk",123,
+                                                  Configuration::Validators::tmplNumericValidator<double, -12, 5>);
+
+static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
+                                                  ValidatorLambda(){
+                                                      return true;
+                                                  });
 
 static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module");
 
@@ -75,6 +82,10 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuTest,
                               Val3
                               )
 
+TARGOMAN_DEFINE_ENUM(enuBaba,
+                     qq=2,
+                     cc=3)
+
 void checkOutput()
 {
 
@@ -111,8 +122,29 @@ void checkOutput()
 }
 
 
+class SampleLamda{
+public:
+    SampleLamda(const std::function< bool(int) >& _crossValidator){
+        this->CrossValidator = _crossValidator;
+    }
+
+    std::function<bool(int)> CrossValidator;
+};
+
+
 int main(int argc, char *argv[])
 {
+  //  std::function<bool(int)> Lambda = ;
+    SampleLamda AAA([] (int x) {
+        const quint16 Max = 12;
+        const quint16 Min = 10;
+        return x > 0; }
+    );
+
+    std::cout<<AAA.CrossValidator(5)<<std::endl;
+    std::cout<<AAA.CrossValidator(-5)<<std::endl;
+exit(0);
+
     try{
       Targoman::Common::printLoadedLibs();
 

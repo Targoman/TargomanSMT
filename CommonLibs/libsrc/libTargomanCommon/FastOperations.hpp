@@ -140,8 +140,21 @@ inline const char* fastSkip2Space(const char*& _str){
     return _str;
 }
 
+/**
+ *
+ */
+template<class Class_t, class Container_t, typename Functor_t>
+    size_t findInsertionPos(const Container_t& _sortedConatiner, const Class_t& _element, Functor_t _comparator){
+        for(size_t i = 0; i< _sortedConatiner.size(); ++i){
+            if (_comparator(_element, _sortedConatiner.at(i)) > 0)
+                return i;
+        }
+        return _sortedConatiner.size();
+    }
+
 }
 }
+
 
 
 #endif // TARGOMAN_COMMON_FASTOPERATIONS_HPP

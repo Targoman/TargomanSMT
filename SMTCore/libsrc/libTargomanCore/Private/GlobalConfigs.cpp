@@ -22,18 +22,26 @@ using namespace Common::Configuration;
 
 stuGlobalConfigs gConfigs;
 
-tmplConfigurable<QString> stuGlobalConfigs::Separator("/Common/Separator",
-                                            "Separator used on multi field configurations",
-                                            ";:;");
-tmplConfigurable<QString> stuGlobalConfigs::SourceLanguage("/Language/Source",
-                                            "Source language from which translating",
-                                            "en");
-tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage("/Language/Destination",
-                                                          "Destination Language to which translating",
-                                                          "fa");
+tmplConfigurable<QString> stuGlobalConfigs::Separator(
+        "/Common/Separator",
+        "Separator used on multi field configurations",
+        ";:;");
+tmplConfigurable<QString> stuGlobalConfigs::SourceLanguage(
+        "/Language/Source",
+        "Source language from which translating",
+        "en");
+tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage(
+        "/Language/Destination",
+        "Destination Language to which translating",
+        "fa");
+tmplConfigurable<bool> stuGlobalConfigs::KeepRecombined(
+        "TODO",
+        "TODO");
+
+QMap<QString, FeatureFunction::intfFeatureFunction*>       stuGlobalConfigs::ActiveFeatureFunctions;
 
 clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM","Language model"); //TODO complete description
-clsModuleConfig         stuGlobalConfigs::PhraseTable("/Modules/PhraseTable","PT"); //TODO complete description
+clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable","RT"); //TODO complete description
 }
 }
 }

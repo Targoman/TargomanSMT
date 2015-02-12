@@ -13,6 +13,7 @@
 #ifndef TARGOMAN_COMMON_CONFIGURATION_TMPLCONFIGURABLE_HPP
 #define TARGOMAN_COMMON_CONFIGURATION_TMPLCONFIGURABLE_HPP
 
+#include <functional>
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/Configuration/intfCrossValidate.hpp"
@@ -21,6 +22,10 @@
 namespace Targoman {
 namespace Common {
 namespace Configuration {
+
+static std::function<bool(const intfConfigurable& _item,
+                          QString& _errorMessage)> ReturnTrueCrossValidator = [] (const intfConfigurable&, QString& ) {
+    return true;};
 
 /**
  * @brief The clsConfigurable template is used to store and validate different configurable items
@@ -31,7 +36,8 @@ public:
     tmplConfigurable(const QString&  _configPath,
                     const QString&  _description,
                     const QVariant& _default = QVariant(),
-                    intfCrossValidate* _crossValidator = NULL,
+                    const std::function< bool(const intfConfigurable& _item,
+                                              QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator,
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
                     const QString&  _LongSwitch = ""):
@@ -46,16 +52,13 @@ public:
                 throw exTargomanInitialization("Invalid default value for: " + _configPath + ": " + ErrorMessage);
             }
             this->setFromVariant(_default);
-            this->CrossValidator.reset(_crossValidator);
+            this->CrossValidator = _crossValidator;
         }catch(exTargomanBase &e){
             TargomanError(e.what());
             throw;
         }
     }
-    /**
-     * @brief This function will be overloaded for every type (such as int, float ,...).
-     * This function converts input value from QVariant to a specific type based on overloaded implementation.
-     */
+
     tmplConfigurable(tmplConfigurable<Type_t>&& _other) :
         intfConfigurable(_other.ConfigPath,
                          _other.Description,
@@ -63,9 +66,13 @@ public:
                          _other.ShortHelp,
                          _other.LongSwitch){
         this->Value = _other.Value;
-        this->CrossValidator.swap(_other.CrossValidator);
+        this->CrossValidator = _other.CrossValidator;
     }
 
+    /**
+     * @brief This function will be overloaded for every type (such as int, float ,...).
+     * This function converts input value from QVariant to a specific type based on overloaded implementation.
+     */
     virtual inline void setFromVariant(const QVariant& _value){
         throw exTargomanMustBeImplemented("setFromVariant for "+this->ConfigPath+" Not Implemented");
     }
@@ -86,7 +93,7 @@ public:
      * @brief if cross validator function is prepared that function will be called, else returns true.
      */
     virtual inline bool        crossValidate(QString& _errorMessage) const{
-        return Q_LIKELY(this->CrossValidator) ? this->CrossValidator->validate(*this, _errorMessage) : true;
+        return this->CrossValidator(*this, _errorMessage);
     }
 
     inline Type_t  value(){return this->Value;}
@@ -94,7 +101,8 @@ public:
 
 private:
     Type_t  Value;
-    QScopedPointer<intfCrossValidate> CrossValidator;
+    //QScopedPointer<intfCrossValidate> CrossValidator;
+    std::function<bool(const intfConfigurable& _item, QString& _errorMessage)> CrossValidator;
 };
 
 

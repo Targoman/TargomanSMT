@@ -11,8 +11,8 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef CLSLEXICALHYPOTHESIS_H
-#define CLSLEXICALHYPOTHESIS_H
+#ifndef TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSLEXICALHYPOTHESIS_H
+#define TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSLEXICALHYPOTHESIS_H
 
 #include <QList>
 #include "clsSearchGraphNode.h"
@@ -24,49 +24,49 @@ namespace Core {
 namespace Private{
 namespace SearchGraphBuilder {
 
+class clsLexicalHypothesisData :public QSharedData
+{
+public:
+    clsLexicalHypothesisData(){}
+    clsLexicalHypothesisData(clsLexicalHypothesisData &_other):
+        Nodes(_other.Nodes)
+    {}
+    ~clsLexicalHypothesisData(){}
+    QList<clsSearchGraphNode> Nodes;
+};
+
 class clsLexicalHypothesis
 {
 public:
     clsLexicalHypothesis();
 
-    clsSearchGraphNode& bestNode(){
-        this->Nodes.first();
+    const clsSearchGraphNode& bestNode() const{
+        return this->Data->Nodes.first();
     }
 
 
     inline static clsLexicalHypothesis rootLexicalHypothesis(){
         clsLexicalHypothesis LexicalHypothesis;
-        LexicalHypothesis.Nodes.append(clsSearchGraphNode());
+        LexicalHypothesis.Data->Nodes.append(clsSearchGraphNode());
         return LexicalHypothesis;
-
-        //TODO OJO
     }
 
     bool mustBePruned(Common::Cost_t _totalCost);
 
     Common::Cost_t getBestCost() const;
 
-    inline const QList<clsSearchGraphNode>& nodes(){
-        return this->Nodes;
+    inline QList<clsSearchGraphNode>& nodes(){
+        return this->Data->Nodes;
     }
 
-    inline void insertHypothesis(clsSearchGraphNode* _node);
+    bool insertHypothesis(clsSearchGraphNode &_node);
 
+    void finalizeRecombination();
 
 private:
-    QList<clsSearchGraphNode> Nodes;
+    QExplicitlySharedDataPointer<clsLexicalHypothesisData> Data;
 
     static Common::Configuration::tmplConfigurable<quint8> LexicalMaxHistogramSize;
-
-    /* PartialHypothesisSet hypothesisSet_;
-    PartialHypothesisStateSet hypothesisStateSet_;
-
-    Cost bestCostsWithRestCosts_;
-
-    // TODO: make this variable static in SourceCardinalitySynchronousSearchDecoder?
-    size_t lexicalHistogramSize_;
-
-    //static bool keepRecombined_;    */
 };
 
 }
@@ -74,4 +74,4 @@ private:
 }
 }
 
-#endif // CLSLEXICALHYPOTHESIS_H
+#endif // TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSLEXICALHYPOTHESIS_H

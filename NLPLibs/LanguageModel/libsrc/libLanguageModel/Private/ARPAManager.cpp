@@ -28,11 +28,11 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
-TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuParseState)
-Looking4Start,
-Started,
-NGram
-TARGOMAN_DEFINE_ENUM_END
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuParseState,
+                              Looking4Start,
+                              Started,
+                              NGram
+                              )
 
 ARPAManager* ARPAManager::Instance = NULL;
 
