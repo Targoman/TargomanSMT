@@ -55,6 +55,7 @@ private:
     QSet<QString>            VerbStemPresent;       /**< A set to store all present verb stems from Persian SpellCorrector 'verbStemPresent' config file. */
     QSet<QString>            VerbStemPast;          /**< A set to store all past verb stems from Persian SpellCorrector 'verbStemPast' config file. */
     QSet<QString>            HamzeAllowed;          /**< A set to store all words that Hamze or Mad is allowed from Persian SpellCorrector 'HamzeOrMadAllowed' config file. */
+    QSet<QString>            AdverbsEndWithFathatan;      /**< A set to store all adverbs that end with An from Persian SpellCorrector 'AdverbsEndWithAn' config file. */
 
     QRegExp                  RxInteractiveChars;    /**< A RegExp to match any interactive chars like ؤ,ئ,إ,أ,آ */
     QRegExp                  RxPresentImperfect;    /**< A RegExp to match last parts of any present imperfect verb. */

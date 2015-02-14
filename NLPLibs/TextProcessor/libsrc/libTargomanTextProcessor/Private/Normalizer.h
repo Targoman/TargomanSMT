@@ -41,7 +41,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuDicType,
 #define ARABIC_YE                  QChar(0x06CC)
 #define ARABIC_YE_HAMZA            QChar(0x0626)
 #define ARABIC_ALEF_HAMZA_DOWN     QChar(0x0625)
-#define ARABIC_ALEF_HAMZA_UP       QChar(0x0622)
+#define ARABIC_ALEF_HAMZA_UP       QChar(0x0623)
 #define ARABIC_ALEF                QChar(0x0627)
 
 #define MULTI_DOT       QStringLiteral("…")

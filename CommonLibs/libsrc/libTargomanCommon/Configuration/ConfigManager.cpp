@@ -151,9 +151,9 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                     else
                         ConfigItemIter.value()->setFromVariant(Value.trimmed());
                 }else if (KeyIter->startsWith("--") && this->pPrivate->ModuleInstantiators.value(KeyIter->mid(2)).IsSingleton){
-                    Modules.append(KeyIter->mid(2)); //zhnDebug: check if it is repetitive.
+                    Modules.append(KeyIter->mid(2));
                 }else{
-                    throw exConfiguration("Unrecognized argument: " + *KeyIter); //zhnDebug: this should be after for loop, I think
+                    throw exConfiguration("Unrecognized argument: " + *KeyIter);
                 }
             }
         }else

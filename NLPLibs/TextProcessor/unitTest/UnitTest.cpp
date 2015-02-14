@@ -24,7 +24,7 @@ void UnitTest::initTestCase(){
 
     Targoman::NLPLibs::TextProcessor::stuConfigs Configs;
     Configs.NormalizationFile = "../conf/Normalization.conf";
-    Configs.AbbreviationsFile = "../conf/Normalization.conf";
+    Configs.AbbreviationsFile = "../conf/Abbreviations.tbl";
     Configs.SpellCorrectorBaseConfigPath = "../conf/SpellCorrectors";
     QVariantHash PersianSpellCorrector;
     PersianSpellCorrector.insert("Active", true);

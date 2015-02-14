@@ -7,7 +7,8 @@
  *
  *************************************************************************/
 /**
- @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ *@author S. Mohammad M. Ziabary <smm@ziabary.com>
+ *@author Saeed Torabzadeh <Saeed.torabzadeh@gmail.com>
  */
 
 #include "TextProcessor.h"
@@ -89,7 +90,7 @@ QString TextProcessor::text2IXML(const QString &_inStr,
                                  bool _useSpellCorrector,
                                  QList<enuTextTags::Type> _removingTags) const
 {
-    TargomanLogDebug(5,"ConvertToIXML Process Started");
+    TargomanLogDebug(7,"ConvertToIXML Process Started");
 
     const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
 
@@ -109,7 +110,7 @@ QString TextProcessor::text2IXML(const QString &_inStr,
                     QString("</%1>").arg(enuTextTags::toStr(Tag)));
 
     TargomanDebug(7, "[REM-TAGS] |"<<IXML<<"|");
-    TargomanLogDebug(5,"ConvertToIXML Process Finished");
+    TargomanLogDebug(7,"ConvertToIXML Process Finished");
     return IXML;
 }
 
@@ -180,8 +181,7 @@ QString TextProcessor::normalizeText(const QString _input, bool _interactive, co
         Output = SpellCorrector::instance().process(LangCode, Output, _interactive);
     }
 
-    Output = Normalizer::fullTrim(Output);
-    return Output;
+    return Normalizer::fullTrim(Output);
 }
 
 }

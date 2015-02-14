@@ -62,7 +62,7 @@ void UnitTest::normalizeText()
     ));
 
     QVERIFY(VERIFY_NORMALIZE("",
-    "ﺍﺟﺘﻤﺎﻋﯽ ـ ﺳﻴﺎﺳﯽ",
+    "ﺍﺟﺘﻤﺎﻋـﯽ ـ ﺳﻴﺎﺳﯽ",
     "اجتماعی - سیاسی"
     ));
 
@@ -70,5 +70,86 @@ void UnitTest::normalizeText()
     "بی شعوری ها یشان",
     "بی‌شعوری‌هایشان"
     ));
+
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                             "می دهند"
+                             , "می‌دهند"));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                             "اویزه",
+                             "آویزه"));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "\"کوری\"",
+                            "\" کوری \""
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "غیبگو تر",
+                            "غیبگوتر"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "غیبگو تر ها",
+                            "غیبگوترها"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "غیبگو ترین ها",
+                            "غیبگوترین‌ها"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "غیبگو ترین هایشان",
+                            "غیبگوترین‌هایشان"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "می زند",
+                            "می‌زند"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "می گوید",
+                            "می‌گوید"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "ماهیانه ای",
+                            "ماهیانه‌ای"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "مهم",
+                            "مهم"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "میسر",
+                            "میسر"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "صرفاً",
+                            "صرفا"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "صرفا\"",
+                            "صرفا"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "ماههای",
+                            "ماهه‌ای"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "چشمهاش",
+                            "چشمهاش"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "می کند و",
+                            "می‌کند و"
+                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "کشته شده اند",
+                            "کشته شده‌اند"
+                            ));
+
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "اشغال",
+                            "اشغال"
+                            ));
+
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "از تاثیر مثبت این خاطره هم کاری برنیامده است",
+                            "از تاثیر مثبت این خاطره هم کاری برنیامده است"
+                            ));
 
 }

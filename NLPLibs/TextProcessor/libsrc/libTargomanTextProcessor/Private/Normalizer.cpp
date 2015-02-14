@@ -94,10 +94,7 @@ QString Normalizer::normalize(const QChar &_char,
     }
 
     //Convert wrong tatweels to dash.
-    if(_nextChar.isDigit() || this->LastChar.isDigit() ||
-       _nextChar.isPunct() || this->LastChar.isPunct() ||
-       _nextChar.script() == QChar::Script_Latin || this->LastChar.script() == QChar::Script_Latin)
-        if(Char == ARABIC_TATWEEL)
+    if(Char == ARABIC_TATWEEL && !(_nextChar.script() == QChar::Script_Arabic && this->LastChar.script() == QChar::Script_Arabic))
             return this->LastChar = '-';
 
     //Convert special ZWNJ to ZWNJ
@@ -681,27 +678,27 @@ void Normalizer::updateBinTable(const QString &_binFilePath, bool _interactive)
 QString Normalizer::fullTrim(const QString &_str)
 {
     QString Normalized;
-
-    for (int i=0; i<_str.trimmed().size(); i++){
+    QString trimmedString = _str.trimmed();
+    for (int i=0; i<trimmedString.size(); i++){
         //
-        if (_str.at(i) == ARABIC_ZWNJ && ((i>0 &&(
-                                              _str.at(i-1).joining() == QChar::Right ||
-                                              _str.at(i-1).joining() == QChar::OtherJoining ||
-                                              _str.at(i-1).isSpace() ||
-                                              _str.at(i-1).isSymbol() ||
-                                              _str.at(i-1).isDigit()||
-                                              _str.at(i-1).isPunct()))
+        if (trimmedString.at(i) == ARABIC_ZWNJ && ((i>0 &&(
+                                              trimmedString.at(i-1).joining() == QChar::Right ||
+                                              trimmedString.at(i-1).joining() == QChar::OtherJoining ||
+                                              trimmedString.at(i-1).isSpace() ||
+                                              trimmedString.at(i-1).isSymbol() ||
+                                              trimmedString.at(i-1).isDigit()||
+                                              trimmedString.at(i-1).isPunct()))
                                           ||  i == 0
-                                          ||  i == _str.size() - 1
-                                          || (i+1 < _str.size() &&(
-                                                  _str.at(i+1).isSpace() ||
-                                                  _str.at(i+1).isSymbol() ||
-                                                  _str.at(i+1).isDigit() ||
-                                                  _str.at(i+1).isPunct() ||
-                                                  _str.at(i+1).isNull()))))
+                                          ||  i == trimmedString.size() - 1
+                                          || (i+1 < trimmedString.size() &&(
+                                                  trimmedString.at(i+1).isSpace() ||
+                                                  trimmedString.at(i+1).isSymbol() ||
+                                                  trimmedString.at(i+1).isDigit() ||
+                                                  trimmedString.at(i+1).isPunct() ||
+                                                  trimmedString.at(i+1).isNull()))))
             continue;
         else
-            Normalized+=_str.at(i);
+            Normalized+=trimmedString.at(i);
     }
     return Normalized;
 }

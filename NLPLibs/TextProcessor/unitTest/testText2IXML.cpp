@@ -63,6 +63,7 @@ void UnitTest::text2IXML()
     QVERIFY(VERIFY_TXT2IXML("en","Amazon.com", "<url>Amazon.com</url>"));
     QVERIFY(VERIFY_TXT2IXML("en","1.Amazon.com", "<oli>1.</oli> <url>Amazon.com</url>"));
     QVERIFY(VERIFY_TXT2IXML("fa","آمازون.کام", "<url>آمازون.کام</url>"));
+
     QVERIFY(VERIFY_TXT2IXML("en","Resources and Irrigation Dr.MMahmoud Abu-Zaid.", "Resources and Irrigation <abbr>Dr.</abbr> MMahmoud Abu - Zaid ."));
 
     //suffix
@@ -89,16 +90,41 @@ void UnitTest::text2IXML()
 
 
     //virastyar
-    QVERIFY(VERIFY_TXT2IXML("fa","می دهند", "می‌دهند"));
-    QVERIFY(VERIFY_TXT2IXML("fa","اویزه", "آویزه"));
-    QVERIFY(VERIFY_TXT2IXML("fa","غیبگو تر", "غیبگوتر"));
-    QVERIFY(VERIFY_TXT2IXML("fa",
-                            "\"کوری\"",
-                            "\" کوری \""
-                            ));
+
     QVERIFY(VERIFY_TXT2IXML("fa",
                             "",
                             ""
                             ));
+
+    QVERIFY(VERIFY_TXT2IXML("fa",
+                            "-"
+                            "استفاده از"
+                            "Wi-Fi."
+                            "هر روز",
+                            "<oli>-</oli>"
+                            "استفاده از"
+                            "Wi-Fi . "
+                            "هر روز"));
+
+    QVERIFY(VERIFY_TXT2IXML("fa",
+                            "* ایران",
+                            "<oli>*</oli> ایران"));
+    QVERIFY(VERIFY_TXT2IXML("en",
+                            "__kook@bbc.co.uk",
+                            "_ _ <email>kook@bbc.co.uk</email>"));
+    QVERIFY(VERIFY_TXT2IXML("en",
+                            "__http://bit.ly/BBCKookFB",
+                            "_ _ <url>http://bit.ly/BBCKookFB</url>"));
+    QVERIFY(VERIFY_TXT2IXML("fa",
+                            "o صفحات_ویژه",
+                            "<oli>o</oli> صفحات _ ویژه"));
+
+    QVERIFY(VERIFY_TXT2IXML("fa",
+                            "می گفت \"پاتک\"",
+                            "می‌گفت \" پاتک \""));
+
+    QVERIFY(VERIFY_TXT2IXML("fa",
+                            "کرد.مشهورترین",
+                            "کرد . مشهورترین"));
 }
 
