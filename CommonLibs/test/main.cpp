@@ -28,7 +28,8 @@ using namespace Targoman::Common;
 
 static Configuration::tmplConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
 static Configuration::tmplConfigurable<QString> B("/s","fjkdfjkdsfjk","123",
-                                                  Configuration::Validators::tmplPathAccessValidator<PathAccess::Dir | PathAccess::Readable>);
+                                                  Configuration::Validators::tmplPathAccessValidator<
+                                                  (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Readable)>);
 
 static Configuration::tmplConfigurable<double> C("/s2","fjkdfjkdsfjk",123,
                                                   Configuration::Validators::tmplNumericValidator<double, -12, 5>);
@@ -130,7 +131,6 @@ public:
 
     std::function<bool(int)> CrossValidator;
 };
-
 
 int main(int argc, char *argv[])
 {

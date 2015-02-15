@@ -22,7 +22,7 @@ namespace Common {
 namespace Configuration {
 namespace Validators {
 
-#define ValidatorLambda()[](const Targoman::Common::Configuration::intfConfigurable& _item,QString& _errorMessage)
+#define TargomanConfigValidatorLambda()
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -44,36 +44,40 @@ template <typename Type_t, int _max, int _min>
 /**
 * @brief The tmplPathAccessValidator template function can be used for path(string) configurables
 */
-template <Targoman::Common::PathAccess::Options _requiredAccess>
+template <Targoman::Common::enuPathAccess::Type _requiredAccess>
     bool tmplPathAccessValidator (const intfConfigurable& _item,
                              QString& _errorMessage){
         QString Path = _item.toVariant().toString();
         QFileInfo PathInfo(Path);
 
-        if (_requiredAccess.testFlag(Targoman::Common::PathAccess::Dir) && PathInfo.isDir() == false){
+        if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Dir) &&
+                PathInfo.isDir() == false){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be a directory";
             return false;
-        }else if (_requiredAccess.testFlag(Targoman::Common::PathAccess::File) && PathInfo.isFile() == false){
+        }else if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::File) &&
+                  PathInfo.isFile() == false){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be a file";
             return false;
         }
-        if (_requiredAccess.testFlag(Targoman::Common::PathAccess::Executable) && PathInfo.isExecutable() == false){
+        if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Executable) &&
+                PathInfo.isExecutable() == false){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be executable";
             return false;
         }
 
-        if (_requiredAccess.testFlag(Targoman::Common::PathAccess::Readable) && PathInfo.isReadable() == false){
+        if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Readable) &&
+                PathInfo.isReadable() == false){
             _errorMessage = _item.configPath() + ": Unable to open <"+Path+"> for READING";
             return false;
         }
-        if (_requiredAccess.testFlag(Targoman::Common::PathAccess::Writeatble) && PathInfo.isWritable() == false){
+        if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Writeatble) &&
+                PathInfo.isWritable() == false){
             _errorMessage = _item.configPath() + ": Unable to open <"+Path+"> for WRITING";
             return false;
         }
         _errorMessage.clear();
         return true;
     }
-
 }
 }
 }

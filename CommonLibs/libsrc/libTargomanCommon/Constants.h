@@ -27,21 +27,15 @@ struct Constants
 
 };
 
-class PathAccess{
-public:
-    enum Option{
-        Readable   = 0x01,
-        Writeatble = 0x02,
-        Executable = 0x04,
-        File       = 0x08,
-        Dir        = 0x10
-    };
-    Q_DECLARE_FLAGS(Options, Option) /**<  helps to treat logical "and" and logical "or" of Option enumeration as type of enumeration*/
-};
+TARGOMAN_DEFINE_ENUM(enuPathAccess,
+                     Readable   = 0x01,
+                     Writeatble = 0x02,
+                     Executable = 0x04,
+                     File       = 0x08,
+                     Dir        = 0x10
+                    );
 
 }
 }
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(Targoman::Common::PathAccess::Options)
 
 #endif // TARGOMAN_COMMON_CONSTANTS_H

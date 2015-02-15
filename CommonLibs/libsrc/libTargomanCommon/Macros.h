@@ -185,7 +185,13 @@
       inline static int getCount(){ return -1; } \
       inline static const char* toStr(Type) { return "Unknown"; } \
       inline static Type toEnum(const char*) { return (Type)-1; toEnum(""); }\
-    }
+    }\
+    inline bool testFlag(_name::Type _key, _name::Type _check)  {return (_key & _check) == _check;}
+
+/*
+inline constexpr _name::Type operator | (const _name::Type _first, const _name::Type _second) {return (_name::Type)(_first | _second);}\
+inline constexpr _name::Type operator & (const _name::Type _first, const _name::Type _second) {return (_name::Type)(_first & _second);}\
+*/
 
 /**
  * @brief A macro to define Enum in an enhanced method in which Enums will reside in a namespace and can have string
