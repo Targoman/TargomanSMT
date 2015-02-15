@@ -33,6 +33,7 @@ clsLMSentenceScorer::~clsLMSentenceScorer()
 void clsLMSentenceScorer::reset()
 {
     this->pPrivate->StringBasedHistory.clear();
+    this->pPrivate->IndexBasedHistory.clear();
 }
 
 /**

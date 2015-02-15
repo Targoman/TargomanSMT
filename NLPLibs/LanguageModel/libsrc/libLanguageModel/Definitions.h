@@ -51,10 +51,15 @@ struct stuLMConfigs
         Targoman::Common::LogP_t Backoff;
     }UnknownWordDefault;
 
+    bool    UseIndexBasedModel;
+
     stuLMConfigs(Targoman::Common::LogP_t _unkProb = 0,
-                 Targoman::Common::LogP_t _unkBackoff = 0){
+                 Targoman::Common::LogP_t _unkBackoff = 0,
+                 bool _useIdexBasedModel = true){
         this->UnknownWordDefault.Prob = _unkProb;
         this->UnknownWordDefault.Backoff = _unkBackoff;
+        this->UseIndexBasedModel = _useIdexBasedModel;
+
     }
 };
 

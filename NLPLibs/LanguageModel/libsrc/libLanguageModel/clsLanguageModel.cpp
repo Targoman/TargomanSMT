@@ -34,7 +34,9 @@ tmplConfigurable<double>  clsLanguageModel::DeafultUnknownProb("/TargomanLM/Deaf
                                                                "TODO");
 tmplConfigurable<double>  clsLanguageModel::DeafultUnknownBackoff("/TargomanLM/DeafultUnknownBackoff",
                                                                   "TODO");
-
+Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::UseIndexBasedModel("/TargomanLM/UseIndexBasedModel",
+                                                                                             "TODO",
+                                                                                             true);
 
 clsLanguageModel::clsLanguageModel() :
     pPrivate(new clsLanguageModelPrivate)
@@ -51,7 +53,8 @@ quint8 clsLanguageModel::init()
     return this->init(clsLanguageModel::FilePath.value(),
                       stuLMConfigs(
                           clsLanguageModel::DeafultUnknownProb.value(),
-                          clsLanguageModel::DeafultUnknownBackoff.value()));
+                          clsLanguageModel::DeafultUnknownBackoff.value(),
+                          clsLanguageModel::UseIndexBasedModel.value()));
 }
 
 /**
@@ -69,11 +72,11 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
     if (this->pPrivate->isBinary(_filePath)){
         throw exTargomanNotImplemented("Binary is Not implemented yet");
     }else{
-#if 1
-        this->pPrivate->Model = new clsIndexBasedProbingModel();
-#else
-        this->pPrivate->Model = new clsStringBasedProbingModel();
-#endif
+        if (_configs.UseIndexBasedModel)
+            this->pPrivate->Model = new clsIndexBasedProbingModel();
+        else
+            this->pPrivate->Model = new clsStringBasedProbingModel();
+
         this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model);
         this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
                                                       _configs.UnknownWordDefault.Backoff);

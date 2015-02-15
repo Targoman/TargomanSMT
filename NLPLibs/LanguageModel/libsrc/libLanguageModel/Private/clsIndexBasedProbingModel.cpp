@@ -204,7 +204,7 @@ void clsIndexBasedProbingModel::insert(QList<WordIndex_t> _ngram, LogP_t _prob, 
 stuProbAndBackoffWeights clsIndexBasedProbingModel::getNGramWeights(QList<WordIndex_t> _ngram) const
 {
     if (_ngram.size() == 1){
-        Q_ASSERT_X(_ngram.first() < (qint32)this->HashTableSize ||
+        Q_ASSERT_X(_ngram.first() < (WordIndex_t)this->HashTableSize ||
                    this->NGramHashTable[_ngram.first()].isMultiIndex() == false,
                 "getNGramWeights",
                 "Invalid Wordindex provided");
