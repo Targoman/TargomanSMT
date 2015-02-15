@@ -24,10 +24,9 @@ namespace InputDecomposer {
 
 using namespace Common;
 
-QSet<QString>    clsInput::SpecialTags;
 Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
                                                                    "User Defined valid XML tags. ",
-                                                                   ""); //TODO complete description
+                                                                   ""); /// @todo complete description
 Configuration::tmplConfigurable<bool>    clsInput::IsIXML("Input/IsIXML",
                                                           "Input is in Plain text or IXML format",
                                                           false);
@@ -35,6 +34,10 @@ Configuration::tmplConfigurable<bool>    clsInput::DoNormalize("Input/DoNormaliz
                                                              "Normalize Input or let it unchanged",
                                                              true);
 
+/**
+ * @brief clsInput::clsInput Instructor of this class gets input string and based on input arguments parses that.
+ * @param _inputStr input string.
+ */
 clsInput::clsInput(const QString &_inputStr)
 {
     if (this->IsIXML.value()) {
@@ -45,7 +48,9 @@ clsInput::clsInput(const QString &_inputStr)
     }else
         this->parsePlain(_inputStr, gConfigs.SourceLanguage.value());
 }
-
+/**
+ * @brief clsInput::init This function inserts userdefined and default tags to #SpecialTags.
+ */
 void clsInput::init()
 {
     if (UserDefinedTags.value().size())
@@ -55,10 +60,17 @@ void clsInput::init()
         SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
 }
 
+/**
+ * @brief clsInput::parsePlain This function fisrt converts plain text to iXML format and then parses that.
+ * @param _inputStr Input string
+ * @param _lang Language.
+ */
+
 void clsInput::parsePlain(const QString &_inputStr, const QString& _lang)
 {
     this->parseRichIXML(TextProcessor::instance().text2RichIXML(_inputStr, _lang), false);
 }
+
 
 void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize, const QString &_lang)
 {
@@ -67,6 +79,11 @@ void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize, const Q
     else
         this->parseRichIXML(_inputIXML);
 }
+
+/**
+ * @brief clsInput::parseRichIXML parses iXML input string and adds detected tokens and their additional informations to #Tokens list.
+ * @param _inputIXML Input string.
+ */
 
 void clsInput::parseRichIXML(const QString &_inputIXML)
 {
@@ -170,7 +187,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
                 continue;
             }
             NextCharEscaped = false;
-            if (Ch == '\\')
+            if (Ch == '\\')             //zhnDebug: why do we append '\'
                 NextCharEscaped = true;
             AttrValue.append(Ch);
             break;

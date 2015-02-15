@@ -58,8 +58,8 @@ _NUMERIC_CONFIGURABLE_IMPL("quint32",QVariant::ULongLong,quint32,quint64, 0, ULO
 _NUMERIC_CONFIGURABLE_IMPL("quint64",QVariant::ULongLong,quint64,quint64, 0,ULONG_LONG_MAX)
 #endif
 
-_NUMERIC_CONFIGURABLE_IMPL("double",QVariant::Double,double,double, DBL_MIN, DBL_MAX)
-_NUMERIC_CONFIGURABLE_IMPL("float",QVariant::Double, float,double, FLT_MIN,FLT_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("double",QVariant::Double,double,double, -DBL_MAX, DBL_MAX)
+_NUMERIC_CONFIGURABLE_IMPL("float",QVariant::Double, float,double, -FLT_MAX,FLT_MAX)
 #pragma GCC diagnostic pop
 
 //////QString

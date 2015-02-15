@@ -31,8 +31,8 @@ static Configuration::tmplConfigurable<QString> B("/s","fjkdfjkdsfjk","123",
                                                   Configuration::Validators::tmplPathAccessValidator<
                                                   (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Readable)>);
 
-static Configuration::tmplConfigurable<double> C("/s2","fjkdfjkdsfjk",123,
-                                                  Configuration::Validators::tmplNumericValidator<double, -12, 5>);
+//static Configuration::tmplConfigurable<double> C("/s2","fjkdfjkdsfjk",123,
+//                                                  Configuration::Validators::tmplNumericValidator<double, -12, 5>);
 
 static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
                                                   [](const Targoman::Common::Configuration::intfConfigurable& _item,QString& _errorMessage){
@@ -134,6 +134,7 @@ public:
 
 int main(int argc, char *argv[])
 {
+    qDebug() << __DBL_MIN__;
   //  std::function<bool(int)> Lambda = ;
     SampleLamda AAA([] (int x) {
         const quint16 Max = 12;

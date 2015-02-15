@@ -31,9 +31,9 @@ using namespace Targoman::Common::Configuration;
 tmplConfigurable<QString> clsLanguageModel::FilePath("/TargomanLM/FilePath",
                                                      "TODO");
 tmplConfigurable<double>  clsLanguageModel::DeafultUnknownProb("/TargomanLM/DeafultUnknownProb",
-                                                               "TODO");
+                                                               "TODO", -100);
 tmplConfigurable<double>  clsLanguageModel::DeafultUnknownBackoff("/TargomanLM/DeafultUnknownBackoff",
-                                                                  "TODO");
+                                                                  "TODO", 0);
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::UseIndexBasedModel("/TargomanLM/UseIndexBasedModel",
                                                                                              "TODO",
                                                                                              true);

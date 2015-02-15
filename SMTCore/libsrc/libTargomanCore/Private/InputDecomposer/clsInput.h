@@ -30,6 +30,11 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
 
 typedef QList<clsToken> Sentence_t;
 
+/**
+ * @brief This class is defined to manage input string tokens.
+ * This input string can be in ixml or plain format.
+ */
+
 class clsInput
 {
 public:
@@ -45,17 +50,17 @@ private:
     void parseRichIXML(const QString& _inputIXML, bool _normalize, const QString &_lang = "");
 
     inline bool isSpace(const QChar& _ch){
-        return _ch == ' ';// || _ch == '\n' || _ch == '\t';
+        return _ch == ' ';
     }
 
 private:
-    Sentence_t Tokens;
-    static QSet<QString>    SpecialTags;
+    Sentence_t Tokens;                                                                  /**< A list of clsToken class. Input string will be parsed and recorded in this structure. */
+    static QSet<QString>    SpecialTags;                                                /**< List of valid tags. */
 
     //Configuration
-    static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;
-    static Targoman::Common::Configuration::tmplConfigurable<bool>    IsIXML;
-    static Targoman::Common::Configuration::tmplConfigurable<bool>    DoNormalize;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;  /**< Users can add their defined iXML tags to list of valid tags (#SpecialTags). */
+    static Targoman::Common::Configuration::tmplConfigurable<bool>    IsIXML;           /**< A configurable to specify whether input string is xml or not. */
+    static Targoman::Common::Configuration::tmplConfigurable<bool>    DoNormalize;      /**< A configurable to specify whether input string should be normalized or not. */
 };
 
 }
