@@ -29,7 +29,6 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplVectorPrefixTree.hpp \
     libTargomanCommon/HashFunctions.hpp \
     libTargomanCommon/tmplExpirableCache.hpp \
-    libTargomanCommon/Configuration/intfCrossValidate.hpp \
     libTargomanCommon/Configuration/intfConfigurable.hpp \
     libTargomanCommon/Configuration/clsFileBasedConfig.hpp \
     libTargomanCommon/Configuration/tmplConfigurable.h \
