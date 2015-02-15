@@ -35,7 +35,7 @@ static Configuration::tmplConfigurable<double> C("/s2","fjkdfjkdsfjk",123,
                                                   Configuration::Validators::tmplNumericValidator<double, -12, 5>);
 
 static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
-                                                  ValidatorLambda(){
+                                                  [](const Targoman::Common::Configuration::intfConfigurable& _item,QString& _errorMessage){
                                                       return true;
                                                   });
 
