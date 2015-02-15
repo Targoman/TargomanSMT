@@ -22,8 +22,6 @@ namespace Common {
 namespace Configuration {
 namespace Validators {
 
-#define TargomanConfigValidatorLambda()
-
 ///////////////////////////////////////////////////////////////////////////////////////
 /**
  * @brief The tmplNumericValidator template function can be used for all type of numeric configurables
