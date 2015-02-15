@@ -50,6 +50,8 @@ private:
     enuLexicalReorderingFields::Type getRightOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
     enuLexicalReorderingFields::Type getLeftOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
 
+    inline QStringList columnNames() const{return enuLexicalReorderingFields::options();}
+
 private:
     static Common::Configuration::tmplConfigurable<bool>      IsBidirectional;
     static Common::Configuration::tmplConfigurable<double>    ScalingFactors[6];

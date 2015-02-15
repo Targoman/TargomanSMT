@@ -28,6 +28,14 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);
 class clsTargetRuleData : public QSharedData
 {
 public:
+    clsTargetRuleData(const QList<Common::WordIndex_t>& _targetPhrase,
+                      const QList<Common::Cost_t>& _fields,
+                      size_t _precomputedValueSize):
+        TargetPhrase(_targetPhrase),
+        Fields(_fields),
+        PrecomputedValues(_precomputedValueSize,-INFINITY)
+    {}
+
     clsTargetRuleData(size_t _precomputedValueSize):
         PrecomputedValues(_precomputedValueSize, -INFINITY)
     {}
@@ -50,6 +58,8 @@ class clsTargetRule
 {
 public:
     clsTargetRule();
+    clsTargetRule(const QList<Common::WordIndex_t>& _targetPhrase,
+                  const QList<Common::Cost_t>& _fields);
     clsTargetRule(const clsTargetRule& _other):
         Data(_other.Data)
     {}
@@ -72,6 +82,13 @@ public:
         return this->Data->PrecomputedValues.at(_index);
     }
 
+    inline void setCosts(const QList<Common::Cost_t>& _costs){
+        Q_ASSERT(this->Data->Fields.isEmpty());
+        Q_ASSERT(clsTargetRule::ColumnNames.size() == _costs.size());
+
+        this->Data->Fields = _costs;
+    }
+
     void setPrecomputedValue(size_t _index, Common::Cost_t _value){
         Q_ASSERT(_index < (size_t)this->Data->PrecomputedValues.size());
         this->Data->PrecomputedValues[_index] = _value;
@@ -90,13 +107,13 @@ public:
     }
 
     static size_t allocatePrecomputedValue(){
-        return ++clsTargetRule::DefaultPrecomputedValuesSize;
+        return ++clsTargetRule::PrecomputedValuesSize;
     }
 
 private:
     QExplicitlySharedDataPointer<clsTargetRuleData>   Data;
     static  QStringList                     ColumnNames;
-    static  size_t                          DefaultPrecomputedValuesSize;
+    static  size_t                          PrecomputedValuesSize;
 };
 
 extern clsTargetRule InvalidTargetRule;

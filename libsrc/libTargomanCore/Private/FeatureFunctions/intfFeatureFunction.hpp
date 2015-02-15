@@ -72,6 +72,8 @@ public:
         throw Common::exTargomanNotImplemented("getTargetRuleCost must be implemented in subclasses");
     }
 
+    virtual QStringList columnNames() const = 0;
+
 protected:
     static QString baseScalingFactorsConfigPath(){ return "/ScalingFactors"; }
     QVector<size_t>         FieldIndexes;

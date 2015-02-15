@@ -32,9 +32,10 @@ class intfLMSentenceScorer : public Common::Configuration::intfModule
 public:
     intfLMSentenceScorer(const QString& _name):
         intfModule(_name){}
+
+    virtual void init() = 0;
     virtual void initHistory(const intfLMSentenceScorer& _oldScorer) = 0;
     virtual void reset() = 0;
-    //virtual Common::LogP_t wordProb(const QString& _word) = 0;
     virtual Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) = 0;
     virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
 

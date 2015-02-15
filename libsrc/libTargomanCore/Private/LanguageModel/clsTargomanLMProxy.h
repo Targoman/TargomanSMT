@@ -29,7 +29,13 @@ class clsTargomanLMProxy : public intfLMSentenceScorer
 public:
     clsTargomanLMProxy();
     ~clsTargomanLMProxy();
+
     inline void reset(){this->LMSentenceScorer->reset();}
+
+    void init(){
+        clsTargomanLMProxy::LM.init(); // LM must check if it needs to be initialized
+    }
+
 
     inline Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) {
         quint8 Dummy;
@@ -51,6 +57,7 @@ public:
 
 private:
     static Targoman::NLPLibs::clsLanguageModel LM;
+
     QScopedPointer<Targoman::NLPLibs::clsLMSentenceScorer> LMSentenceScorer;
     TARGOMAN_DEFINE_MODULE("TargomanLM", clsTargomanLMProxy)
 };
