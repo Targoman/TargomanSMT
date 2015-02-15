@@ -17,6 +17,7 @@
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Macros.h"
 #include "libLanguageModel/Definitions.h"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
 
 namespace Targoman {
 namespace NLPLibs {
@@ -33,6 +34,8 @@ public:
     clsLanguageModel();
     ~clsLanguageModel();
 
+    quint8 init();
+
     quint8 init(const QString& _filePath, const stuLMConfigs& _configs = stuLMConfigs());
 
     void convertBinary(enuMemoryModel::Type _model, const QString& _binFilePath);
@@ -46,6 +49,10 @@ public:
 
 private:
     QScopedPointer<Private::clsLanguageModelPrivate> pPrivate;
+
+    static Targoman::Common::Configuration::tmplConfigurable<QString> FilePath;
+    static Targoman::Common::Configuration::tmplConfigurable<double>  DeafultUnknownProb;
+    static Targoman::Common::Configuration::tmplConfigurable<double>  DeafultUnknownBackoff;
 };
 
 

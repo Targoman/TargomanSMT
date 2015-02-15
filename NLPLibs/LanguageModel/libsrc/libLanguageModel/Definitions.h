@@ -51,9 +51,10 @@ struct stuLMConfigs
         Targoman::Common::LogP_t Backoff;
     }UnknownWordDefault;
 
-    stuLMConfigs(){
-        this->UnknownWordDefault.Prob = 0;
-        this->UnknownWordDefault.Backoff = 0;
+    stuLMConfigs(Targoman::Common::LogP_t _unkProb = 0,
+                 Targoman::Common::LogP_t _unkBackoff = 0){
+        this->UnknownWordDefault.Prob = _unkProb;
+        this->UnknownWordDefault.Backoff = _unkBackoff;
     }
 };
 

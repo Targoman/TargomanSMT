@@ -26,6 +26,15 @@ namespace Targoman {
 namespace NLPLibs {
 
 using namespace Private;
+using namespace Targoman::Common::Configuration;
+
+tmplConfigurable<QString> clsLanguageModel::FilePath("/TargomanLM/FilePath",
+                                                     "TODO");
+tmplConfigurable<double>  clsLanguageModel::DeafultUnknownProb("/TargomanLM/DeafultUnknownProb",
+                                                               "TODO");
+tmplConfigurable<double>  clsLanguageModel::DeafultUnknownBackoff("/TargomanLM/DeafultUnknownBackoff",
+                                                                  "TODO");
+
 
 clsLanguageModel::clsLanguageModel() :
     pPrivate(new clsLanguageModelPrivate)
@@ -37,6 +46,14 @@ clsLanguageModel::~clsLanguageModel()
     //Just to suppress Compiler error when using QScopped Poiter
 }
 
+quint8 clsLanguageModel::init()
+{
+    return this->init(clsLanguageModel::FilePath.value(),
+                      stuLMConfigs(
+                          clsLanguageModel::DeafultUnknownProb.value(),
+                          clsLanguageModel::DeafultUnknownBackoff.value()));
+}
+
 /**
  * @brief initialize and instantiates a model.
  * @param[in] _filePath address of language model file.
@@ -46,6 +63,9 @@ clsLanguageModel::~clsLanguageModel()
 
 quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_configs)
 {
+    if (this->pPrivate->Initialized)
+        return this->pPrivate->Order;
+
     if (this->pPrivate->isBinary(_filePath)){
         throw exTargomanNotImplemented("Binary is Not implemented yet");
     }else{
@@ -110,6 +130,7 @@ WordIndex_t LM_END_SENTENCE_WINDEX;
 
 Private::clsLanguageModelPrivate::clsLanguageModelPrivate()
 {
+    this->Initialized = false;
 }
 
 bool clsLanguageModelPrivate::isBinary(const QString &_file)
