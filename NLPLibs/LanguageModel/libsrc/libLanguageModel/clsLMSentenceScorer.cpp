@@ -30,6 +30,10 @@ clsLMSentenceScorer::~clsLMSentenceScorer()
     //Just to suppress Compiler error when using QScopped Poiter
 }
 
+/**
+ * @brief clears string and index based history list.
+ */
+
 void clsLMSentenceScorer::reset()
 {
     this->pPrivate->StringBasedHistory.clear();
@@ -37,8 +41,8 @@ void clsLMSentenceScorer::reset()
 }
 
 /**
- * @brief calculates word probability based on previous words.
- * @param _word         input word
+ * @brief calculates word probability using previous words (history) and input word .
+ * @param _word         input word string
  * @param _foundedGram  order of NGram that was existed in Hash Table.
  * @return              probablity of NGram.
  */
@@ -59,6 +63,14 @@ LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
     return this->pPrivate->LM.lookupNGram(this->pPrivate->StringBasedHistory, _foundedGram);
 }
 
+/**
+ * @brief calculates word probability using previous words (history) and input word .
+ * @param _word         input word index
+ * @param _foundedGram  order of NGram that was existed in Hash Table.
+ * @return              probablity of NGram.
+ */
+
+
 LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t &_wordIndex, quint8& _foundedGram)
 {
     if (Q_UNLIKELY(this->pPrivate->IndexBasedHistory.isEmpty())){
@@ -72,17 +84,33 @@ LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t &_wordIndex, quint8& _fou
     return this->pPrivate->LM.lookupNGram(this->pPrivate->IndexBasedHistory, _foundedGram);
 }
 
+/**
+ * @brief Initializes history of language model with history of input sentence scorer.
+ * @param _oldScorer input sentence scorer.
+ */
+
 void clsLMSentenceScorer::initHistory(const clsLMSentenceScorer &_oldScorer)
 {
     this->pPrivate->StringBasedHistory = _oldScorer.pPrivate->StringBasedHistory;
     this->pPrivate->IndexBasedHistory = _oldScorer.pPrivate->IndexBasedHistory;
 }
 
+/**
+ * @brief checks wethere our sentence scorer and input scorer have same history list or not.
+ * @param _oldScorer input sentence scorer.
+ */
+
 bool clsLMSentenceScorer::haveSameHistoryAs(const clsLMSentenceScorer &_oldScorer)
 {
     return this->pPrivate->IndexBasedHistory == _oldScorer.pPrivate->IndexBasedHistory &&
             this->pPrivate->StringBasedHistory == _oldScorer.pPrivate->StringBasedHistory;
 }
+
+/**
+ * @brief returns word index of input word string.
+ * @param _word
+ * @return
+ */
 
 WordIndex_t clsLMSentenceScorer::wordIndex(const QString &_word)
 {

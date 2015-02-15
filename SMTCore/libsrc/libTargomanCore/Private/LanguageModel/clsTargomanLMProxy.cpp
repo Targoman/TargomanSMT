@@ -21,6 +21,10 @@ namespace LanguageModel{
 Targoman::NLPLibs::clsLanguageModel clsTargomanLMProxy::LM;
 TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy)
 
+/**
+ * @brief Constructor of this class initializes its parrent class with its module name and instantiates #LMSentenceScorer with #clsTargomanLMProxy::LM
+ */
+
 clsTargomanLMProxy::clsTargomanLMProxy() :
     intfLMSentenceScorer(clsTargomanLMProxy::moduleName()),
     LMSentenceScorer(new Targoman::NLPLibs::clsLMSentenceScorer(clsTargomanLMProxy::LM)){

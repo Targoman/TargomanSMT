@@ -58,7 +58,14 @@ quint8 clsLanguageModel::init()
 }
 
 /**
- * @brief initialize and instantiates a model.
+ * @brief Initialize and instantiates a model.
+ *
+ * If our model is already initialized, it just returns the order of language model.
+ * This function decides to instantiates language model between index based or string based probing model based on UseIndexBasedModel data memeber of input #_configs.
+ * Using ARPAManager class, this function loads language model file and initializes the model data member of #pPrivate.
+ * Finally, this function sets unknown word default probability and backoff.
+ *
+ *
  * @param[in] _filePath address of language model file.
  * @param[out] _configs  structure to save unknownWordDefault probablity and backoffs
  * @return return order of NGram.

@@ -24,30 +24,66 @@ namespace Core {
 namespace Private {
 namespace LanguageModel{
 
+/**
+ * @brief This class is a proxy for using sentenceScorer class.
+ */
+
 class clsTargomanLMProxy : public intfLMSentenceScorer
 {
 public:
     clsTargomanLMProxy();
     ~clsTargomanLMProxy();
 
+    /**
+     * @brief resets history of sentence scorer.
+     */
     inline void reset(){this->LMSentenceScorer->reset();}
+
+    /**
+     * @brief Initializes language model based on configuration values (which may come from config file or argument of program).
+     */
 
     void init(){
         clsTargomanLMProxy::LM.init(); // LM must check if it needs to be initialized
     }
 
+    /**
+     * @brief returns probablity of a given word index using previous words.
+     * @param _wordIndex input word index.
+     * @return probablity of word index ( on the hand probablity of ngram constructed from word index and history word indices).
+     */
 
     inline Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) {
         quint8 Dummy;
         return this->LMSentenceScorer->wordProb(_wordIndex, Dummy);
     }
 
+    /**
+     * @brief gives word index of input word string.
+     * @param _word input word string.
+     * @return return word index.
+     */
+
     inline Common::WordIndex_t getWordIndex(const QString& _word){return this->LM.getID(_word);}
 
+    /**
+     * @brief return end of sentence word index.
+     */
+
     inline Common::WordIndex_t endOfSentence(){return this->LMSentenceScorer->endOfSentence();}
+
+    /**
+     * @brief Initializes history of language model with history of input sentence scorer.
+     * @param _oldScorer input sentence scorer.
+     */
     inline void initHistory(const intfLMSentenceScorer& _oldScorer){
         this->LMSentenceScorer->initHistory(*(dynamic_cast<const clsTargomanLMProxy&>(_oldScorer).LMSentenceScorer));
     }
+
+    /**
+     * @brief checks wethere our sentence scorer and input scorer have same history list or not.
+     * @param _oldScorer input sentence scorer.
+     */
 
     bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const{
         return this->LMSentenceScorer->haveSameHistoryAs(
@@ -56,9 +92,9 @@ public:
 
 
 private:
-    static Targoman::NLPLibs::clsLanguageModel LM;
+    static Targoman::NLPLibs::clsLanguageModel LM;                              /** < static data member of clsLanguageModel. */
 
-    QScopedPointer<Targoman::NLPLibs::clsLMSentenceScorer> LMSentenceScorer;
+    QScopedPointer<Targoman::NLPLibs::clsLMSentenceScorer> LMSentenceScorer;    /** < clsLMSentenceScorer data pointer. */
     TARGOMAN_DEFINE_MODULE("TargomanLM", clsTargomanLMProxy)
 };
 
