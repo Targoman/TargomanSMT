@@ -21,7 +21,7 @@ namespace Common {
 typedef float LogP_t;
 typedef double Cost_t;
 
-typedef qint32 WordIndex_t;
+typedef unsigned WordIndex_t;
 typedef union { float AsFloat; quint32 AsUInt32; } FloatEncoded_t;
 
 #define OUTPUT

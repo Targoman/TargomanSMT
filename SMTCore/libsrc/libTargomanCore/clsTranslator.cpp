@@ -14,7 +14,6 @@
 #include "clsTranslator.h"
 
 #include "Private/clsTranslator_p.h"
-#include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
 
 namespace Targoman{
 namespace Core {
@@ -35,9 +34,12 @@ void clsTranslator::init(const stuTranslatorConfigs& _configs)
 {
     Q_UNUSED(_configs)
 
-    gConfigs.EmptyLMScorer = gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>();
+    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
+        FF->initialize();
 
-    FeatureFunction::PhraseTable::instance();
+    gConfigs.EmptyLMScorer = gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>();
+    gConfigs.EmptyLMScorer->init();
+
     InputDecomposer::clsInput::init();
     SearchGraphBuilder::clsSearchGraphBuilder::init();
     NBestFinder::clsNBestFinder::init();

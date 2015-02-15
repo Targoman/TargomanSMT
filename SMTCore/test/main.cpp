@@ -44,7 +44,8 @@ public:
 
 int main(int argc, char *argv[])
 {
-    QList<clsClass> A;
+
+/*    QList<clsClass> A;
 
     A.append(clsClass(5));
     if (true){
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
     }
     A.append(clsClass(7));
     A.takeFirst();
-
+*/
     cout<<"Finished"<<endl;
 }
 

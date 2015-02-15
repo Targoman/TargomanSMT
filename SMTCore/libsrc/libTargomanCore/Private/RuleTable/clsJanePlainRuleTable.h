@@ -34,18 +34,18 @@ public:
 
     virtual void init();
 
-    /**
-     * @brief newSentence is empty because it is not important for us that we have a new sentence
-     */
-    void newSentence() {}
-    bool isBinary() { return false; }
-
-    void partialSortRuleTreesWithLM(const std::vector<double> &_scalingFactors,
-                                    unsigned _rulesCostsBegin,
-                                    size_t _observationHistogramSize);
+private:
+    void addRule(const QStringList &_phraseCosts,
+                 const QStringList &_fields,
+                 const QList<size_t> &_acceptedAdditionalFields,
+                 size_t _ruleNumber);
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseCostNames;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> AdditionalModels;
+    static QList<Targoman::Common::Configuration::tmplConfigurable<QString>> FeatureFunctions;
+
     TARGOMAN_DEFINE_MODULE("JanePTPlain", clsJanePlainRuleTable)
 };
 

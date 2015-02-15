@@ -139,7 +139,7 @@ stuProbAndBackoffWeights clsAbstractProbingModel::getNGramWeights(const char *_n
     Hash_t HashLoc, HashValue;
     size_t NGramLen = strlen(_ngram);
 
-    HashLoc = (HashFunctions::murmurHash64(_ngram, NGramLen, 0) % this->HashTableSize) + 1;;
+    HashLoc = (HashFunctions::murmurHash64(_ngram, NGramLen, 0) % this->HashTableSize) + 1;
 
     for (quint8 HashLevel = 1; HashLevel< MAX_HASH_LEVEL; ++HashLevel)
     {
@@ -148,7 +148,7 @@ stuProbAndBackoffWeights clsAbstractProbingModel::getNGramWeights(const char *_n
         if (this->NGramHashTable[HashLoc].hashValue() == (HashValue & HASHVALUE_CONTAINER) &&
                 this->NGramHashTable[HashLoc].hashLevel() == HashLevel-1){
             if (_justSingle && this->NGramHashTable[HashLoc].isMultiIndex())
-                //Note that we didn't check continue flag for further search for input unigram.
+                //Note that we didn't check continue flag for further search on input unigram.
                 //That's because in program flow, we first insert unigrams then we insert multigrams.
                 //So it is impossible for a unigram to set continue flag of a multiIndex cell.
                 return UnknownWeights;

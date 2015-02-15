@@ -34,8 +34,7 @@ public:
     ~intfRuleTable(){}
 
     virtual void init() = 0;
-    virtual void newSentence() = 0;
-    virtual bool isBinary() = 0;
+
     virtual RuleTable::RulesPrefixTree_t& getPrefixTree(){
         return *this->PrefixTree;
     }

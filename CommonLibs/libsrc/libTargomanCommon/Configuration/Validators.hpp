@@ -13,7 +13,6 @@
 #ifndef TARGOMAN_COMMON_CONFIGURATION_VALIDATORS_H
 #define TARGOMAN_COMMON_CONFIGURATION_VALIDATORS_H
 
-#include "libTargomanCommon/Configuration/intfCrossValidate.hpp"
 #include "libTargomanCommon/Constants.h"
 #include "intfConfigurable.hpp"
 

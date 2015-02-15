@@ -16,7 +16,6 @@
 #include <functional>
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
-#include "libTargomanCommon/Configuration/intfCrossValidate.hpp"
 #include "libTargomanCommon/Macros.h"
 
 namespace Targoman {
@@ -69,6 +68,27 @@ public:
         this->CrossValidator = _other.CrossValidator;
     }
 
+    tmplConfigurable(const tmplConfigurable<Type_t>& _other) :
+        intfConfigurable(_other.ConfigPath,
+                         _other.Description,
+                         _other.ShortSwitch,
+                         _other.ShortHelp,
+                         _other.LongSwitch){
+        this->Value = _other.Value;
+        this->CrossValidator = _other.CrossValidator;
+    }
+
+    tmplConfigurable& operator = (const tmplConfigurable<Type_t>& _other){
+        this->ConfigPath = _other.ConfigPath;
+        this->Description = _other.Description;
+        this->ShortSwitch = _other.ShortSwitch;
+        this->ShortHelp = _other.ShortHelp;
+        this->LongSwitch = _other.LongSwitch;
+        this->Value = _other.Value;
+        this->CrossValidator = _other.CrossValidator;
+        return *this;
+    }
+
     /**
      * @brief This function will be overloaded for every type (such as int, float ,...).
      * This function converts input value from QVariant to a specific type based on overloaded implementation.
@@ -96,8 +116,8 @@ public:
         return this->CrossValidator(*this, _errorMessage);
     }
 
-    inline Type_t  value(){return this->Value;}
-    inline Type_t  operator ()(){return this->Value;}
+    inline Type_t  value() const{return this->Value;}
+    inline Type_t  operator ()() const{return this->Value;}
 
 private:
     Type_t  Value;

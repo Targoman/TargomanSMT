@@ -93,7 +93,7 @@ Cost_t PhraseTable::getTargetRuleCost(unsigned _sourceStart,
     if (Cost == -INFINITY){
         Cost = 0;
         for(int i=0; i< enuPhraseTableFields::getCount(); ++i)
-            Cost += _targetRule.field(i) * this->ScalingFactors[i].value();
+            Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
 
         static_cast<RuleTable::clsTargetRule>(_targetRule).setPrecomputedValue(this->PrecomputedIndex, Cost);
     }

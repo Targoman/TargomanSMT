@@ -225,12 +225,12 @@ inline constexpr _name::Type operator & (const _name::Type _first, const _name::
       return Unknown; \
       toEnum(""); \
     } \
-    inline static QString listOptions(){ \
-      QString Options = "( "; \
+    inline static QStringList options(){ \
+      QStringList Options; \
       int EnumSize = getCount(); \
-      for(int i=0; i< EnumSize - 1; i++) \
-          Options += QString("%1 | ").arg(Strings[i]); \
-      return Options + Strings[EnumSize - 1] + " )"; \
+      for(int i=0; i< EnumSize; i++) \
+          Options.append(Strings[i]); \
+      return Options; \
     } \
     }
 

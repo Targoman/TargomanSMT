@@ -62,10 +62,11 @@ public:
  * Registrar member is the static member that is of type clsModuleRegistrar and will be instantiated before main to insert module instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
  */
 #define TARGOMAN_DEFINE_MODULE(_name, _class) \
-private: \
+public: \
     static inline QString moduleName(){return QStringLiteral(_name);}  \
     static inline intfModule* instantiator(){return new _class;} \
     static inline QString baseConfigPath(){return "/" + moduleName();} \
+private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
 
 /**
@@ -76,9 +77,9 @@ private: \
 #define TARGOMAN_DEFINE_SINGLETONMODULE(_name, _class) \
 public: \
     static inline intfModule* instance(){return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
-private: \
     static inline QString moduleName(){return QStringLiteral(_name);}  \
     static inline QString baseConfigPath(){return "/" + moduleName();} \
+private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
     static _class* Instance;
 

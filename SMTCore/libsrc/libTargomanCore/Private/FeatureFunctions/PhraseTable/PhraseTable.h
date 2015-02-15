@@ -56,6 +56,9 @@ class PhraseTable : public intfFeatureFunction
     Common::Cost_t getTargetRuleCost(unsigned _sourceStart,
                                      unsigned _sourceEnd,
                                      const RuleTable::clsTargetRule &_targetRule) const;
+
+    inline QStringList columnNames() const{return enuPhraseTableFields::options();}
+
 private:
     PhraseTable();
     Q_DISABLE_COPY(PhraseTable)

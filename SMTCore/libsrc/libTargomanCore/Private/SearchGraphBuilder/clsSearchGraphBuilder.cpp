@@ -82,7 +82,7 @@ void clsSearchGraphBuilder::matchPhrase()
             if (PrevNode == NULL)
                 break; // appending next word breaks phrase lookup
 
-            //ERROR !!!!!!!!!!!!! referencecounter will be buggy
+            //TODO WARNING !!!!!!!!!!!!! referencecounter may be buggy
             this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition] = PrevNode->getData();
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
