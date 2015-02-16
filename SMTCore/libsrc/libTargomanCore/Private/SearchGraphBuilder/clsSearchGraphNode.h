@@ -77,7 +77,7 @@ public:
         SourceRangeBegin(0),
         SourceRangeEnd(0),
         LMScorer(gConfigs.EmptyLMScorer),
-        PrevNode(*((clsSearchGraphNode*)NULL))
+        PrevNode(NULL)
     {}
 
     clsSearchGraphNodeData(clsSearchGraphNode _prevNode,
@@ -100,7 +100,7 @@ public:
         SourceRangeBegin(_startPos),
         SourceRangeEnd(_endPos),
         LMScorer(_lmscorer),
-        PrevNode(_prevNode)
+        PrevNode(&_prevNode)
     {
         Q_UNUSED(_reorderingJumpCost) // used when training
         Q_UNUSED(_lmCost)// used when training
@@ -136,7 +136,7 @@ public:
     size_t SourceRangeEnd;
 
     QScopedPointer<LanguageModel::intfLMSentenceScorer>     LMScorer;
-    clsSearchGraphNode                                      PrevNode;
+    clsSearchGraphNode*                                     PrevNode;
     QList<clsSearchGraphNode>                               CombinedNodes;
 };
 
@@ -154,7 +154,7 @@ inline const LanguageModel::intfLMSentenceScorer& clsSearchGraphNode::lmScorer()
 
 inline size_t clsSearchGraphNode::sourceRangeBegin() const { return this->Data->SourceRangeBegin;}
 inline size_t clsSearchGraphNode::sourceRangeEnd() const { return this->Data->SourceRangeEnd;}
-inline const clsSearchGraphNode&  clsSearchGraphNode::prevNode() const {return this->Data->PrevNode;}
+inline const clsSearchGraphNode&  clsSearchGraphNode::prevNode() const {return *this->Data->PrevNode;}
 inline const RuleTable::clsTargetRule& clsSearchGraphNode::targetRule() const {return this->Data->TargetRule;}
 inline const Coverage_t&    clsSearchGraphNode::coverage() const{return this->Data->Coverage;}
 inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecombined;}

@@ -21,10 +21,10 @@ namespace SearchGraphBuilder {
 
 using namespace RuleTable;
 
-clsSearchGraphNodeData InvalidSearchGraphNodeData;
+clsSearchGraphNodeData* InvalidSearchGraphNodeData = new clsSearchGraphNodeData;
 
 clsSearchGraphNode::clsSearchGraphNode():
-    Data(&InvalidSearchGraphNodeData)
+    Data(InvalidSearchGraphNodeData)
 {
 
 }

@@ -45,7 +45,7 @@ public:
     ~clsSearchGraphBuilderData(){}
 
 public:
-    QList<QVector<RuleTable::clsRuleNode>> PhraseMatchTable; //TODO convert to cacheable
+    QList<QVector<RuleTable::clsRuleNode>> PhraseMatchTable;
 
     clsSearchGraphNode                  RootNode;
     clsSearchGraphNode                  GoalNode;
@@ -70,12 +70,16 @@ public:
     bool parseSentence();
 
     Common::Cost_t computeReorderingJumpCost(size_t JumpWidth) const;
+    static inline QString moduleName(){return "SearchGraphBuilder";}
+    static inline QString moduleBaseconfig(){return "/" + clsSearchGraphBuilder::moduleName();}
+
 private:
     void initializePhraseRestCostsMatrix();
     Common::Cost_t calculateRestCost(const Coverage_t& _coverage, quint16 _lastPos) const;
     Common::Cost_t computePhraseRestCosts(const Coverage_t& _coverage) const;
     Common::Cost_t computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const;
     void initializeRestCostsMatrix();
+
 
 private:
     QExplicitlySharedDataPointer<clsSearchGraphBuilderData> Data;

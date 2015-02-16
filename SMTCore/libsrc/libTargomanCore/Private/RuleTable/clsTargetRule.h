@@ -36,8 +36,7 @@ public:
         PrecomputedValues(_precomputedValueSize,-INFINITY)
     {}
 
-    clsTargetRuleData(size_t _precomputedValueSize):
-        PrecomputedValues(_precomputedValueSize, -INFINITY)
+    clsTargetRuleData()
     {}
 
     clsTargetRuleData(const clsTargetRuleData& _other):

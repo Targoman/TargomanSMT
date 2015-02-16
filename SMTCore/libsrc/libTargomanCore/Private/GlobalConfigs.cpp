@@ -35,14 +35,15 @@ tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage(
         "/Language/Destination",
         "Destination Language to which translating",
         "fa");
-tmplConfigurable<bool> stuGlobalConfigs::KeepRecombined(
-        "TODO",
-        "TODO");
 
 QMap<QString, FeatureFunction::intfFeatureFunction*>       stuGlobalConfigs::ActiveFeatureFunctions;
 
-clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM","Language model"); //TODO complete description
-clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable","RT"); //TODO complete description
+clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM",
+                                             "TODO Desc",
+                                             "TargomanLM");
+clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable",
+                                                    "TODO Desc",
+                                                    "JanePTPlain");
 Targoman::Core::Private::LanguageModel::intfLMSentenceScorer*  stuGlobalConfigs::EmptyLMScorer;
 
 }

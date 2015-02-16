@@ -68,6 +68,7 @@ private:
     QExplicitlySharedDataPointer<clsLexicalHypothesisData> Data;
 
     static Common::Configuration::tmplConfigurable<quint8> LexicalMaxHistogramSize;
+    static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;
 };
 
 }

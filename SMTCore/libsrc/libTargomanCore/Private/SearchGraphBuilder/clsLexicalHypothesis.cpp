@@ -12,6 +12,7 @@
  */
 
 #include "clsLexicalHypothesis.h"
+#include "clsSearchGraphBuilder.h"
 
 namespace Targoman{
 namespace Core {
@@ -23,15 +24,20 @@ using namespace Common::Configuration;
 
 const Cost_t PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST = 1e10;
 tmplConfigurable<quint8> clsLexicalHypothesis::LexicalMaxHistogramSize(
-        "/SearchGraphBuilder/LexicalMaxHistogramSize",
-        "TODO",
-        0
+        clsSearchGraphBuilder::moduleBaseconfig() + "/LexicalMaxHistogramSize",
+        "TODO Desc",
+        100
         );
 
-clsLexicalHypothesis::clsLexicalHypothesis()
-{
+Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesis::KeepRecombined(
+        clsSearchGraphBuilder::moduleBaseconfig() + "/KeepRecombined",
+        "TODO Desc",
+        true
+        );
 
-}
+clsLexicalHypothesis::clsLexicalHypothesis() :
+    Data(new clsLexicalHypothesisData)
+{}
 
 bool clsLexicalHypothesis::mustBePruned(Cost_t _totalCost)
 {
@@ -56,7 +62,7 @@ bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
     for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
         clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
         if (HypoNode.haveSameFuture(_node)){
-            if (gConfigs.KeepRecombined.value()){
+            if (clsLexicalHypothesis::KeepRecombined.value()){
                 HypoNode.recombine(_node);
                 return true;
             }else{
@@ -86,6 +92,8 @@ bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
 
 void clsLexicalHypothesis::finalizeRecombination()
 {
+    if(clsLexicalHypothesis::KeepRecombined.value() == false)
+        return;
     while (this->nodes().size() > 1) {
         this->Data->Nodes[0].recombine(this->Data->Nodes[1]);
         this->Data->Nodes.removeAt(1);

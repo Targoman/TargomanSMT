@@ -10,52 +10,30 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
-#include "libTargomanCore/Private/InputDecomposer/clsInput.h"
+#include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCore/Private/GlobalConfigs.h"
 #include "libTargomanCommon/Logger.h"
-#include <iostream>
+//#include "libTargomanCore/clsTranslator.h"
+#include "libTargomanCommon/clsSafeCoreApplication.h"
 
-#include <QFile>
-
-//TODO remove
-#include <fstream>
-#include <string>
-#include <QTime>
-
-using namespace std;
-
-class clsData : public QSharedData{
-public:
-    clsData(int i): A(i){}
-    ~clsData() {
-       cout<<(void*)this<<" "<<A<<" Deleted !!!!!"<<endl;
-    }
-    int A;
-};
-
-class clsClass
-{
-public:
-    clsClass(int i):Data(new clsData(i)) {}
-    void setA(int i){Data->A = i;}
-
-    QSharedDataPointer<clsData> Data;
-};
+using namespace Targoman::Common;
+using namespace Targoman::Common::Configuration;
+using namespace Targoman::Core;
 
 int main(int argc, char *argv[])
 {
+    try{
+        clsSafeCoreApplication App(argc, argv);
 
-/*    QList<clsClass> A;
+        ConfigManager::instance().init("kdsjh", QStringList()<<"--save"<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
 
-    A.append(clsClass(5));
-    if (true){
-        clsClass B = A.first();
-        B.setA(111);
+        clsTranslator::init(ConfigManager::instance().configFilePath());
+
+        clsTranslator MyTranslator(QStringLiteral("این یک آزمایش است."));
+        MyTranslator.translate();
+    }catch(exTargomanBase& e){
+        TargomanError(e.what());
     }
-    A.append(clsClass(7));
-    A.takeFirst();
-*/
-    cout<<"Finished"<<endl;
 }
 
 
