@@ -84,7 +84,7 @@ public:
     QString getStatsStr() const {
         return QString("MaxLevel: %1 AverageLevel: %2 QHashed: %3").arg(
                     this->MaxLevel).arg(
-                    this->SumLevels / (double)this->NgramCount).arg(
+                    this->SumLevels / (double)this->StoredItems).arg(
                     this->RemainingHashes.size());
     }
 
@@ -99,6 +99,7 @@ protected:
     stuProbAndBackoffWeights    UnknownWeights;                 /**< Weight of unknown word. */
     quint8                      MaxLevel;                       /**< Maximum level that was needed during inserting NGrams in #NGramHashTable . */
     quint64                     SumLevels;                      /**< sum of levels of hash levels, calculated during inserting NGrams in #NGramHashTable . */
+    quint64                     StoredItems;                    /**< count of items stored, calculated during inserting NGrams in #NGramHashTable . */
 };
 
 }

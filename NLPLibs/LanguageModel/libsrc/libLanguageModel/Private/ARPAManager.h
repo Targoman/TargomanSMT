@@ -30,7 +30,7 @@ class ARPAManager
 public:
     static inline ARPAManager& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new ARPAManager));}
 
-    quint8 load(const QString&  _file, intfBaseModel* _model);
+    quint8 load(const QString&  _file, intfBaseModel* _model, bool _justVocab = false, bool _skipVocab = false);
 
 private:
     ARPAManager();

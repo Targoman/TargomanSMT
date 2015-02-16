@@ -23,6 +23,7 @@ using namespace Targoman::Common;
 clsLMSentenceScorer::clsLMSentenceScorer(const clsLanguageModel &_lm) :
     pPrivate(new clsLMSentenceScorerPrivate(_lm))
 {
+    this->reset();
 }
 
 clsLMSentenceScorer::~clsLMSentenceScorer()
@@ -38,6 +39,9 @@ void clsLMSentenceScorer::reset()
 {
     this->pPrivate->StringBasedHistory.clear();
     this->pPrivate->IndexBasedHistory.clear();
+
+    this->pPrivate->StringBasedHistory.append(LM_BEGIN_SENTENCE);
+    this->pPrivate->IndexBasedHistory.append(LM_BEGIN_SENTENCE_WINDEX);
 }
 
 /**
@@ -49,13 +53,12 @@ void clsLMSentenceScorer::reset()
 
 LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
 {
-    if (Q_UNLIKELY(this->pPrivate->StringBasedHistory.isEmpty())){
-        this->pPrivate->StringBasedHistory.append(LM_BEGIN_SENTENCE);
-    }else if (Q_LIKELY(this->pPrivate->StringBasedHistory.size() >= this->pPrivate->LM.order())){
+    if (Q_LIKELY(this->pPrivate->StringBasedHistory.size() >= this->pPrivate->LM.order()))
         this->pPrivate->StringBasedHistory.removeFirst();
-    }
 
-    if (this->pPrivate->LM.getID(_word) == 0)
+    if (this->pPrivate->LM.getID(_word) == 0 ||
+        _word == LM_BEGIN_SENTENCE ||
+        _word == LM_END_SENTENCE)
         this->pPrivate->StringBasedHistory.append(LM_UNKNOWN_WORD);
     else
         this->pPrivate->StringBasedHistory.append(_word);
@@ -69,19 +72,29 @@ LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
  * @param _foundedGram  order of NGram that was existed in Hash Table.
  * @return              probablity of NGram.
  */
-
-
 LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t &_wordIndex, quint8& _foundedGram)
 {
-    if (Q_UNLIKELY(this->pPrivate->IndexBasedHistory.isEmpty())){
-        this->pPrivate->IndexBasedHistory.append(LM_BEGIN_SENTENCE_WINDEX);
-    }else if (Q_LIKELY(this->pPrivate->IndexBasedHistory.size() >= this->pPrivate->LM.order())){
+    if (Q_LIKELY(this->pPrivate->IndexBasedHistory.size() >= this->pPrivate->LM.order()))
         this->pPrivate->IndexBasedHistory.removeFirst();
-    }
 
-    this->pPrivate->IndexBasedHistory.append(_wordIndex);
+    if (_wordIndex == LM_BEGIN_SENTENCE_WINDEX ||
+        _wordIndex == LM_END_SENTENCE_WINDEX)
+        this->pPrivate->IndexBasedHistory.append(LM_UNKNOWN_WINDEX);
+    else
+        this->pPrivate->IndexBasedHistory.append(_wordIndex);
 
     return this->pPrivate->LM.lookupNGram(this->pPrivate->IndexBasedHistory, _foundedGram);
+}
+
+LogP_t clsLMSentenceScorer::endOfSentenceProb(quint8& _foundedGram)
+{
+    if (this->pPrivate->IndexBasedHistory.size() > 1){
+        this->pPrivate->IndexBasedHistory.append(LM_END_SENTENCE_WINDEX);
+        return this->pPrivate->LM.lookupNGram(this->pPrivate->IndexBasedHistory, _foundedGram);
+    }else{
+        this->pPrivate->StringBasedHistory.append(LM_END_SENTENCE);
+        return this->pPrivate->LM.lookupNGram(this->pPrivate->StringBasedHistory, _foundedGram);
+    }
 }
 
 /**

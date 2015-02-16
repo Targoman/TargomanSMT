@@ -82,12 +82,17 @@ ARPAManager::ARPAManager()
  *
  * @param _file     address of language model file.
  * @param _model    language model to initialized from model file.
+ * @param _justVocab Indicates that we need to load just vocabulary so skip n-grams where n > 1
+ * @param _skipVocab Indicates that we have previously loaded vocab so skip loading 1-gram
  * @return returns  order of n-gram
  */
 
-quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
+quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _justVocab, bool _skipVocab)
 {
     TargomanLogInfo(5, "Loading ARPA File: " + _file);
+
+    //At least one of conditions must be false
+    Q_ASSERT((_justVocab && _skipVocab) == false);
 
     std::ifstream File(_file.toUtf8().constData());
     if (File.is_open() == false)
@@ -162,9 +167,14 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
                 }
                 _model->init(MaxItems);
 
-                ProgressBar.reset("Loading 1-Gram Items",NGramCounts.value(1));
+                if (_skipVocab){
+                    ProgressBar.reset("Skipping load of uni-gram Items",NGramCounts.value(1));
+                    ProgressBar.setValue(NGramCounts.value(1));
+                }else
+                    ProgressBar.reset("Loading 1-Gram Items",NGramCounts.value(1));
                 ParseState = enuParseState::NGram;
                 Count = 0;
+
             }else
                 throw exARPAManager(QString("Invalid Identifier at line: %1").arg(LineNo));
             break;
@@ -181,7 +191,13 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
                     if (!IsOK || NGramOrder < 2)
                         throw exARPAManager(QString("Invalid ARPA file as invalid gram section is found at line: %1").arg(LineNo));
                     Count = 0;
-                    ProgressBar.reset(QString("Loading %1-Gram Items").arg(NGramOrder),NGramCounts.value(NGramOrder));
+
+                    if (_justVocab){
+                        TargomanLogInfo(5, "Vocabs from ARPA File Loaded. " + _model->getStatsStr());
+
+                        return 1;
+                    }else
+                        ProgressBar.reset(QString("Loading %1-Gram Items").arg(NGramOrder),NGramCounts.value(NGramOrder));
                 }else if (Line == "\\end\\"){
                     if (Count < NGramCounts.value(NGramOrder))
                         throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
@@ -192,6 +208,11 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model)
                 }else
                     throw exARPAManager(QString("Invalid Tag at Line: %1").arg(LineNo));
             }else{
+                if (_skipVocab){
+                    ++Count;
+                    continue;
+                }
+
                 if (Count > NGramCounts.value(NGramOrder))
                     throw exARPAManager(QString("There are more Items specified for Ngram=%1 than specified: %2 vs %3").arg(
                                             NGramOrder).arg(Count).arg(NGramCounts.value(NGramOrder)));

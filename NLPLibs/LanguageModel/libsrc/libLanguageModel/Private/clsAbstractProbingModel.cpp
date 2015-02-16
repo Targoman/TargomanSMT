@@ -29,6 +29,7 @@ clsAbstractProbingModel::clsAbstractProbingModel() : intfBaseModel(enuMemoryMode
 {
     this->SumLevels = 0;
     this->MaxLevel = 0;
+    this->StoredItems = 0;
 }
 
 /**
@@ -94,6 +95,7 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
 
             this->MaxLevel = qMax(this->MaxLevel, HashLevel);
             this->SumLevels += HashLevel;
+            ++this->StoredItems;
 
             return;
         }

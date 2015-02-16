@@ -34,9 +34,9 @@ public:
     clsLanguageModel();
     ~clsLanguageModel();
 
-    quint8 init();
+    quint8 init(bool _justVocab = false);
 
-    quint8 init(const QString& _filePath, const stuLMConfigs& _configs = stuLMConfigs());
+    quint8 init(const QString& _filePath, const stuLMConfigs& _configs = stuLMConfigs(), bool _justVocab = false);
 
     void convertBinary(enuMemoryModel::Type _model, const QString& _binFilePath);
 

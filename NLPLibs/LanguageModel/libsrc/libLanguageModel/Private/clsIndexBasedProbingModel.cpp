@@ -180,6 +180,7 @@ void clsIndexBasedProbingModel::insert(QList<WordIndex_t> _ngram, LogP_t _prob, 
 
             this->MaxLevel = qMax(this->MaxLevel, HashLevel);
             this->SumLevels += HashLevel;
+            ++this->StoredItems;
 
             return;
         }

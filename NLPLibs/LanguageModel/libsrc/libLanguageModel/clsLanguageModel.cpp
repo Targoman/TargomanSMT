@@ -56,13 +56,13 @@ clsLanguageModel::~clsLanguageModel()
     //Just to suppress Compiler error when using QScopped Poiter
 }
 
-quint8 clsLanguageModel::init()
+quint8 clsLanguageModel::init(bool _justVocab)
 {
     return this->init(clsLanguageModel::FilePath.value(),
                       stuLMConfigs(
                           clsLanguageModel::DeafultUnknownProb.value(),
                           clsLanguageModel::DeafultUnknownBackoff.value(),
-                          clsLanguageModel::UseIndexBasedModel.value()));
+                          clsLanguageModel::UseIndexBasedModel.value()), _justVocab);
 }
 
 /**
@@ -79,25 +79,33 @@ quint8 clsLanguageModel::init()
  * @return return order of NGram.
  */
 
-quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_configs)
+quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_configs, bool _justVocab)
 {
-    if (this->pPrivate->Initialized)
+    if (this->pPrivate->FullyInitialized)
         return this->pPrivate->Order;
 
     if (this->pPrivate->isBinary(_filePath)){
         throw exTargomanNotImplemented("Binary is Not implemented yet");
     }else{
-        if (_configs.UseIndexBasedModel)
-            this->pPrivate->Model = new clsIndexBasedProbingModel();
-        else
-            this->pPrivate->Model = new clsStringBasedProbingModel();
+        if (this->pPrivate->Model == NULL){
+            if (_configs.UseIndexBasedModel)
+                this->pPrivate->Model = new clsIndexBasedProbingModel();
+            else
+                this->pPrivate->Model = new clsStringBasedProbingModel();
+            this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model, _justVocab);
+            this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
+                                                          _configs.UnknownWordDefault.Backoff);
 
-        this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model);
-        this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
-                                                      _configs.UnknownWordDefault.Backoff);
-
-        LM_BEGIN_SENTENCE_WINDEX = this->pPrivate->Model->getID(LM_BEGIN_SENTENCE);
-        LM_END_SENTENCE_WINDEX   = this->pPrivate->Model->getID(LM_END_SENTENCE);
+            LM_BEGIN_SENTENCE_WINDEX = this->pPrivate->Model->getID(LM_BEGIN_SENTENCE);
+            LM_END_SENTENCE_WINDEX   = this->pPrivate->Model->getID(LM_END_SENTENCE);
+            if(_justVocab == false)
+                this->pPrivate->FullyInitialized = true;
+        }else{
+            if (_justVocab)
+                return this->pPrivate->Order;
+            this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model, false, true);
+            this->pPrivate->FullyInitialized = true;
+        }
     }
     return this->pPrivate->Order;
 }
@@ -148,7 +156,8 @@ WordIndex_t LM_END_SENTENCE_WINDEX;
 
 Private::clsLanguageModelPrivate::clsLanguageModelPrivate()
 {
-    this->Initialized = false;
+    this->FullyInitialized = false;
+    this->Model = NULL;
 }
 
 bool clsLanguageModelPrivate::isBinary(const QString &_file)

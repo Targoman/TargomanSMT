@@ -30,7 +30,7 @@ public:
 public:
     quint8                Order;    /**< Order of NGram */
     intfBaseModel*        Model;    /**< instance of NGram Model */
-    bool                  Initialized;
+    bool                  FullyInitialized;
 };
 
 
