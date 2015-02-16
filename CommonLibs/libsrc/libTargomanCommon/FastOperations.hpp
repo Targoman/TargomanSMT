@@ -80,9 +80,10 @@ inline std::string& fastTrimStdString(std::string& _str){
  */
 inline float fastASCII2Float (const char *pFloatString, size_t& _lastPos)
 {
-    qint64 IntValue, Scale = 1;
+    qint64 IntValue, Scale = 0;
     qint16 Sign;
     const char*  StartOfString = pFloatString;
+    const float  Log2Of10 = log2(10);
 
     Sign = 1;
     if (*pFloatString == '-') {
@@ -99,19 +100,42 @@ inline float fastASCII2Float (const char *pFloatString, size_t& _lastPos)
 
     // Get digits after decimal point, if any.
     if (*pFloatString == '.') {
-        pFloatString += 1;
+        ++pFloatString;
         while (IS_VALID_DIGIT(*pFloatString)) {
-            if (Scale < 10000000L){
+            if (Scale < 8){
                 IntValue = IntValue * 10 + (*pFloatString - '0');
-                Scale*=10;
+                ++Scale;
             }
             ++pFloatString;
         }
     }
 
+    if (*pFloatString == 'e'){
+        ++pFloatString;
+        qint16 ExpSign = 1;
+        if (*pFloatString == '+')
+            ++pFloatString;
+        else if (*pFloatString == '-'){
+            ExpSign = -1;
+            ++pFloatString;
+        }
+        quint16 Exponent = 0;
+        for (IntValue = 0; IS_VALID_DIGIT(*pFloatString); ++pFloatString) {
+            Exponent = Exponent * 10 + (*pFloatString - '0');
+        }
+        Scale += ExpSign * Exponent;
+    }
+
     _lastPos = pFloatString - StartOfString;
     // Return signed and scaled floating point result.
-    return ((float)(Sign * IntValue))/(float)Scale;
+
+    char LastChar = *pFloatString;
+    *((char*)pFloatString) = 0;
+    float Ret = atof(StartOfString);
+    *((char*)pFloatString) = LastChar;
+    return Ret;
+
+    //return ((float)(Sign * IntValue))/(float)Scale;
 }
 /**
  * @param[in, out] _str input and output string.

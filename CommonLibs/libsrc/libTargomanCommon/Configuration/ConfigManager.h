@@ -48,6 +48,7 @@ public:
     QVariant getConfig(const QString& _path, const QVariant &_default = QVariant()) const;
     void setValue(const QString& _path, const QVariant &_value) const;
     fpModuleInstantiator_t getInstantiator(const QString& _name) const;
+    QString configFilePath();
 
 private:
     ConfigManager();

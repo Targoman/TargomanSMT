@@ -60,24 +60,6 @@ public:
         }
     }
 
-    /**
-     * @brief Move constructor.
-     *
-     * This function is used when we want to assign a temporary instantiated configurable into an array of configurables.
-     *
-     * @param _other
-     */
-
-    tmplConfigurable(tmplConfigurable<Type_t>&& _other) :
-        intfConfigurable(_other.ConfigPath,
-                         _other.Description,
-                         _other.ShortSwitch,
-                         _other.ShortHelp,
-                         _other.LongSwitch){
-        this->Value = _other.Value;
-        this->CrossValidator = _other.CrossValidator;
-    }
-
     tmplConfigurable(const tmplConfigurable<Type_t>& _other) :
         intfConfigurable(_other){
         this->Value = _other.Value;

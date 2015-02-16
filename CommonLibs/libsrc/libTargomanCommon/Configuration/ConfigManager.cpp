@@ -69,6 +69,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     // /check arguments to see wheter we must save file or not
     // ////////////////////////////////////////////////
     bool SaveFile = false;
+    bool FirstTimeConfigFile = false;
     if (_arguments.count("--save"))
         SaveFile = true;
     
@@ -87,6 +88,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             if (SaveFile){
                 TargomanWarn(5, "File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read. Creating new file.");
                 this->save2File(this->pPrivate->ConfigFilePath, false);
+                FirstTimeConfigFile = true;
             }else
                throw exConfiguration("File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read.");
         }
@@ -104,7 +106,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     // /check configFile and load everything
     // ////////////////////////////////////////////////
     QStringList Modules;
-    if (this->pPrivate->ConfigFilePath.size()){
+    if (FirstTimeConfigFile == false &&
+        this->pPrivate->ConfigFilePath.size()){
         QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
         Modules = ConfigFile.childGroups();
         foreach (const QString& Key, ConfigFile.allKeys()){
@@ -175,33 +178,41 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             throw exConfiguration("invalid argument <"+*KeyIter+">");
     }
 
-    // ////////////////////////////////////////////////
-    // /validate all config items
-    // ////////////////////////////////////////////////
-    foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
-        if (ConfigItem->crossValidate(ErrorMessage) == false)
-            throw exConfiguration(ErrorMessage);
-    }
-
-    // ////////////////////////////////////////////////
-    // /finalize all config items (for module configurables, this puts instantiator function of module to Instatiator member of that.)
-    // ////////////////////////////////////////////////
-    foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
-        ConfigItem->finalizeConfig();
-    }
-
-    // ////////////////////////////////////////////////
-    // /marshal all singletons
-    // ////////////////////////////////////////////////
-    foreach (const QString& Module, Modules){
-        stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(Module);
-        if (Instantiator.IsSingleton && Instantiator.fpMethod)
-            Instantiator.fpMethod();
-    }
-
-    if (SaveFile)
-        this->save2File(this->pPrivate->ConfigFilePath, true);
+    //Do not move following to the end of this method as finalization needs an initialized ConfigManager
     this->pPrivate->Initialized = true;
+
+    try{
+        // ////////////////////////////////////////////////
+        // /validate all config items
+        // ////////////////////////////////////////////////
+        foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
+            if (ConfigItem->crossValidate(ErrorMessage) == false){
+                throw exConfiguration(ErrorMessage);
+            }
+        }
+
+        // ////////////////////////////////////////////////
+        // /finalize all config items (for module configurables, this puts instantiator function of module to Instatiator member of that.)
+        // ////////////////////////////////////////////////
+        foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
+            ConfigItem->finalizeConfig();
+        }
+
+        // ////////////////////////////////////////////////
+        // /marshal all singletons
+        // ////////////////////////////////////////////////
+        foreach (const QString& Module, Modules){
+            stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(Module);
+            if (Instantiator.IsSingleton && Instantiator.fpMethod)
+                Instantiator.fpMethod();
+        }
+
+        if (SaveFile)
+            this->save2File(this->pPrivate->ConfigFilePath, FirstTimeConfigFile ? false : true);
+    }catch(...){
+        this->pPrivate->Initialized = false;
+        throw;
+    }
 }
 
 
@@ -311,6 +322,12 @@ fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) cons
 
     return Instantiator.fpMethod;
 }
+
+QString ConfigManager::configFilePath()
+{
+    return this->pPrivate->ConfigFilePath;
+}
+
 /***********************************************************************************************/
 void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
 {
