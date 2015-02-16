@@ -11,6 +11,7 @@
  */
 #include "tmplConfigurable.h"
 #include "libTargomanCommon/CmdIO.h"
+#include "../Private/clsConfigManager_p.h"
 
 namespace Targoman {
 namespace Common {
@@ -129,6 +130,9 @@ void tmplConfigurable<QRegExp, true>::setFromVariant(const QVariant& _value){
     if (this->validate(_value, ErrorMessage))this->Value = _value.value<QRegExp>();
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
+
+
+
 
 }
 }

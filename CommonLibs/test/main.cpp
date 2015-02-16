@@ -39,7 +39,7 @@ static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
                                                       return true;
                                                   });
 
-static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module");
+static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module", "Default");
 
 class MLM : Configuration::intfModule{
 public:
@@ -134,7 +134,6 @@ public:
 
 int main(int argc, char *argv[])
 {
-    qDebug() << __DBL_MIN__;
   //  std::function<bool(int)> Lambda = ;
     SampleLamda AAA([] (int x) {
         const quint16 Max = 12;

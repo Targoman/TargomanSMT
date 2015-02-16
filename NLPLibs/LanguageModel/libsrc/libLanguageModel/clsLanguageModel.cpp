@@ -15,10 +15,12 @@
 #include "clsLanguageModel.h"
 #include "Private/clsLanguageModel_p.h"
 #include "Private/ARPAManager.h"
+#include "libTargomanCommon/Configuration/Validators.hpp"
 
 /// Different Language Models
 #include "Private/clsStringBasedProbingModel.h"
 #include "Private/clsIndexBasedProbingModel.h"
+
 
 using namespace Targoman::Common;
 
@@ -29,13 +31,19 @@ using namespace Private;
 using namespace Targoman::Common::Configuration;
 
 tmplConfigurable<QString> clsLanguageModel::FilePath("/TargomanLM/FilePath",
-                                                     "TODO");
+                                                     "File path of ARPA or binary models",
+                                                     "",
+                                                     Validators::tmplPathAccessValidator<
+                                                     (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>);
+
 tmplConfigurable<double>  clsLanguageModel::DeafultUnknownProb("/TargomanLM/DeafultUnknownProb",
-                                                               "TODO", -100);
+                                                               "Default value for unknown words probability when not defined in model file",
+                                                               -100);
 tmplConfigurable<double>  clsLanguageModel::DeafultUnknownBackoff("/TargomanLM/DeafultUnknownBackoff",
-                                                                  "TODO", 0);
+                                                                  "Default value for unknown words backoff when not defined in model file",
+                                                                  0);
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::UseIndexBasedModel("/TargomanLM/UseIndexBasedModel",
-                                                                                             "TODO",
+                                                                                             "Wheter use Index-Based or String-Based model",
                                                                                              true);
 
 clsLanguageModel::clsLanguageModel() :

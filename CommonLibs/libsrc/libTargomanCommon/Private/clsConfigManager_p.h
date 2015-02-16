@@ -15,7 +15,7 @@
 
 #include <QHash>
 #include <QVariant>
-#include "Configuration/intfConfigurable.hpp"
+#include "Configuration/tmplConfigurable.h"
 
 namespace Targoman {
 namespace Common {

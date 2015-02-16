@@ -25,6 +25,7 @@ namespace Configuration {
 
 namespace Private {
 class clsConfigManagerPrivate;
+class intfConfigurablePrivate;
 }
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
@@ -45,6 +46,7 @@ public:
     void addConfig(const QString _path, intfConfigurable* _item);
     void addModuleInstantiaor(const QString _name, const stuInstantiator& _instantiator);
     QVariant getConfig(const QString& _path, const QVariant &_default = QVariant()) const;
+    void setValue(const QString& _path, const QVariant &_value) const;
     fpModuleInstantiator_t getInstantiator(const QString& _name) const;
 
 private:
@@ -54,6 +56,8 @@ private:
 private:
     static ConfigManager* Instance;
     QScopedPointer<Private::clsConfigManagerPrivate> pPrivate;
+
+    friend class Targoman::Common::Configuration::Private::intfConfigurablePrivate;
 };
 
 }

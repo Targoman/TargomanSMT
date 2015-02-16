@@ -154,6 +154,8 @@ class Logger : public QObject
 public:
     static inline Logger& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new Logger));}
     ~Logger();
+    
+    bool init();
     /**
      * @brief Initialization method. If Logger is not initialized then no other function will work
      *
@@ -231,6 +233,14 @@ private:
     QScopedPointer<Targoman::Common::Private::LoggerPrivate> pPrivate;
 
     friend class Targoman::Common::Private::LoggerPrivate;
+    
+    /*
+    static Configuration::tmplConfigurable<clsLogSettings>    LogDebugSettings;
+    static Configuration::tmplConfigurable<clsLogSettings>    LogInfoSettings;
+    static Configuration::tmplConfigurable<clsLogSettings>    LogWarningSettings;
+    static Configuration::tmplConfigurable<clsLogSettings>    LogHappySettings;
+    static Configuration::tmplConfigurable<clsLogSettings>    LogErrorSettings;
+    static Configuration::tmplConfigurable<clsLogSettings>    LogNormalSettings;*/
 };
 
 }

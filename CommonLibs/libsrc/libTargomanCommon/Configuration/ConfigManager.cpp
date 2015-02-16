@@ -66,6 +66,13 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         return;
     }
     // ////////////////////////////////////////////////
+    // /check arguments to see wheter we must save file or not
+    // ////////////////////////////////////////////////
+    bool SaveFile = false;
+    if (_arguments.count("--save"))
+        SaveFile = true;
+    
+    // ////////////////////////////////////////////////
     // /check arguments for configFile path or set default cogFileplFile path
     // ////////////////////////////////////////////////
     if (_arguments.count("-c") + _arguments.count("--config") > 1)
@@ -76,13 +83,18 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         if (_arguments.size() <= Index + 1)
             throw exConfiguration("Invalid config option with no file name");
         this->pPrivate->ConfigFilePath = _arguments.at(Index + 1);
-        if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false)
-            throw exConfiguration("File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read.");
+        if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false){
+            if (SaveFile){
+                TargomanWarn(5, "File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read. Creating new file.");
+                this->save2File(this->pPrivate->ConfigFilePath, false);
+            }else
+               throw exConfiguration("File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read.");
+        }
     }
 
     if (this->pPrivate->ConfigFilePath.isEmpty()){
         this->pPrivate->ConfigFilePath = QCoreApplication::applicationDirPath() + QCoreApplication::applicationName() + ".ini";
-        if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false){
+        if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false && SaveFile == false){
             TargomanWarn(1, "No ConfigFile can be found. It is absolutely recomended to write one. Use --save to create one");
             this->pPrivate->ConfigFilePath.clear();
         }
@@ -101,7 +113,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                 bool Found = false;
                 while(BasePath.contains("/")){
                     BasePath.truncate(BasePath.lastIndexOf("/"));
-                    if (this->pPrivate->Configs.value(BasePath)->canBemanaged() == false){ // zhnDebug: what is this?
+                    if (this->pPrivate->Configs.value(BasePath) &&
+                            this->pPrivate->Configs.value(BasePath)->canBemanaged() == false){
                         Found = true;
                         break;
                     }
@@ -130,6 +143,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             KeyIter++;
             if (KeyIter != _arguments.end())
                 continue;
+        }else if(*KeyIter == "--save"){
+            continue;
         }
 
         if (KeyIter->startsWith("-")){
@@ -184,6 +199,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             Instantiator.fpMethod();
     }
 
+    if (SaveFile)
+        this->save2File(this->pPrivate->ConfigFilePath, true);
     this->pPrivate->Initialized = true;
 }
 
@@ -196,9 +213,16 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
 
 void ConfigManager::save2File(const QString &_fileName, bool _backup)
 {
-    Q_UNUSED(_fileName)
-    Q_UNUSED(_backup)
-    ///@todo implement me
+    if (_backup){
+        if (QFile::exists(_fileName))
+            QFile::copy(_fileName, _fileName + ".back-" + QDateTime::currentDateTime().toString("dd-MM-yyyy_hh:mm:ss"));
+    }
+    QSettings ConfigFile(_fileName, QSettings::IniFormat);
+
+    foreach (Configuration::intfConfigurable* Config, this->pPrivate->Configs.values())
+        if (Config->canBemanaged())
+            ConfigFile.setValue(Config->configPath(),Config->toVariant());
+    ConfigFile.sync();
 }
 
 /**
@@ -210,9 +234,13 @@ void ConfigManager::save2File(const QString &_fileName, bool _backup)
 
 void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
 {
+    QString Path = _path;
+    if(Path.startsWith("/"))
+        Path = Path.remove(0,1);
+
     if (this->pPrivate->Configs.contains(_path))
-        throw exConfiguration("Duplicate path key: " + _path);
-    this->pPrivate->Configs.insert(_path, _item);
+        throw exConfiguration("Duplicate path key: " + Path);
+    this->pPrivate->Configs.insert(Path, _item);
 }
 
 /**
@@ -242,10 +270,20 @@ QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default
         throw exConfiguration("Configuration is not initialized yet.");
 
     intfConfigurable* Item= this->pPrivate->Configs.value(_path);
-    if (Item->toVariant().isValid() == false)
+    if (Item && Item->toVariant().isValid() == false)
         return Item->toVariant();
     else
         return _default;
+}
+
+void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
+{
+    if (this->pPrivate->Initialized == false)
+        throw exConfiguration("Configuration is not initialized yet.");
+
+    intfConfigurable* Item= this->pPrivate->Configs.value(_path);
+    if (Item)
+        return Item->setFromVariant(_value);
 }
 
 /**
@@ -293,6 +331,16 @@ void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
 }
 
 /***********************************************************************************************/
+namespace Private {
+class intfConfigurablePrivate{
+public:
+    void updateConfig(const intfConfigurable* _old, intfConfigurable* _new){
+        ConfigManager::instance().pPrivate->Configs[ConfigManager::instance().pPrivate->Configs.key((intfConfigurable*)_old)] = _new;
+    }
+};
+}
+
+/***********************************************************************************************/
 /**
  * @brief constructor of intfConfigurable. this is where each configurable inserts its instantiator to config Map of pPrivate member of ConfigManager class.
  */
@@ -300,7 +348,8 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
                                    const QString &_description,
                                    const QString &_shortSwitch,
                                    const QString &_shortHelp,
-                                   const QString &_longSwitch)
+                                   const QString &_longSwitch) :
+    pPrivate(new Private::intfConfigurablePrivate)
 {
     try{
         this->Description = _description;
@@ -315,6 +364,24 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
         TargomanError(e.what());
         throw;
     }
+}
+
+intfConfigurable::intfConfigurable(const intfConfigurable &_other):
+    pPrivate(new Private::intfConfigurablePrivate)
+{
+    this->Description = _other.Description;
+    this->ShortSwitch = _other.ShortSwitch;
+    this->LongSwitch = _other.LongSwitch;
+    this->ShortHelp = _other.ShortHelp;
+    this->ConfigPath = _other.ConfigPath;
+
+    //To replace pointer of old registered config with the new copied config
+    this->pPrivate->updateConfig(&_other, this);
+}
+
+intfConfigurable::~intfConfigurable()
+{
+    //Just to suppress compiler error on QSopedPointer
 }
 
 /***********************************************************************************************/

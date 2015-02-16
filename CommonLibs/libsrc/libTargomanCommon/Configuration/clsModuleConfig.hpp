@@ -28,6 +28,7 @@ class clsModuleConfig : public intfConfigurable{
 public:
     clsModuleConfig(const QString&  _configPath,
                     const QString&  _description,
+                    const QString&  _default,
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
                     const QString&  _LongSwitch = "") :
@@ -36,6 +37,7 @@ public:
                          _shortSwitch,
                          _shortHelp,
                          _LongSwitch){
+        this->ActiveModuleName = _default;
     }
     virtual inline void setFromVariant(const QVariant& _var){
         this->ActiveModuleName = _var.toString();

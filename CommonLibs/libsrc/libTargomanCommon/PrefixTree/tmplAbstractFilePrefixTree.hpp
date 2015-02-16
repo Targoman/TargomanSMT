@@ -148,6 +148,7 @@ namespace PrefixTree {
          */
         virtual void readBinary(std::istream &iStream)
         {
+            Q_UNUSED(iStream);
         }
 
         /**

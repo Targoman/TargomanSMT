@@ -20,6 +20,11 @@
 namespace Targoman {
 namespace Common {
 namespace Configuration {
+
+namespace Private {
+class intfConfigurablePrivate;
+}
+
 /**
  * @brief This class is an interface for all kinds of configurables. Configurables are options and configurations of programs.
  *
@@ -38,11 +43,14 @@ public:
      * @param _longSwitch (Optional) Long switch to be used to configure item via program arguments
      */
     intfConfigurable(const QString&  _configPath,
-                            const QString&  _description,
-                            const QString&  _shortSwitch = "",
-                            const QString&  _shortHelp = "",
-                            const QString&  _longSwitch = "");
+                     const QString&  _description,
+                     const QString&  _shortSwitch = "",
+                     const QString&  _shortHelp = "",
+                     const QString&  _longSwitch = "");
 
+    intfConfigurable(const intfConfigurable& _other);
+
+    ~intfConfigurable();
 
     /**
      * @brief setFromVariant Pure virtual function to set configurable item by a variant.
@@ -89,6 +97,9 @@ protected:
     QString ShortHelp;      /**< (Optional) Argument structure to be shown when printing help*/
     QString LongSwitch;     /**< (Optional) Long switch to be used to configure item via program arguments*/
     qint8   ArgCount;       /**< Number of arguments for this configurable */
+
+private:
+    QScopedPointer<Private::intfConfigurablePrivate> pPrivate;
 };
 
 }

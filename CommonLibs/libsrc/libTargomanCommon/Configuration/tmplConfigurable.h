@@ -39,12 +39,13 @@ public:
                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator,
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
-                    const QString&  _LongSwitch = ""):
+                    const QString&  _LongSwitch = "") :
         intfConfigurable(_configPath,
                                 _description,
                                 _shortSwitch,
                                 _shortHelp,
-                                _LongSwitch){
+                                _LongSwitch)
+    {
         try{
             QString ErrorMessage;
             if (!this->validate(_default, ErrorMessage)){
@@ -69,11 +70,7 @@ public:
     }
 
     tmplConfigurable(const tmplConfigurable<Type_t>& _other) :
-        intfConfigurable(_other.ConfigPath,
-                         _other.Description,
-                         _other.ShortSwitch,
-                         _other.ShortHelp,
-                         _other.LongSwitch){
+        intfConfigurable(_other){
         this->Value = _other.Value;
         this->CrossValidator = _other.CrossValidator;
     }
@@ -121,8 +118,8 @@ public:
 
 private:
     Type_t  Value;
-    //QScopedPointer<intfCrossValidate> CrossValidator;
     std::function<bool(const intfConfigurable& _item, QString& _errorMessage)> CrossValidator;
+
 };
 
 
