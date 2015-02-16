@@ -7,7 +7,7 @@
  * 
  *************************************************************************/
 /**
- @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ *@author Saeed Torabzadeh <saeed.torabzadeh@gmail.com>
  */
 
 #ifndef UNITTEST_H
@@ -15,12 +15,12 @@
 
 #include <QtTest/QtTest>
 
+
 class UnitTest: public QObject
 {
     Q_OBJECT
 
 private slots:
-
 };
 
 #endif // UNITTEST_H

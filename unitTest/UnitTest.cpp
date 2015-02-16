@@ -7,7 +7,7 @@
  * 
  *************************************************************************/
 /**
- @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ *@author Saeed Torabzadeh <saeed.torabzadeh@gmail.com>
  */
 
 #include "UnitTest.h"
