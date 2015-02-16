@@ -31,16 +31,15 @@ public:
         SGB(new SearchGraphBuilder::clsSearchGraphBuilder(Input->tokens())),
         NBF(new NBestFinder::clsNBestFinder),
         OutComposer(new OutputComposer::clsOutputComposer){
-        this->Initialized = false;
     }
 
 public:
-    bool Initialized;
-
     QScopedPointer<InputDecomposer::clsInput> Input;
     QScopedPointer<SearchGraphBuilder::clsSearchGraphBuilder> SGB;
     QScopedPointer<NBestFinder::clsNBestFinder> NBF;
     QScopedPointer<OutputComposer::clsOutputComposer> OutComposer;
+
+    static bool Initialized;
 };
 
 }

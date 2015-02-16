@@ -32,4 +32,4 @@ MOC_DIR = $$BaseBuildFolder/moc
 INCLUDEPATH += $$BasePath/libsrc \
                $$BasePath/libsrc/lib$$ProjectName
 QMAKE_LIBDIR += $$BaseLibraryFolder
-#LIBS += -l$$ProjectName
+LIBS += -l$$ProjectName

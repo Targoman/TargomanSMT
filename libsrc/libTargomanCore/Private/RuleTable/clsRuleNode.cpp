@@ -20,16 +20,15 @@ namespace RuleTable{
 
 using namespace Common;
 
-static clsRuleNodeData InvalidRuleNodeData;
+clsRuleNodeData* InvalidRuleNodeData = new clsRuleNodeData;
 
-//RulesForSourcePart.cc
 clsRuleNode::clsRuleNode() :
-    Data(&InvalidRuleNodeData)
+    Data(InvalidRuleNodeData)
 {}
 
 bool clsRuleNode::isInvalid() const
 {
-    return (this->Data.data() == &InvalidRuleNodeData);
+    return (this->Data.data() == InvalidRuleNodeData);
 }
 
 void clsRuleNode::readBinary(std::istream &_input)

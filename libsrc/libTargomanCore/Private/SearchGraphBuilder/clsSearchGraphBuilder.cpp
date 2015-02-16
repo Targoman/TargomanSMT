@@ -27,34 +27,41 @@ using namespace LanguageModel;
 using namespace InputDecomposer;
 
 tmplConfigurable<quint8> clsSearchGraphBuilder::ReorderingConstraintMaximumRuns(
-        "TODO",
-        "TODO");
+        clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingConstraintMaximumRuns",
+        "TODO Desc",
+        1);
 tmplConfigurable<bool>   clsSearchGraphBuilder::DoComputeReorderingRestCosts(
-        "TODO",
-        "TODO");
+        clsSearchGraphBuilder::moduleBaseconfig() + "/DoComputeReorderingRestCosts",
+        "TODO Desc",
+        true);
 tmplConfigurable<bool>   clsSearchGraphBuilder::PruneAtStage2(
-        "TODO",
-        "TODO");
+        clsSearchGraphBuilder::moduleBaseconfig() + "/PruneAtStage2",
+        "TODO Desc",
+        true);
 tmplConfigurable<bool>   clsSearchGraphBuilder::PruneAtStage3(
-        "TODO",
-        "TODO");
+        clsSearchGraphBuilder::moduleBaseconfig() + "/PruneAtStage3",
+        "TODO Desc",
+        true);
 tmplConfigurable<bool>   clsSearchGraphBuilder::PruneAtStage4(
-        "TODO",
-        "TODO");
-
+        clsSearchGraphBuilder::moduleBaseconfig() + "/PruneAtStage4",
+        "TODO Desc",
+        true);
 tmplConfigurable<bool>   clsSearchGraphBuilder::ReorderingHardJumpLimit(
-        "TODO",
-        "TODO");
+        clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingHardJumpLimit",
+        "TODO Desc",
+        true);
 tmplConfigurable<quint8> clsSearchGraphBuilder::ReorderingMaximumJumpWidth(
-        "TODO",
-        "TODO");
+        clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingMaximumJumpWidth",
+        "TODO Desc",
+        5);
 tmplConfigurable<quint8> clsSearchGraphBuilder::ObservationHistogramSize(
-        "TODO",
-        "TODO");
-
+        clsSearchGraphBuilder::moduleBaseconfig() + "/ObservationHistogramSize",
+        "TODO Desc",
+        100);
 tmplConfigurable<double> clsSearchGraphBuilder::ScalingFactorReorderingJump(
-        "TODO",
-        "TODO");
+        clsSearchGraphBuilder::moduleBaseconfig() + "/ScalingFactorReorderingJump",
+        "TODO Desc",
+        1);
 
 FeatureFunction::intfFeatureFunction*  clsSearchGraphBuilder::pPhraseTable = NULL;
 RuleTable::intfRuleTable*              clsSearchGraphBuilder::pRuleTable = NULL;
@@ -82,7 +89,6 @@ void clsSearchGraphBuilder::matchPhrase()
             if (PrevNode == NULL)
                 break; // appending next word breaks phrase lookup
 
-            //TODO WARNING !!!!!!!!!!!!! referencecounter may be buggy
             this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition] = PrevNode->getData();
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
@@ -103,7 +109,6 @@ Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
 
 bool clsSearchGraphBuilder::parseSentence()
 {
-    //JANE::startParsing()
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
 
@@ -121,7 +126,6 @@ bool clsSearchGraphBuilder::parseSentence()
         for (int PrevCardinality = qMax(NewCardinality - this->Data->MaxMatchingSourcePhraseCardinality, 0);
              PrevCardinality < NewCardinality; ++PrevCardinality) {
             unsigned short NewPhraseCardinality = NewCardinality - PrevCardinality;
-            // TODO: check if we have phrases of this cardinality. if not, continue.
 
             if(this->Data->HypothesisHolder[PrevCardinality].isEmpty()) {
                 //log() << "ERROR: cardinality Container for previous cardinality empty.\n";
@@ -269,7 +273,7 @@ bool clsSearchGraphBuilder::parseSentence()
                                 Cost_t FinalJumpCost = 0;
 
                                 if (IsFinal){
-                                    LMCost += LMScorer->wordProb(LMScorer->endOfSentence());
+                                    LMCost += LMScorer->endOfSentenceProb();
                                     size_t FinalJumpWidth = qAbs(this->Data->Sentence.size() - LastPhrasePos);
                                     FinalJumpCost = this->computeReorderingJumpCost(FinalJumpWidth) *
                                             clsSearchGraphBuilder::ScalingFactorReorderingJump.value();
@@ -331,8 +335,7 @@ bool clsSearchGraphBuilder::parseSentence()
     {
         this->Data->GoalNode = this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
 
-        if(gConfigs.KeepRecombined.value())
-            this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
+        this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
         return true;
     } else {
         // no translation with full coverage found

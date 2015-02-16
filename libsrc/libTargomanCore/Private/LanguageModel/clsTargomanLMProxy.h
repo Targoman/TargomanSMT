@@ -43,8 +43,8 @@ public:
      * @brief Initializes language model based on configuration values (which may come from config file or argument of program).
      */
 
-    void init(){
-        clsTargomanLMProxy::LM.init(); // LM must check if it needs to be initialized
+    void init(bool _justVocab){
+        clsTargomanLMProxy::LM.init(_justVocab); // LM must check if it needs to be initialized
     }
 
     /**
@@ -59,18 +59,20 @@ public:
     }
 
     /**
+     * @brief returns probablity of whole sentence based on previous words.
+     * @return probablity of sentence based on the history.
+     */
+    inline Common::LogP_t endOfSentenceProb(){
+        quint8 Dummy;
+        return this->LMSentenceScorer->endOfSentenceProb(Dummy);
+    }
+    /**
      * @brief gives word index of input word string.
      * @param _word input word string.
      * @return return word index.
      */
 
     inline Common::WordIndex_t getWordIndex(const QString& _word){return this->LM.getID(_word);}
-
-    /**
-     * @brief return end of sentence word index.
-     */
-
-    inline Common::WordIndex_t endOfSentence(){return this->LMSentenceScorer->endOfSentence();}
 
     /**
      * @brief Initializes history of language model with history of input sentence scorer.

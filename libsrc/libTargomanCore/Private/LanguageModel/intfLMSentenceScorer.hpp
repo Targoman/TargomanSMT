@@ -33,13 +33,12 @@ public:
     intfLMSentenceScorer(const QString& _name):
         intfModule(_name){}
 
-    virtual void init() = 0;
+    virtual void init(bool _justVocab) = 0;
     virtual void initHistory(const intfLMSentenceScorer& _oldScorer) = 0;
     virtual void reset() = 0;
     virtual Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) = 0;
+    virtual Common::LogP_t endOfSentenceProb() = 0;
     virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
-
-    virtual Common::WordIndex_t endOfSentence()= 0;
     virtual bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const = 0;
 };
 

@@ -40,7 +40,6 @@ class clsRuleNode
 {
 public:
     clsRuleNode();
-    clsRuleNode(int ){} // TODO must be implemented in order to validate RuleNode
     clsRuleNode(const clsRuleNode & _other) : Data(_other.Data){}
 
     bool isInvalid() const;
@@ -51,6 +50,7 @@ public:
     // Following functions are needed for the binary input/output
     void readBinary(std::istream &_input);
     void writeBinary(std::ostream &_output) const;
+    void detachInvalidData(){this->Data.detach();}
 
 private:
     QExplicitlySharedDataPointer<clsRuleNodeData> Data;

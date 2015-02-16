@@ -44,10 +44,6 @@ struct stuTranslationOutput{
     QList<stuMetaInfo> MetaInfo;
 };
 
-struct stuTranslatorConfigs{
-
-};
-
 namespace Private {
 class clsTranslatorPrivate;
 }
@@ -57,7 +53,7 @@ public:
     clsTranslator(const QString &_inputStr);
     ~clsTranslator();
 
-    static void init(const stuTranslatorConfigs& _configs);
+    static void init(const QString _configFilePath);
 
     //Input language is predefined
     stuTranslationOutput translate();

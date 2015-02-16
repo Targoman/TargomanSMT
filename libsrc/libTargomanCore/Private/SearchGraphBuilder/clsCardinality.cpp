@@ -12,6 +12,7 @@
  */
 
 #include "clsCardinality.h"
+#include "clsSearchGraphBuilder.h"
 
 namespace Targoman{
 namespace Core {
@@ -23,8 +24,9 @@ using namespace Common::Configuration;
 
 Coverage_t clsCardinality::EmptyCoverage;
 tmplConfigurable<quint8> clsCardinality::ReorderingHistogramSize(
-        "TODO",
-        "TODO");
+        clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingHistogramSize",
+        "TODO Desc",
+        100);
 
 clsCardinality::clsCardinality() :
     Data(new clsCardinalityData)

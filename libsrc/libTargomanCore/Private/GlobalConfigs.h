@@ -37,7 +37,6 @@ struct stuGlobalConfigs{
     static Targoman::Common::Configuration::tmplConfigurable<QString> TargetLanguage;
 
 
-    static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;
 
     static Targoman::Common::Configuration::clsModuleConfig          LM;
     static Targoman::Common::Configuration::clsModuleConfig          RuleTable;

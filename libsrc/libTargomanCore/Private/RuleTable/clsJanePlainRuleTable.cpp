@@ -44,8 +44,10 @@ TARGOMAN_REGISTER_MODULE(clsJanePlainRuleTable)
 
 tmplConfigurable<QString> clsJanePlainRuleTable::FileName(clsJanePlainRuleTable::baseConfigPath() + "/FileName",
                                                   "Filename where phrase table is stored",
-                                                  ""/*,
-                                                  new Validators::clsPathValidator(PathAccess::File|PathAccess::Readable)*/);
+                                                  "",
+                                                  Validators::tmplPathAccessValidator<
+                                                          (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
+                                                  );
 
 tmplConfigurable<QString> clsJanePlainRuleTable::PhraseCostNames(clsJanePlainRuleTable::baseConfigPath() + "/CostNames",
                                                            "CostsNames as defined in Jane config File",
@@ -56,7 +58,7 @@ tmplConfigurable<QString> clsJanePlainRuleTable::PhraseCostNames(clsJanePlainRul
                                                                //TODO check names with phrase table
                                                            }*/);
 
-QList<tmplConfigurable<QString>> FeatureFunctions = {
+QList<tmplConfigurable<QString>> clsJanePlainRuleTable::FeatureFunctions = {
     tmplConfigurable<QString>(clsJanePlainRuleTable::baseConfigPath() +
     "/FeatureFunctions/" + FeatureFunction::LexicalReordering::moduleName() + FFCONFIG_KEY_IDENTIFIER,
     "TODO Desc",
@@ -118,12 +120,12 @@ void clsJanePlainRuleTable::init()
             for (unsigned AdditionalFieldIndex = janeFormatStandardNumberOfFields;
                  AdditionalFieldIndex < (size_t)Fields.size();
                  ++AdditionalFieldIndex) {
-                QString FieldName = Fields.at(AdditionalFieldIndex).split(" ").first();
+                QString FieldName = Fields.at(AdditionalFieldIndex).split(" ", QString::SkipEmptyParts).first();
                 for(int i = 0; i< clsJanePlainRuleTable::FeatureFunctions.size(); ++i){
                     const tmplConfigurable<QString>& FFConfig = clsJanePlainRuleTable::FeatureFunctions.at(i);
                     if (FFConfig.value() == FieldName){
                         QString FFModuleName = FFConfig.configPath().split("/").last();
-                        FFModuleName.truncate(FFModuleName.size() - sizeof(FFCONFIG_KEY_IDENTIFIER));
+                        FFModuleName.truncate(FFModuleName.size() - sizeof(FFCONFIG_KEY_IDENTIFIER) + 1);
                         ColumnNames.append(gConfigs.ActiveFeatureFunctions.value(FFModuleName)->columnNames());
                         Accepted = true;
                         AcceptedAdditionalFieldsIndexes.append(AdditionalFieldIndex);
@@ -131,13 +133,17 @@ void clsJanePlainRuleTable::init()
                     }
                 }
                 if (Accepted == false){
-                   TargomanWarn(5,"Unsupported Additional field" + FieldName + " ignored!!!");
+                   TargomanWarn(5,"Unsupported Additional field <" + FieldName + "> ignored!!!");
                 }
             }
+
+            clsTargetRule::setColumnNames(ColumnNames);
+            ColmnNamesNotSet = false;
         }
 
         this->addRule(PhraseCostsFields, Fields, AcceptedAdditionalFieldsIndexes, RulesRead);
     }
+
 }
 
 void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
@@ -152,11 +158,12 @@ void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
         Costs.append(Cost.toDouble());
 
     QVector<WordIndex_t> SourcePhrase;
-    foreach(const QString& Word, _allFields[janeFormatSourcePosition].split(" "))
+    foreach(const QString& Word, _allFields[janeFormatSourcePosition].split(" ", QString::SkipEmptyParts))
         SourcePhrase.append(gConfigs.EmptyLMScorer->getWordIndex(Word));
 
+
     QList<WordIndex_t> TargetPhrase;
-    foreach(const QString& Word, _allFields[janeFormatTargetPosition].split(" "))
+    foreach(const QString& Word, _allFields[janeFormatTargetPosition].split(" ", QString::SkipEmptyParts))
         TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(Word));
 
     foreach(size_t FieldIndex, _acceptedAdditionalFields){
@@ -170,6 +177,7 @@ void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
 
 
     clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(SourcePhrase.toStdVector())->getData();
+    RuleNode.detachInvalidData();
     RuleNode.targetRules().append(TargetRule);
 }
 

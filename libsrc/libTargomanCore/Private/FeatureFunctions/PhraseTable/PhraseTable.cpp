@@ -25,37 +25,37 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable)
 
 tmplConfigurable<double>    PhraseTable::ScalingFactors[] = {
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/s2t",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/t2s",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ibm1s2t",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ibm1t2s",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/phrasePenalty",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/wordPenalty",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/s2tRatio",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/t2sRatio",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/cnt1",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/cnt2",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/cnt3",
-    "TODO",
+    "TODO Desc",
     0)
 };
 
@@ -71,8 +71,6 @@ void PhraseTable::initialize()
 PhraseTable::PhraseTable():
     intfFeatureFunction(this->moduleName())
 {
-    //TODO
-
 }
 
 Common::Cost_t PhraseTable::getApproximateCost(unsigned _sourceStart,

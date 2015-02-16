@@ -26,27 +26,27 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(LexicalReordering)
 
 tmplConfigurable<bool>      LexicalReordering::IsBidirectional(
         LexicalReordering::baseConfigPath() + "/IsBidirectional",
-        "TODO",
+        "TODO Desc",
         true);
 
 tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftMonotone",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightMonotone",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftSwap",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightSwap",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftDiscontinous",
-    "TODO",
+    "TODO Desc",
     0),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightDiscontinous",
-    "TODO",
+    "TODO Desc",
     0)
 };
 

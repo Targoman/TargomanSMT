@@ -22,10 +22,12 @@ using namespace Common;
 
 QStringList  clsTargetRule::ColumnNames;
 size_t clsTargetRule::PrecomputedValuesSize = 0;
+
 clsTargetRule InvalidTargetRule;
+clsTargetRuleData* InvalidTargetRuleData = new clsTargetRuleData;
 
 clsTargetRule::clsTargetRule() :
-    Data(new clsTargetRuleData(clsTargetRule::PrecomputedValuesSize))
+    Data(InvalidTargetRuleData)
 {
 }
 
