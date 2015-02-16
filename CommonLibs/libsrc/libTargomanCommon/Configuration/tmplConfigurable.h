@@ -22,6 +22,7 @@ namespace Targoman {
 namespace Common {
 namespace Configuration {
 
+/// this is a lambda function variable that its arguments are intfConfigurable and a QString and always returns true.
 static std::function<bool(const intfConfigurable& _item,
                           QString& _errorMessage)> ReturnTrueCrossValidator = [] (const intfConfigurable&, QString& ) {
     return true;};
@@ -58,6 +59,14 @@ public:
             throw;
         }
     }
+
+    /**
+     * @brief Move constructor.
+     *
+     * This function is used when we want to assign a temporary instantiated configurable into an array of configurables.
+     *
+     * @param _other
+     */
 
     tmplConfigurable(tmplConfigurable<Type_t>&& _other) :
         intfConfigurable(_other.ConfigPath,

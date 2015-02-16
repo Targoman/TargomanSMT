@@ -14,7 +14,9 @@ HEADERS += \
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
-    UnitTest.cpp
+    UnitTest.cpp \
+    testStringBased.cpp \
+    testIndexBased.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

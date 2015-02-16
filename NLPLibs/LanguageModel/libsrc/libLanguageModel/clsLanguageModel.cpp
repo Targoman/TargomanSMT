@@ -74,8 +74,8 @@ quint8 clsLanguageModel::init()
  * Finally, this function sets unknown word default probability and backoff.
  *
  *
- * @param[in] _filePath address of language model file.
- * @param[out] _configs  structure to save unknownWordDefault probablity and backoffs
+ * @param[in] _filePath Address of language model file.
+ * @param[in] _configs  Structure to set unknownWordDefault probablity and backoffs. This structure also decides between index and string based language model.
  * @return return order of NGram.
  */
 

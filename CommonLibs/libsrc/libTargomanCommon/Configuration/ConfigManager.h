@@ -31,7 +31,7 @@ class intfConfigurablePrivate;
 TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
 
 /**
- * @brief The ConfigManager class is the base ConfigManager manager class.
+ * @brief The ConfigManager class is the manager class for configurables data.
  * Currently it will just manage Arguments and config file
  */
 class ConfigManager

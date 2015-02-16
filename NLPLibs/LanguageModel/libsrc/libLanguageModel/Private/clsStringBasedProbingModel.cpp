@@ -48,6 +48,7 @@ LogP_t clsStringBasedProbingModel::lookupNGram(const QStringList& _ngram, quint8
     QString     NGram = _ngram.last();
     QString     NGram2 = _ngram.last();
     quint8      CurrGram = 0;
+    _foundedGram = 1;
 
     while (true){
         PB = this->getNGramWeights(NGram.toUtf8().constData());

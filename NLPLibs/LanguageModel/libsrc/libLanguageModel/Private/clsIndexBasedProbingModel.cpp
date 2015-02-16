@@ -90,6 +90,7 @@ LogP_t clsIndexBasedProbingModel::lookupNGram(const QList<WordIndex_t> &_ngram, 
     NGram.append(_ngram.last());
     QList<WordIndex_t>     NGram2;
     quint8      CurrGram = 0;
+    _foundedGram = 1;
 
     while (true){
         PB = this->getNGramWeights(NGram);

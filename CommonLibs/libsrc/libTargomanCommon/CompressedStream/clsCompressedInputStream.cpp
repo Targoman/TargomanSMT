@@ -27,6 +27,12 @@ clsCompressedInputStream::clsCompressedInputStream(const std::string &_name, boo
     open(_name, _allowFail);
 }
 
+/**
+ * @param _name         File address
+ * @param _allowFail    Is it ok to  throw exception if it could not open file or not.
+ * @exception throws exception if it could not open file and _allowFail is not true.
+ */
+
 void clsCompressedInputStream::open(const std::string &_name, bool _allowFail)
 {
     if (this->Buffer) delete this->Buffer;

@@ -31,18 +31,42 @@ int main(int argc, char *argv[])
         Targoman::Common::Logger::instance().setVisible();
         Targoman::Common::Logger::instance().setActive();
 
+        Targoman::Common::LogP_t UnkProb = 0;
+        Targoman::Common::LogP_t UnkBackoff = 0;
+        bool UseIdexBasedModel = true;
 
-        qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "./test.arpa");
+        stuLMConfigs languageModelConfig( UnkProb, UnkBackoff, UseIdexBasedModel);
+
+
+//        Word = "این";
+//        Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+//        QVERIFY(Gram == 2);
+//        QVERIFY(qFuzzyCompare(Prob, -1.97194f));
+
+//        Word = "استخوان‌ها";
+//        Prob = SS.wordProb(Word, Gram);
+
+        qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/saeed/Khadivi/Targoman/Trunk/out/unitTest/test.arpa", languageModelConfig);
         clsLMSentenceScorer SS(LM);
-        QString Sentence =
-                QStringLiteral("ارتباط او با سپاه پاسسسداران انقلالللب اسلاملللللی اووووو را در مرکز زنجیققرهای از ترور و جنایت قرار داده که دنیا را در برگرفته است .");
 
+        QString Word = "این";
         quint8 Gram;
-        foreach (const QString& Word, Sentence.split(" ")){
-            Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
-            qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
-        }
-        while(1);
+        Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+//        QVERIFY(Gram == 2);
+//        QVERIFY(qFuzzyCompare(Prob, -1.97194f));
+
+        Word = "استخوان‌ها";
+        Prob = SS.wordProb(Word, Gram);
+
+//        QString Sentence =
+//                QStringLiteral("ارتباط او با سپاه پاسسسداران انقلالللب اسلاملللللی اووووو را در مرکز زنجیققرهای از ترور و جنایت قرار داده که دنیا را در برگرفته است .");
+
+//        quint8 Gram;
+//        foreach (const QString& Word, Sentence.split(" ")){
+//            Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+//            qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
+//        }
+//        while(1);
 
         return 0;
         std::ifstream File;

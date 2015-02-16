@@ -276,6 +276,13 @@ QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default
         return _default;
 }
 
+/**
+ * @brief           Sets _value of a configurable in Config data member of #pPrivate using its _path.
+ * @param _path     Path of configurable (key of hash map in the Config data member of #pPrivate).
+ * @param _value    Value of configurable. (value of hash map in the Config data member of #pPrivate).
+ * @exception       Throws exception if #pPrivate is not initialized yet.
+ */
+
 void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
 {
     if (this->pPrivate->Initialized == false)
@@ -290,7 +297,7 @@ void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
  * @brief gives instantiator function of a module.
  * @param _name     Name of module.
  * @exception throws exception if ConfigManager is not initialized yet.
- * @exception throws exception if input module is singleton.
+ * @exception throws exception if input module is singleton (because singleton module can not be reinitialized).
  */
 
 fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) const
@@ -331,9 +338,15 @@ void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
 }
 
 /***********************************************************************************************/
+
 namespace Private {
 class intfConfigurablePrivate{
 public:
+    /**
+     * @brief  updateConfig Finds location which _old configurable pointer is located in Configs hash map and changes its value with _new configurable pointer.
+     * @param _old          old configurable pointer.
+     * @param _new          new configurable pointer.
+     */
     void updateConfig(const intfConfigurable* _old, intfConfigurable* _new){
         ConfigManager::instance().pPrivate->Configs[ConfigManager::instance().pPrivate->Configs.key((intfConfigurable*)_old)] = _new;
     }
@@ -342,7 +355,7 @@ public:
 
 /***********************************************************************************************/
 /**
- * @brief constructor of intfConfigurable. this is where each configurable inserts its instantiator to config Map of pPrivate member of ConfigManager class.
+ * @brief constructor of intfConfigurable. this is where each configurable inserts itself to Configs hash map of pPrivate member of ConfigManager class.
  */
 intfConfigurable::intfConfigurable(const QString &_configPath,
                                    const QString &_description,
@@ -366,6 +379,17 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
     }
 }
 
+/**
+ * @brief intfConfigurable::intfConfigurable Copy constructor of intfConfigurable class.
+ *
+ * This function is defined to call updateConfig function of #pPrivate.
+ * Usage of this function is when we have QList of Configurables and we want to insert a new configurable to it.
+ * When a temporary configurable is instantiated to be inserted into QList, its pointer will be added into Configs hash map, but that pointer will be deleted soon because it is temporary.
+ * This copy constructor will be called when the temporary configurable is inserted into QList.
+ * Calling updateConfig in this copy constructor, helps us to change the deleted pointer with the valid pointer of configurable which is in the QList.
+ *
+ */
+
 intfConfigurable::intfConfigurable(const intfConfigurable &_other):
     pPrivate(new Private::intfConfigurablePrivate)
 {
@@ -386,7 +410,7 @@ intfConfigurable::~intfConfigurable()
 
 /***********************************************************************************************/
 /**
- * @brief constructor of clsModuleRegistrar. this is where each module inserts its instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
+ * @brief constructor of clsModuleRegistrar. This is where each module inserts its instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
  */
 clsModuleRegistrar::clsModuleRegistrar(const QString &_name, stuInstantiator _instantiatior){
     ConfigManager::instance().addModuleInstantiaor(_name, _instantiatior);
