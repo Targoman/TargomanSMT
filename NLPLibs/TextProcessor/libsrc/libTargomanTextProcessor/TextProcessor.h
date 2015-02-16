@@ -50,10 +50,10 @@ public:
     };
 
 public:
-    static inline const TextProcessor& instance(){
+    static inline TextProcessor& instance(){
         return *(Q_LIKELY(Instance) ? Instance : (Instance = new TextProcessor));}
 
-    bool init(const stuConfigs &_configs) const;
+    bool init(const stuConfigs &_configs);
     bool init(const QString _configFile = "");
 
     QString text2IXML(const QString& _inStr,

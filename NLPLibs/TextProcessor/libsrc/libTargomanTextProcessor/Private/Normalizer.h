@@ -29,8 +29,8 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exNormalizer, exTextProcessor);
 
 TARGOMAN_DEFINE_ENHANCED_ENUM(enuDicType,
                               WhiteList,
-                              ReplacingCharacter,
-                              RemovingCharcters,
+                              ReplacingCharacters,
+                              RemovingCharacters,
                               SpaceCharacters,
                               ZeroWidthSpaceCharacters,
                               NotSure,
@@ -101,7 +101,7 @@ private:
     QSet<QChar>             RemovingList;               /** < A Set to contain invalid chars. Content of this variable will be added using Normalization config file. */
     QSet<QChar>             SpaceCharList;              /** < A Set to contain all kind of spaces chars. Content of this variable will be added using Normalization config file. */
     QSet<QChar>             ZeroWidthSpaceCharList;     /** < A Set to contain all kind of zero width spaces chars. Content of this variable will be added using Normalization config file. */
-    QString                 ConfigFile;                 /** < Configuration file address */
+    QString                 ConfigFileName;                 /** < Configuration file address */
     bool                    BinaryMode;                 /** < If Normalization data is in binary mode this variable will be true.*/
     QChar                   LastChar;                   /** < Last character in normalization process.*/
     QRegExp                 RxDetokenDQuote;            /** < A Regular expression to detokenize Double Quote characters. */

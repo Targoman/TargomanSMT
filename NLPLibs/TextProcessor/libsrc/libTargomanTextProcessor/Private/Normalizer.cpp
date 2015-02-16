@@ -281,7 +281,7 @@ QString Normalizer::normalize(const QChar &_char,
             {
             case 1:
                 this->RemovingList.insert(Char);
-                this->add2Configs (enuDicType::RemovingCharcters, Char);
+                this->add2Configs (enuDicType::RemovingCharacters, Char);
                 ValidSelection = true;
                 break;
             case 2:
@@ -323,7 +323,7 @@ QString Normalizer::normalize(const QChar &_char,
                     continue;
                 }
                 this->ReplacingTable.insert(Char,TempBuffer.at(0));
-                this->add2Configs(enuDicType::ReplacingCharacter, Char, TempBuffer.at(0));
+                this->add2Configs(enuDicType::ReplacingCharacters, Char, TempBuffer.at(0));
                 ValidSelection = true;
                 break;
             }
@@ -371,13 +371,13 @@ QString Normalizer::normalize(const QString &_string, qint32 _line, bool _intera
  */
 void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar _replacement)
 {
-    QFile ConfigFileOut(this->ConfigFile);
-    if(QFile::exists (this->ConfigFile + ".back"))
-        QFile::remove(this->ConfigFile + ".back");
-    if (!ConfigFileOut.copy(this->ConfigFile + ".back"))
+    QFile ConfigFileOut(this->ConfigFileName);
+    if(QFile::exists (this->ConfigFileName + ".back"))
+        QFile::remove(this->ConfigFileName + ".back");
+    if (!ConfigFileOut.copy(this->ConfigFileName + ".back"))
         throw exNormalizer("Unable to backup normalization file");
 
-    QFile ConfigFileIn(this->ConfigFile + ".back");
+    QFile ConfigFileIn(this->ConfigFileName + ".back");
     ConfigFileIn.open(QIODevice::ReadOnly);
     ConfigFileOut.open(QIODevice::WriteOnly);
 
@@ -407,7 +407,7 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
                 case enuDicType::NotSure:
                     ConfigFileOut.write(("NEW " + this->char2Str(_originalChar) + "\n").toUtf8());
                 case enuDicType::WhiteList:
-                case enuDicType::RemovingCharcters:
+                case enuDicType::RemovingCharacters:
                 case enuDicType::SpaceCharacters:
                 case enuDicType::ZeroWidthSpaceCharacters:
                 {
@@ -421,7 +421,7 @@ void Normalizer::add2Configs(enuDicType::Type _type, QChar _originalChar, QChar 
                                             QCharScriptToStringMap[_originalChar.script()].c_str()).toUtf8());
                 }
                     break;
-                case enuDicType::ReplacingCharacter:
+                case enuDicType::ReplacingCharacters:
                 {
                     QString ToBeWrittenKey = this->char2Str(_originalChar);
                     QString ToBeWrittenVal = this->char2Str(_replacement);
@@ -505,7 +505,7 @@ QList<QChar> Normalizer::str2QChar(QString _str, quint16 _line, bool _allowRange
  */
 void Normalizer::init(const QString &_configFile, bool _binaryMode)
 {
-    this->ConfigFile = _configFile;
+    this->ConfigFileName = _configFile;
     this->BinaryMode = _binaryMode;
 
     if (_binaryMode){
@@ -528,10 +528,10 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
         TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, "Loaded");
         return;
     }
-    QFile ConfigFile(this->ConfigFile);
+    QFile ConfigFile(this->ConfigFileName);
     ConfigFile.open(QIODevice::ReadOnly);
     if(!ConfigFile.isReadable ())
-        throw exNormalizer("Unable to open normalization file.");
+        throw exNormalizer("Unable to open normalization file: <" + this->ConfigFileName + ">");
 
     QTextStream ConfigStream(&ConfigFile);
     ConfigStream.setCodec("UTF-8");
@@ -577,7 +577,7 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
                     this->WhiteList.insert(Ch);
             }
             break;
-        case enuDicType::ReplacingCharacter:
+        case enuDicType::ReplacingCharacters:
         {
             QStringList Pair = ConfigLine.split('=');
             if (Pair.size() == 2)
@@ -590,7 +590,7 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
             }
         }
             break;
-        case enuDicType::RemovingCharcters:
+        case enuDicType::RemovingCharacters:
             StrList = ConfigLine.split(" ", QString::SkipEmptyParts);
             foreach (const QString& CharStr, StrList){
                 QList<QChar> Chars = this->str2QChar(CharStr, LineNumber);

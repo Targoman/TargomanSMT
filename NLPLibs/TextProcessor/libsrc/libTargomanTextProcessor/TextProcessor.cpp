@@ -41,7 +41,7 @@ TextProcessor::TextProcessor()
  * @param _configFile
  * @return
  */
-bool TextProcessor::init(const stuConfigs& _configs) const
+bool TextProcessor::init(const stuConfigs& _configs)
 {
     Normalizer::instance().init(_configs.NormalizationFile);
     SpellCorrector::instance().init(_configs.SpellCorrectorBaseConfigPath, _configs.SpellCorrectorLanguageBasedConfigs);
