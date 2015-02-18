@@ -27,7 +27,7 @@ using namespace Targoman::Common;
 namespace Targoman {
 namespace NLPLibs {
 
-const char* BIN_FILE_HREADER = "TargomanLMBin";
+const QString BIN_FILE_HEADER = "TargomanLMBin";
 
 using namespace Private;
 using namespace Targoman::Common::Configuration;
@@ -132,7 +132,7 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
 
 void clsLanguageModel::convertBinary(const QString &_binFilePath)
 {
-    if (this->pPrivate->FullyInitialized)
+    if (!this->pPrivate->FullyInitialized)
         throw exLanguageModel("Seems that LM has not been fully initialized");
     if (this->pPrivate->WasBinary)
         throw exLanguageModel("LM has been loaded from a bin file so can not be written again");
@@ -190,9 +190,15 @@ bool clsLanguageModelPrivate::isBinary(const QString &_filePath)
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _filePath + "> For reading");
 
-    return (BinFile.read(sizeof(BIN_FILE_HREADER)) == BIN_FILE_HREADER);
+    QDataStream InputStream(&BinFile);
+    QString Header;
+    InputStream >> Header;
+    qDebug() << Header;
+    qDebug() << BIN_FILE_HEADER;
+    return (Header == BIN_FILE_HEADER);
 }
 
 }
 }
+
 

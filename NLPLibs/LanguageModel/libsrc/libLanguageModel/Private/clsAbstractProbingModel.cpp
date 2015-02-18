@@ -24,7 +24,7 @@ using namespace Targoman::Common;
 namespace Targoman {
 namespace NLPLibs {
 
-extern const char* BIN_FILE_HREADER;
+
 
 namespace Private {
 
@@ -138,21 +138,22 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     QFile BinFile(_binFilePath);
     if (BinFile.open(QFile::WriteOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For writing");
-
+    QDataStream OutputStream(&BinFile);
     clsCmdProgressBar ProgressBar("Storing Bin Data", this->HashTableSize);
-
-    BinFile.write(BIN_FILE_HREADER);
+    qDebug() << BIN_FILE_HEADER;
+    OutputStream << BIN_FILE_HEADER;
+//    BinFile.write(BIN_FILE_HEADER, sizeof(BIN_FILE_HEADER));
     BinFile.write(this->modelHeaderSuffix().toLatin1());
-    BinFile.write((char*)&_order, sizeof(_order));
-    BinFile.write((char*)&this->HashTableSize, sizeof(this->HashTableSize));
-    BinFile.write((char*)&this->NgramCount, sizeof(this->NgramCount));
+    OutputStream << _order;
+    OutputStream << this->HashTableSize;
+    OutputStream << this->NgramCount;
     for(Hash_t HashLoc=1; HashLoc<this->HashTableSize; ++HashLoc){
         ProgressBar.setValue(HashLoc);
         if (this->NGramHashTable[HashLoc].hashValue() > 0){
-            BinFile.write((char*)&HashLoc, sizeof(Hash_t));
-            BinFile.write((char*)&this->NGramHashTable[HashLoc].HashValueLevel, sizeof(quint8));
-            BinFile.write((char*)&this->NGramHashTable[HashLoc].Prob, sizeof(LogP_t));
-            BinFile.write((char*)&this->NGramHashTable[HashLoc].Backoff, sizeof(LogP_t));
+            OutputStream << HashLoc;
+            OutputStream << this->NGramHashTable[HashLoc].HashValueLevel;
+            OutputStream << this->NGramHashTable[HashLoc].Prob;
+            OutputStream << this->NGramHashTable[HashLoc].Backoff;
         }
     }
 
@@ -165,34 +166,41 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     int i=0;
     while(!BinFile.atEnd()){
         ProgressBar.setValue(++i);
-        Crypto.addData(BinFile.read(8192));
+        Crypto.addData(BinFile.read(8192)); //Adds data in 8K blocks.
     }
     BinFile.close();
     QByteArray Hash = Crypto.result();
+    qDebug() << Hash.toHex().constData();
+
     TargomanInfo(5, QString("BinFile Checksum: ") + Hash.toHex().constData());
 
     if (BinFile.open(QFile::Append) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For writing");
 
-    BinFile.write(Hash);
+    BinFile.write(Hash, Hash.size());
+    BinFile.close();
 }
 
 quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
 {
     QFile BinFile(_binFilePath);
+
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
-
-    if (BinFile.read(sizeof(BIN_FILE_HREADER)) != BIN_FILE_HREADER)
+    QDataStream InputStream(&BinFile);
+    QString Header;
+    QString Model;
+    InputStream >> Header;
+    if (Header != BIN_FILE_HEADER)
         throw exLanguageModel("Incompatible bin file");
     quint8 Order;
     try{
-        QString Model = BinFile.read(this->modelHeaderSuffix().size());
+        Model = BinFile.read(this->modelHeaderSuffix().size());
         if (Model != this->modelHeaderSuffix())
             throw exLanguageModel(QString("Incompatible Bin File. %1 vs %2").arg(this->modelHeaderSuffix()).arg(Model));
-        Order = BinFile.read(sizeof(quint8)).toUInt();
-        this->HashTableSize = BinFile.read(sizeof(this->HashTableSize)).toULongLong();
-        this->NgramCount = BinFile.read(sizeof(this->NgramCount)).toULongLong();
+        Order = BinFile.read(sizeof(quint8)).at(0);
+        InputStream >> this->HashTableSize;
+        InputStream >> this->NgramCount;
     }catch (exLanguageModel &e){
         throw;
     }catch(...){
@@ -211,19 +219,31 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
 
     clsCmdProgressBar ProgressBar("Computing CheckSum", QFileInfo(_binFilePath).size() / 8192);
     QCryptographicHash Crypto(QCryptographicHash::Md5);
+    BinFile.close();
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
     int i=0;
     QByteArray MD5Sum;
-    while(!BinFile.atEnd()){
-        ProgressBar.setValue(++i);
-        QByteArray Data = BinFile.read(8192);
-        if (Data.size() < 8192 || BinFile.atEnd()){
-            MD5Sum = Data.mid(Data.size() - 16);
-            Data.truncate(Data.size() - 16); // Ignore last 16 byte where MD5Sum is stored
-        }
-        Crypto.addData(Data);
+//    QByteArray OldData;
+    const quint16 BulkSize = 1000;
+    const quint16 HashStructSize = sizeof(Hash_t) + sizeof(stuNGramHash);
+    const quint64 BulkReadSize = HashStructSize * BulkSize;
+
+    quint8 Reminder = this->NgramCount % BulkSize;
+
+    try{
+        for(quint64 i = 0; i < (this->NgramCount / BulkSize); ++i)
+            Crypto.addData(BinFile.read(BulkReadSize));
+        for(int i = 0; i < Reminder; i++)
+            Crypto.addData(BinFile.read(HashStructSize));
+        MD5Sum = BinFile.read(1000);
+
     }
+    catch(...){
+        throw exLanguageModel("Invalid truncated BinFile");
+    }
+    if(MD5Sum.size() != 16)
+        throw exLanguageModel("Invalid truncated BinFile. Reminder size is" + QString::number(MD5Sum.size()));
 
     if (Crypto.result() != MD5Sum)
         throw exLanguageModel(QString("Checksum has failed: %1 vs %2").arg(
@@ -244,11 +264,19 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
 
+    InputStream >> Header;
+    Model = BinFile.read(this->modelHeaderSuffix().size());
+    Order = BinFile.read(sizeof(quint8)).at(0);
+    InputStream >> this->HashTableSize;
+    InputStream >> this->NgramCount;
+
+
     for (Hash_t i; i<this->NgramCount; ++i){
-        Hash_t HashLoc = BinFile.read(sizeof(Hash_t)).toULongLong();
-        this->NGramHashTable[HashLoc].HashValueLevel = BinFile.read(sizeof(quint64)).toULongLong();
-        this->NGramHashTable[HashLoc].Prob = BinFile.read(sizeof(LogP_t)).toFloat();
-        this->NGramHashTable[HashLoc].Backoff = BinFile.read(sizeof(LogP_t)).toFloat();
+        Hash_t HashLoc;
+        InputStream >> HashLoc;
+        InputStream >> this->NGramHashTable[HashLoc].HashValueLevel;
+        InputStream >> this->NGramHashTable[HashLoc].Prob;
+        InputStream >> this->NGramHashTable[HashLoc].Backoff;
 
         ProgressBar.setValue(i);
     }

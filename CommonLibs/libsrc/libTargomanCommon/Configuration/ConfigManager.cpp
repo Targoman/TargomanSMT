@@ -149,7 +149,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         }else if(*KeyIter == "--save"){
             continue;
         }
-
+        bool ArgumentIsConfigItem = false;
         if (KeyIter->startsWith("-")){
             for (auto ConfigItemIter = this->pPrivate->Configs.begin();
                  ConfigItemIter != this->pPrivate->Configs.end();
@@ -168,12 +168,19 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                         throw exConfiguration(ErrorMessage);
                     else
                         ConfigItemIter.value()->setFromVariant(Value.trimmed());
-                }else if (KeyIter->startsWith("--") && this->pPrivate->ModuleInstantiators.value(KeyIter->mid(2)).IsSingleton){
+                    ArgumentIsConfigItem = true;
+                    break;
+                }
+            }
+            if(!ArgumentIsConfigItem)
+            {
+                if ( KeyIter->startsWith("--") && this->pPrivate->ModuleInstantiators.value(KeyIter->mid(2)).IsSingleton){
                     Modules.append(KeyIter->mid(2));
                 }else{
                     throw exConfiguration("Unrecognized argument: " + *KeyIter);
                 }
             }
+
         }else
             throw exConfiguration("invalid argument <"+*KeyIter+">");
     }

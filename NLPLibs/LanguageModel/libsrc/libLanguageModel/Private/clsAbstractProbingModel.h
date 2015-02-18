@@ -22,6 +22,9 @@
 
 namespace Targoman {
 namespace NLPLibs {
+
+extern const QString BIN_FILE_HEADER;
+
 namespace Private {
 
 const quint8  MAX_HASH_LEVEL = 32;

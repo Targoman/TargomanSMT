@@ -47,25 +47,29 @@ int main(int argc, char *argv[])
 //        Prob = SS.wordProb(Word, Gram);
 
         qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/saeed/Khadivi/Targoman/Trunk/out/unitTest/test.arpa", languageModelConfig);
-        clsLMSentenceScorer SS(LM);
+        LM.convertBinary("/home/saeed/Khadivi/Targoman/Trunk/out/unitTest/test.arpa.bin");
+        clsLanguageModel LM2;
+        LM2.init("/home/saeed/Khadivi/Targoman/Trunk/out/unitTest/test.arpa.bin", languageModelConfig);
+        clsLMSentenceScorer SS(LM2);
+//        clsLMSentenceScorer SS(LM);
 
-        QString Word = "این";
-        quint8 Gram;
-        Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+//        QString Word = "این";
+//        quint8 Gram;
+//        Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
 //        QVERIFY(Gram == 2);
 //        QVERIFY(qFuzzyCompare(Prob, -1.97194f));
 
-        Word = "استخوان‌ها";
-        Prob = SS.wordProb(Word, Gram);
+//        Word = "استخوان‌ها";
+//        Prob = SS.wordProb(Word, Gram);
 
-//        QString Sentence =
-//                QStringLiteral("ارتباط او با سپاه پاسسسداران انقلالللب اسلاملللللی اووووو را در مرکز زنجیققرهای از ترور و جنایت قرار داده که دنیا را در برگرفته است .");
+        QString Sentence =
+                QStringLiteral("این استخوان‌ها شامل یک استخوان فک بالا و دو استخوان فک پایین با دندان‌های سالم , بخشی از استخوان انگشت پا و استخوان‌های سالم انگشت دست است .");
 
-//        quint8 Gram;
-//        foreach (const QString& Word, Sentence.split(" ")){
-//            Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
-//            qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
-//        }
+        quint8 Gram;
+        foreach (const QString& Word, Sentence.split(" ")){
+            Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+            qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
+        }
 //        while(1);
 
         return 0;
