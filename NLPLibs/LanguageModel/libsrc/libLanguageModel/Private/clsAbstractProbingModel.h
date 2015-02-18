@@ -88,8 +88,6 @@ public:
     virtual quint8 loadBinFile(const QString& _binFilePath);
     virtual QString modelHeaderSuffix() = 0;
 
-    bool isBinary(const QString &_binFilePath);
-
     QString getStatsStr() const {
         return QString("MaxLevel: %1 AverageLevel: %2 QHashed: %3").arg(
                     this->MaxLevel).arg(
