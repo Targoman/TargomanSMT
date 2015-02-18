@@ -60,11 +60,17 @@ public:
         }
     }
 
+    /**
+     * @brief tmplConfigurable Copy constructor of this class.
+     */
+
+
     tmplConfigurable(const tmplConfigurable<Type_t>& _other) :
         intfConfigurable(_other){
         this->Value = _other.Value;
         this->CrossValidator = _other.CrossValidator;
     }
+
 
     tmplConfigurable& operator = (const tmplConfigurable<Type_t>& _other){
         this->ConfigPath = _other.ConfigPath;
