@@ -38,7 +38,7 @@ public:
 
     quint8 init(const QString& _filePath, const stuLMConfigs& _configs = stuLMConfigs(), bool _justVocab = false);
 
-    void convertBinary(enuMemoryModel::Type _model, const QString& _binFilePath);
+    void convertBinary(const QString& _binFilePath);
 
     quint8  order() const;
     Common::WordIndex_t getID(const QString& _word) const;

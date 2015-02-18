@@ -84,17 +84,34 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
     if (this->pPrivate->FullyInitialized)
         return this->pPrivate->Order;
 
-    if (this->pPrivate->isBinary(_filePath)){
-        throw exTargomanNotImplemented("Binary is Not implemented yet");
-    }else{
+    if (this->pPrivate->Model->isBinary(_filePath)){
+        this->pPrivate->WasBinary = true;
         if (this->pPrivate->Model == NULL){
             if (_configs.UseIndexBasedModel)
                 this->pPrivate->Model = new clsIndexBasedProbingModel();
             else
                 this->pPrivate->Model = new clsStringBasedProbingModel();
-            this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model, _justVocab);
+        }
+
+        this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
+                                                      _configs.UnknownWordDefault.Backoff);
+
+        this->pPrivate->Order = this->pPrivate->Model->loadBinFile(_filePath);
+
+        LM_BEGIN_SENTENCE_WINDEX = this->pPrivate->Model->getID(LM_BEGIN_SENTENCE);
+        LM_END_SENTENCE_WINDEX   = this->pPrivate->Model->getID(LM_END_SENTENCE);
+        this->pPrivate->FullyInitialized = true;
+    }else{
+        this->pPrivate->WasBinary = false;
+        if (this->pPrivate->Model == NULL){
+            if (_configs.UseIndexBasedModel)
+                this->pPrivate->Model = new clsIndexBasedProbingModel();
+            else
+                this->pPrivate->Model = new clsStringBasedProbingModel();
+
             this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
                                                           _configs.UnknownWordDefault.Backoff);
+            this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model, _justVocab);
 
             LM_BEGIN_SENTENCE_WINDEX = this->pPrivate->Model->getID(LM_BEGIN_SENTENCE);
             LM_END_SENTENCE_WINDEX   = this->pPrivate->Model->getID(LM_END_SENTENCE);
@@ -107,13 +124,18 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
             this->pPrivate->FullyInitialized = true;
         }
     }
+
     return this->pPrivate->Order;
 }
 
-void clsLanguageModel::convertBinary(enuMemoryModel::Type _model, const QString &_binFilePath)
+void clsLanguageModel::convertBinary(const QString &_binFilePath)
 {
-    Q_UNUSED(_model);
-    Q_UNUSED(_binFilePath);
+    if (this->pPrivate->FullyInitialized)
+        throw exLanguageModel("Seems that LM has not been fully initialized");
+    if (this->pPrivate->WasBinary)
+        throw exLanguageModel("LM has been loaded from a bin file so can not be written again");
+
+    this->pPrivate->Model->saveBinFile(_binFilePath, this->pPrivate->Order);
 }
 
 quint8 clsLanguageModel::order() const
@@ -158,12 +180,6 @@ Private::clsLanguageModelPrivate::clsLanguageModelPrivate()
 {
     this->FullyInitialized = false;
     this->Model = NULL;
-}
-
-bool clsLanguageModelPrivate::isBinary(const QString &_file)
-{
-    Q_UNUSED(_file)
-    return false;
 }
 
 }
