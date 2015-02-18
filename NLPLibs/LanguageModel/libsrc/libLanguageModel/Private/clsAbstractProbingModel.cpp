@@ -141,6 +141,7 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     clsCmdProgressBar ProgressBar("Storing Bin Data", this->HashTableSize);
 
     BinFile.write(BIN_FILE_HREADER);
+    BinFile.write(this->modelHeaderSuffix().toLatin1());
     BinFile.write((char*)&_order, sizeof(_order));
     BinFile.write((char*)&this->HashTableSize, sizeof(this->HashTableSize));
     BinFile.write((char*)&this->NgramCount, sizeof(this->NgramCount));
@@ -185,9 +186,14 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
         throw exLanguageModel("Incompatible bin file");
     quint8 Order;
     try{
+        QString Model = BinFile.read(this->modelHeaderSuffix().size());
+        if (Model != this->modelHeaderSuffix())
+            throw exLanguageModel(QString("Incompatible Bin File. %1 vs %2").arg(this->modelHeaderSuffix()).arg(Model));
         Order = BinFile.read(sizeof(quint8)).toUInt();
         this->HashTableSize = BinFile.read(sizeof(this->HashTableSize)).toULongLong();
         this->NgramCount = BinFile.read(sizeof(this->NgramCount)).toULongLong();
+    }catch (exLanguageModel &e){
+        throw;
     }catch(...){
         throw exLanguageModel("Invalid truncated BinFile");
     }

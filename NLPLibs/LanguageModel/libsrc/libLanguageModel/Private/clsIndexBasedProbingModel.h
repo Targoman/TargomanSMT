@@ -30,6 +30,7 @@ public:
     void insert(const char *_ngram, quint8 _order, Common::LogP_t _prob, Common::LogP_t _backoff);
     Common::LogP_t lookupNGram(const QList<Common::WordIndex_t> &_ngram, quint8 &_foundedGram) const;
     Targoman::Common::LogP_t lookupNGram(const QStringList &_ngram, quint8& _foundedGram) const;
+    inline QString modelHeaderSuffix() {return "IndexBased";}
 
 private:
     void insert(QList<Common::WordIndex_t> _ngram, Common::LogP_t _prob, Common::LogP_t _backoff);

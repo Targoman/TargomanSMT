@@ -31,6 +31,7 @@ public:
         Q_UNUSED(_foundedGram)
         throw Common::exTargomanNotImplemented("NgramLookup by WordIndex not implemented yet");
     }
+    inline QString modelHeaderSuffix() {return QString("StringBased");}
 };
 
 }
