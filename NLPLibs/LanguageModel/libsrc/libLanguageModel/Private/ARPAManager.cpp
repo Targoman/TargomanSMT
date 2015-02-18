@@ -159,7 +159,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                     throw exARPAManager("Invalid ARPA file as it has been started with greater order NGram than 1");
 
                 quint32 MaxItems = 0;
-                for (int i=1; i<MaxGram; ++i){
+                for (int i=1; i<=MaxGram; ++i){
                     if (NGramCounts.value(i) == 0)
                         throw exARPAManager(QString("ARPA File has no item for %1Gram which is prior to %2Gram").arg(
                                                 i).arg(MaxGram));
@@ -193,7 +193,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                     Count = 0;
 
                     if (_justVocab){
-                        TargomanLogInfo(5, "Vocabs from ARPA File Loaded. " + _model->getStatsStr());
+                        TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
 
                         return 1;
                     }else
@@ -202,8 +202,8 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                     if (Count < NGramCounts.value(NGramOrder))
                         throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
                                                 NGramOrder).arg(NGramCounts.value(NGramOrder)));
+//                    TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
                     TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
-
                     return MaxGram;
                 }else
                     throw exARPAManager(QString("Invalid Tag at Line: %1").arg(LineNo));

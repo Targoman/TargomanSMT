@@ -92,10 +92,11 @@ public:
     virtual QString modelHeaderSuffix() = 0;
 
     QString getStatsStr() const {
-        return QString("MaxLevel: %1 AverageLevel: %2 QHashed: %3").arg(
+        return QString("Count: %4 MaxLevel: %1 AverageLevel: %2 QHashed: %3").arg(
                     this->MaxLevel).arg(
                     this->SumLevels / (double)this->StoredItems).arg(
-                    this->RemainingHashes.size());
+                    this->RemainingHashes.size()).arg(
+                    this->StoredItems+this->RemainingHashes.size());
     }
 
 protected:

@@ -155,7 +155,6 @@ LogP_t clsIndexBasedProbingModel::lookupNGram(const QStringList &_ngram, quint8 
 void clsIndexBasedProbingModel::insert(QList<WordIndex_t> _ngram, LogP_t _prob, LogP_t _backoff)
 {
     Hash_t HashLoc, HashValue;
-
     if (_ngram.size() < 2)
         throw exLanguageModel("Seems buggy as input _ngram has just one Item", __LINE__);
 

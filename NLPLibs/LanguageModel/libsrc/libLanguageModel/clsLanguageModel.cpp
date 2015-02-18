@@ -193,8 +193,6 @@ bool clsLanguageModelPrivate::isBinary(const QString &_filePath)
     QDataStream InputStream(&BinFile);
     QString Header;
     InputStream >> Header;
-    qDebug() << Header;
-    qDebug() << BIN_FILE_HEADER;
     return (Header == BIN_FILE_HEADER);
 }
 

@@ -70,7 +70,6 @@ void clsAbstractProbingModel::setUnknownWordDefaults(LogP_t _prob, LogP_t _backo
 void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _prob, LogP_t _backoff)
 {
     Hash_t HashLoc, HashValue;
-
     size_t NGramLen = strlen(_ngram);
     if (_order == 1 && !strcmp(_ngram, LM_UNKNOWN_WORD)){
         this->UnknownWeights.Backoff = _backoff;
@@ -140,9 +139,7 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For writing");
     QDataStream OutputStream(&BinFile);
     clsCmdProgressBar ProgressBar("Storing Bin Data", this->HashTableSize);
-    qDebug() << BIN_FILE_HEADER;
     OutputStream << BIN_FILE_HEADER;
-//    BinFile.write(BIN_FILE_HEADER, sizeof(BIN_FILE_HEADER));
     BinFile.write(this->modelHeaderSuffix().toLatin1());
     OutputStream << _order;
     OutputStream << this->HashTableSize;
@@ -157,7 +154,11 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
         }
     }
 
-    BinFile.close();
+//    QByteArray HashByteArray;
+//    QDataStream HashStream(&HashByteArray, QIODevice::WriteOnly);
+//    HashStream << this->RemainingHashes;
+//    OutputStream << HashByteArray;
+//    BinFile.close();
 
     ProgressBar.reset("Computing CheckSum", QFileInfo(_binFilePath).size() / 8192);
     QCryptographicHash Crypto(QCryptographicHash::Md5);
@@ -170,7 +171,6 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     }
     BinFile.close();
     QByteArray Hash = Crypto.result();
-    qDebug() << Hash.toHex().constData();
 
     TargomanInfo(5, QString("BinFile Checksum: ") + Hash.toHex().constData());
 
@@ -212,44 +212,31 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
         this->HashTableSize < this->NgramCount)
         throw exLanguageModel("Invalid bin file");
 
-    BinFile.close();
-    if (BinFile.open(QFile::ReadOnly) == false)
-        throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
-
 
     clsCmdProgressBar ProgressBar("Computing CheckSum", QFileInfo(_binFilePath).size() / 8192);
     QCryptographicHash Crypto(QCryptographicHash::Md5);
     BinFile.close();
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
-    int i=0;
+    quint64 FileSize = QFileInfo(_binFilePath).size();
+    const quint16 BulkSize = 8192;
+    quint16 Remainder = (FileSize - 16) % BulkSize;
     QByteArray MD5Sum;
-//    QByteArray OldData;
-    const quint16 BulkSize = 1000;
-    const quint16 HashStructSize = sizeof(Hash_t) + sizeof(stuNGramHash);
-    const quint64 BulkReadSize = HashStructSize * BulkSize;
-
-    quint8 Reminder = this->NgramCount % BulkSize;
 
     try{
-        for(quint64 i = 0; i < (this->NgramCount / BulkSize); ++i)
-            Crypto.addData(BinFile.read(BulkReadSize));
-        for(int i = 0; i < Reminder; i++)
-            Crypto.addData(BinFile.read(HashStructSize));
-        MD5Sum = BinFile.read(1000);
+        for(quint64 i = 0; i < ((FileSize - 16) / BulkSize); ++i)
+            Crypto.addData(BinFile.read(BulkSize));
+        Crypto.addData(BinFile.read(Remainder));
+        MD5Sum = BinFile.read(16);
 
     }
     catch(...){
         throw exLanguageModel("Invalid truncated BinFile");
     }
-    if(MD5Sum.size() != 16)
-        throw exLanguageModel("Invalid truncated BinFile. Reminder size is" + QString::number(MD5Sum.size()));
-
     if (Crypto.result() != MD5Sum)
         throw exLanguageModel(QString("Checksum has failed: %1 vs %2").arg(
                                   MD5Sum.toHex().constData()).arg(
                                   Crypto.result().toHex().constData()));
-
     BinFile.close();
 
     if (this->NGramHashTable)
@@ -280,6 +267,11 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
 
         ProgressBar.setValue(i);
     }
+
+//    QByteArray HashByteArray;
+//    InputStream >> HashByteArray;
+//    QDataStream HashStream(&HashByteArray, QIODevice::ReadOnly);
+//    HashStream >> this->RemainingHashes;
 
     return Order;
 }
