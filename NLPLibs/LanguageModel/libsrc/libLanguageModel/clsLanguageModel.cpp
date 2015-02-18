@@ -27,6 +27,8 @@ using namespace Targoman::Common;
 namespace Targoman {
 namespace NLPLibs {
 
+const char* BIN_FILE_HREADER = "TargomanLMBin";
+
 using namespace Private;
 using namespace Targoman::Common::Configuration;
 
@@ -84,7 +86,7 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
     if (this->pPrivate->FullyInitialized)
         return this->pPrivate->Order;
 
-    if (this->pPrivate->Model->isBinary(_filePath)){
+    if (this->pPrivate->isBinary(_filePath)){
         this->pPrivate->WasBinary = true;
         if (this->pPrivate->Model == NULL){
             if (_configs.UseIndexBasedModel)
@@ -180,6 +182,15 @@ Private::clsLanguageModelPrivate::clsLanguageModelPrivate()
 {
     this->FullyInitialized = false;
     this->Model = NULL;
+}
+
+bool clsLanguageModelPrivate::isBinary(const QString &_filePath)
+{
+    QFile BinFile(_filePath);
+    if (BinFile.open(QFile::ReadOnly) == false)
+        throw exLanguageModel("Unable to open <" + _filePath + "> For reading");
+
+    return (BinFile.read(sizeof(BIN_FILE_HREADER)) == BIN_FILE_HREADER);
 }
 
 }

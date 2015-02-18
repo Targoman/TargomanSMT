@@ -23,9 +23,10 @@ using namespace Targoman::Common;
 
 namespace Targoman {
 namespace NLPLibs {
-namespace Private {
 
-const char* BIN_FILE_HREADER = "TargomanLMBin-Probing-v1.0";
+extern const char* BIN_FILE_HREADER;
+
+namespace Private {
 
 clsAbstractProbingModel::clsAbstractProbingModel() : intfBaseModel(enuMemoryModel::Probing)
 {
@@ -255,14 +256,7 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
     return Order;
 }
 
-bool clsAbstractProbingModel::isBinary(const QString &_binFilePath)
-{
-    QFile BinFile(_binFilePath);
-    if (BinFile.open(QFile::ReadOnly) == false)
-        throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
 
-    return (BinFile.read(sizeof(BIN_FILE_HREADER)) == BIN_FILE_HREADER);
-}
 
 /**
  * @brief Retrieves probability, backoff weight and ID of input NGram in Hash Table.

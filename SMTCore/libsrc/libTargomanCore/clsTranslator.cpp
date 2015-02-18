@@ -57,7 +57,7 @@ void clsTranslator::init(const QString _configFilePath)
 
 stuTranslationOutput clsTranslator::translate()
 {
-    if (clsTranslatorPrivate::Initialized = false)
+    if (clsTranslatorPrivate::Initialized == false)
         throw exTargomanCore("Translator is not initialized");
 
     //Input was decomposed in constructor
