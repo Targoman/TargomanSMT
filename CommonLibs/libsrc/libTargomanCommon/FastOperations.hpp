@@ -81,13 +81,13 @@ inline std::string& fastTrimStdString(std::string& _str){
 inline float fastASCII2Float (const char *pFloatString, size_t& _lastPos)
 {
     qint64 IntValue, Scale = 0;
-    qint16 Sign;
+    //qint16 Sign;
     const char*  StartOfString = pFloatString;
-    const float  Log2Of10 = log2(10);
+    //const float  Log2Of10 = log2(10);
 
-    Sign = 1;
+//    Sign = 1;
     if (*pFloatString == '-') {
-        Sign = -1;
+  //      Sign = -1;
         ++pFloatString;
     } else if (*pFloatString == '+') {
         ++pFloatString;
