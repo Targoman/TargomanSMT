@@ -23,10 +23,8 @@ using namespace Targoman::Common;
 
 namespace Targoman {
 namespace NLPLibs {
-
-
-
 namespace Private {
+
 
 clsAbstractProbingModel::clsAbstractProbingModel() : intfBaseModel(enuMemoryModel::Probing)
 {
@@ -142,14 +140,20 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     QFile BinFile(_binFilePath);
     if (BinFile.open(QFile::WriteOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For writing");
-    QDataStream OutputStream(&BinFile);
+
+    /***********************************************************************************
+          Write Whole Data to file
+     ***********************************************************************************/
     clsCmdProgressBar ProgressBar("Storing Bin Data", this->HashTableSize);
-    OutputStream << BIN_FILE_HEADER;
+    QDataStream OutputStream(&BinFile);
+
+    BinFile.write(BIN_FILE_HEADER.toLatin1());
     BinFile.write(this->modelHeaderSuffix().toLatin1());
+    OutputStream.setVersion(QDataStream::Qt_5_0);
     OutputStream << _order;
     OutputStream << this->HashTableSize;
     OutputStream << this->NgramCount;
-    quint64 Inserted = 0;
+
     for(Hash_t HashLoc=1; HashLoc<this->HashTableSize; ++HashLoc){
         ProgressBar.setValue(HashLoc);
         if (this->NGramHashTable[HashLoc].hashValue() > 0){
@@ -157,35 +161,36 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
             OutputStream << this->NGramHashTable[HashLoc].HashValueLevel;
             OutputStream << this->NGramHashTable[HashLoc].Prob;
             OutputStream << this->NGramHashTable[HashLoc].Backoff;
-            ++Inserted;
         }
     }
-    qDebug()<<Inserted;
 
-//    QByteArray HashByteArray;
-//    QDataStream HashStream(&HashByteArray, QIODevice::WriteOnly);
-//    HashStream << this->RemainingHashes;
-//    OutputStream << HashByteArray;
-//    BinFile.close();
+    OutputStream << this->RemainingHashes;
 
-    ProgressBar.reset("Computing CheckSum", QFileInfo(_binFilePath).size() / 8192);
+    BinFile.close();
+
+    /***********************************************************************************
+         Compute MD5Sum of the stored file
+     ***********************************************************************************/
+    ProgressBar.reset("Computing CheckSum", QFileInfo(_binFilePath).size() / Constants::MaxFileIOBytes);
     QCryptographicHash Crypto(QCryptographicHash::Md5);
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
     int i=0;
     while(!BinFile.atEnd()){
         ProgressBar.setValue(++i);
-        Crypto.addData(BinFile.read(8192)); //Adds data in 8K blocks.
+        Crypto.addData(BinFile.read(Constants::MaxFileIOBytes));
     }
+    QByteArray Checksum = Crypto.result();
+    TargomanInfo(5, QString("BinFile Checksum: ") + Checksum.toHex().constData());
     BinFile.close();
-    QByteArray Hash = Crypto.result();
 
-    TargomanInfo(5, QString("BinFile Checksum: ") + Hash.toHex().constData());
-
+    /***********************************************************************************
+         Append Checksum to file
+     ***********************************************************************************/
     if (BinFile.open(QFile::Append) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For writing");
 
-    BinFile.write(Hash, Hash.size());
+    BinFile.write(Checksum, Checksum.size());
     BinFile.close();
 }
 
@@ -195,21 +200,26 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
 
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
-    QDataStream InputStream(&BinFile);
-    QString Header;
-    QString Model;
-    InputStream >> Header;
-    if (Header != BIN_FILE_HEADER)
-        throw exLanguageModel("Incompatible bin file");
+
+    /***********************************************************************************
+         Primary check for header
+     ***********************************************************************************/
+    QByteArray Header, Model;
     quint8 Order;
     try{
+        QDataStream InputStream(&BinFile);
+
+        Header = BinFile.read(BIN_FILE_HEADER.size());
+        if (Header != BIN_FILE_HEADER)
+            throw exLanguageModel(QString("Incompatible Bin file: %1").arg(Header.append('\0').constData()));
         Model = BinFile.read(this->modelHeaderSuffix().size());
         if (Model != this->modelHeaderSuffix())
-            throw exLanguageModel(QString("Incompatible Bin File. %1 vs %2").arg(this->modelHeaderSuffix()).arg(Model));
-        Order = BinFile.read(sizeof(quint8)).at(0);
+            throw exLanguageModel(QString("Incompatible Bin File. %1 vs %2").arg(this->modelHeaderSuffix()).arg(Model.append('\0').constData()));
+        InputStream.setVersion(QDataStream::Qt_5_0);
+        InputStream >> Order;
         InputStream >> this->HashTableSize;
         InputStream >> this->NgramCount;
-    }catch (exLanguageModel &e){
+    }catch (exLanguageModel&){
         throw;
     }catch(...){
         throw exLanguageModel("Invalid truncated BinFile");
@@ -218,35 +228,42 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
     if (this->HashTableSize == 0 ||
         this->NgramCount == 0 ||
         this->HashTableSize < this->NgramCount)
-        throw exLanguageModel("Invalid bin file");
+        throw exLanguageModel("Invalid bin file or corrupted header");
 
-
-    clsCmdProgressBar ProgressBar("Computing CheckSum", QFileInfo(_binFilePath).size() / 8192);
-    QCryptographicHash Crypto(QCryptographicHash::Md5);
     BinFile.close();
+    /***********************************************************************************
+        Compute checksum
+     ***********************************************************************************/
+    const quint64 FileSize  = QFileInfo(_binFilePath).size();
+    const quint32 LoopCount = (FileSize - 16) / Constants::MaxFileIOBytes;
+    const quint32 Remainder = FileSize - (LoopCount * Constants::MaxFileIOBytes) - 16;
+    QByteArray CheckSum;
+
+    clsCmdProgressBar ProgressBar("Computing CheckSum", LoopCount + 1);
+    QCryptographicHash Crypto(QCryptographicHash::Md5);
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
-    quint64 FileSize = QFileInfo(_binFilePath).size();
-    const quint16 BulkSize = 8192;
-    quint16 Remainder = (FileSize - 16) % BulkSize;
-    QByteArray MD5Sum;
-
     try{
-        for(quint64 i = 0; i < ((FileSize - 16) / BulkSize); ++i)
-            Crypto.addData(BinFile.read(BulkSize));
+        for(quint64 i = 0; i < LoopCount; ++i){
+            ProgressBar.setValue(i+1);
+            Crypto.addData(BinFile.read(Constants::MaxFileIOBytes));
+        }
         Crypto.addData(BinFile.read(Remainder));
-        MD5Sum = BinFile.read(16);
-
-    }
-    catch(...){
+        ProgressBar.setValue(LoopCount+1);
+        CheckSum = BinFile.read(16);
+    }catch(...){
         throw exLanguageModel("Invalid truncated BinFile");
     }
-    if (Crypto.result() != MD5Sum)
+
+    if (Crypto.result() != CheckSum)
         throw exLanguageModel(QString("Checksum has failed: %1 vs %2").arg(
-                                  MD5Sum.toHex().constData()).arg(
+                                  CheckSum.toHex().constData()).arg(
                                   Crypto.result().toHex().constData()));
     BinFile.close();
 
+    /***********************************************************************************
+         Load Bin File
+     ***********************************************************************************/
     if (this->NGramHashTable)
         delete [] this->NGramHashTable;
 
@@ -255,18 +272,20 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
     this->NGramHashTable = new stuNGramHash[this->HashTableSize + 1];
     TargomanInfo(5, "Allocated");
 
-    ProgressBar.reset("Loading BinaryLM", this->HashTableSize);
+    ProgressBar.reset("Loading BinaryLM (Phase 1)", this->NgramCount);
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
 
-    InputStream >> Header;
-    Model = BinFile.read(this->modelHeaderSuffix().size());
-    Order = BinFile.read(sizeof(quint8)).at(0);
+    QDataStream InputStream(&BinFile);
+    /** Dummy Reads **/
+    BinFile.read(BIN_FILE_HEADER.size());
+    BinFile.read(this->modelHeaderSuffix().size());
+    InputStream.setVersion(QDataStream::Qt_5_0);
+    InputStream >> Order;
     InputStream >> this->HashTableSize;
     InputStream >> this->NgramCount;
 
-
-    for (Hash_t i; i<this->NgramCount; ++i){
+    for (Hash_t i = 0; i<this->NgramCount; ++i){
         Hash_t HashLoc;
         InputStream >> HashLoc;
         InputStream >> this->NGramHashTable[HashLoc].HashValueLevel;
@@ -276,10 +295,9 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
         ProgressBar.setValue(i);
     }
 
-//    QByteArray HashByteArray;
-//    InputStream >> HashByteArray;
-//    QDataStream HashStream(&HashByteArray, QIODevice::ReadOnly);
-//    HashStream >> this->RemainingHashes;
+    ProgressBar.reset("Loading BinaryLM (Phase 2)", 1);
+    InputStream >> this->RemainingHashes;
+    ProgressBar.setValue(1);
 
     return Order;
 }

@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 
         qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en", languageModelConfig);
         LM.convertBinary("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en.bin");
+
         clsLanguageModel LM2;
         LM2.init("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en.bin", languageModelConfig);
         clsLMSentenceScorer SS(LM2);

@@ -49,4 +49,12 @@ struct stuProbBackoffAndRestWeights {
 }
 }
 
+inline QDataStream& operator << (QDataStream& _stream, const Targoman::NLPLibs::Private::stuProbAndBackoffWeights& _value){
+    return _stream<<_value.ID<<_value.Prob<<_value.Backoff;
+}
+
+inline QDataStream& operator >> (QDataStream& _stream, const Targoman::NLPLibs::Private::stuProbAndBackoffWeights& _value){
+    return _stream>>_value.ID>>_value.Prob>>_value.Backoff;
+}
+
 #endif // TARGOMAN_NLPLIBS_PRIVATE_WEIGHTS_HPP

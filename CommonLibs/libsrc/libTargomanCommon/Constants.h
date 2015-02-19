@@ -21,10 +21,10 @@ namespace Common {
 
 struct Constants
 {
-    static const LogP_t LogP_Zero;            /* log(0) = -Infinity */
-    static const LogP_t LogP_Inf;             /* log(Inf) = Infinity */
-    static const LogP_t LogP_One;             /* log(1) = 0 */
-
+    static const LogP_t     LogP_Zero;            /* log(0) = -Infinity */
+    static const LogP_t     LogP_Inf;             /* log(Inf) = Infinity */
+    static const LogP_t     LogP_One;             /* log(1) = 0 */
+    static const quint32    MaxFileIOBytes;       /* 8192 */
 };
 
 TARGOMAN_DEFINE_ENUM(enuPathAccess,

@@ -19,6 +19,7 @@ namespace Common {
 const LogP_t Constants::LogP_Zero = -FLT_MAX;            /* log(0) = -Infinity */
 const LogP_t Constants::LogP_Inf  = FLT_MAX;             /* log(Inf) = Infinity */
 const LogP_t Constants::LogP_One  = 0.0;                  /* log(1) = 0 */
+const quint32 Constants::MaxFileIOBytes = 8192;
 
 }
 }

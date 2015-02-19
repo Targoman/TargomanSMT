@@ -195,10 +195,11 @@ bool clsLanguageModelPrivate::isBinary(const QString &_filePath)
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _filePath + "> For reading");
 
-    QDataStream InputStream(&BinFile);
-    QString Header;
-    InputStream >> Header;
-    return (Header == BIN_FILE_HEADER);
+    try{
+        return (BinFile.read(BIN_FILE_HEADER.size()) == BIN_FILE_HEADER.toLatin1());
+    }catch(...){
+        throw exLanguageModel("Unable to read from: " + _filePath);
+    }
 }
 
 }
