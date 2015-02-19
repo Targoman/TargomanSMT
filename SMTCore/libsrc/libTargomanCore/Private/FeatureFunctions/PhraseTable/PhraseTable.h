@@ -41,6 +41,9 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exFeatureFunction);
 
 class PhraseTable : public intfFeatureFunction
 {
+public:
+    ~PhraseTable(){TargomanDebugLine}
+
     void initialize();
 
     inline Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const{

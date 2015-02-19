@@ -45,7 +45,7 @@ public:
         QSharedData(_other),
         LexicalHypothesisContainer(_other.LexicalHypothesisContainer)
     {}
-    ~clsCardinalityData(){}
+    ~clsCardinalityData(){TargomanDebugLine}
 
 public:
     LexicalHypothesisContainer_t LexicalHypothesisContainer;
@@ -57,6 +57,7 @@ class clsCardinality
 {
 public:
     clsCardinality();
+    ~clsCardinality(){TargomanDebugLine}
 
     inline clsLexicalHypothesis& operator [] (const Coverage_t& _coverage){
         return this->Data->LexicalHypothesisContainer[_coverage];
@@ -70,9 +71,9 @@ public:
         return this->Data->LexicalHypothesisContainer;
     }
 
-    inline static clsCardinality rootCoverageContainer(){
+    inline static clsCardinality rootCoverageContainer(Coverage_t _emptyCoverage){
         clsCardinality CoverageContainer;
-        CoverageContainer.Data->LexicalHypothesisContainer.insert(clsCardinality::EmptyCoverage,
+        CoverageContainer.Data->LexicalHypothesisContainer.insert(_emptyCoverage,
                                                             clsLexicalHypothesis::rootLexicalHypothesis());
         return CoverageContainer;
     }
@@ -85,7 +86,6 @@ public:
     void updateWorstNode(const Coverage_t& _coverage, const clsSearchGraphNode& _node);
 
 public:
-    static Coverage_t EmptyCoverage;
     static Common::Configuration::tmplConfigurable<quint8> ReorderingHistogramSize;
 
 private:

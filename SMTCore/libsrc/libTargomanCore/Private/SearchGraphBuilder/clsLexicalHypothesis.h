@@ -32,7 +32,7 @@ public:
         QSharedData(_other),
         Nodes(_other.Nodes)
     {}
-    ~clsLexicalHypothesisData(){}
+    ~clsLexicalHypothesisData(){TargomanDebugLine}
     QList<clsSearchGraphNode> Nodes;
 };
 
@@ -40,6 +40,7 @@ class clsLexicalHypothesis
 {
 public:
     clsLexicalHypothesis();
+    ~clsLexicalHypothesis(){TargomanDebugLine}
 
     const clsSearchGraphNode& bestNode() const{
         return this->Data->Nodes.first();

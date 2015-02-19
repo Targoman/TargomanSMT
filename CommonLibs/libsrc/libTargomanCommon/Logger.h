@@ -30,6 +30,9 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
 #define TARGOMAN_REGISTER_ACTOR(_actorName) \
     Targoman::Common::Logger::instance().registerActor(&ActorUUID, _actorName);
 
+#define TARGOMAN_UNREGISTER_ACTOR \
+    Targoman::Common::Logger::instance().unregisterActor(ActorUUID);
+
 /** @brief These are helper macros to ease usage of Logger */
 #define TargomanLogWarn(_level, _message) \
     Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Warning, _level, _message);
@@ -178,7 +181,7 @@ public:
      * @param _newLine if this is true, newline character will be added after printing message in log file.
      * @exception throws exception if _actorID and value of _actorID in LoggerPrivate#Actor is empty.
      */
-    void   write(const QString&     _actorID,
+    void   write(const QString&     _actorUUID,
                  enuLogType::Type   _type,
                  quint8             _level,
                  const QString&     _message,
@@ -192,7 +195,15 @@ public:
      * @exception throws exception if _actorName or _actorUUID is empty
      * @exception throws exception if _actorName is already exists in our Map, but _actorUUID is different
      **/
-    void   registerActor(QString* _actorID, const QString& _actorName);
+    void   registerActor(QString* _actorUUID, const QString& _actorName);
+
+    /**
+     * @brief unregisterActor
+     * @param _actorID
+     * @param _actorName
+     */
+    void   unregisterActor(const QString &_actorUUID);
+
     /**
      * @brief List of all registered actors
      *

@@ -31,7 +31,7 @@ namespace LanguageModel{
 class clsTargomanLMProxy : public intfLMSentenceScorer
 {
 public:
-    clsTargomanLMProxy();
+    clsTargomanLMProxy(quint64 _instanceID);
     ~clsTargomanLMProxy();
 
     /**
@@ -73,6 +73,13 @@ public:
      */
 
     inline Common::WordIndex_t getWordIndex(const QString& _word){return this->LM.getID(_word);}
+
+    /**
+     * @brief getWordIndex
+     * @param _word
+     * @return
+     */
+    inline QString getWordByIndex(Common::WordIndex_t _wordIndex){return this->LM.getWordByID(_wordIndex);}
 
     /**
      * @brief Initializes history of language model with history of input sentence scorer.

@@ -24,6 +24,10 @@ namespace Configuration {
 
 ConfigManager* ConfigManager::Instance = NULL;
 
+/******************************************************************************************/
+//tmplConfigurable<QStringList>
+
+/******************************************************************************************/
 ConfigManager::ConfigManager() :
     pPrivate(new Private::clsConfigManagerPrivate)
 {
@@ -395,6 +399,7 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
         this->ShortHelp = _shortHelp;
         this->ConfigPath = _configPath;
         this->ArgCount = this->ShortHelp.split(" ").size();
+        //this->ValidConfigSource = _validConfigSource;
 
         ConfigManager::instance().addConfig(_configPath, this);
     }catch(exTargomanBase &e){
@@ -413,7 +418,6 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
  * Calling updateConfig in this copy constructor, helps us to change the deleted pointer with the valid pointer of configurable which is in the QList.
  *
  */
-
 intfConfigurable::intfConfigurable(const intfConfigurable &_other):
     pPrivate(new Private::intfConfigurablePrivate)
 {

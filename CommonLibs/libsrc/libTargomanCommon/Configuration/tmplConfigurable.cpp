@@ -69,6 +69,25 @@ bool tmplConfigurable<QString>::validate(const QVariant&, QString& )const { retu
 template <>
 void tmplConfigurable<QString>::setFromVariant(const QVariant& _value){ this->Value = _value.toString(); }
 
+//////QStringList
+template <>
+bool tmplConfigurable<QStringList>::validate(const QVariant& _value, QString& _errorMessage )const {
+    if (_value.canConvert(QVariant::List) == false) {
+        _errorMessage = "Unable to convert" + _value.toString() + " to QStringList.";
+        return false;
+    }else
+        return true;
+}
+
+template <>
+void tmplConfigurable<QStringList>::setFromVariant(const QVariant& _value){
+    QString ErrorMessage;
+    if (this->validate(_value, ErrorMessage))
+        this->Value = _value.value<QStringList>();
+    else
+        throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
+}
+
 //////bool
 template <>
 bool tmplConfigurable<bool>::validate(const QVariant& _value, QString& _errorMessage) const{

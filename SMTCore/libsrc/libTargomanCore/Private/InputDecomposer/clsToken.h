@@ -17,7 +17,7 @@
 #include <QString>
 #include <QHash>
 #include "libTargomanCommon/Types.h"
-
+#include "libTargomanCommon/CmdIO.h"
 
 namespace Targoman {
 namespace Core {
@@ -40,6 +40,7 @@ public:
         this->TagStr = _tagStr;
         this->Attrs = _attrs;
     }
+    ~clsToken(){TargomanDebugLine}
 
     inline const QString& value() const {return this->Value;}
     inline const Common::WordIndex_t& wordIndex() const {return this->WordIndex;}

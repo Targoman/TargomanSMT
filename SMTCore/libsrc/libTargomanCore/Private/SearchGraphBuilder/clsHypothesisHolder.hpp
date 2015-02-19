@@ -27,31 +27,39 @@ namespace SearchGraphBuilder {
 class clsHypothesisHolderData : public QSharedData
 {
 public:
-    clsHypothesisHolderData(){}
+    clsHypothesisHolderData(size_t _sentenceSize){
+        this->EmptyCoverage.resize(_sentenceSize);
+        this->EmptyCoverage.fill(0);
+    }
     clsHypothesisHolderData(const clsHypothesisHolderData& _other):
         QSharedData(_other),
         Cardinalities(_other.Cardinalities)
     {}
-    ~clsHypothesisHolderData() {}
+    ~clsHypothesisHolderData() {TargomanDebugLine}
 
 public:
     QVector<clsCardinality> Cardinalities;
+    Coverage_t EmptyCoverage;
 };
 
 class clsHypothesisHolder
 {
 public:
-    clsHypothesisHolder() {}
+    clsHypothesisHolder(size_t _sentenceSize) :
+        Data(new clsHypothesisHolderData(_sentenceSize))
+    {}
+    clsHypothesisHolder(){TargomanDebugLine}
+
     void clear() {
         this->Data->Cardinalities.clear();
-        this->Data->Cardinalities.append(clsCardinality::rootCoverageContainer());
+        this->Data->Cardinalities.append(clsCardinality::rootCoverageContainer(this->Data->EmptyCoverage));
     }
     void resize(size_t _size) {
             this->Data->Cardinalities.resize(_size);
     }
 
     inline const clsSearchGraphNode& getRootNode(){
-        return this->Data->Cardinalities[0][clsCardinality::EmptyCoverage].bestNode();
+        return this->Data->Cardinalities[0][this->Data->EmptyCoverage].bestNode();
     }
 
     inline clsCardinality& operator [](size_t _index){

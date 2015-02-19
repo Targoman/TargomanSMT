@@ -23,13 +23,11 @@ using namespace Common;
 QStringList  clsTargetRule::ColumnNames;
 size_t clsTargetRule::PrecomputedValuesSize = 0;
 
-clsTargetRule InvalidTargetRule;
-clsTargetRuleData* InvalidTargetRuleData = new clsTargetRuleData;
+clsTargetRule* InvalidTargetRule = NULL;
 
-clsTargetRule::clsTargetRule() :
-    Data(InvalidTargetRuleData)
-{
-}
+clsTargetRule::clsTargetRule():
+    Data(new clsTargetRuleData)
+{}
 
 clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields):
     Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize))

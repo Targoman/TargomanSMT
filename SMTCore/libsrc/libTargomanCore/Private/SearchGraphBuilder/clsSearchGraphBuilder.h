@@ -30,6 +30,7 @@ class clsSearchGraphBuilderData : public QSharedData
 {
 public:
     clsSearchGraphBuilderData(const InputDecomposer::Sentence_t& _sentence):
+        HypothesisHolder(_sentence.size()),
         Sentence(_sentence)
     {}
     clsSearchGraphBuilderData(const clsSearchGraphBuilderData& _other):
@@ -42,7 +43,7 @@ public:
         Sentence(_other.Sentence),
         RestCostMatrix(_other.RestCostMatrix)
     {}
-    ~clsSearchGraphBuilderData(){}
+    ~clsSearchGraphBuilderData(){TargomanDebugLine}
 
 public:
     QList<QVector<RuleTable::clsRuleNode>> PhraseMatchTable;
@@ -64,6 +65,7 @@ class clsSearchGraphBuilder
 {
 public:
     clsSearchGraphBuilder(const InputDecomposer::Sentence_t& _sentence);
+    clsSearchGraphBuilder(){TargomanDebugLine}
 
     static void init();
     void matchPhrase();

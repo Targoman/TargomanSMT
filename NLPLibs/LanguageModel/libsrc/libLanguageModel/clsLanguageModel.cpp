@@ -150,6 +150,11 @@ WordIndex_t clsLanguageModel::getID(const QString &_word) const
     return this->pPrivate->Model->getID(_word.toUtf8().constData());
 }
 
+QString clsLanguageModel::getWordByID(WordIndex_t _wordIndex) const
+{
+    return this->pPrivate->Model->getWordByID(_wordIndex);
+}
+
 /**
  * @brief returns probablity of input NGram and maximum order of founded NGram.
  * @param[in] _ngram                    input NGram in a list of QString.

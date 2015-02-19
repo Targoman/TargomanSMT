@@ -30,7 +30,7 @@ public:
         QSharedData(_other),
         TargetRules(_other.TargetRules)
     {}
-    ~clsRuleNodeData(){}
+    ~clsRuleNodeData(){TargomanDebugLine}
 
 public:
     QList<clsTargetRule> TargetRules;
@@ -41,6 +41,7 @@ class clsRuleNode
 public:
     clsRuleNode();
     clsRuleNode(const clsRuleNode & _other) : Data(_other.Data){}
+    ~clsRuleNode(){TargomanDebugLine}
 
     bool isInvalid() const;
     inline QList<clsTargetRule>& targetRules() {

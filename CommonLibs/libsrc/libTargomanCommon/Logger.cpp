@@ -122,7 +122,6 @@ void Logger::write(const QString &_actorID,
 
 void Logger::registerActor(QString *_actorUUID, const QString &_actorName)
 {
-    TargomanDebug(5, qPrintable("Registering "+ *_actorUUID + " / " + _actorName));
     QMutexLocker Locker(&this->pPrivate->mxLog);
 
     if (_actorName.isEmpty())
@@ -143,6 +142,16 @@ void Logger::registerActor(QString *_actorUUID, const QString &_actorName)
     TargomanInfo(6, qPrintable(_actorName + " Registerd with UUID: " + *_actorUUID) );
 }
 
+void Logger::unregisterActor(const QString& _actorUUID)
+{
+    QMutexLocker Locker(&this->pPrivate->mxLog);
+    QString ActorName = this->pPrivate->Actors.value(_actorUUID);
+
+    this->pPrivate->Actors.remove(_actorUUID);
+
+    TargomanInfo(6, _actorUUID + " / " + ActorName + " Unregistered");
+}
+
 const QHash<QString, QString> &Logger::actors()
 {
     return this->pPrivate->Actors;
@@ -150,6 +159,11 @@ const QHash<QString, QString> &Logger::actors()
 Logger::~Logger()
 {
     //It is defined to suppress error on QScoppedPointer
+}
+
+bool Logger::init()
+{
+    return true;
 }
 
 void Logger::setActive(bool _state)

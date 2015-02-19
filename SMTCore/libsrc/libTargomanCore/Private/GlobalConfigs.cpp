@@ -45,6 +45,7 @@ clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable",
                                                     "TODO Desc",
                                                     "JanePTPlain");
 Targoman::Core::Private::LanguageModel::intfLMSentenceScorer*  stuGlobalConfigs::EmptyLMScorer;
+QHash<QString, Common::WordIndex_t>                            stuGlobalConfigs::SourceVocab;
 
 }
 }

@@ -39,6 +39,7 @@ class clsInput
 {
 public:
     clsInput(const QString& _inputStr);
+    ~clsInput(){TargomanDebugLine}
 
     static void init();
 

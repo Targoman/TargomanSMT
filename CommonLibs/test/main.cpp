@@ -41,18 +41,6 @@ static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
 
 static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module", "Default");
 
-class MLM : Configuration::intfModule{
-public:
-    MLM() : intfModule("MLM"){}
-private:
-    static intfModule * instantiator(){
-        return new MLM;
-    }
-    static Configuration::clsModuleRegistrar Registrar;
-};
-
-Configuration::clsModuleRegistrar MLM::Registrar("MLM", MLM::instantiator);
-
 class exSample: public exTargomanBase
 {
 public:
@@ -143,10 +131,9 @@ int main(int argc, char *argv[])
 
     std::cout<<AAA.CrossValidator(5)<<std::endl;
     std::cout<<AAA.CrossValidator(-5)<<std::endl;
-exit(0);
 
     try{
-      Targoman::Common::printLoadedLibs();
+      //Targoman::Common::printLoadedLibs();
 
       QString ActorUUID;
 

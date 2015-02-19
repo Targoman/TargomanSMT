@@ -54,7 +54,12 @@ tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
 
 void LexicalReordering::initialize()
 {
-    for (int i=0; i< enuLexicalReorderingFields::getCount(); ++i){
+    for (int i=0;
+         i< (LexicalReordering::IsBidirectional.value() ?
+             enuLexicalReorderingFields::getCount() :
+             enuLexicalReorderingFields::getCount() / 2
+             );
+             ++i){
         this->FieldIndexes.append(RuleTable::clsTargetRule::getColumnIndex(
                                       enuLexicalReorderingFields::toStr(
                                           (enuLexicalReorderingFields::Type)(i))));
@@ -98,7 +103,7 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart, unsi
     return Cost;
 }
 
-LexicalReordering::LexicalReordering():
+LexicalReordering::LexicalReordering() :
     intfFeatureFunction(this->moduleName())
 {
 

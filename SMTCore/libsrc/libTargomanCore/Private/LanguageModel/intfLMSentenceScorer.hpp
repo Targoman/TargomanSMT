@@ -30,8 +30,11 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);
 class intfLMSentenceScorer : public Common::Configuration::intfModule
 {
 public:
-    intfLMSentenceScorer(const QString& _name):
-        intfModule(_name){}
+    intfLMSentenceScorer(const QString& _moduleName, quint64 _instanceID) :
+        intfModule(_moduleName, _instanceID)
+    {}
+
+    virtual ~intfLMSentenceScorer(){TargomanDebugLine}
 
     virtual void init(bool _justVocab) = 0;
     virtual void initHistory(const intfLMSentenceScorer& _oldScorer) = 0;
@@ -39,6 +42,7 @@ public:
     virtual Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) = 0;
     virtual Common::LogP_t endOfSentenceProb() = 0;
     virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
+    virtual QString getWordByIndex(Common::WordIndex_t _wordIndex) = 0;
     virtual bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const = 0;
 };
 

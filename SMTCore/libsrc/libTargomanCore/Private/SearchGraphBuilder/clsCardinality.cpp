@@ -22,7 +22,6 @@ namespace SearchGraphBuilder {
 using namespace Common;
 using namespace Common::Configuration;
 
-Coverage_t clsCardinality::EmptyCoverage;
 tmplConfigurable<quint8> clsCardinality::ReorderingHistogramSize(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingHistogramSize",
         "TODO Desc",

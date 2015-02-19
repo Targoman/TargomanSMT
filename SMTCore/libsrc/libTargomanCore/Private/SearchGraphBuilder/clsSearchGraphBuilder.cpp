@@ -11,6 +11,8 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
+#include <functional>
+
 #include "clsSearchGraphBuilder.h"
 #include "../GlobalConfigs.h"
 #include "Private/LanguageModel/intfLMSentenceScorer.hpp"
@@ -76,10 +78,17 @@ void clsSearchGraphBuilder::init()
     clsSearchGraphBuilder::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
     clsSearchGraphBuilder::pRuleTable->init();
     clsSearchGraphBuilder::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
+
+    //InvalidTargetRule has been marshalled here because it depends on loading RuleTable
+    RuleTable::InvalidTargetRule = new RuleTable::clsTargetRule;
+
+    //InvalidSearchGraphNodeData has been marshalled here because it depends on initialization of gConfigs
+    InvalidSearchGraphNodeData = new clsSearchGraphNodeData;
 }
 
 void clsSearchGraphBuilder::matchPhrase()
 {
+    this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseMatchTable.append(QVector<clsRuleNode>(this->Data->Sentence.size() - FirstPosition));
         RulesPrefixTree_t::Node* PrevNode = this->pRuleTable->getPrefixTree().rootNode();
@@ -92,7 +101,7 @@ void clsSearchGraphBuilder::matchPhrase()
             this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition] = PrevNode->getData();
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
-                                                                (int)(LastPosition - FirstPosition));
+                                                                (int)(LastPosition - FirstPosition + 1));
         }
     }
 }
@@ -121,7 +130,7 @@ bool clsSearchGraphBuilder::parseSentence()
     int PrunedAt4 = 0;
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
-        bool IsFinal = NewCardinality == this->Data->Sentence.size();
+        bool IsFinal = (NewCardinality == this->Data->Sentence.size());
 
         for (int PrevCardinality = qMax(NewCardinality - this->Data->MaxMatchingSourcePhraseCardinality, 0);
              PrevCardinality < NewCardinality; ++PrevCardinality) {
@@ -149,7 +158,7 @@ bool clsSearchGraphBuilder::parseSentence()
                  * this is not implemented here.
                  */
 
-                for (size_t StartPos = 0; StartPos < (size_t)this->Data->Sentence.size() - NewPhraseCardinality; ++StartPos){
+                for (size_t StartPos = 0; StartPos <= (size_t)this->Data->Sentence.size() - NewPhraseCardinality; ++StartPos){
                     unsigned LastPhrasePos = StartPos + NewPhraseCardinality;
                     //log() << "start position: "<< startPosition << "\n";
 
@@ -183,7 +192,7 @@ bool clsSearchGraphBuilder::parseSentence()
                     if (Runs <0)// check IBM reordering constraint for new coverage
                         continue;
 
-                    clsRuleNode& PhraseCandidates = this->Data->PhraseMatchTable[StartPos][NewPhraseCardinality];
+                    clsRuleNode& PhraseCandidates = this->Data->PhraseMatchTable[StartPos][NewPhraseCardinality - 1];
 
                     if (PhraseCandidates.isInvalid())
                         continue;
@@ -213,7 +222,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
 
                     // get reordering distance
-                    size_t JumpWidth = qAbs(SourceRangeEnd - StartPos);
+                    size_t JumpWidth = qAbs(SourceRangeEnd - (int)StartPos);
 
                     if (this->ReorderingHardJumpLimit.value() == false ||
                             JumpWidth <= this->ReorderingMaximumJumpWidth.value()){
@@ -266,14 +275,14 @@ bool clsSearchGraphBuilder::parseSentence()
 
                                 Cost_t LMCost = 0;
                                 for (size_t j=0; j<CurrentPhraseCandidate.size(); ++j)
-                                    LMScorer->wordProb(CurrentPhraseCandidate.at(j));
+                                    LMCost -= LMScorer->wordProb(CurrentPhraseCandidate.at(j));
 
                                 Cost_t CurrCost = PrevLexHypoNode.getCost() + PhraseCost + ScaledReorderingJumpCost;
 
                                 Cost_t FinalJumpCost = 0;
 
                                 if (IsFinal){
-                                    LMCost += LMScorer->endOfSentenceProb();
+                                    LMCost -= LMScorer->endOfSentenceProb();
                                     size_t FinalJumpWidth = qAbs(this->Data->Sentence.size() - LastPhrasePos);
                                     FinalJumpCost = this->computeReorderingJumpCost(FinalJumpWidth) *
                                             clsSearchGraphBuilder::ScalingFactorReorderingJump.value();
@@ -336,6 +345,19 @@ bool clsSearchGraphBuilder::parseSentence()
         this->Data->GoalNode = this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
 
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
+
+        std::function<void(const clsSearchGraphNode&)> printNode = [&](const clsSearchGraphNode& _node) {
+            if(_node.isInvalid())
+                return;
+
+            printNode(_node.prevNode());
+
+            for(int i=0; i< _node.targetRule().size(); ++i)
+                qDebug()<<gConfigs.EmptyLMScorer->getWordByIndex(_node.targetRule().at(i));
+        };
+
+        printNode(this->Data->GoalNode);
+
         return true;
     } else {
         // no translation with full coverage found

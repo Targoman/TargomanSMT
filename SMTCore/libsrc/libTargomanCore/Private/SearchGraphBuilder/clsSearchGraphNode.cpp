@@ -21,7 +21,7 @@ namespace SearchGraphBuilder {
 
 using namespace RuleTable;
 
-clsSearchGraphNodeData* InvalidSearchGraphNodeData = new clsSearchGraphNodeData;
+clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
 
 clsSearchGraphNode::clsSearchGraphNode():
     Data(InvalidSearchGraphNodeData)
@@ -29,7 +29,7 @@ clsSearchGraphNode::clsSearchGraphNode():
 
 }
 
-clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode _prevNode,
+clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
                                        const clsTargetRule &_targetRule,
                                        Common::Cost_t _cost,
                                        Common::Cost_t _reorderingJumpCost,
@@ -117,6 +117,7 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
 /*****************************************************************************************************/
 clsSearchGraphNodeData::~clsSearchGraphNodeData()
 {
+    TargomanDebugLine
     //Just to Suppress compiler error on QScoppedPointer
 }
 

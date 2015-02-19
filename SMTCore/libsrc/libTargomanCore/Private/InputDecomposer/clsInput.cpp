@@ -91,7 +91,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
 {
     if (_inputIXML.contains('<') == false) {
       foreach(const QString& Token, _inputIXML.split(" ", QString::SkipEmptyParts))
-          this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token)));
+          this->Tokens.append(clsToken(Token, gConfigs.SourceVocab.value(Token,0)));
       return;
     }
 
@@ -130,7 +130,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             }
             NextCharEscaped = false;
             if (this->isSpace(Ch)){
-                this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token)));
+                this->Tokens.append(clsToken(Token,gConfigs.SourceVocab.value(Token,0)));
                 Token.clear();
             }else if (Ch == '\\'){
                 NextCharEscaped = true;
@@ -220,7 +220,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             else if (Ch == '>'){
                 if (TempStr != TagStr)
                     throw exInput("Invalid closing tag: <"+TempStr+"> while looking for <"+TagStr+">");
-                this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token), TagStr, Attributes));
+                this->Tokens.append(clsToken(Token, gConfigs.SourceVocab.value(Token,0), TagStr, Attributes));
                 Token.clear();
                 TempStr.clear();
                 Attributes.clear();

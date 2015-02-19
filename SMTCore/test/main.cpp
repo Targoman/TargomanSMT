@@ -16,24 +16,35 @@
 //#include "libTargomanCore/clsTranslator.h"
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 
+
+
+
+#include <QDebug>
+
+
 using namespace Targoman::Common;
 using namespace Targoman::Common::Configuration;
 using namespace Targoman::Core;
 
 int main(int argc, char *argv[])
 {
+    TARGOMAN_IO_SETTINGS.setFull();
+
     try{
         clsSafeCoreApplication App(argc, argv);
 
-        ConfigManager::instance().init("kdsjh", QStringList()<<"--save"<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
+        ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
 
         clsTranslator::init(ConfigManager::instance().configFilePath());
 
-        clsTranslator MyTranslator(QStringLiteral("این یک آزمایش است."));
+        clsTranslator MyTranslator(QStringLiteral("ما به"));
         MyTranslator.translate();
     }catch(exTargomanBase& e){
+        qDebug()<<e.what();
         TargomanError(e.what());
     }
+
+    while(1);
 }
 
 

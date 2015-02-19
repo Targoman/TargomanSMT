@@ -18,6 +18,7 @@
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
 #include "libTargomanCore/clsTranslator.h"
+#include "libTargomanCommon/Types.h"
 
 namespace Targoman {
 namespace Core {
@@ -42,6 +43,7 @@ struct stuGlobalConfigs{
     static Targoman::Common::Configuration::clsModuleConfig          RuleTable;
 
     static Targoman::Core::Private::LanguageModel::intfLMSentenceScorer*  EmptyLMScorer;
+    static QHash<QString, Common::WordIndex_t>                            SourceVocab;
 
     static QMap<QString, FeatureFunction::intfFeatureFunction*>       ActiveFeatureFunctions;
 };

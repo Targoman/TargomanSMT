@@ -100,10 +100,15 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
             this->SumLevels += HashLevel;
             ++this->StoredItems;
 
+            if(_order == 1)
+                this->Vocab.insert(HashLoc, _ngram);
+
             return;
         }
         HashLoc = (HashValue % this->HashTableSize) + 1;
     }
+
+    Q_ASSERT(_order == 1);
 
     this->RemainingHashes.insert(_ngram,
                                  stuProbAndBackoffWeights(this->RemainingHashes.size() + this->HashTableSize, _prob,_backoff));
@@ -144,6 +149,7 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     OutputStream << _order;
     OutputStream << this->HashTableSize;
     OutputStream << this->NgramCount;
+    quint64 Inserted = 0;
     for(Hash_t HashLoc=1; HashLoc<this->HashTableSize; ++HashLoc){
         ProgressBar.setValue(HashLoc);
         if (this->NGramHashTable[HashLoc].hashValue() > 0){
@@ -151,8 +157,10 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
             OutputStream << this->NGramHashTable[HashLoc].HashValueLevel;
             OutputStream << this->NGramHashTable[HashLoc].Prob;
             OutputStream << this->NGramHashTable[HashLoc].Backoff;
+            ++Inserted;
         }
     }
+    qDebug()<<Inserted;
 
 //    QByteArray HashByteArray;
 //    QDataStream HashStream(&HashByteArray, QIODevice::WriteOnly);

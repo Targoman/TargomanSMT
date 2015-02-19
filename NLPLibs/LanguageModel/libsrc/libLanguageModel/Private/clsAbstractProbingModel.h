@@ -81,6 +81,10 @@ public:
         return this->getNGramWeights(_word).ID;
     }
 
+    inline QString getWordByID(Common::WordIndex_t _wordIndex) const{
+        return this->Vocab.value(_wordIndex, LM_UNKNOWN_WORD);
+    }
+
     inline bool isValidIndex(Common::WordIndex_t _index) const {
         return (quint64)_index < this->HashTableSize + 1;
     }
@@ -111,6 +115,7 @@ protected:
     quint8                      MaxLevel;                       /**< Maximum level that was needed during inserting NGrams in #NGramHashTable . */
     quint64                     SumLevels;                      /**< sum of levels of hash levels, calculated during inserting NGrams in #NGramHashTable . */
     quint64                     StoredItems;                    /**< count of items stored, calculated during inserting NGrams in #NGramHashTable . */
+    QHash<Common::WordIndex_t, QString>  Vocab;
 };
 
 }

@@ -42,6 +42,7 @@ public:
 
     quint8  order() const;
     Common::WordIndex_t getID(const QString& _word) const;
+    QString getWordByID(Common::WordIndex_t _wordIndex) const;
 
     Common::LogP_t lookupNGram(const QStringList & _ngram, quint8& _foundedGram) const;
     Common::LogP_t lookupNGram(const QList<Common::WordIndex_t> &_ngram, quint8& _foundedGram) const ;

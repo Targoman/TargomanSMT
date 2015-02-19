@@ -42,10 +42,10 @@ public:
                     const QString&  _shortHelp = "",
                     const QString&  _LongSwitch = "") :
         intfConfigurable(_configPath,
-                                _description,
-                                _shortSwitch,
-                                _shortHelp,
-                                _LongSwitch)
+                        _description,
+                        _shortSwitch,
+                        _shortHelp,
+                        _LongSwitch)
     {
         try{
             QString ErrorMessage;
@@ -140,6 +140,7 @@ _SPECIAL_CONFIGURABLE(quint64)
 _SPECIAL_CONFIGURABLE(double)
 _SPECIAL_CONFIGURABLE(float)
 _SPECIAL_CONFIGURABLE(QString)
+_SPECIAL_CONFIGURABLE(QStringList)
 _SPECIAL_CONFIGURABLE(bool)
 _SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA false) /* Used on normal regex matching */
 _SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA true) /* Used on wildcard matching */

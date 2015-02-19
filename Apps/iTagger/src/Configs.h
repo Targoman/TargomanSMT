@@ -15,23 +15,18 @@
 #define TARGOMAN_CONFIGS_H
 
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/Validators.h"
+#include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/Macros.h"
 
 
 namespace Targoman {
 
-TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuAppMode)
-    Text2IXML,
-    Normalize,
-    Tokenize,
-    IXML2Text
-TARGOMAN_DEFINE_ENHANCED_ENUM_STRINGS
-    "Text2IXML",
-    "Normalize",
-    "Tokenize",
-    "IXML2Text"
-TARGOMAN_DEFINE_ENHANCED_ENUM_END
+TARGOMAN_DEFINE_ENHANCED_ENUM_BEGIN(enuAppMode,
+                                    Text2IXML,
+                                    Normalize,
+                                    Tokenize,
+                                    IXML2Text
+                                    );
 
 namespace Common{
     namespace Configuration {
