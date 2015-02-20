@@ -10,26 +10,26 @@ BasePath = ".."
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 HEADERS += \
-    libLanguageModel/clsLanguageModel.h \
-    libLanguageModel/Definitions.h \
-    libLanguageModel/Private/clsLanguageModel_p.h \
-    libLanguageModel/Private/ARPAManager.h \
-    libLanguageModel/clsLMSentenceScorer.h \
-    libLanguageModel/Private/clsLMSentenceScorer_p.h \
-    libLanguageModel/Private/WeightStructs.hpp \
-    libLanguageModel/Private/intfBaseModel.hpp \
-    libLanguageModel/Private/clsAbstractProbingModel.h \
-    libLanguageModel/Private/clsStringBasedProbingModel.h \
-    libLanguageModel/Private/clsIndexBasedProbingModel.h
+    libTargomanLM/clsLanguageModel.h \
+    libTargomanLM/Definitions.h \
+    libTargomanLM/Private/clsLanguageModel_p.h \
+    libTargomanLM/Private/ARPAManager.h \
+    libTargomanLM/clsLMSentenceScorer.h \
+    libTargomanLM/Private/clsLMSentenceScorer_p.h \
+    libTargomanLM/Private/WeightStructs.hpp \
+    libTargomanLM/Private/intfBaseModel.hpp \
+    libTargomanLM/Private/clsAbstractProbingModel.h \
+    libTargomanLM/Private/clsStringBasedProbingModel.h \
+    libTargomanLM/Private/clsIndexBasedProbingModel.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
-    libLanguageModel/clsLanguageModel.cpp \
-    libLanguageModel/Private/ARPAManager.cpp \
-    libLanguageModel/clsLMSentenceScorer.cpp \
-    libLanguageModel/Private/clsAbstractProbingModel.cpp \
-    libLanguageModel/Private/clsStringBasedProbingModel.cpp \
-    libLanguageModel/Private/clsIndexBasedProbingModel.cpp
+    libTargomanLM/clsLanguageModel.cpp \
+    libTargomanLM/Private/ARPAManager.cpp \
+    libTargomanLM/clsLMSentenceScorer.cpp \
+    libTargomanLM/Private/clsAbstractProbingModel.cpp \
+    libTargomanLM/Private/clsStringBasedProbingModel.cpp \
+    libTargomanLM/Private/clsIndexBasedProbingModel.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

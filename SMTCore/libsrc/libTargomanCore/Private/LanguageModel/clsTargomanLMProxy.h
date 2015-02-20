@@ -15,8 +15,8 @@
 #define TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
 
 #include "intfLMSentenceScorer.hpp"
-#include "libLanguageModel/clsLMSentenceScorer.h"
-#include "libLanguageModel/clsLanguageModel.h"
+#include "libTargomanLM/clsLMSentenceScorer.h"
+#include "libTargomanLM/clsLanguageModel.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 
 namespace Targoman {

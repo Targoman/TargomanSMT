@@ -16,8 +16,8 @@
 
 #include <QTest>
 
-#include "libLanguageModel/clsLanguageModel.h"
-#include "libLanguageModel/clsLMSentenceScorer.h"
+#include "libTargomanLM/clsLanguageModel.h"
+#include "libTargomanLM/clsLMSentenceScorer.h"
 
 class UnitTest: public QObject
 {

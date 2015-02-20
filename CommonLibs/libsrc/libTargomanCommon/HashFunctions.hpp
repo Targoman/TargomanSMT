@@ -20,39 +20,10 @@
 namespace Targoman {
 namespace Common {
 
-static const int TargomanHashKeys[]={29,71,113,173,229,31,73,127,179,37,79,131,181,41,
-                                     83,137,53,11,13,17,19,107,521,607,1279,2203,2281,3217};
-static const int TargomanHashKeysCount = sizeof(TargomanHashKeys) / sizeof(int);
-/*http://planetmath.org/goodhashtableprimes*/
-static const quint32 TargomanGoodHashTableSizes[]={
-    53,
-    97,
-    193,
-    389,
-    769,
-    1543,
-    3079,
-    6151,
-    12289,
-    24593,
-    49157,
-    98317,
-    196613,
-    393241,
-    786433,
-    1572869,
-    3145739,
-    6291469,
-    12582917,
-    20996011,
-    25165843,
-    30402457,
-    50331653,
-    100663319,
-    201326611,
-    402653189
-};
-
+extern const int TargomanHashKeys[];
+extern const int TargomanHashKeysCount;
+extern const quint32 TargomanGoodHashTableSizes[];
+extern const quint16 TargomanGoodHashTableSizesCount;
 
 class HashFunctions
 {

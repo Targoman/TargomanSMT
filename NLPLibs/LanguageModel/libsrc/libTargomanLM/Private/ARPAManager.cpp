@@ -18,6 +18,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 #include "libTargomanCommon/clsCmdProgressBar.h"
 #include "libTargomanCommon/Logger.h"
@@ -40,7 +41,7 @@ QString ActorUUID;
 
 ARPAManager::ARPAManager()
 {
-    TARGOMAN_REGISTER_ACTOR("LM::ARPAManager");
+    TARGOMAN_REGISTER_ACTOR("TargomanLM");
 }
 
 /**
@@ -202,8 +203,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                     if (Count < NGramCounts.value(NGramOrder))
                         throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
                                                 NGramOrder).arg(NGramCounts.value(NGramOrder)));
-//                    TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
-                    TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
+                    TargomanLogInfo(5, "@end ARPA File Loaded. " + _model->getStatsStr());
                     return MaxGram;
                 }else
                     throw exARPAManager(QString("Invalid Tag at Line: %1").arg(LineNo));
@@ -255,6 +255,11 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
         }
     }
 
+    if (Count < NGramCounts.value(NGramOrder))
+        throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
+                                NGramOrder).arg(NGramCounts.value(NGramOrder)));
+
+    std::cout<<std::endl;
     TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
 
     return MaxGram;

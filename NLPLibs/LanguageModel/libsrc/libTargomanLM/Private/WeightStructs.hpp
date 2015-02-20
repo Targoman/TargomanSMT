@@ -53,7 +53,7 @@ inline QDataStream& operator << (QDataStream& _stream, const Targoman::NLPLibs::
     return _stream<<_value.ID<<_value.Prob<<_value.Backoff;
 }
 
-inline QDataStream& operator >> (QDataStream& _stream, const Targoman::NLPLibs::Private::stuProbAndBackoffWeights& _value){
+inline QDataStream& operator >> (QDataStream& _stream, Targoman::NLPLibs::Private::stuProbAndBackoffWeights& _value){
     return _stream>>_value.ID>>_value.Prob>>_value.Backoff;
 }
 

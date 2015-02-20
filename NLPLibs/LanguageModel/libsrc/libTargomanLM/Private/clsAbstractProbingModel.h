@@ -27,8 +27,8 @@ extern const QString BIN_FILE_HEADER;
 
 namespace Private {
 
-const quint8  MAX_HASH_LEVEL = 32;
-const quint64 HASHVALUE_CONTAINER = 0xFFFFFFFFFFFFFF80LL;
+const quint8  MAX_HASH_LEVEL = 64;
+const quint64 HASHVALUE_CONTAINER = 0xFFFFFFFFFFFFFF00LL;
 typedef quint64 Hash_t;
 
 
@@ -53,24 +53,28 @@ class clsAbstractProbingModel : public intfBaseModel
         /** @brief Sets level of hashing in #HashValueLevel . */
         inline void setHashLevel(quint8 _level){
             Q_ASSERT(_level <= 0x1F);
-            this->HashValueLevel = (this->HashValueLevel & (HASHVALUE_CONTAINER | 0x40 | 0x20)) + (_level & 0x1F); }
+            this->HashValueLevel = (this->HashValueLevel & (HASHVALUE_CONTAINER | 0x80 | 0x40)) + (_level & 0x3F); }
         /** @return returns level of hashing from #HashValueLevel. */
-        inline quint8  hashLevel(){ return this->HashValueLevel & 0x1F; }
+        inline quint8  hashLevel(){ return this->HashValueLevel & 0x3F; }
         /** @return returns hash value from #HashValueLevel. */
         inline quint64 hashValue(){ return this->HashValueLevel & HASHVALUE_CONTAINER; }
         /** @brief Does continue flag of cell is set or not. */
-        inline bool    continues(){ return this->HashValueLevel & 0x20; }
+        inline bool    continues(){ return this->HashValueLevel & 0x40; }
         /** @brief Sets continue flag of cell in #HashValueLevel. */
-        inline void    setContinues(){ this->HashValueLevel |= 0x20; }
+        inline void    setContinues(){ this->HashValueLevel |= 0x40; }
         /** @brief Does continue flag of cell is set or not. */
-        inline bool    isMultiIndex(){ return this->HashValueLevel & 0x40; }
+        inline bool    isMultiIndex(){ return this->HashValueLevel & 0x80; }
         /** @brief Sets continue flag of cell in #HashValueLevel. */
-        inline void    setMultiIndex(){ this->HashValueLevel |= 0x40; }
+        inline void    setMultiIndex(){ this->HashValueLevel |= 0x80; }
 
         stuNGramHash(){
             this->HashValueLevel = 0;
         }
     };
+protected:
+    inline Hash_t getHashValue(Hash_t _hash) const{
+        return Q_LIKELY(_hash & HASHVALUE_CONTAINER) ? (_hash & HASHVALUE_CONTAINER) : HASHVALUE_CONTAINER;
+    }
 
 public:
     clsAbstractProbingModel();
@@ -98,10 +102,11 @@ public:
     QString getStatsStr() const {
         return QString("Count: %4 MaxLevel: %1 AverageLevel: %2 QHashed: %3").arg(
                     this->MaxLevel).arg(
-                    this->SumLevels / (double)this->StoredItems).arg(
+                    this->SumLevels / (double)this->StoredInHashTable).arg(
                     this->RemainingHashes.size()).arg(
-                    this->StoredItems+this->RemainingHashes.size());
+                    this->StoredInHashTable+this->RemainingHashes.size());
     }
+
 
 protected:
     stuProbAndBackoffWeights getNGramWeights(const char* _ngram, bool _justSingle = false) const;
@@ -114,7 +119,7 @@ protected:
     stuProbAndBackoffWeights    UnknownWeights;                 /**< Weight of unknown word. */
     quint8                      MaxLevel;                       /**< Maximum level that was needed during inserting NGrams in #NGramHashTable . */
     quint64                     SumLevels;                      /**< sum of levels of hash levels, calculated during inserting NGrams in #NGramHashTable . */
-    quint64                     StoredItems;                    /**< count of items stored, calculated during inserting NGrams in #NGramHashTable . */
+    quint64                     StoredInHashTable;                    /**< count of items stored, calculated during inserting NGrams in #NGramHashTable . */
     QHash<Common::WordIndex_t, QString>  Vocab;
 };
 

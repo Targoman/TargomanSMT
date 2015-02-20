@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
         clsTranslator::init(ConfigManager::instance().configFilePath());
 
-        clsTranslator MyTranslator(QStringLiteral("ما به"));
+        clsTranslator MyTranslator(QStringLiteral("ما"));
         MyTranslator.translate();
     }catch(exTargomanBase& e){
         qDebug()<<e.what();

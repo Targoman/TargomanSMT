@@ -6,8 +6,8 @@
 # download it from http://targoman.com/License.txt
 #
 ################################################################################
-ProjectName="LanguageModel"
-VERSION=0.0.1
+ProjectName="TargomanLM"
+VERSION=0.1.0
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+=TargomanCommon

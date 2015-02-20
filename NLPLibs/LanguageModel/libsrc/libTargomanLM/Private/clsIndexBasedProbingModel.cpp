@@ -163,7 +163,7 @@ void clsIndexBasedProbingModel::insert(QList<WordIndex_t> _ngram, LogP_t _prob, 
         HashValue = HashFunctions::murmurHash64(_ngram, HashLevel) ;
 
         if (this->NGramHashTable[HashLoc].HashValueLevel){
-            if (this->NGramHashTable[HashLoc].hashValue() == (HashValue & HASHVALUE_CONTAINER) &&
+            if (this->NGramHashTable[HashLoc].hashValue() == this->getHashValue(HashValue) &&
                 this->NGramHashTable[HashLoc].hashLevel() == HashLevel-1)
                 throw exLanguageModel(QString("Fatal Collision found on: %1 (%2, %3, %4)").arg(
                                          "ListOfWIndexes").arg(
@@ -172,14 +172,14 @@ void clsIndexBasedProbingModel::insert(QList<WordIndex_t> _ngram, LogP_t _prob, 
                                          HashLevel));
             this->NGramHashTable[HashLoc].setContinues();
         }else{
-            this->NGramHashTable[HashLoc].HashValueLevel = (HashValue & HASHVALUE_CONTAINER) + HashLevel-1;
+            this->NGramHashTable[HashLoc].HashValueLevel = this->getHashValue(HashValue) + HashLevel-1;
             this->NGramHashTable[HashLoc].Prob      = _prob;
             this->NGramHashTable[HashLoc].Backoff   = _backoff;
             this->NGramHashTable[HashLoc].setMultiIndex();
 
             this->MaxLevel = qMax(this->MaxLevel, HashLevel);
             this->SumLevels += HashLevel;
-            ++this->StoredItems;
+            ++this->StoredInHashTable;
 
             return;
         }
@@ -225,7 +225,7 @@ stuProbAndBackoffWeights clsIndexBasedProbingModel::getNGramWeights(QList<WordIn
     {
         HashValue = HashFunctions::murmurHash64(_ngram, HashLevel);
 
-        if (this->NGramHashTable[HashLoc].hashValue() == (HashValue & HASHVALUE_CONTAINER) &&
+        if (this->NGramHashTable[HashLoc].hashValue() == this->getHashValue(HashValue) &&
                 this->NGramHashTable[HashLoc].hashLevel() == HashLevel-1){
                 return stuProbAndBackoffWeights(
                             HashLoc,

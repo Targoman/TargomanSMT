@@ -18,6 +18,7 @@
 #include "libTargomanCommon/clsCmdProgressBar.h"
 #include "clsAbstractProbingModel.h"
 #include "../Definitions.h"
+#include "libTargomanCommon/Logger.h"
 
 using namespace Targoman::Common;
 
@@ -25,12 +26,13 @@ namespace Targoman {
 namespace NLPLibs {
 namespace Private {
 
+extern QString ActorUUID;
 
 clsAbstractProbingModel::clsAbstractProbingModel() : intfBaseModel(enuMemoryModel::Probing)
 {
     this->SumLevels = 0;
     this->MaxLevel = 0;
-    this->StoredItems = 0;
+    this->StoredInHashTable = 0;
     this->NGramHashTable = NULL;
 }
 
@@ -81,7 +83,7 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
         HashValue = HashFunctions::murmurHash64(_ngram, NGramLen, HashLevel) ;
 
         if (this->NGramHashTable[HashLoc].HashValueLevel){
-            if (this->NGramHashTable[HashLoc].hashValue() == (HashValue & HASHVALUE_CONTAINER) &&
+            if (this->NGramHashTable[HashLoc].hashValue() == this->getHashValue(HashValue)  &&
                     this->NGramHashTable[HashLoc].hashLevel() == HashLevel-1)
                 throw exLanguageModel(QString("Fatal Collision found on: %1 (%2, %3, %4)").arg(
                                           _ngram).arg(
@@ -90,13 +92,13 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
                                           HashLevel));
             this->NGramHashTable[HashLoc].setContinues();
         }else{
-            this->NGramHashTable[HashLoc].HashValueLevel = (HashValue & HASHVALUE_CONTAINER) + HashLevel-1;
+            this->NGramHashTable[HashLoc].HashValueLevel = this->getHashValue(HashValue) + HashLevel-1;
             this->NGramHashTable[HashLoc].Prob      = _prob;
             this->NGramHashTable[HashLoc].Backoff   = _backoff;
 
             this->MaxLevel = qMax(this->MaxLevel, HashLevel);
             this->SumLevels += HashLevel;
-            ++this->StoredItems;
+            ++this->StoredInHashTable;
 
             if(_order == 1)
                 this->Vocab.insert(HashLoc, _ngram);
@@ -119,9 +121,9 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
 void clsAbstractProbingModel::init(quint32 _maxNGramCount)
 {
     this->HashTableSize = 0;
-    for (size_t i =0; i< sizeof(TargomanGoodHashTableSizes)/sizeof(quint32) - 1; i++)
+    for (size_t i =0; i< qMax(1, TargomanGoodHashTableSizesCount - 10); i++)
         if (_maxNGramCount < TargomanGoodHashTableSizes[i]){
-            this->HashTableSize = TargomanGoodHashTableSizes[i+1];
+            this->HashTableSize = TargomanGoodHashTableSizes[i+10];
             break;
         }
 
@@ -152,17 +154,25 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     OutputStream.setVersion(QDataStream::Qt_5_0);
     OutputStream << _order;
     OutputStream << this->HashTableSize;
+    OutputStream << this->StoredInHashTable;
     OutputStream << this->NgramCount;
 
-    for(Hash_t HashLoc=1; HashLoc<this->HashTableSize; ++HashLoc){
-        ProgressBar.setValue(HashLoc);
-        if (this->NGramHashTable[HashLoc].hashValue() > 0){
+    quint64 Inserted = 0;
+    for(Hash_t HashLoc=1; HashLoc<=this->HashTableSize; ++HashLoc){
+        if (this->NGramHashTable[HashLoc].HashValueLevel != 0){
+            ProgressBar.setValue(HashLoc);
             OutputStream << HashLoc;
             OutputStream << this->NGramHashTable[HashLoc].HashValueLevel;
             OutputStream << this->NGramHashTable[HashLoc].Prob;
             OutputStream << this->NGramHashTable[HashLoc].Backoff;
+            ++Inserted;
         }
     }
+
+    if (Inserted != this->StoredInHashTable)
+        throw exLanguageModel(QString("Count of HashTable Items differs. %1 must be %2").arg(Inserted).arg(this->StoredInHashTable));
+
+    ProgressBar.finalize(true);
 
     OutputStream << this->RemainingHashes;
 
@@ -196,6 +206,7 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
 
 quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
 {
+    TargomanLogInfo(5, "Loading binaryLM from: " + _binFilePath);
     QFile BinFile(_binFilePath);
 
     if (BinFile.open(QFile::ReadOnly) == false)
@@ -210,7 +221,7 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
         QDataStream InputStream(&BinFile);
 
         Header = BinFile.read(BIN_FILE_HEADER.size());
-        if (Header != BIN_FILE_HEADER)
+        if (Header != BIN_FILE_HEADER.toLatin1())
             throw exLanguageModel(QString("Incompatible Bin file: %1").arg(Header.append('\0').constData()));
         Model = BinFile.read(this->modelHeaderSuffix().size());
         if (Model != this->modelHeaderSuffix())
@@ -218,6 +229,7 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
         InputStream.setVersion(QDataStream::Qt_5_0);
         InputStream >> Order;
         InputStream >> this->HashTableSize;
+        InputStream >> this->StoredInHashTable;
         InputStream >> this->NgramCount;
     }catch (exLanguageModel&){
         throw;
@@ -227,6 +239,7 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
 
     if (this->HashTableSize == 0 ||
         this->NgramCount == 0 ||
+        this->StoredInHashTable == 0 ||
         this->HashTableSize < this->NgramCount)
         throw exLanguageModel("Invalid bin file or corrupted header");
 
@@ -272,7 +285,6 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
     this->NGramHashTable = new stuNGramHash[this->HashTableSize + 1];
     TargomanInfo(5, "Allocated");
 
-    ProgressBar.reset("Loading BinaryLM (Phase 1)", this->NgramCount);
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
 
@@ -283,9 +295,12 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
     InputStream.setVersion(QDataStream::Qt_5_0);
     InputStream >> Order;
     InputStream >> this->HashTableSize;
+    InputStream >> this->StoredInHashTable;
     InputStream >> this->NgramCount;
 
-    for (Hash_t i = 0; i<this->NgramCount; ++i){
+    ProgressBar.reset("Loading BinaryLM (Phase 1)", this->StoredInHashTable);
+
+    for (Hash_t i = 1; i<=this->StoredInHashTable; ++i){
         Hash_t HashLoc;
         InputStream >> HashLoc;
         InputStream >> this->NGramHashTable[HashLoc].HashValueLevel;
@@ -295,10 +310,12 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
         ProgressBar.setValue(i);
     }
 
+
     ProgressBar.reset("Loading BinaryLM (Phase 2)", 1);
     InputStream >> this->RemainingHashes;
-    ProgressBar.setValue(1);
+    ProgressBar.finalize(true);
 
+    TargomanLogInfo(5, "Binary LM File Loaded. " + this->getStatsStr());
     return Order;
 }
 
@@ -322,7 +339,7 @@ stuProbAndBackoffWeights clsAbstractProbingModel::getNGramWeights(const char *_n
     {
         HashValue = HashFunctions::murmurHash64(_ngram, NGramLen, HashLevel);
 
-        if (this->NGramHashTable[HashLoc].hashValue() == (HashValue & HASHVALUE_CONTAINER) &&
+        if (this->NGramHashTable[HashLoc].hashValue() == this->getHashValue(HashValue) &&
                 this->NGramHashTable[HashLoc].hashLevel() == HashLevel-1){
             if (_justSingle && this->NGramHashTable[HashLoc].isMultiIndex())
                 //Note that we didn't check continue flag for further search on input unigram.

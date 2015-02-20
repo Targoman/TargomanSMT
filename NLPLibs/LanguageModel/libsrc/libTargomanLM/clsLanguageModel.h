@@ -16,7 +16,7 @@
 
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Macros.h"
-#include "libLanguageModel/Definitions.h"
+#include "libTargomanLM/Definitions.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 
 namespace Targoman {

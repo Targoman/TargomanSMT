@@ -14,8 +14,8 @@
 #include <QStringList>
 
 #include "libTargomanCommon/CmdIO.h"
-#include "libLanguageModel/clsLanguageModel.h"
-#include "libLanguageModel/clsLMSentenceScorer.h"
+#include "libTargomanLM/clsLanguageModel.h"
+#include "libTargomanLM/clsLMSentenceScorer.h"
 #include "libTargomanCommon/Logger.h"
 
 #include <fstream>
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 {
     clsLanguageModel LM;
     try {
-        Targoman::Common::TARGOMAN_IO_SETTINGS.Info.setLevel(5);
+        Targoman::Common::TARGOMAN_IO_SETTINGS.setDefault();
         Targoman::Common::Logger::instance().setVisible();
         Targoman::Common::Logger::instance().setActive();
 
@@ -46,9 +46,11 @@ int main(int argc, char *argv[])
 //        Word = "استخوان‌ها";
 //        Prob = SS.wordProb(Word, Gram);
 
-        qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en", languageModelConfig);
-        LM.convertBinary("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en.bin");
+       // qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en", languageModelConfig);
+       // LM.convertBinary("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en.bin");
+        LM.init("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en.bin", languageModelConfig);
 
+exit(0);
         clsLanguageModel LM2;
         LM2.init("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en.bin", languageModelConfig);
         clsLMSentenceScorer SS(LM2);
