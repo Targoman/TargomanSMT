@@ -33,7 +33,7 @@ public:
         OutComposer(new OutputComposer::clsOutputComposer){
     }
 
-    ~clsTranslatorPrivate(){TargomanDebugLine}
+    ~clsTranslatorPrivate(){}
 
 public:
     QScopedPointer<InputDecomposer::clsInput> Input;

@@ -31,7 +31,6 @@ clsTranslator::clsTranslator(const QString &_inputStr) :
 
 clsTranslator::~clsTranslator()
 {
-    TargomanDebugLine
     ///@note Just to suppress compiler error using QScoppedPointer
 }
 
@@ -41,11 +40,11 @@ void clsTranslator::init(const QString _configFilePath)
     InputDecomposer::clsInput::init();
     gConfigs.EmptyLMScorer = gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>();
     //Load vocab by LM
-    gConfigs.EmptyLMScorer->init(true);
+    gConfigs.EmptyLMScorer->init(false);
 
     SearchGraphBuilder::clsSearchGraphBuilder::init();
     //continue to load rest of LM
-    gConfigs.EmptyLMScorer->init(false);
+    //gConfigs.EmptyLMScorer->init(false);
 
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
         FF->initialize();

@@ -176,6 +176,8 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
 
     OutputStream << this->RemainingHashes;
 
+    OutputStream << this->Vocab;
+
     BinFile.close();
 
     /***********************************************************************************
@@ -313,6 +315,10 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
 
     ProgressBar.reset("Loading BinaryLM (Phase 2)", 1);
     InputStream >> this->RemainingHashes;
+    ProgressBar.finalize(true);
+
+    ProgressBar.reset("Loading BinaryLM (Phase 3)", 1);
+    InputStream >> this->Vocab;
     ProgressBar.finalize(true);
 
     TargomanLogInfo(5, "Binary LM File Loaded. " + this->getStatsStr());

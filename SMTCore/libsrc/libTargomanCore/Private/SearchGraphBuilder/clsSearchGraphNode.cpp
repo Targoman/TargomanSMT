@@ -25,9 +25,7 @@ clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
 
 clsSearchGraphNode::clsSearchGraphNode():
     Data(InvalidSearchGraphNodeData)
-{
-
-}
+{}
 
 clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
                                        const clsTargetRule &_targetRule,
@@ -54,9 +52,11 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
              _lmscorer))
 {
     //TODO Seems that this must be moved to SearchGraphBuilder.
-    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions){
+
+    //TODO Uncomment following
+    /*foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions){
         this->Data->Cost += FF->scoreSearchGraphNode(*this);
-    }
+    }*/
 }
 
 template<class Class_t, class Container_t, typename Functor_t>
@@ -117,8 +117,11 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
 /*****************************************************************************************************/
 clsSearchGraphNodeData::~clsSearchGraphNodeData()
 {
-    TargomanDebugLine
     //Just to Suppress compiler error on QScoppedPointer
+/*    if (this->TargetRule.size())
+        TargomanDebug(1, gConfigs.EmptyLMScorer->getWordByIndex(this->TargetRule.at(0))<<":"<<this->TargetRule.size())
+    else
+        TargomanDebug(1,"No TargetPhrase")*/
 }
 
 }

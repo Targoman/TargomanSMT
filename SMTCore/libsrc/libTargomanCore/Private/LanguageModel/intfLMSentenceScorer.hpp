@@ -34,7 +34,7 @@ public:
         intfModule(_moduleName, _instanceID)
     {}
 
-    virtual ~intfLMSentenceScorer(){TargomanDebugLine}
+    virtual ~intfLMSentenceScorer(){}
 
     virtual void init(bool _justVocab) = 0;
     virtual void initHistory(const intfLMSentenceScorer& _oldScorer) = 0;

@@ -46,9 +46,9 @@ int main(int argc, char *argv[])
 //        Word = "استخوان‌ها";
 //        Prob = SS.wordProb(Word, Gram);
 
-       // qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en", languageModelConfig);
-       // LM.convertBinary("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en.bin");
-        LM.init("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en//lm.4g.en.bin", languageModelConfig);
+        qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en", languageModelConfig);
+        LM.convertBinary("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en.bin");
+        //LM.init("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en.bin", languageModelConfig);
 
 exit(0);
         clsLanguageModel LM2;

@@ -36,7 +36,7 @@ public:
         this->PrecomputedIndex = RuleTable::clsTargetRule::allocatePrecomputedValue();
     }
 
-    virtual ~intfFeatureFunction(){TargomanDebugLine}
+    virtual ~intfFeatureFunction(){}
 
     virtual bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode& _first,
                                     const SearchGraphBuilder::clsSearchGraphNode& _second) const {

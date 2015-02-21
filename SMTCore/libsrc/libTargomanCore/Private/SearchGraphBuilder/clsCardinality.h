@@ -29,15 +29,9 @@ typedef QHash<Coverage_t, clsLexicalHypothesis> LexicalHypothesisContainer_t;
 
 class clsCardinalityData : public QSharedData
 {
-    struct stuWorstCosSearchGraphNode{
-        LexicalHypothesisContainer_t::Iterator ConatinerIter;
-        QList<clsSearchGraphNode>::Iterator    NodeIter;
-        Common::Cost_t                         Cost;
-    };
-
 public:
     clsCardinalityData(){
-        this->WorstNode.Cost = INFINITY;
+        this->WorstLexicalHypothesis = NULL;
         this->TotalSearchGraphNodeCount = 0;
     }
 
@@ -45,19 +39,20 @@ public:
         QSharedData(_other),
         LexicalHypothesisContainer(_other.LexicalHypothesisContainer)
     {}
-    ~clsCardinalityData(){TargomanDebugLine}
+    ~clsCardinalityData(){}
 
 public:
     LexicalHypothesisContainer_t LexicalHypothesisContainer;
     size_t                       TotalSearchGraphNodeCount;
-    stuWorstCosSearchGraphNode   WorstNode;
+    clsLexicalHypothesis*        WorstLexicalHypothesis;
+    Coverage_t                   WorstCoverage;
 };
 
 class clsCardinality
 {
 public:
     clsCardinality();
-    ~clsCardinality(){TargomanDebugLine}
+    ~clsCardinality(){}
 
     inline clsLexicalHypothesis& operator [] (const Coverage_t& _coverage){
         return this->Data->LexicalHypothesisContainer[_coverage];
@@ -80,14 +75,21 @@ public:
 
     void remove(Coverage_t _coverage){
         this->Data->LexicalHypothesisContainer.remove(_coverage);
+        if (this->Data->WorstLexicalHypothesis != NULL && this->Data->WorstCoverage == _coverage){
+            this->updateWorstNode();
+        }
     }
 
-    bool mustBePruned(Common::Cost_t _cost);
-    void updateWorstNode(const Coverage_t& _coverage, const clsSearchGraphNode& _node);
+    void insertNewHypothesis(const Coverage_t& _coverage, clsLexicalHypothesis& _container, clsSearchGraphNode& _node);
+
+    bool mustBePruned(Common::Cost_t _cost) const;
+    void pruneAndUpdateWorstNode(const Coverage_t& _coverage, clsLexicalHypothesis& _lexicalHypo, const clsSearchGraphNode &_node);
+    size_t totalSearchGraphNodeCount() const{return this->Data->TotalSearchGraphNodeCount;}
 
 public:
     static Common::Configuration::tmplConfigurable<quint8> ReorderingHistogramSize;
 
+    void updateWorstNode();
 private:
     QExplicitlySharedDataPointer<clsCardinalityData> Data;
 };

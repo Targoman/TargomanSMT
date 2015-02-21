@@ -27,15 +27,10 @@ TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy)
 
 clsTargomanLMProxy::clsTargomanLMProxy(quint64 _instanceID)  :
     intfLMSentenceScorer(this->moduleName(), _instanceID),
-    LMSentenceScorer(new Targoman::NLPLibs::clsLMSentenceScorer(clsTargomanLMProxy::LM)){
-
-}
+    LMSentenceScorer(new Targoman::NLPLibs::clsLMSentenceScorer(clsTargomanLMProxy::LM)){}
 
 clsTargomanLMProxy::~clsTargomanLMProxy()
-{
-    TargomanDebugLine
-    this->unregister();
-}
+{this->unregister();}
 
 }
 }

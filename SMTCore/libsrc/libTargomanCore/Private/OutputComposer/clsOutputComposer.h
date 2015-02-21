@@ -25,7 +25,7 @@ class clsOutputComposer
 {
 public:
     clsOutputComposer();
-    ~clsOutputComposer(){TargomanDebugLine}
+    ~clsOutputComposer(){}
 
     static void init();
 };

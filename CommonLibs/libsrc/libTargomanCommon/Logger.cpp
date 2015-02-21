@@ -139,7 +139,7 @@ void Logger::registerActor(QString *_actorUUID, const QString &_actorName)
                            *_actorUUID).arg(_actorName).arg(this->pPrivate->Actors.key(_actorName)).arg(_actorName));
 
     this->pPrivate->Actors.insert(*_actorUUID, _actorName);
-    TargomanInfo(6, qPrintable(_actorName + " Registerd with UUID: " + *_actorUUID) );
+    //TargomanInfo(6, qPrintable(_actorName + " Registerd with UUID: " + *_actorUUID) );
 }
 
 void Logger::unregisterActor(const QString& _actorUUID)
@@ -149,7 +149,7 @@ void Logger::unregisterActor(const QString& _actorUUID)
 
     this->pPrivate->Actors.remove(_actorUUID);
 
-    TargomanInfo(6, _actorUUID + " / " + ActorName + " Unregistered");
+    //TargomanInfo(6, _actorUUID + " / " + ActorName + " Unregistered");
 }
 
 const QHash<QString, QString> &Logger::actors()

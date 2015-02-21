@@ -35,7 +35,7 @@ public:
         QSharedData(_other),
         Cardinalities(_other.Cardinalities)
     {}
-    ~clsHypothesisHolderData() {TargomanDebugLine}
+    ~clsHypothesisHolderData() {}
 
 public:
     QVector<clsCardinality> Cardinalities;
@@ -48,7 +48,7 @@ public:
     clsHypothesisHolder(size_t _sentenceSize) :
         Data(new clsHypothesisHolderData(_sentenceSize))
     {}
-    clsHypothesisHolder(){TargomanDebugLine}
+    clsHypothesisHolder(){}
 
     void clear() {
         this->Data->Cardinalities.clear();

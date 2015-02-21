@@ -42,7 +42,7 @@ public:
             const Coverage_t &_newCoverage,
             bool _isFinal,
             LanguageModel::intfLMSentenceScorer* _lmscorer);
-    ~clsSearchGraphNode(){TargomanDebugLine}
+    ~clsSearchGraphNode(){}
 
     inline Common::Cost_t getTotalCost() const;
     inline Common::Cost_t getCost() const;
@@ -62,7 +62,6 @@ public:
     inline bool isInvalid() const;
 
 private:
-    //TODO seems buggy as LM will not be destroyed and neither unregistered
     QExplicitlySharedDataPointer<clsSearchGraphNodeData>          Data;
 };
 
@@ -78,7 +77,7 @@ public:
         Coverage(Coverage_t()),
         SourceRangeBegin(0),
         SourceRangeEnd(0),
-        LMScorer(gConfigs.EmptyLMScorer),
+        LMScorer(gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>()),
         PrevNode(NULL)
     {}
 
@@ -143,7 +142,7 @@ public:
 };
 
 inline Common::Cost_t clsSearchGraphNode::getTotalCost() const{
-    return this->Data->Cost + this->Data->RestCost;
+    return this->Data->Cost;// + this->Data->RestCost;
 }
 
 inline  Common::Cost_t clsSearchGraphNode::getCost() const{

@@ -32,7 +32,7 @@ public:
     intfModule(_moduleName, _instanceID)
     {}
 
-    virtual ~intfRuleTable(){TargomanDebugLine}
+    virtual ~intfRuleTable(){}
 
     virtual void init() = 0;
 

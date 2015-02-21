@@ -35,7 +35,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLexicalReordering, exFeatureFunction);
 class LexicalReordering : public intfFeatureFunction
 {
 public:
-    ~LexicalReordering(){TargomanDebugLine}
+    ~LexicalReordering(){}
     void initialize();
     void newSentence(const InputDecomposer::Sentence_t &inputSentence);
     virtual Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;

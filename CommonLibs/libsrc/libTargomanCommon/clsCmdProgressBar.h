@@ -25,18 +25,19 @@ class clsCmdProgressBar
 {
 public:
     clsCmdProgressBar();
-    clsCmdProgressBar(const QString& _message, quint32 _maximum);
+    clsCmdProgressBar(const QString& _message, quint64 _maximum = 0);
     ~clsCmdProgressBar();
     void setValue(quint32 _value);
     void reset(const QString& _message, qint64 _maximum);
-    void finalize(bool _change2full);
+    void finalize(bool _change2full, qint64 _value = -1);
 
 private:
     qint64  Maximum;
     QString Message;
-    qint8   LastProgressValue;
+    quint8   LastProgressValue;
     bool    Reseted;
     bool    WasShown;
+    QTime   LastShowTime;
 };
 
 }

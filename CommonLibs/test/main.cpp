@@ -122,6 +122,13 @@ public:
 
 int main(int argc, char *argv[])
 {
+    clsCmdProgressBar PB("Marquee");
+    for (int i=0;i<1000000;i++){
+        PB.setValue(i);
+        usleep(10000);
+    }
+    PB.finalize(true, 100000);
+
   //  std::function<bool(int)> Lambda = ;
     SampleLamda AAA([] (int x) {
         const quint16 Max = 12;

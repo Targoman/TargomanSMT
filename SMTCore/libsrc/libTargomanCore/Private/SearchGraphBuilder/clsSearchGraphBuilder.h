@@ -43,13 +43,13 @@ public:
         Sentence(_other.Sentence),
         RestCostMatrix(_other.RestCostMatrix)
     {}
-    ~clsSearchGraphBuilderData(){TargomanDebugLine}
+    ~clsSearchGraphBuilderData(){}
 
 public:
     QList<QVector<RuleTable::clsRuleNode>> PhraseMatchTable;
 
-    clsSearchGraphNode                  RootNode;
-    clsSearchGraphNode                  GoalNode;
+    const clsSearchGraphNode*                  RootNode;
+    const clsSearchGraphNode*                  GoalNode;
 
     int MaxMatchingSourcePhraseCardinality;
 
@@ -65,7 +65,7 @@ class clsSearchGraphBuilder
 {
 public:
     clsSearchGraphBuilder(const InputDecomposer::Sentence_t& _sentence);
-    clsSearchGraphBuilder(){TargomanDebugLine}
+    clsSearchGraphBuilder(){}
 
     static void init();
     void matchPhrase();
@@ -99,6 +99,8 @@ private:
     static Common::Configuration::tmplConfigurable<quint8> ObservationHistogramSize;
 
     static Common::Configuration::tmplConfigurable<double> ScalingFactorReorderingJump;
+    static Common::Configuration::tmplConfigurable<double> ScalingFactorLM;
+
 
 };
 

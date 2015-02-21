@@ -40,7 +40,7 @@ public:
         this->TagStr = _tagStr;
         this->Attrs = _attrs;
     }
-    ~clsToken(){TargomanDebugLine}
+    ~clsToken(){}
 
     inline const QString& value() const {return this->Value;}
     inline const Common::WordIndex_t& wordIndex() const {return this->WordIndex;}

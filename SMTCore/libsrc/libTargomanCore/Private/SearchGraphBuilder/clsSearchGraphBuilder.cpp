@@ -64,6 +64,10 @@ tmplConfigurable<double> clsSearchGraphBuilder::ScalingFactorReorderingJump(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ScalingFactorReorderingJump",
         "TODO Desc",
         1);
+tmplConfigurable<double> clsSearchGraphBuilder::ScalingFactorLM(
+        clsSearchGraphBuilder::moduleBaseconfig() + "/ScalingFactorLM",
+        "TODO Desc",
+        1);
 
 FeatureFunction::intfFeatureFunction*  clsSearchGraphBuilder::pPhraseTable = NULL;
 RuleTable::intfRuleTable*              clsSearchGraphBuilder::pRuleTable = NULL;
@@ -95,6 +99,7 @@ void clsSearchGraphBuilder::matchPhrase()
         //Max PhraseTable order will be implicitly checked by follow
         for (size_t LastPosition = FirstPosition; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
             PrevNode = PrevNode->follow(this->Data->Sentence.at(LastPosition).wordIndex());
+
             if (PrevNode == NULL)
                 break; // appending next word breaks phrase lookup
 
@@ -102,6 +107,11 @@ void clsSearchGraphBuilder::matchPhrase()
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                 (int)(LastPosition - FirstPosition + 1));
+            double Sum = 0;
+            foreach(const clsTargetRule& TR, this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].targetRules()){
+                for(int i=0; i< TR.ColumnNames.size(); ++i)
+                    Sum+=TR.field(i);
+            }
         }
     }
 }
@@ -121,19 +131,21 @@ bool clsSearchGraphBuilder::parseSentence()
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
 
-    this->Data->RootNode = this->Data->HypothesisHolder.getRootNode();
+    this->Data->RootNode = &this->Data->HypothesisHolder.getRootNode();
 
     this->initializeRestCostsMatrix();
 
     int PrunedAt2 = 0;
     int PrunedAt3 = 0;
     int PrunedAt4 = 0;
+    int PrunedAtReored = 0;
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
         bool IsFinal = (NewCardinality == this->Data->Sentence.size());
 
         for (int PrevCardinality = qMax(NewCardinality - this->Data->MaxMatchingSourcePhraseCardinality, 0);
              PrevCardinality < NewCardinality; ++PrevCardinality) {
+
             unsigned short NewPhraseCardinality = NewCardinality - PrevCardinality;
 
             if(this->Data->HypothesisHolder[PrevCardinality].isEmpty()) {
@@ -144,12 +156,13 @@ bool clsSearchGraphBuilder::parseSentence()
             for(LexicalHypothesisContainer_t::Iterator PrevCoverageIter = this->Data->HypothesisHolder[PrevCardinality].lexicalHypotheses().begin();
                 PrevCoverageIter != this->Data->HypothesisHolder[PrevCardinality].lexicalHypotheses().end();
                 ++PrevCoverageIter){
+
                 const Coverage_t& PrevCoverage = PrevCoverageIter.key();
                 clsLexicalHypothesis& PrevLexHypoContainer = PrevCoverageIter.value();
 
                 // TODO: this can be removed if pruning works properly
                 if (PrevLexHypoContainer.nodes().isEmpty()){
-                    // log() << "ERROR: prevLexHypContainer empty. card: " << previousCardinality << ", cov Vector: " << previousCoverageVector.getString() << "\n";
+                    //TargomanDebug(1,"ERROR: prevLexHypContainer empty. card: " <<PrevCardinality.<< "cov Vector: " << PrevCoverage)
                     continue;
                 }
 
@@ -160,7 +173,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
                 for (size_t StartPos = 0; StartPos <= (size_t)this->Data->Sentence.size() - NewPhraseCardinality; ++StartPos){
                     unsigned LastPhrasePos = StartPos + NewPhraseCardinality;
-                    //log() << "start position: "<< startPosition << "\n";
+                    //TargomanDebug(1, "start position: "<< StartPos);
 
                     // skip if phrase coverage is not compatible with previous sentence coverage
                     bool SkipStep = false;
@@ -249,13 +262,14 @@ bool clsSearchGraphBuilder::parseSentence()
                                 continue;
                             }
 
-                            intfLMSentenceScorer* LMScorer = gConfigs.LM.getInstance<intfLMSentenceScorer>();
-                            LMScorer->initHistory(PrevLexHypoNode.lmScorer());
 
                             size_t MaxCandidates = qMin((int)this->ObservationHistogramSize.value(),
                                                         PhraseCandidates.targetRules().size());
 
                             for(size_t i = 0; i<MaxCandidates; ++i){
+                                intfLMSentenceScorer* LMScorer = gConfigs.LM.getInstance<intfLMSentenceScorer>();
+
+                                LMScorer->initHistory(PrevLexHypoNode.lmScorer());
                                 //log() << "phraseCandidate "<< phraseCandidateNumber << "\n";
                                 //log() << "phraseCandidate "<< phraseCandidateNumber << ": "<< targetPart<<"\n";
                                 //log() << "hypothesisBaseCosts = " << hypothesisBaseCosts << "\n";
@@ -289,14 +303,17 @@ bool clsSearchGraphBuilder::parseSentence()
                                     //addtoSeparateCosts ignored
                                 }
 
-                                CurrCost += LMCost;
+                                //TODO uncomment me
+                                //CurrCost += LMCost * clsSearchGraphBuilder::ScalingFactorLM.value();
 
                                 if (NewLexHypoContainer.mustBePruned(CurrCost + RestCost + 1e-10))
                                     continue;
 
                                 //Pruning based on Reordering
-                                if (this->Data->HypothesisHolder[NewCardinality].mustBePruned(CurrCost + RestCost))
+                                if (this->Data->HypothesisHolder[NewCardinality].mustBePruned(CurrCost + RestCost)){
+                                    ++PrunedAtReored;
                                     continue;
+                                }
 
                                 clsSearchGraphNode* NewHypoNode =
                                         new clsSearchGraphNode(PrevLexHypoNode,
@@ -311,13 +328,10 @@ bool clsSearchGraphBuilder::parseSentence()
                                                                IsFinal,
                                                                LMScorer);
 
-                                //Final Pruning ignored
+                                this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage, NewLexHypoContainer, *NewHypoNode);
+                                //NewHypoNode will be appended to QList as a new reference so we don't need it anymore
 
-                                if (NewLexHypoContainer.insertHypothesis(*NewHypoNode) == false)
-                                    delete NewHypoNode;
-                                else
-                                    this->Data->HypothesisHolder[NewCardinality].updateWorstNode(NewCoverage, *NewHypoNode);
-
+                                delete NewHypoNode;
                             }
                         }//foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes())
                         if (NewLexHypoContainer.nodes().isEmpty())
@@ -326,6 +340,14 @@ bool clsSearchGraphBuilder::parseSentence()
                 }
             }
         }
+
+        quint64 Sum = 0;
+        foreach(auto Iter , this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses()){
+            Sum+= Iter.nodes().size();
+        }
+
+        TargomanDebug(1,"Total Hypo for card="<<NewCardinality<<" is: "<<Sum <<" which must be: "<<this->Data->HypothesisHolder[NewCardinality].totalSearchGraphNodeCount());
+        TargomanDebug(1," pruned at 2(%d) 3(%d) 4(%d) Reorder(%d): ", PrunedAt2, PrunedAt3, PrunedAt4,PrunedAtReored)
 
         /*        if (verbosity_ >= Core::verbosityLevelAdditionalDebug) {
           log() << "before ro pruning: CovContainer size = " << cardinalityContainer_[newCardinality]->size() << "\n";
@@ -342,7 +364,7 @@ bool clsSearchGraphBuilder::parseSentence()
     if(this->Data->HypothesisHolder[this->Data->Sentence.size()].lexicalHypotheses().size() > 0 &&
             this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().isEmpty() == false)
     {
-        this->Data->GoalNode = this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
+        this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
 
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
 
@@ -356,10 +378,11 @@ bool clsSearchGraphBuilder::parseSentence()
                 qDebug()<<gConfigs.EmptyLMScorer->getWordByIndex(_node.targetRule().at(i));
         };
 
-        printNode(this->Data->GoalNode);
+        printNode(*this->Data->GoalNode);
 
         return true;
     } else {
+        TargomanWarn(1,"No translation option");
         // no translation with full coverage found
         return false;
     }

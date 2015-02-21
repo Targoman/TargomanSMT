@@ -38,7 +38,7 @@ public:
     clsTargetRule(const clsTargetRule& _other):
         Data(_other.Data)
     {}
-    ~clsTargetRule(){TargomanDebugLine}
+    ~clsTargetRule(){}
 
     inline Common::WordIndex_t at(int _index) const;
     inline size_t size() const;
@@ -66,7 +66,8 @@ public:
 
     }
 
-private:
+//private:
+public:
     QExplicitlySharedDataPointer<clsTargetRuleData>   Data;
     static  QStringList                     ColumnNames;
     static  size_t                          PrecomputedValuesSize;
@@ -100,7 +101,7 @@ public:
         Fields(_other.Fields),
         PrecomputedValues(_other.PrecomputedValues)
     {}
-    ~clsTargetRuleData() {TargomanDebugLine}
+    ~clsTargetRuleData() {}
 
 public:
     QList<Common::WordIndex_t> TargetPhrase;

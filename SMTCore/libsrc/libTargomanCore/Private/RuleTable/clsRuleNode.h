@@ -30,7 +30,7 @@ public:
         QSharedData(_other),
         TargetRules(_other.TargetRules)
     {}
-    ~clsRuleNodeData(){TargomanDebugLine}
+    ~clsRuleNodeData(){}
 
 public:
     QList<clsTargetRule> TargetRules;
@@ -41,7 +41,7 @@ class clsRuleNode
 public:
     clsRuleNode();
     clsRuleNode(const clsRuleNode & _other) : Data(_other.Data){}
-    ~clsRuleNode(){TargomanDebugLine}
+    ~clsRuleNode(){}
 
     bool isInvalid() const;
     inline QList<clsTargetRule>& targetRules() {
@@ -53,10 +53,12 @@ public:
     void writeBinary(std::ostream &_output) const;
     void detachInvalidData(){this->Data.detach();}
 
-private:
+//private:
+public:
     QExplicitlySharedDataPointer<clsRuleNodeData> Data;
 };
 
+extern clsRuleNodeData* InvalidRuleNodeData;
 }
 }
 }

@@ -58,10 +58,10 @@ Cost_t clsLexicalHypothesis::getBestCost() const
 
 bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
 {
-    size_t InsertionPos=this->Data->Nodes.size();
+    size_t InsertionPos = this->Data->Nodes.size();
     for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
         clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
-        if (HypoNode.haveSameFuture(_node)){
+        if (false && HypoNode.haveSameFuture(_node)){
             if (clsLexicalHypothesis::KeepRecombined.value()){
                 HypoNode.recombine(_node);
                 return true;
@@ -74,8 +74,10 @@ bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
                     return false;
                 }
             }
-        }else if(HypoNode.getTotalCost() > _node.getTotalCost())
+        }else if(HypoNode.getTotalCost() > _node.getTotalCost()){
             InsertionPos = i;
+            break;
+        }
     }
 
     if (this->LexicalMaxHistogramSize.value() > 0 &&

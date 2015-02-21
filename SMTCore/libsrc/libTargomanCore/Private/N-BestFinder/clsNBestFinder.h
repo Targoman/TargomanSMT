@@ -25,7 +25,7 @@ class clsNBestFinder
 {
 public:
     clsNBestFinder();
-    ~clsNBestFinder(){TargomanDebugLine}
+    ~clsNBestFinder(){}
     static void init();
 };
 

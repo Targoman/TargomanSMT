@@ -15,6 +15,7 @@
 #include "libTargomanCommon/Logger.h"
 #include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/CompressedStream/clsCompressedInputStream.h"
+#include "libTargomanCommon/clsCmdProgressBar.h"
 
 #include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
 #include "Private/FeatureFunctions/LexicalReordering/LexicalReordering.h"
@@ -71,7 +72,6 @@ clsJanePlainRuleTable::clsJanePlainRuleTable(quint64 _instanceID)  :
 
 clsJanePlainRuleTable::~clsJanePlainRuleTable()
 {
-    TargomanDebugLine
     this->unregister();
 }
 
@@ -82,6 +82,8 @@ void clsJanePlainRuleTable::init()
     this->PrefixTree.reset(new RulesPrefixTree_t());
     QStringList ColumnNames = clsJanePlainRuleTable::PhraseCostNames.value().split(",");
     size_t      PhraseCostsCount = ColumnNames.size();
+
+    clsCmdProgressBar ProgressBar("Loading RuleTable");
 
     clsCompressedInputStream InputStream(clsJanePlainRuleTable::FileName.value().toStdString());
     size_t RulesRead = 0;
@@ -95,6 +97,7 @@ void clsJanePlainRuleTable::init()
         if (Line == "")
             continue;
         ++RulesRead;
+        ProgressBar.setValue(RulesRead);
 
         QStringList Fields = QString::fromUtf8(Line.c_str()).split("#");
 

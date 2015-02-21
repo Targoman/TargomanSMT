@@ -104,7 +104,7 @@ private:
     static Targoman::NLPLibs::clsLanguageModel LM;                              /** < static data member of clsLanguageModel. */
 
     QScopedPointer<Targoman::NLPLibs::clsLMSentenceScorer> LMSentenceScorer;    /** < clsLMSentenceScorer data pointer. */
-    TARGOMAN_DEFINE_MODULE("TargomanLM", clsTargomanLMProxy)
+    TARGOMAN_DEFINE_MODULE("TargomanLMProxy", clsTargomanLMProxy)
 };
 
 }

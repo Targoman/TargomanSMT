@@ -42,7 +42,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exFeatureFunction);
 class PhraseTable : public intfFeatureFunction
 {
 public:
-    ~PhraseTable(){TargomanDebugLine}
+    ~PhraseTable(){}
 
     void initialize();
 

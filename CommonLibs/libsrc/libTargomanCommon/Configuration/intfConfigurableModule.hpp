@@ -71,13 +71,14 @@ public:
  */
 #define TARGOMAN_DEFINE_MODULE(_name, _class) \
 public: \
-    void   unregister(){_class::Instances.fetchAndAddOrdered(-1); TARGOMAN_UNREGISTER_ACTOR;} \
-    static QString moduleName(){return QStringLiteral(_name);}  \
-    static intfModule* instantiator(){return new _class(_class::Instances.fetchAndAddOrdered(1));} \
+    void   unregister(){TARGOMAN_UNREGISTER_ACTOR;} \
+    static QString moduleName(){_class::ActiveInstances.fetchAndAddOrdered(-1);return QStringLiteral(_name);}  \
+    static intfModule* instantiator(){_class::ActiveInstances.fetchAndAddOrdered(1); return new _class(_class::Instances.fetchAndAddOrdered(1));} \
     static QString baseConfigPath(){return "/" + moduleName();} \
 private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
-    static QAtomicInt Instances;
+    static QAtomicInt Instances; \
+    static QAtomicInt ActiveInstances;
 
 
 /**
@@ -101,7 +102,8 @@ private: \
 #define TARGOMAN_REGISTER_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
                       Targoman::Common::Configuration::stuInstantiator(_class::instantiator,false)); \
-    QAtomicInt _class::Instances;
+    QAtomicInt _class::Instances; \
+    QAtomicInt _class::ActiveInstances;
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for singleton classes. Also makes a null instance of class.
