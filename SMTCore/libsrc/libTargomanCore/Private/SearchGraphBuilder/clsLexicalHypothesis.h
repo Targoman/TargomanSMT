@@ -65,7 +65,9 @@ public:
 
     void finalizeRecombination();
 
-private:
+//TODO uncomment
+//private:
+public:
     QExplicitlySharedDataPointer<clsLexicalHypothesisData> Data;
 
     static Common::Configuration::tmplConfigurable<quint8> LexicalMaxHistogramSize;

@@ -52,11 +52,9 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
              _lmscorer))
 {
     //TODO Seems that this must be moved to SearchGraphBuilder.
-
-    //TODO Uncomment following
-    /*foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions){
+    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions){
         this->Data->Cost += FF->scoreSearchGraphNode(*this);
-    }*/
+    }
 }
 
 template<class Class_t, class Container_t, typename Functor_t>

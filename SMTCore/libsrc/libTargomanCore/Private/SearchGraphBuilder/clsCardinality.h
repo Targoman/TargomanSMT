@@ -18,6 +18,7 @@
 #include <QBitArray>
 #include "clsLexicalHypothesis.h"
 
+bool operator<(const QBitArray& a, const QBitArray& b);
 
 namespace Targoman{
 namespace Core {
@@ -26,6 +27,7 @@ namespace SearchGraphBuilder {
 
 typedef QBitArray Coverage_t;
 typedef QHash<Coverage_t, clsLexicalHypothesis> LexicalHypothesisContainer_t;
+//typedef QMap<Coverage_t, clsLexicalHypothesis> LexicalHypothesisContainer_t;
 
 class clsCardinalityData : public QSharedData
 {

@@ -73,9 +73,14 @@ void LexicalReordering::newSentence(const InputDecomposer::Sentence_t &_inputSen
 
 Common::Cost_t LexicalReordering::scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
 {
+
+
     enuLexicalReorderingFields::Type Orientation = this->getLeftOreientation(_newHypothesisNode);
     Cost_t Cost = _newHypothesisNode.targetRule().field(
                 this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();
+
+    //TODO remove this
+    return Cost;
 
     if (this->IsBidirectional.value()){
         Orientation = getRightOreientation(_newHypothesisNode);
@@ -95,6 +100,10 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart, unsi
     for (int i = enuLexicalReorderingFields::LeftMonotone; i<= enuLexicalReorderingFields::LeftDiscontinous; ++i){
         Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
     }
+
+    //TODO remove this
+    return Cost;
+
     if (this->IsBidirectional.value()){
         for (int i = enuLexicalReorderingFields::RightMonotone; i<= enuLexicalReorderingFields::RightDiscontinous; ++i){
             Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();

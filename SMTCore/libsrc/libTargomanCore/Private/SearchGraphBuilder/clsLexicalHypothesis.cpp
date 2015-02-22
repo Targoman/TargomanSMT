@@ -41,11 +41,16 @@ clsLexicalHypothesis::clsLexicalHypothesis() :
 
 bool clsLexicalHypothesis::mustBePruned(Cost_t _totalCost)
 {
-    return !( this->Data->Nodes.isEmpty() ||
-              (this->LexicalMaxHistogramSize.value() == 0 ||
-               this->Data->Nodes.size() < this->LexicalMaxHistogramSize.value() ||
-               _totalCost < this->Data->Nodes.last().getTotalCost()));
+    if (this->Data->Nodes.isEmpty())
+        return false;
+    if(this->LexicalMaxHistogramSize.value() == 0)
+        return false;
+    if(this->Data->Nodes.size() < this->LexicalMaxHistogramSize.value())
+        return false;
+    if (_totalCost < this->Data->Nodes.last().getTotalCost())
+        return false;
 
+    return true;
 }
 
 Cost_t clsLexicalHypothesis::getBestCost() const

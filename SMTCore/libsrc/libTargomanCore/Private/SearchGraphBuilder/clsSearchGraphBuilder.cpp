@@ -126,6 +126,25 @@ Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
     return ReorderingJumpCosts;
 }
 
+QString bitArray2Str(const QBitArray& _bits){
+    QString Output;
+    for(int i=0;i<_bits.size(); ++i)
+        Output+=_bits.testBit(i) ? '1' : '0';
+    return Output;
+}
+
+
+bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
+{
+    //Find last bit set then check how many bits are zero before this.
+    for(int i=_newCoverage.size() - 1; i>=0; --i)
+        if(_newCoverage.testBit(i)){
+            size_t CoutOfPrevZeros = _newCoverage.count(false) + i - _newCoverage.size() + 1;
+            return (CoutOfPrevZeros <= this->ReorderingMaximumJumpWidth.value());
+        }
+    return true;
+}
+
 bool clsSearchGraphBuilder::parseSentence()
 {
     this->Data->HypothesisHolder.clear();
@@ -148,8 +167,9 @@ bool clsSearchGraphBuilder::parseSentence()
 
             unsigned short NewPhraseCardinality = NewCardinality - PrevCardinality;
 
+            //This happens when we have for ex. 2 bi-grams and a quad-gram but no similar 3-gram. due to bad training
             if(this->Data->HypothesisHolder[PrevCardinality].isEmpty()) {
-                //log() << "ERROR: cardinality Container for previous cardinality empty.\n";
+                std::cout<<__LINE__<< ": ERROR: cardinality Container for previous cardinality empty.\n";
                 continue;
             }
 
@@ -157,12 +177,22 @@ bool clsSearchGraphBuilder::parseSentence()
                 PrevCoverageIter != this->Data->HypothesisHolder[PrevCardinality].lexicalHypotheses().end();
                 ++PrevCoverageIter){
 
+
                 const Coverage_t& PrevCoverage = PrevCoverageIter.key();
                 clsLexicalHypothesis& PrevLexHypoContainer = PrevCoverageIter.value();
 
+                Q_ASSERT(PrevCoverage.count(true) == PrevCardinality);
+                Q_ASSERT(PrevLexHypoContainer.nodes().size());
+
+
                 // TODO: this can be removed if pruning works properly
                 if (PrevLexHypoContainer.nodes().isEmpty()){
-                    //TargomanDebug(1,"ERROR: prevLexHypContainer empty. card: " <<PrevCardinality.<< "cov Vector: " << PrevCoverage)
+                    //TODO convert to log
+                    TargomanDebug(1,"Warning: prevLexHypContainer empty. PrevCard: " <<PrevCardinality
+                                     << "PrevCov: " << bitArray2Str(PrevCoverage)
+                                  <<" Addr:" <<(void*)PrevLexHypoContainer.Data.data());
+
+
                     continue;
                 }
 
@@ -170,14 +200,15 @@ bool clsSearchGraphBuilder::parseSentence()
                  * TODO at this point pbt performs cardinality pruning (cf. discardedAtA / cardhist, cardthres pruning)
                  * this is not implemented here.
                  */
-
-                for (size_t StartPos = 0; StartPos <= (size_t)this->Data->Sentence.size() - NewPhraseCardinality; ++StartPos){
-                    unsigned LastPhrasePos = StartPos + NewPhraseCardinality;
+                for (size_t NewPhraseBeginPos = 0;
+                     NewPhraseBeginPos <= (size_t)this->Data->Sentence.size() - NewPhraseCardinality;
+                     ++NewPhraseBeginPos){
+                    unsigned NewPhraseEndPos = NewPhraseBeginPos + NewPhraseCardinality;
                     //TargomanDebug(1, "start position: "<< StartPos);
 
                     // skip if phrase coverage is not compatible with previous sentence coverage
                     bool SkipStep = false;
-                    for (size_t i= StartPos; i<LastPhrasePos; ++i)
+                    for (size_t i= NewPhraseBeginPos; i<NewPhraseEndPos; ++i)
                         if (PrevCoverage.testBit(i)){
                             SkipStep = true;
                             break;
@@ -187,30 +218,20 @@ bool clsSearchGraphBuilder::parseSentence()
 
                     // generate new coverage vector, containing the new coverage
                     Coverage_t NewCoverage(PrevCoverage);
-                    for (size_t i=StartPos; i<LastPhrasePos; ++i)
+                    for (size_t i=NewPhraseBeginPos; i<NewPhraseEndPos; ++i)
                         NewCoverage.setBit(i);
 
-                    //Compute number of transitions from 0 to 1 in NewCoverage bit vector
-                    //TODO refactor
-                    int Last = 0;
-                    int Runs = 0;
-
-                    for(unsigned i=0;i<(size_t)NewCoverage.size();++i) {
-                        bool Curr=NewCoverage.testBit(i);
-                        if(Last==Curr) continue;
-                        if(Last) Last=0;
-                        else {Last=1;++Runs;if(Runs>this->ReorderingMaximumJumpWidth.value()) Runs=-1;break;}
-                    }
-
-                    if (Runs <0)// check IBM reordering constraint for new coverage
+                    if (this->conformsIBM1Constraint(NewCoverage) == false)
                         continue;
 
-                    clsRuleNode& PhraseCandidates = this->Data->PhraseMatchTable[StartPos][NewPhraseCardinality - 1];
+                    clsRuleNode& PhraseCandidates =
+                            this->Data->PhraseMatchTable[NewPhraseBeginPos][NewPhraseCardinality - 1];
 
+                    //There is no rule defined in rule table for current phrase
                     if (PhraseCandidates.isInvalid())
                         continue;
 
-                    Cost_t RestCost =  this->calculateRestCost(NewCoverage, LastPhrasePos);
+                    Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseEndPos);
                     Cost_t BestCandidateCost = clsSearchGraphBuilder::pPhraseTable->getTargetRuleCost(
                                 0,
                                 0,
@@ -219,124 +240,121 @@ bool clsSearchGraphBuilder::parseSentence()
                     clsLexicalHypothesis& NewLexHypoContainer =
                             this->Data->HypothesisHolder[NewCardinality][NewCoverage];
 
+                    //If best phrase candidate is combined with best previous node but computyed cost is worst than worst node then ignore it
                     if (this->PruneAtStage2.value() && NewLexHypoContainer.mustBePruned(
                                 BestCandidateCost + RestCost + PrevLexHypoContainer.getBestCost())){
                         PrunedAt2++;
                         continue;
                     }
 
+                    foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
+                        // Get reordering distance
+                        size_t JumpWidth = qAbs(PrevLexHypoNode.sourceRangeEnd() - (int)NewPhraseBeginPos);
+                        if (this->ReorderingHardJumpLimit.value() &&
+                                JumpWidth > this->ReorderingMaximumJumpWidth.value())
+                            continue;
 
-                    int SourceRangeEnd = 0;
-                    for (int i=PrevCoverage.size() - 1; i>=0; --i)
-                        if (PrevCoverage.testBit(i)){
-                            SourceRangeEnd = i;
-                            break;
+                        Cost_t ReorderingJumpCosts = computeReorderingJumpCost(JumpWidth);
+
+                        Cost_t ScaledReorderingJumpCost = ReorderingJumpCosts *
+                                this->ScalingFactorReorderingJump.value();
+
+                        Cost_t HypoBaseCost =
+                                RestCost +
+                                PrevLexHypoNode.getCost() +
+                                ScaledReorderingJumpCost;
+
+                        //If best phrase candidate combined with current HypoNode is worst than worst stored node ignore it
+                        if (this->PruneAtStage3.value() &&
+                                NewLexHypoContainer.mustBePruned(HypoBaseCost + BestCandidateCost)){
+                            PrunedAt3++;
+                            continue;
                         }
 
 
-                    // get reordering distance
-                    size_t JumpWidth = qAbs(SourceRangeEnd - (int)StartPos);
+                        size_t MaxCandidates = qMin((int)this->ObservationHistogramSize.value(),
+                                                    PhraseCandidates.targetRules().size());
 
-                    if (this->ReorderingHardJumpLimit.value() == false ||
-                            JumpWidth <= this->ReorderingMaximumJumpWidth.value()){
-                        Cost_t ReorderingJumpCosts = computeReorderingJumpCost(JumpWidth);
+                        for(size_t i = 0; i<MaxCandidates; ++i){
+                            intfLMSentenceScorer* LMScorer = gConfigs.LM.getInstance<intfLMSentenceScorer>();
+                            LMScorer->initHistory(PrevLexHypoNode.lmScorer());
 
-                        Cost_t ScaledReorderingJumpCost = ReorderingJumpCosts * this->ScalingFactorReorderingJump.value();
+                            const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
+                            Cost_t PhraseCost =
+                                    clsSearchGraphBuilder::pPhraseTable->getTargetRuleCost(
+                                        0,
+                                        0,
+                                        CurrentPhraseCandidate);
 
-                        //log() << "hypothesisBaseCosts = " << hypothesisBaseCosts << "\n";
-                        //log() << "scalingFactorReorderingJump_ * reorderingJumpCosts = " << scalingFactorReorderingJump_ * reorderingJumpCosts << "\n";
-                        //log() << "reorderingJumpCosts = " << reorderingJumpCosts<< "\n";
+                            /*std::cout<<"TestLOG-"<<"Cardinality: "<<NewCardinality<<
+                                      " PrevCard: "<<PrevCardinality<<
+                                      " Cov: "<<bitArray2Str(PrevCoverage).toLatin1().constData()<<
+                                      " StartPos: "<<NewPhraseBeginPos<<
+                                      " HypoNode: "<<PrevLexHypoNode.targetRule().size()<<
+                                      " Candidate: "<<i<<
+                                      " PhraseCost: "<<PhraseCost<<
+                                      " BaseCost: "<<HypoBaseCost<<
+                                      " JumpW: "<<JumpWidth<<
+                                      " ScaledJ:"<<ScaledReorderingJumpCost<<std::endl;*/
 
-                        foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
-                            Cost_t HypoBaseCost =
-                                    RestCost +
-                                    PrevLexHypoNode.getCost() +
-                                    ScaledReorderingJumpCost;
 
-                            //log() << "restCosts = " << restCosts << "\n";
-                            //log() << "getBestPhraseCosts_(phraseCandidates) = " << getBestPhraseCosts_(phraseCandidates) << "\n";
-                            //log() << "previousLexicalHypothesisNode->getFirstBestCost() = " << previousLexicalHypothesisNode->getFirstBestCost() << "\n";
-                            if (this->PruneAtStage3.value() &&
-                                    NewLexHypoContainer.mustBePruned(HypoBaseCost + BestCandidateCost)){
-                                PrunedAt3++;
+                            //If current phrase candidate combined with current HypoNode is worst than worst stored node ignore it
+                            if (this->PruneAtStage4.value() &&
+                                    NewLexHypoContainer.mustBePruned(HypoBaseCost + PhraseCost)){
+                                PrunedAt4++;
+                                //TODO This must be converted to break!!!! as RuleTable must store TargetPhrases sorted.
                                 continue;
                             }
 
+                            Cost_t LMCost = 0;
+                            for (size_t j=0; j<CurrentPhraseCandidate.size(); ++j)
+                                LMCost -= LMScorer->wordProb(CurrentPhraseCandidate.at(j));
 
-                            size_t MaxCandidates = qMin((int)this->ObservationHistogramSize.value(),
-                                                        PhraseCandidates.targetRules().size());
+                            Cost_t CurrCost = PrevLexHypoNode.getCost() + PhraseCost + ScaledReorderingJumpCost;
 
-                            for(size_t i = 0; i<MaxCandidates; ++i){
-                                intfLMSentenceScorer* LMScorer = gConfigs.LM.getInstance<intfLMSentenceScorer>();
+                            Cost_t FinalJumpCost = 0;
 
-                                LMScorer->initHistory(PrevLexHypoNode.lmScorer());
-                                //log() << "phraseCandidate "<< phraseCandidateNumber << "\n";
-                                //log() << "phraseCandidate "<< phraseCandidateNumber << ": "<< targetPart<<"\n";
-                                //log() << "hypothesisBaseCosts = " << hypothesisBaseCosts << "\n";
-                                const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
-                                Cost_t PhraseCost =
-                                        clsSearchGraphBuilder::pPhraseTable->getTargetRuleCost(
-                                            0,
-                                            0,
-                                            CurrentPhraseCandidate);
-                                //log() << "phraseCosts = " << phraseCosts << "\n";
-
-                                if (this->PruneAtStage4.value() &&
-                                        NewLexHypoContainer.mustBePruned(HypoBaseCost + PhraseCost)){
-                                    PrunedAt4++;
-                                    break;
-                                }
-
-                                Cost_t LMCost = 0;
-                                for (size_t j=0; j<CurrentPhraseCandidate.size(); ++j)
-                                    LMCost -= LMScorer->wordProb(CurrentPhraseCandidate.at(j));
-
-                                Cost_t CurrCost = PrevLexHypoNode.getCost() + PhraseCost + ScaledReorderingJumpCost;
-
-                                Cost_t FinalJumpCost = 0;
-
-                                if (IsFinal){
-                                    LMCost -= LMScorer->endOfSentenceProb();
-                                    size_t FinalJumpWidth = qAbs(this->Data->Sentence.size() - LastPhrasePos);
-                                    FinalJumpCost = this->computeReorderingJumpCost(FinalJumpWidth) *
-                                            clsSearchGraphBuilder::ScalingFactorReorderingJump.value();
-                                    //addtoSeparateCosts ignored
-                                }
-
-                                //TODO uncomment me
-                                //CurrCost += LMCost * clsSearchGraphBuilder::ScalingFactorLM.value();
-
-                                if (NewLexHypoContainer.mustBePruned(CurrCost + RestCost + 1e-10))
-                                    continue;
-
-                                //Pruning based on Reordering
-                                if (this->Data->HypothesisHolder[NewCardinality].mustBePruned(CurrCost + RestCost)){
-                                    ++PrunedAtReored;
-                                    continue;
-                                }
-
-                                clsSearchGraphNode* NewHypoNode =
-                                        new clsSearchGraphNode(PrevLexHypoNode,
-                                                               CurrentPhraseCandidate,
-                                                               CurrCost + FinalJumpCost,
-                                                               ReorderingJumpCosts,
-                                                               RestCost,
-                                                               LMCost,
-                                                               StartPos,
-                                                               LastPhrasePos,
-                                                               PrevCoverageIter.key(),
-                                                               IsFinal,
-                                                               LMScorer);
-
-                                this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage, NewLexHypoContainer, *NewHypoNode);
-                                //NewHypoNode will be appended to QList as a new reference so we don't need it anymore
-
-                                delete NewHypoNode;
+                            if (IsFinal){
+                                LMCost -= LMScorer->endOfSentenceProb();
+                                size_t FinalJumpWidth = qAbs(this->Data->Sentence.size() - NewPhraseEndPos);
+                                FinalJumpCost = this->computeReorderingJumpCost(FinalJumpWidth) *
+                                        clsSearchGraphBuilder::ScalingFactorReorderingJump.value();
+                                //addtoSeparateCosts ignored
                             }
-                        }//foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes())
-                        if (NewLexHypoContainer.nodes().isEmpty())
-                            this->Data->HypothesisHolder[NewCardinality].remove(NewCoverage);
-                    }
+
+                            CurrCost += LMCost * clsSearchGraphBuilder::ScalingFactorLM.value();
+
+                            if (NewLexHypoContainer.mustBePruned(CurrCost + RestCost + 1e-10))
+                                continue;
+
+                            //Pruning among different reorderings
+                            if (this->Data->HypothesisHolder[NewCardinality].mustBePruned(CurrCost + RestCost)){
+                                ++PrunedAtReored;
+                                continue;
+                            }
+
+                            clsSearchGraphNode* NewHypoNode =
+                                    new clsSearchGraphNode(PrevLexHypoNode,
+                                                           CurrentPhraseCandidate,
+                                                           CurrCost + FinalJumpCost,
+                                                           ReorderingJumpCosts,
+                                                           RestCost,
+                                                           LMCost,
+                                                           NewPhraseBeginPos,
+                                                           NewPhraseEndPos,
+                                                           PrevCoverageIter.key(),
+                                                           IsFinal,
+                                                           LMScorer);
+
+                            this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage, NewLexHypoContainer, *NewHypoNode);
+
+                            //NewHypoNode will be appended to QList as a new reference so we don't need it anymore
+                            delete NewHypoNode;
+                        }
+                    }//foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes())
+                    if (NewLexHypoContainer.nodes().isEmpty())
+                        this->Data->HypothesisHolder[NewCardinality].remove(NewCoverage);
+
                 }
             }
         }

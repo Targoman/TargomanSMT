@@ -77,7 +77,9 @@ void clsCardinality::updateWorstNode()
         LexIter != this->Data->LexicalHypothesisContainer.end();
         ++LexIter){
         //TODO Why we have empty container
-        if (LexIter->nodes().size() && WorstCost < LexIter->nodes().last().getTotalCost()){
+        Q_ASSERT(LexIter->nodes().size());
+
+        if (LexIter->nodes().size()  && WorstCost < LexIter->nodes().last().getTotalCost()){
             WorstCost = LexIter->nodes().last().getTotalCost();
             WorstLexIter = LexIter;
             WorstLexCoverage = LexIter.key();
@@ -120,4 +122,16 @@ void clsCardinality::pruneAndUpdateWorstNode(const Coverage_t& _coverage, clsLex
 }
 }
 }
+}
+
+
+bool operator<(const QBitArray &a, const QBitArray &b)
+{
+    Q_ASSERT(a.size() == b.size());
+    for(int i = 0; i < a.size(); ++i)
+        if(a[i] < b[i])
+            return true;
+        else if(b[i] < a[i])
+            return false;
+    return false;
 }

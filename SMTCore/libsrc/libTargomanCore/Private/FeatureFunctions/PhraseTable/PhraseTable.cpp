@@ -87,7 +87,13 @@ Cost_t PhraseTable::getTargetRuleCost(unsigned _sourceStart,
     Q_UNUSED(_sourceStart)
     Q_UNUSED(_sourceEnd)
 
-    Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
+    Cost_t Cost = 0;
+    for(int i=0; i< enuPhraseTableFields::getCount(); ++i)
+        Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
+    return Cost;
+    //TODO remove above
+
+    //Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
     if (Cost == -INFINITY){
         Cost = 0;
         for(int i=0; i< enuPhraseTableFields::getCount(); ++i)

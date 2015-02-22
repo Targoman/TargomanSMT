@@ -75,6 +75,7 @@ public:
     static inline QString moduleName(){return "SearchGraphBuilder";}
     static inline QString moduleBaseconfig(){return "/" + clsSearchGraphBuilder::moduleName();}
 
+    bool conformsIBM1Constraint(const Coverage_t& _newCoverage);
 private:
     void initializePhraseRestCostsMatrix();
     Common::Cost_t calculateRestCost(const Coverage_t& _coverage, quint16 _lastPos) const;
