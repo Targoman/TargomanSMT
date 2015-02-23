@@ -15,8 +15,8 @@
 #define TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
 
 #include "intfLMSentenceScorer.hpp"
-#include "libLanguageModel/clsLMSentenceScorer.h"
-#include "libLanguageModel/clsLanguageModel.h"
+#include "libTargomanLM/clsLMSentenceScorer.h"
+#include "libTargomanLM/clsLanguageModel.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 
 namespace Targoman {
@@ -31,7 +31,7 @@ namespace LanguageModel{
 class clsTargomanLMProxy : public intfLMSentenceScorer
 {
 public:
-    clsTargomanLMProxy();
+    clsTargomanLMProxy(quint64 _instanceID);
     ~clsTargomanLMProxy();
 
     /**
@@ -75,6 +75,13 @@ public:
     inline Common::WordIndex_t getWordIndex(const QString& _word){return this->LM.getID(_word);}
 
     /**
+     * @brief getWordIndex
+     * @param _word
+     * @return
+     */
+    inline QString getWordByIndex(Common::WordIndex_t _wordIndex){return this->LM.getWordByID(_wordIndex);}
+
+    /**
      * @brief Initializes history of language model with history of input sentence scorer.
      * @param _oldScorer input sentence scorer.
      */
@@ -97,7 +104,7 @@ private:
     static Targoman::NLPLibs::clsLanguageModel LM;                              /** < static data member of clsLanguageModel. */
 
     QScopedPointer<Targoman::NLPLibs::clsLMSentenceScorer> LMSentenceScorer;    /** < clsLMSentenceScorer data pointer. */
-    TARGOMAN_DEFINE_MODULE("TargomanLM", clsTargomanLMProxy)
+    TARGOMAN_DEFINE_MODULE("TargomanLMProxy", clsTargomanLMProxy)
 };
 
 }

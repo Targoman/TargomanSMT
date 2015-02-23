@@ -15,6 +15,7 @@
 #include "libTargomanCommon/Logger.h"
 #include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/CompressedStream/clsCompressedInputStream.h"
+#include "libTargomanCommon/clsCmdProgressBar.h"
 
 #include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
 #include "Private/FeatureFunctions/LexicalReordering/LexicalReordering.h"
@@ -65,14 +66,13 @@ QList<tmplConfigurable<QString>> clsJanePlainRuleTable::FeatureFunctions = {
     "lrm")
 };
 
-clsJanePlainRuleTable::clsJanePlainRuleTable():
-    intfRuleTable(clsJanePlainRuleTable::moduleName())
-{
-}
+clsJanePlainRuleTable::clsJanePlainRuleTable(quint64 _instanceID)  :
+    intfRuleTable(this->moduleName(), _instanceID)
+{}
 
 clsJanePlainRuleTable::~clsJanePlainRuleTable()
 {
-    //Just to suppress compiler error when using QScoppedPointer
+    this->unregister();
 }
 
 void clsJanePlainRuleTable::init()
@@ -82,6 +82,8 @@ void clsJanePlainRuleTable::init()
     this->PrefixTree.reset(new RulesPrefixTree_t());
     QStringList ColumnNames = clsJanePlainRuleTable::PhraseCostNames.value().split(",");
     size_t      PhraseCostsCount = ColumnNames.size();
+
+    clsCmdProgressBar ProgressBar("Loading RuleTable");
 
     clsCompressedInputStream InputStream(clsJanePlainRuleTable::FileName.value().toStdString());
     size_t RulesRead = 0;
@@ -95,6 +97,7 @@ void clsJanePlainRuleTable::init()
         if (Line == "")
             continue;
         ++RulesRead;
+        ProgressBar.setValue(RulesRead);
 
         QStringList Fields = QString::fromUtf8(Line.c_str()).split("#");
 
@@ -120,12 +123,15 @@ void clsJanePlainRuleTable::init()
             for (unsigned AdditionalFieldIndex = janeFormatStandardNumberOfFields;
                  AdditionalFieldIndex < (size_t)Fields.size();
                  ++AdditionalFieldIndex) {
-                QString FieldName = Fields.at(AdditionalFieldIndex).split(" ", QString::SkipEmptyParts).first();
+                QStringList AdditionalField = Fields.at(AdditionalFieldIndex).split(" ", QString::SkipEmptyParts);
+                QString FieldName = AdditionalField.first();
                 for(int i = 0; i< clsJanePlainRuleTable::FeatureFunctions.size(); ++i){
                     const tmplConfigurable<QString>& FFConfig = clsJanePlainRuleTable::FeatureFunctions.at(i);
                     if (FFConfig.value() == FieldName){
                         QString FFModuleName = FFConfig.configPath().split("/").last();
                         FFModuleName.truncate(FFModuleName.size() - sizeof(FFCONFIG_KEY_IDENTIFIER) + 1);
+                        if (gConfigs.ActiveFeatureFunctions.value(FFModuleName)->columnNames().size() != AdditionalField.size() - 1)
+                            throw exJanePhraseTable("Invalid count of costs for field: " + FFModuleName);
                         ColumnNames.append(gConfigs.ActiveFeatureFunctions.value(FFModuleName)->columnNames());
                         Accepted = true;
                         AcceptedAdditionalFieldsIndexes.append(AdditionalFieldIndex);
@@ -158,8 +164,14 @@ void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
         Costs.append(Cost.toDouble());
 
     QVector<WordIndex_t> SourcePhrase;
-    foreach(const QString& Word, _allFields[janeFormatSourcePosition].split(" ", QString::SkipEmptyParts))
-        SourcePhrase.append(gConfigs.EmptyLMScorer->getWordIndex(Word));
+    foreach(const QString& Word, _allFields[janeFormatSourcePosition].split(" ", QString::SkipEmptyParts)){
+        WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word);
+        if (WordIndex == 0 && Word != "<unknown-word>"){
+            WordIndex = gConfigs.SourceVocab.size() + 1;
+            gConfigs.SourceVocab.insert(Word, WordIndex);
+        }
+        SourcePhrase.append(WordIndex);
+    }
 
 
     QList<WordIndex_t> TargetPhrase;

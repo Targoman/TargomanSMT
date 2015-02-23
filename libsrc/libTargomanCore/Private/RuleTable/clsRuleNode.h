@@ -36,11 +36,14 @@ public:
     QList<clsTargetRule> TargetRules;
 };
 
+//RuleNode is not an adequated name must be changed to a  more common sense DB Row name
+
 class clsRuleNode
 {
 public:
     clsRuleNode();
     clsRuleNode(const clsRuleNode & _other) : Data(_other.Data){}
+    ~clsRuleNode(){}
 
     bool isInvalid() const;
     inline QList<clsTargetRule>& targetRules() {
@@ -52,10 +55,12 @@ public:
     void writeBinary(std::ostream &_output) const;
     void detachInvalidData(){this->Data.detach();}
 
-private:
+//private:
+public:
     QExplicitlySharedDataPointer<clsRuleNodeData> Data;
 };
 
+extern clsRuleNodeData* InvalidRuleNodeData;
 }
 }
 }

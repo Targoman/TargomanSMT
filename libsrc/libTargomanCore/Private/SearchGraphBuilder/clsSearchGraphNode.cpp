@@ -21,15 +21,14 @@ namespace SearchGraphBuilder {
 
 using namespace RuleTable;
 
-clsSearchGraphNodeData* InvalidSearchGraphNodeData = new clsSearchGraphNodeData;
+clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
+clsSearchGraphNode* InvalidSearchGraphNodePointer = NULL;
 
 clsSearchGraphNode::clsSearchGraphNode():
     Data(InvalidSearchGraphNodeData)
-{
+{}
 
-}
-
-clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode _prevNode,
+clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
                                        const clsTargetRule &_targetRule,
                                        Common::Cost_t _cost,
                                        Common::Cost_t _reorderingJumpCost,

@@ -30,6 +30,7 @@ class clsSearchGraphBuilderData : public QSharedData
 {
 public:
     clsSearchGraphBuilderData(const InputDecomposer::Sentence_t& _sentence):
+        HypothesisHolder(_sentence.size()),
         Sentence(_sentence)
     {}
     clsSearchGraphBuilderData(const clsSearchGraphBuilderData& _other):
@@ -47,8 +48,8 @@ public:
 public:
     QList<QVector<RuleTable::clsRuleNode>> PhraseMatchTable;
 
-    clsSearchGraphNode                  RootNode;
-    clsSearchGraphNode                  GoalNode;
+    const clsSearchGraphNode*                  RootNode;
+    const clsSearchGraphNode*                  GoalNode;
 
     int MaxMatchingSourcePhraseCardinality;
 
@@ -64,6 +65,7 @@ class clsSearchGraphBuilder
 {
 public:
     clsSearchGraphBuilder(const InputDecomposer::Sentence_t& _sentence);
+    clsSearchGraphBuilder(){}
 
     static void init();
     void matchPhrase();
@@ -73,6 +75,7 @@ public:
     static inline QString moduleName(){return "SearchGraphBuilder";}
     static inline QString moduleBaseconfig(){return "/" + clsSearchGraphBuilder::moduleName();}
 
+    bool conformsIBM1Constraint(const Coverage_t& _newCoverage);
 private:
     void initializePhraseRestCostsMatrix();
     Common::Cost_t calculateRestCost(const Coverage_t& _coverage, quint16 _lastPos) const;
@@ -97,6 +100,8 @@ private:
     static Common::Configuration::tmplConfigurable<quint8> ObservationHistogramSize;
 
     static Common::Configuration::tmplConfigurable<double> ScalingFactorReorderingJump;
+    static Common::Configuration::tmplConfigurable<double> ScalingFactorLM;
+
 
 };
 

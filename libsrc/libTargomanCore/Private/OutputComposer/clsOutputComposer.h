@@ -14,6 +14,8 @@
 #ifndef TARGOMAN_CORE_PRIVATE_OUTPUTCOMPOSER_CLSOUTPUTCOMPOSER_H
 #define TARGOMAN_CORE_PRIVATE_OUTPUTCOMPOSER_CLSOUTPUTCOMPOSER_H
 
+#include "libTargomanCommon/CmdIO.h"
+
 namespace Targoman{
 namespace Core {
 namespace Private{
@@ -23,6 +25,7 @@ class clsOutputComposer
 {
 public:
     clsOutputComposer();
+    ~clsOutputComposer(){}
 
     static void init();
 };

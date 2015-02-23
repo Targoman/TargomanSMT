@@ -14,6 +14,8 @@
 #ifndef TARGOMAN_CORE_PRIVATE_NBESTFINDER_CLSNBESTFINDER_H
 #define TARGOMAN_CORE_PRIVATE_NBESTFINDER_CLSNBESTFINDER_H
 
+#include "libTargomanCommon/CmdIO.h"
+
 namespace Targoman{
 namespace Core {
 namespace Private{
@@ -23,7 +25,7 @@ class clsNBestFinder
 {
 public:
     clsNBestFinder();
-
+    ~clsNBestFinder(){}
     static void init();
 };
 

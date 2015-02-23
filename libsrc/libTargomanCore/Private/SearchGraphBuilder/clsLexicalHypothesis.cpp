@@ -41,11 +41,16 @@ clsLexicalHypothesis::clsLexicalHypothesis() :
 
 bool clsLexicalHypothesis::mustBePruned(Cost_t _totalCost)
 {
-    return !( this->Data->Nodes.isEmpty() ||
-              (this->LexicalMaxHistogramSize.value() == 0 ||
-               this->Data->Nodes.size() < this->LexicalMaxHistogramSize.value() ||
-               _totalCost < this->Data->Nodes.last().getTotalCost()));
+    if (this->Data->Nodes.isEmpty())
+        return false;
+    if(this->LexicalMaxHistogramSize.value() == 0)
+        return false;
+    if(this->Data->Nodes.size() < this->LexicalMaxHistogramSize.value())
+        return false;
+    if (_totalCost < this->Data->Nodes.last().getTotalCost())
+        return false;
 
+    return true;
 }
 
 Cost_t clsLexicalHypothesis::getBestCost() const
@@ -58,7 +63,7 @@ Cost_t clsLexicalHypothesis::getBestCost() const
 
 bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
 {
-    size_t InsertionPos=this->Data->Nodes.size();
+    size_t InsertionPos = this->Data->Nodes.size();
     for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
         clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
         if (HypoNode.haveSameFuture(_node)){
@@ -74,8 +79,10 @@ bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
                     return false;
                 }
             }
-        }else if(HypoNode.getTotalCost() > _node.getTotalCost())
+        }else if(HypoNode.getTotalCost() > _node.getTotalCost()){
             InsertionPos = i;
+            break;
+        }
     }
 
     if (this->LexicalMaxHistogramSize.value() > 0 &&

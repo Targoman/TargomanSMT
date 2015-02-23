@@ -18,10 +18,20 @@
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
 #include "libTargomanCore/clsTranslator.h"
+#include "libTargomanCommon/Types.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
+
+//TODO move this to core common
+inline QString bitArray2Str(const QBitArray& _bits){
+    QString Output;
+    for(int i=0;i<_bits.size(); ++i)
+        Output+=_bits.testBit(i) ? '1' : '0';
+    return Output;
+}
+
 
 namespace FeatureFunction{
 class intfFeatureFunction;
@@ -42,6 +52,7 @@ struct stuGlobalConfigs{
     static Targoman::Common::Configuration::clsModuleConfig          RuleTable;
 
     static Targoman::Core::Private::LanguageModel::intfLMSentenceScorer*  EmptyLMScorer;
+    static QHash<QString, Common::WordIndex_t>                            SourceVocab;
 
     static QMap<QString, FeatureFunction::intfFeatureFunction*>       ActiveFeatureFunctions;
 };

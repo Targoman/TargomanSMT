@@ -40,6 +40,7 @@ class clsLexicalHypothesis
 {
 public:
     clsLexicalHypothesis();
+    ~clsLexicalHypothesis(){}
 
     const clsSearchGraphNode& bestNode() const{
         return this->Data->Nodes.first();
@@ -48,7 +49,7 @@ public:
 
     inline static clsLexicalHypothesis rootLexicalHypothesis(){
         clsLexicalHypothesis LexicalHypothesis;
-        LexicalHypothesis.Data->Nodes.append(clsSearchGraphNode());
+        LexicalHypothesis.Data->Nodes.append(*InvalidSearchGraphNodePointer);
         return LexicalHypothesis;
     }
 
@@ -64,7 +65,9 @@ public:
 
     void finalizeRecombination();
 
-private:
+//TODO uncomment
+//private:
+public:
     QExplicitlySharedDataPointer<clsLexicalHypothesisData> Data;
 
     static Common::Configuration::tmplConfigurable<quint8> LexicalMaxHistogramSize;

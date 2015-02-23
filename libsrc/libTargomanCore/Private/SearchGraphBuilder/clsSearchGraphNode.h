@@ -31,8 +31,7 @@ class clsSearchGraphNode
 {
 public:
     clsSearchGraphNode();
-
-    clsSearchGraphNode(const clsSearchGraphNode _prevNode,
+    clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
             const RuleTable::clsTargetRule& _targetRule,
             Common::Cost_t _cost,
             Common::Cost_t _reorderingJumpCost,
@@ -43,6 +42,7 @@ public:
             const Coverage_t &_newCoverage,
             bool _isFinal,
             LanguageModel::intfLMSentenceScorer* _lmscorer);
+    ~clsSearchGraphNode(){}
 
     inline Common::Cost_t getTotalCost() const;
     inline Common::Cost_t getCost() const;
@@ -59,6 +59,7 @@ public:
     inline const RuleTable::clsTargetRule& targetRule() const;
     inline const Coverage_t&    coverage() const;
     inline bool isRecombined() const;
+    inline bool isInvalid() const;
 
 private:
     QExplicitlySharedDataPointer<clsSearchGraphNodeData>          Data;
@@ -71,16 +72,16 @@ public:
         IsFinal(false),
         Cost(0),
         RestCost(0),
-        TargetRule(RuleTable::InvalidTargetRule),
+        TargetRule(*RuleTable::InvalidTargetRule),
         IsRecombined(false),
         Coverage(Coverage_t()),
         SourceRangeBegin(0),
         SourceRangeEnd(0),
-        LMScorer(gConfigs.EmptyLMScorer),
+        LMScorer(gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>()),
         PrevNode(NULL)
     {}
 
-    clsSearchGraphNodeData(clsSearchGraphNode _prevNode,
+    clsSearchGraphNodeData(const clsSearchGraphNode& _prevNode,
                            const RuleTable::clsTargetRule &_targetRule,
                            Common::Cost_t _cost,
                            Common::Cost_t _reorderingJumpCost,
@@ -136,12 +137,12 @@ public:
     size_t SourceRangeEnd;
 
     QScopedPointer<LanguageModel::intfLMSentenceScorer>     LMScorer;
-    clsSearchGraphNode*                                     PrevNode;
+    const clsSearchGraphNode*                               PrevNode;
     QList<clsSearchGraphNode>                               CombinedNodes;
 };
 
 inline Common::Cost_t clsSearchGraphNode::getTotalCost() const{
-    return this->Data->Cost + this->Data->RestCost;
+    return this->Data->Cost;// + this->Data->RestCost;
 }
 
 inline  Common::Cost_t clsSearchGraphNode::getCost() const{
@@ -152,14 +153,17 @@ inline const LanguageModel::intfLMSentenceScorer& clsSearchGraphNode::lmScorer()
     return *this->Data->LMScorer;
 }
 
+
+extern clsSearchGraphNodeData* InvalidSearchGraphNodeData;
+extern clsSearchGraphNode* InvalidSearchGraphNodePointer;
+
 inline size_t clsSearchGraphNode::sourceRangeBegin() const { return this->Data->SourceRangeBegin;}
 inline size_t clsSearchGraphNode::sourceRangeEnd() const { return this->Data->SourceRangeEnd;}
 inline const clsSearchGraphNode&  clsSearchGraphNode::prevNode() const {return *this->Data->PrevNode;}
 inline const RuleTable::clsTargetRule& clsSearchGraphNode::targetRule() const {return this->Data->TargetRule;}
 inline const Coverage_t&    clsSearchGraphNode::coverage() const{return this->Data->Coverage;}
 inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecombined;}
-
-//static clsSearchGraphNode InvalidSearchGraphNode;
+inline bool clsSearchGraphNode::isInvalid() const {return this->Data == InvalidSearchGraphNodeData;}
 
 }
 }

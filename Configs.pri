@@ -12,7 +12,7 @@ VERSION=0.0.1
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+=TargomanCommon \
                      TargomanTextProcessor \
-                     LanguageModel
+                     TargomanLM
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

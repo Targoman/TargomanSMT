@@ -33,6 +33,8 @@ public:
         OutComposer(new OutputComposer::clsOutputComposer){
     }
 
+    ~clsTranslatorPrivate(){}
+
 public:
     QScopedPointer<InputDecomposer::clsInput> Input;
     QScopedPointer<SearchGraphBuilder::clsSearchGraphBuilder> SGB;

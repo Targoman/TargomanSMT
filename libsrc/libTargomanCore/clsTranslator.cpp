@@ -27,6 +27,7 @@ bool clsTranslatorPrivate::Initialized = false;
 clsTranslator::clsTranslator(const QString &_inputStr) :
     pPrivate(new Private::clsTranslatorPrivate(_inputStr))
 {
+    TargomanDebug(5,_inputStr);
 }
 
 clsTranslator::~clsTranslator()
@@ -40,11 +41,11 @@ void clsTranslator::init(const QString _configFilePath)
     InputDecomposer::clsInput::init();
     gConfigs.EmptyLMScorer = gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>();
     //Load vocab by LM
-    gConfigs.EmptyLMScorer->init(true);
+    gConfigs.EmptyLMScorer->init(false);
 
     SearchGraphBuilder::clsSearchGraphBuilder::init();
     //continue to load rest of LM
-   // gConfigs.EmptyLMScorer->init(false);
+    //gConfigs.EmptyLMScorer->init(false);
 
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
         FF->initialize();

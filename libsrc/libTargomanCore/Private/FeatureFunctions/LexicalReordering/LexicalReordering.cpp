@@ -54,7 +54,12 @@ tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
 
 void LexicalReordering::initialize()
 {
-    for (int i=0; i< enuLexicalReorderingFields::getCount(); ++i){
+    for (int i=0;
+         i< (LexicalReordering::IsBidirectional.value() ?
+             enuLexicalReorderingFields::getCount() :
+             enuLexicalReorderingFields::getCount() / 2
+             );
+             ++i){
         this->FieldIndexes.append(RuleTable::clsTargetRule::getColumnIndex(
                                       enuLexicalReorderingFields::toStr(
                                           (enuLexicalReorderingFields::Type)(i))));
@@ -71,6 +76,9 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNode(SearchGraphBuilder::clsSe
     enuLexicalReorderingFields::Type Orientation = this->getLeftOreientation(_newHypothesisNode);
     Cost_t Cost = _newHypothesisNode.targetRule().field(
                 this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();
+
+    //TODO remove this
+    return Cost;
 
     if (this->IsBidirectional.value()){
         Orientation = getRightOreientation(_newHypothesisNode);
@@ -90,6 +98,10 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart, unsi
     for (int i = enuLexicalReorderingFields::LeftMonotone; i<= enuLexicalReorderingFields::LeftDiscontinous; ++i){
         Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
     }
+
+    //TODO remove this
+    return Cost;
+
     if (this->IsBidirectional.value()){
         for (int i = enuLexicalReorderingFields::RightMonotone; i<= enuLexicalReorderingFields::RightDiscontinous; ++i){
             Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
@@ -98,7 +110,7 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart, unsi
     return Cost;
 }
 
-LexicalReordering::LexicalReordering():
+LexicalReordering::LexicalReordering() :
     intfFeatureFunction(this->moduleName())
 {
 

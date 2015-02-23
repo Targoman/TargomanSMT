@@ -39,6 +39,7 @@ class clsInput
 {
 public:
     clsInput(const QString& _inputStr);
+    ~clsInput(){}
 
     static void init();
 
@@ -48,6 +49,7 @@ private:
     void parsePlain(const QString &_inputStr, const QString& _lang);
     void parseRichIXML(const QString& _inputIXML);
     void parseRichIXML(const QString& _inputIXML, bool _normalize, const QString &_lang = "");
+    void getWordIndex(QString Token, const QString &_tagStr = "");
 
     inline bool isSpace(const QChar& _ch){
         return _ch == ' ';

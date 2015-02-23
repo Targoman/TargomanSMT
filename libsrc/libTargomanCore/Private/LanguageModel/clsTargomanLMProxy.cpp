@@ -25,16 +25,12 @@ TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy)
  * @brief Constructor of this class initializes its parrent class with its module name and instantiates #LMSentenceScorer with #clsTargomanLMProxy::LM
  */
 
-clsTargomanLMProxy::clsTargomanLMProxy() :
-    intfLMSentenceScorer(clsTargomanLMProxy::moduleName()),
-    LMSentenceScorer(new Targoman::NLPLibs::clsLMSentenceScorer(clsTargomanLMProxy::LM)){
-
-}
+clsTargomanLMProxy::clsTargomanLMProxy(quint64 _instanceID)  :
+    intfLMSentenceScorer(this->moduleName(), _instanceID),
+    LMSentenceScorer(new Targoman::NLPLibs::clsLMSentenceScorer(clsTargomanLMProxy::LM)){}
 
 clsTargomanLMProxy::~clsTargomanLMProxy()
-{
-  //Just to suppress compiler error on using QScoppedPointer
-}
+{this->unregister();}
 
 }
 }

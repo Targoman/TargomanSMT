@@ -35,6 +35,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLexicalReordering, exFeatureFunction);
 class LexicalReordering : public intfFeatureFunction
 {
 public:
+    ~LexicalReordering(){}
     void initialize();
     void newSentence(const InputDecomposer::Sentence_t &inputSentence);
     virtual Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
@@ -50,7 +51,11 @@ private:
     enuLexicalReorderingFields::Type getRightOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
     enuLexicalReorderingFields::Type getLeftOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
 
-    inline QStringList columnNames() const{return enuLexicalReorderingFields::options();}
+    inline QStringList columnNames() const{
+        return LexicalReordering::IsBidirectional.value() ?
+                    enuLexicalReorderingFields::options() :
+                    enuLexicalReorderingFields::options().mid(0,3);
+    }
 
 private:
     static Common::Configuration::tmplConfigurable<bool>      IsBidirectional;

@@ -13,6 +13,7 @@
 
 #include <QStringList>
 #include "libTargomanTextProcessor/TextProcessor.h"
+#include "Private/OOVHandler/OOVHandler.h"
 #include "clsInput.h"
 
 using Targoman::NLPLibs::TextProcessor;
@@ -29,6 +30,8 @@ QSet<QString>    clsInput::SpecialTags;
 Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
                                                                    "User Defined valid XML tags. ",
                                                                    ""); /// @todo complete description
+                                                                    //TODO check that UDFTags are not same as predefined tags
+
 Configuration::tmplConfigurable<bool>    clsInput::IsIXML("Input/IsIXML",
                                                           "Input is in Plain text or IXML format",
                                                           false);
@@ -60,6 +63,11 @@ void clsInput::init()
             SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
+
+    foreach(const QString& Tag, SpecialTags){
+        WordIndex_t WordIndex = gConfigs.SourceVocab.size() + 1;
+        gConfigs.SourceVocab.insert(Tag, WordIndex);
+    }
 }
 
 /**
@@ -87,11 +95,21 @@ void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize, const Q
  * @param _inputIXML Input string.
  */
 
+void clsInput::getWordIndex(QString Token, const QString& _tagStr)
+{
+    if (_tagStr.size())
+        return gConfigs.SourceVocab.value(_tagStr);
+
+    WordIndex_t WordIndex = gConfigs.SourceVocab.value(Token,0);
+    if (WordIndex == 0)
+        WordIndex = OOVHandler::instance().getWordIndex(Token);
+}
+
 void clsInput::parseRichIXML(const QString &_inputIXML)
 {
     if (_inputIXML.contains('<') == false) {
       foreach(const QString& Token, _inputIXML.split(" ", QString::SkipEmptyParts))
-          this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token)));
+          this->Tokens.append(clsToken(Token, this->getWordIndex(Token)));
       return;
     }
 
@@ -130,7 +148,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             }
             NextCharEscaped = false;
             if (this->isSpace(Ch)){
-                this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token)));
+                this->Tokens.append(clsToken(Token,this->getWordIndex(Token)));
                 Token.clear();
             }else if (Ch == '\\'){
                 NextCharEscaped = true;
@@ -220,7 +238,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             else if (Ch == '>'){
                 if (TempStr != TagStr)
                     throw exInput("Invalid closing tag: <"+TempStr+"> while looking for <"+TagStr+">");
-                this->Tokens.append(clsToken(Token, gConfigs.EmptyLMScorer->getWordIndex(Token), TagStr, Attributes));
+                this->Tokens.append(clsToken(Token, this->getWordIndex(Token, TagStr), TagStr, Attributes));
                 Token.clear();
                 TempStr.clear();
                 Attributes.clear();

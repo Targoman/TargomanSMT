@@ -29,12 +29,14 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exFeatureFunction, exTargomanCore);
 class intfFeatureFunction : public Common::Configuration::intfModule
 {
 public:
-    intfFeatureFunction(const QString& _name) :
-        Common::Configuration::intfModule(_name)
+    intfFeatureFunction(const QString& _moduleName) :
+        intfModule(_moduleName)
     {
-        gConfigs.ActiveFeatureFunctions.insert(_name, this);
+        gConfigs.ActiveFeatureFunctions.insert(_moduleName, this);
         this->PrecomputedIndex = RuleTable::clsTargetRule::allocatePrecomputedValue();
     }
+
+    virtual ~intfFeatureFunction(){}
 
     virtual bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode& _first,
                                     const SearchGraphBuilder::clsSearchGraphNode& _second) const {

@@ -16,24 +16,92 @@
 //#include "libTargomanCore/clsTranslator.h"
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 
+
+
+
+#include <QDebug>
+
+
 using namespace Targoman::Common;
 using namespace Targoman::Common::Configuration;
 using namespace Targoman::Core;
 
+void printMemoryUsage(const QString& _stepString){
+    QFile ProcessMemStatFile(QString("/proc/%1/status").arg(QCoreApplication::applicationPid()));
+    ProcessMemStatFile.open(QFile::ReadOnly);
+    QString Line;
+    QTextStream ProcessMemInfoStream(ProcessMemStatFile.readAll());
+
+    QString VirtualPeak;
+    QString ResidentPeak;
+    QString VirtualMemory;
+    QString ResidentMemory;
+    QString SharedMemory;
+
+
+    while(ProcessMemInfoStream.atEnd() == false)
+    {
+      Line = ProcessMemInfoStream.readLine();
+      if (Line.startsWith("VmPeak"))
+        VirtualPeak = Line.replace(" ","").split(":").at(1).trimmed();
+      else if (Line.startsWith("VmHWM"))
+        ResidentPeak =Line.replace(" ","").split(":").at(1).trimmed();
+      else if (Line.startsWith("VmSize"))
+        VirtualMemory = Line.replace(" ","").split(":").at(1).trimmed();
+      else if (Line.startsWith("VmRSS"))
+        ResidentMemory = Line.replace(" ","").split(":").at(1).trimmed();
+      else if (Line.startsWith("VmLib"))
+        SharedMemory = Line.replace(" ","").split(":").at(1).trimmed();
+    }
+    qDebug()<<"********************************************************************";
+    qDebug()<<"Memory Stat ["<<_stepString<<
+              "]: VirtPeak:"<<VirtualMemory<<
+              " CurrVirt:"<<VirtualMemory<<
+              " ResPeak:"<<ResidentPeak<<
+              " CurRes:"<<ResidentMemory<<
+              " Shared:"<<SharedMemory;
+    qDebug()<<"********************************************************************";
+}
+
+
 int main(int argc, char *argv[])
 {
+    TARGOMAN_IO_SETTINGS.setDefault();
+    //TARGOMAN_IO_SETTINGS.Info.setLevel(5);
+    //TARGOMAN_IO_SETTINGS.setSilent();
+
     try{
         clsSafeCoreApplication App(argc, argv);
 
-        ConfigManager::instance().init("kdsjh", QStringList()<<"--save"<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
-
+        printMemoryUsage("@first");
+#if 0
+        ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
+#else
+        ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en.full/Targoman.conf");
+#endif
+        printMemoryUsage("after init");
         clsTranslator::init(ConfigManager::instance().configFilePath());
+        printMemoryUsage("after load all");
 
-        clsTranslator MyTranslator(QStringLiteral("این یک آزمایش است."));
-        MyTranslator.translate();
+        QFile File(argv[1]);
+        QTextStream Stream(&File);
+        Stream.setCodec("UTF-8");
+        File.open(QFile::ReadOnly);
+
+        while(Stream.atEnd() == false)
+        {
+            clsTranslator MyTranslator(Stream.readLine());
+            MyTranslator.translate();
+            printMemoryUsage("after translate");
+        }
+
     }catch(exTargomanBase& e){
+        qDebug()<<e.what();
         TargomanError(e.what());
     }
+
+    TargomanInfo(1,"Entering the infinite loop...");
+   // while(1);
 }
 
 

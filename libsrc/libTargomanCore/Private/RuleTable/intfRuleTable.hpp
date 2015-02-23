@@ -28,10 +28,11 @@ typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode>
 class intfRuleTable : public Common::Configuration::intfModule
 {
 public:
-    intfRuleTable(const QString& _typeName):
-        intfModule(_typeName){}
+    intfRuleTable(const QString& _moduleName, quint64 _instanceID) :
+    intfModule(_moduleName, _instanceID)
+    {}
 
-    ~intfRuleTable(){}
+    virtual ~intfRuleTable(){}
 
     virtual void init() = 0;
 

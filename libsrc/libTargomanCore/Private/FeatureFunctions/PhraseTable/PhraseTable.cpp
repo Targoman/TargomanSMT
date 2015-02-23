@@ -24,37 +24,37 @@ using namespace Common::Configuration;
 TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable)
 
 tmplConfigurable<double>    PhraseTable::ScalingFactors[] = {
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/s2t",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/s2t",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/t2s",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/t2s",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ibm1s2t",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/ibm1s2t",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ibm1t2s",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/ibm1t2s",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/phrasePenalty",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/phrasePenalty",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/wordPenalty",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/wordPenalty",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/s2tRatio",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/s2tRatio",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/t2sRatio",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/t2sRatio",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/cnt1",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/cnt1",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/cnt2",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/cnt2",
     "TODO Desc",
     0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/cnt3",
+    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/cnt3",
     "TODO Desc",
     0)
 };
@@ -68,7 +68,7 @@ void PhraseTable::initialize()
     }
 }
 
-PhraseTable::PhraseTable():
+PhraseTable::PhraseTable() :
     intfFeatureFunction(this->moduleName())
 {
 }
@@ -87,7 +87,13 @@ Cost_t PhraseTable::getTargetRuleCost(unsigned _sourceStart,
     Q_UNUSED(_sourceStart)
     Q_UNUSED(_sourceEnd)
 
-    Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
+    Cost_t Cost = 0;
+    for(int i=0; i< enuPhraseTableFields::getCount(); ++i)
+        Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
+    return Cost;
+    //TODO remove above
+
+    //Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
     if (Cost == -INFINITY){
         Cost = 0;
         for(int i=0; i< enuPhraseTableFields::getCount(); ++i)
