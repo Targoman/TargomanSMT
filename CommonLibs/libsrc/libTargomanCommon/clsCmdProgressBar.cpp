@@ -119,11 +119,11 @@ void clsCmdProgressBar::finalize(bool _change2full, qint64 _finalValue)
         ioctl(1, TIOCGWINSZ, &w);
         QString ProgressPrefix = this->Message + QString(" [%1][100%][").arg(_finalValue == -1 ? this->Maximum : _finalValue);
         quint16 ProgressBarMaxWidth = w.ws_col - ProgressPrefix.size() - 10;
-        cout<<(ProgressPrefix +
+        cerr<<(ProgressPrefix +
                QString(ProgressBarMaxWidth, '#') + "]").toUtf8().constData()<<flush;
     }
 
-    cout<<endl;
+    cerr<<endl;
     this->WasShown = false;
 }
 

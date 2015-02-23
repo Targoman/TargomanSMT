@@ -106,6 +106,30 @@ void clsSearchGraphBuilder::matchPhrase()
                 continue; // appending next word breaks phrase lookup
 
             this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
+
+//#define DEBUG_MATCH_PHRASE
+#ifdef DEBUG_MATCH_PHRASE
+            QString TargetPhrasesCounters;
+            if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false){
+                clsRuleNode& RuleNode = this->Data->PhraseMatchTable[FirstPosition][0];
+
+                for(int i=0; i< RuleNode.targetRules().size(); ++i)
+                    TargetPhrasesCounters += QString::number(RuleNode.targetRules().at(i).size()) + ";";
+            }
+
+            QBitArray Cov;
+            Cov.resize(this->Data->Sentence.size());
+            for (int i=FirstPosition; i<= FirstPosition; ++i )
+                Cov.setBit(i);
+
+            std::cout<<"JANECOMPARE: FP:"<<FirstPosition<<
+                       " LP:"<<FirstPosition<<
+                       " TRs:"<<this->Data->PhraseMatchTable[FirstPosition][0].targetRules().size()<<
+                       " TRTPs:"<<TargetPhrasesCounters.toLatin1().constData()<<
+                       " Cov:"<<bitArray2Str(Cov).toLatin1().constData()<<std::endl;
+
+#endif
+
             if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = 1;
             //else
@@ -120,11 +144,38 @@ void clsSearchGraphBuilder::matchPhrase()
                 break; // appending next word breaks phrase lookup
 
             this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition] = PrevNode->getData();
+
+#ifdef DEBUG_MATCH_PHRASE
+            QString TargetPhrasesCounters;
+            if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false){
+                clsRuleNode& RuleNode = this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition];
+
+                for(int i=0; i< RuleNode.targetRules().size(); ++i)
+                    TargetPhrasesCounters += QString::number(RuleNode.targetRules().at(i).size()) + ";";
+            }
+
+            QBitArray Cov;
+            Cov.resize(this->Data->Sentence.size());
+            for (int i=FirstPosition; i<= LastPosition; ++i )
+                Cov.setBit(i);
+
+            std::cout<<"JANECOMPARE: FP:"<<FirstPosition<<
+                       " LP:"<<LastPosition<<
+                       " TRs:"<<this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].targetRules().size()<<
+                       " TRTPs:"<<TargetPhrasesCounters.toLatin1().constData()<<
+                       " Cov:"<<bitArray2Str(Cov).toLatin1().constData()<<std::endl;
+
+#endif
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                 (int)(LastPosition - FirstPosition + 1));
         }
     }
+
+
+#ifdef DEBUG_MATCH_PHRASE
+    exit(0);
+#endif
 }
 
 Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
@@ -139,7 +190,7 @@ Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
 
 bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
 {
-    /* //Jane implementation that seems to be wrong
+     //Jane implementation that seems to be wrong
      bool last = 0;
     int runs=0;
     for(unsigned i=0;i<_newCoverage.size();++i) {
@@ -148,7 +199,7 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
       if(last) last=0;
       else {last=1;++runs;if(runs>this->ReorderingMaximumJumpWidth.value()) return false;}
     }
-    return true;*/
+    return true;
 
 
     //Find last bit set then check how many bits are zero before this.
