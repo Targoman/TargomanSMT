@@ -61,6 +61,8 @@ tmplConfigurable<double>    PhraseTable::ScalingFactors[] = {
 
 void PhraseTable::initialize()
 {
+    //TODO enuPhraseTableFields must be removed and this must be reported by RulTable reader (JanePT)
+
     for (int i=0; i< enuPhraseTableFields::getCount(); ++i){
         this->FieldIndexes.append(RuleTable::clsTargetRule::getColumnIndex(
                                       enuPhraseTableFields::toStr(

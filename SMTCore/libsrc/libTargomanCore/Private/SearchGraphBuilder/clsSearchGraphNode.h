@@ -142,7 +142,7 @@ public:
 };
 
 inline Common::Cost_t clsSearchGraphNode::getTotalCost() const{
-    return this->Data->Cost;// + this->Data->RestCost;
+    return this->Data->Cost + this->Data->RestCost;
 }
 
 inline  Common::Cost_t clsSearchGraphNode::getCost() const{

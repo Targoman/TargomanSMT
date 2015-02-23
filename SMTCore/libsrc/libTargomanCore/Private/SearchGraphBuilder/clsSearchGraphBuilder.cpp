@@ -191,7 +191,7 @@ Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
 bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
 {
      //Jane implementation that seems to be wrong
-     bool last = 0;
+/*     bool last = 0;
     int runs=0;
     for(unsigned i=0;i<_newCoverage.size();++i) {
       bool curr=_newCoverage.testBit(i);
@@ -201,7 +201,7 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
     }
     return true;
 
-
+*/
     //Find last bit set then check how many bits are zero before this.
     for(int i=_newCoverage.size() - 1; i>=0; --i)
         if(_newCoverage.testBit(i)){
@@ -213,6 +213,8 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
 
 bool clsSearchGraphBuilder::parseSentence()
 {
+#define DEBUG_PARSE_SENTENCE_CARDINALITY 5
+
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
 
@@ -267,7 +269,7 @@ bool clsSearchGraphBuilder::parseSentence()
                 }
 
 /*************************************************
- * PREMATURE OPTIMIZATION that does not work properly
+ * TODO PREMATURE OPTIMIZATION that does not work properly
  *                 size_t StartLookingPos = 0;
                 size_t NeededSpace = NewPhraseCardinality;
                 while(StartLookingPos <= (size_t)this->Data->Sentence.size() - NewPhraseCardinality){
@@ -433,6 +435,12 @@ bool clsSearchGraphBuilder::parseSentence()
                                 continue;
                             }
 
+                            if (CurrentPhraseCandidate.at(0) == 35598856){
+                                int a=0;
+                                ++a;
+                            }
+
+
                             clsSearchGraphNode* NewHypoNode =
                                     new clsSearchGraphNode(PrevLexHypoNode,
                                                            CurrentPhraseCandidate,
@@ -466,6 +474,13 @@ bool clsSearchGraphBuilder::parseSentence()
 
         TargomanDebug(1,"Total Hypo for card="<<NewCardinality<<" is: "<<Sum <<" which must be: "<<this->Data->HypothesisHolder[NewCardinality].totalSearchGraphNodeCount());
         TargomanDebug(1," pruned at IBM(%d) 2(%d) 3(%d) 4(%d) Reorder(%d): ", prunedByIBMConstraint, PrunedAt2, PrunedAt3, PrunedAt4,PrunedAtReored)
+        #ifdef DEBUG_PARSE_SENTENCE_CARDINALITY
+                    if (NewCardinality <= DEBUG_PARSE_SENTENCE_CARDINALITY){
+                        this->Data->HypothesisHolder[NewCardinality].dump("JANECOMPARE: Card["+
+                                                             QString::number(NewCardinality) +
+                                                             "] ");
+                    }
+        #endif
 
         /*        if (verbosity_ >= Core::verbosityLevelAdditionalDebug) {
           log() << "before ro pruning: CovContainer size = " << cardinalityContainer_[newCardinality]->size() << "\n";

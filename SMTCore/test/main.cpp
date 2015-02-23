@@ -76,8 +76,10 @@ int main(int argc, char *argv[])
         printMemoryUsage("@first");
 #if 0
         ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
-#else
+#elif 1
         ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en.full/Targoman.conf");
+#elif 1
+        ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en.moses/Targoman.conf");
 #endif
         printMemoryUsage("after init");
         clsTranslator::init(ConfigManager::instance().configFilePath());
@@ -99,9 +101,6 @@ int main(int argc, char *argv[])
         qDebug()<<e.what();
         TargomanError(e.what());
     }
-
-    TargomanInfo(1,"Entering the infinite loop...");
-   // while(1);
 }
 
 

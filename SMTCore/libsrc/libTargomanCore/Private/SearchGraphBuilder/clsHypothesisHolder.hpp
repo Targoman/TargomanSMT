@@ -66,9 +66,10 @@ public:
         return this->Data->Cardinalities[_index];
     }
 
-    /*inline const QVector<clsCoverageContainer>& cardinalityContainer(){
-        return this->CardinalityContainer;
-    }*/
+    inline size_t size() const{
+        return this->Data->Cardinalities.size();
+    }
+
 
 private:
     QExplicitlySharedDataPointer<clsHypothesisHolderData> Data;

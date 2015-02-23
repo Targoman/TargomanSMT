@@ -62,6 +62,8 @@ public:
         return this->Data->LexicalHypothesisContainer[_coverage];
     }
 
+    void dump(const QString &_prefix);
+
     inline size_t isEmpty(){
         return this->Data->LexicalHypothesisContainer.isEmpty();
     }

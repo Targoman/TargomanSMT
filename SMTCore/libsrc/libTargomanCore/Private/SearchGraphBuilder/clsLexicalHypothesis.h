@@ -57,7 +57,7 @@ public:
 
     Common::Cost_t getBestCost() const;
 
-    inline QList<clsSearchGraphNode>& nodes(){
+    inline QList<clsSearchGraphNode>& nodes() const{
         return this->Data->Nodes;
     }
 

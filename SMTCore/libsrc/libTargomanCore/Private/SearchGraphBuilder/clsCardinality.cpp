@@ -13,6 +13,7 @@
 
 #include "clsCardinality.h"
 #include "clsSearchGraphBuilder.h"
+#include <iostream>
 
 namespace Targoman{
 namespace Core {
@@ -30,6 +31,30 @@ tmplConfigurable<quint8> clsCardinality::ReorderingHistogramSize(
 clsCardinality::clsCardinality() :
     Data(new clsCardinalityData)
 {}
+
+void clsCardinality::dump(const QString& _prefix)
+{
+    for(LexicalHypothesisContainer_t::ConstIterator Iter = this->Data->LexicalHypothesisContainer.begin();
+        Iter != this->Data->LexicalHypothesisContainer.end();
+        ++Iter){
+        for(int i=0; i<Iter.value().nodes().size(); ++i){
+            clsSearchGraphNode Node(Iter.value().nodes().at(i));
+            QString TargetPhrase;
+            for(int j=0; j <Node.targetRule().size(); ++j)
+                TargetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(Node.targetRule().at(j))+
+                        "(" + QString::number(Node.targetRule().at(j))+")";
+
+            std::cout<<(_prefix +
+                        QString("Cov[%1] Node[%2] Cost[%3] RestCost[%4] :").arg(
+                            bitArray2Str(Iter.key())).arg(
+                            i).arg(
+                            Node.getCost()).arg(
+                            Node.getTotalCost() - Iter.value().nodes().at(i).getCost())
+                        + TargetPhrase).toUtf8().constData()<<std::endl;
+        }
+    }
+
+}
 
 void clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesis &_container, clsSearchGraphNode &_node)
 {
@@ -130,8 +155,8 @@ bool operator<(const QBitArray &a, const QBitArray &b)
     Q_ASSERT(a.size() == b.size());
     for(int i = 0; i < a.size(); ++i)
         if(a[i] < b[i])
-            return true;
-        else if(b[i] < a[i])
             return false;
+        else if(b[i] < a[i])
+            return true;
     return false;
 }
