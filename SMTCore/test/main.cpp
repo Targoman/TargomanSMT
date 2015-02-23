@@ -81,11 +81,20 @@ int main(int argc, char *argv[])
 #endif
         printMemoryUsage("after init");
         clsTranslator::init(ConfigManager::instance().configFilePath());
-
         printMemoryUsage("after load all");
-        clsTranslator MyTranslator(QString::fromUtf8(argv[1]));
-        MyTranslator.translate();
-        printMemoryUsage("after translate");
+
+        QFile File(argv[1]);
+        QTextStream Stream(&File);
+        Stream.setCodec("UTF-8");
+        File.open(QFile::ReadOnly);
+
+        while(Stream.atEnd() == false)
+        {
+            clsTranslator MyTranslator(Stream.readLine());
+            MyTranslator.translate();
+            printMemoryUsage("after translate");
+        }
+
     }catch(exTargomanBase& e){
         qDebug()<<e.what();
         TargomanError(e.what());

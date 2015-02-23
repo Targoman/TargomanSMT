@@ -26,8 +26,7 @@ namespace Private{
 namespace SearchGraphBuilder {
 
 typedef QBitArray Coverage_t;
-typedef QHash<Coverage_t, clsLexicalHypothesis> LexicalHypothesisContainer_t;
-//typedef QMap<Coverage_t, clsLexicalHypothesis> LexicalHypothesisContainer_t;
+typedef QMap<Coverage_t, clsLexicalHypothesis> LexicalHypothesisContainer_t;
 
 class clsCardinalityData : public QSharedData
 {
@@ -57,6 +56,9 @@ public:
     ~clsCardinality(){}
 
     inline clsLexicalHypothesis& operator [] (const Coverage_t& _coverage){
+        /*if(this->Data->LexicalHypothesisContainer.contains(_coverage) == false){
+            TargomanDebug(1,"Creating new LexHypo for coverage = " + bitArray2Str(_coverage));
+        }*/
         return this->Data->LexicalHypothesisContainer[_coverage];
     }
 

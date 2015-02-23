@@ -52,14 +52,16 @@ struct stuLMConfigs
     }UnknownWordDefault;
 
     bool    UseIndexBasedModel;
+    bool    VerifyBinaryCheckSum;
 
     stuLMConfigs(Targoman::Common::LogP_t _unkProb = 0,
                  Targoman::Common::LogP_t _unkBackoff = 0,
-                 bool _useIdexBasedModel = true){
+                 bool _useIdexBasedModel = true,
+                 bool _verifyBinaryCheckSum = true){
         this->UnknownWordDefault.Prob = _unkProb;
         this->UnknownWordDefault.Backoff = _unkBackoff;
         this->UseIndexBasedModel = _useIdexBasedModel;
-
+        this->VerifyBinaryCheckSum = _verifyBinaryCheckSum;
     }
 };
 

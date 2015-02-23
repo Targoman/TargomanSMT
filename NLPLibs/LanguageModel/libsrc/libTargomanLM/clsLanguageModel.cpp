@@ -45,7 +45,10 @@ tmplConfigurable<double>  clsLanguageModel::DeafultUnknownBackoff("/TargomanLM/D
                                                                   "Default value for unknown words backoff when not defined in model file",
                                                                   0);
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::UseIndexBasedModel("/TargomanLM/UseIndexBasedModel",
-                                                                                             "Wheter use Index-Based or String-Based model",
+                                                                                             "Whether to use Index-Based or String-Based model",
+                                                                                             true);
+Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::VerifyBinaryChecksum("/TargomanLM/VerifyBinaryChecksum",
+                                                                                             "Whether to verify checksum on binary files or not",
                                                                                              true);
 
 clsLanguageModel::clsLanguageModel() :
@@ -64,7 +67,9 @@ quint8 clsLanguageModel::init(bool _justVocab)
                       stuLMConfigs(
                           clsLanguageModel::DeafultUnknownProb.value(),
                           clsLanguageModel::DeafultUnknownBackoff.value(),
-                          clsLanguageModel::UseIndexBasedModel.value()), _justVocab);
+                          clsLanguageModel::UseIndexBasedModel.value(),
+                          clsLanguageModel::VerifyBinaryChecksum.value()),
+                      _justVocab);
 }
 
 /**
@@ -98,7 +103,7 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
         this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
                                                       _configs.UnknownWordDefault.Backoff);
 
-        this->pPrivate->Order = this->pPrivate->Model->loadBinFile(_filePath);
+        this->pPrivate->Order = this->pPrivate->Model->loadBinFile(_filePath, _configs.VerifyBinaryCheckSum);
 
         LM_BEGIN_SENTENCE_WINDEX = this->pPrivate->Model->getID(LM_BEGIN_SENTENCE);
         LM_END_SENTENCE_WINDEX   = this->pPrivate->Model->getID(LM_END_SENTENCE);

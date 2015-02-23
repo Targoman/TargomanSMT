@@ -155,6 +155,7 @@ inline const LanguageModel::intfLMSentenceScorer& clsSearchGraphNode::lmScorer()
 
 
 extern clsSearchGraphNodeData* InvalidSearchGraphNodeData;
+extern clsSearchGraphNode* InvalidSearchGraphNodePointer;
 
 inline size_t clsSearchGraphNode::sourceRangeBegin() const { return this->Data->SourceRangeBegin;}
 inline size_t clsSearchGraphNode::sourceRangeEnd() const { return this->Data->SourceRangeEnd;}

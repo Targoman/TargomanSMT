@@ -55,6 +55,7 @@ private:
     static Targoman::Common::Configuration::tmplConfigurable<double>  DeafultUnknownProb;
     static Targoman::Common::Configuration::tmplConfigurable<double>  DeafultUnknownBackoff;
     static Targoman::Common::Configuration::tmplConfigurable<bool>    UseIndexBasedModel;
+    static Targoman::Common::Configuration::tmplConfigurable<bool>    VerifyBinaryChecksum;
 };
 
 

@@ -27,6 +27,7 @@ bool clsTranslatorPrivate::Initialized = false;
 clsTranslator::clsTranslator(const QString &_inputStr) :
     pPrivate(new Private::clsTranslatorPrivate(_inputStr))
 {
+    TargomanDebug(5,_inputStr);
 }
 
 clsTranslator::~clsTranslator()

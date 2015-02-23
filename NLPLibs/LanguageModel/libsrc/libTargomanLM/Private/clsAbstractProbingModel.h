@@ -96,7 +96,7 @@ public:
     virtual Targoman::Common::LogP_t lookupNGram(const QStringList &_ngram, quint8& _foundedGram) const = 0;
     virtual Targoman::Common::LogP_t lookupNGram(const QList<Common::WordIndex_t> &_ngram, quint8& _foundedGram) const = 0;
     virtual void    saveBinFile(const QString& _binFilePath, quint8 _order);
-    virtual quint8 loadBinFile(const QString& _binFilePath);
+    virtual quint8 loadBinFile(const QString& _binFilePath, bool _computeChecksum);
     virtual QString modelHeaderSuffix() = 0;
 
     QString getStatsStr() const {

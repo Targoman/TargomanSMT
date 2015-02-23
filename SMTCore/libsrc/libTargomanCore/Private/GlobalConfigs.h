@@ -24,6 +24,15 @@ namespace Targoman {
 namespace Core {
 namespace Private {
 
+//TODO move this to core common
+inline QString bitArray2Str(const QBitArray& _bits){
+    QString Output;
+    for(int i=0;i<_bits.size(); ++i)
+        Output+=_bits.testBit(i) ? '1' : '0';
+    return Output;
+}
+
+
 namespace FeatureFunction{
 class intfFeatureFunction;
 }

@@ -28,9 +28,9 @@ class intfModule {
 public:
     intfModule(const QString& _moduleName, quint64 _instanceID = 0){
         this->InstanceID = _instanceID;
-        TARGOMAN_REGISTER_ACTOR(
+      /*  TARGOMAN_REGISTER_ACTOR(
                     _moduleName +
-                    (_instanceID ? "(" + QString::number(this->InstanceID) + ")" : ""));
+                    (_instanceID ? "(" + QString::number(this->InstanceID) + ")" : ""));*/
     }
 
 protected:
@@ -71,7 +71,7 @@ public:
  */
 #define TARGOMAN_DEFINE_MODULE(_name, _class) \
 public: \
-    void   unregister(){TARGOMAN_UNREGISTER_ACTOR;} \
+    void   unregister(){/*TARGOMAN_UNREGISTER_ACTOR;*/} \
     static QString moduleName(){_class::ActiveInstances.fetchAndAddOrdered(-1);return QStringLiteral(_name);}  \
     static intfModule* instantiator(){_class::ActiveInstances.fetchAndAddOrdered(1); return new _class(_class::Instances.fetchAndAddOrdered(1));} \
     static QString baseConfigPath(){return "/" + moduleName();} \

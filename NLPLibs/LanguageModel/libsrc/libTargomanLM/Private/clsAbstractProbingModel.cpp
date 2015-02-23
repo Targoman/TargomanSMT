@@ -206,7 +206,7 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     BinFile.close();
 }
 
-quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
+quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath, bool _computeChecksum)
 {
     TargomanLogInfo(5, "Loading binaryLM from: " + _binFilePath);
     QFile BinFile(_binFilePath);
@@ -249,33 +249,35 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath)
     /***********************************************************************************
         Compute checksum
      ***********************************************************************************/
-    const quint64 FileSize  = QFileInfo(_binFilePath).size();
-    const quint32 LoopCount = (FileSize - 16) / Constants::MaxFileIOBytes;
-    const quint32 Remainder = FileSize - (LoopCount * Constants::MaxFileIOBytes) - 16;
-    QByteArray CheckSum;
+    clsCmdProgressBar ProgressBar;
+    if(_computeChecksum){
+        const quint64 FileSize  = QFileInfo(_binFilePath).size();
+        const quint32 LoopCount = (FileSize - 16) / Constants::MaxFileIOBytes;
+        const quint32 Remainder = FileSize - (LoopCount * Constants::MaxFileIOBytes) - 16;
+        QByteArray CheckSum;
 
-    clsCmdProgressBar ProgressBar("Computing CheckSum", LoopCount + 1);
-    QCryptographicHash Crypto(QCryptographicHash::Md5);
-    if (BinFile.open(QFile::ReadOnly) == false)
-        throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
-    try{
-        for(quint64 i = 0; i < LoopCount; ++i){
-            ProgressBar.setValue(i+1);
-            Crypto.addData(BinFile.read(Constants::MaxFileIOBytes));
+        ProgressBar.reset("Computing CheckSum", LoopCount + 1);
+        QCryptographicHash Crypto(QCryptographicHash::Md5);
+        if (BinFile.open(QFile::ReadOnly) == false)
+            throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
+        try{
+            for(quint64 i = 0; i < LoopCount; ++i){
+                ProgressBar.setValue(i+1);
+                Crypto.addData(BinFile.read(Constants::MaxFileIOBytes));
+            }
+            Crypto.addData(BinFile.read(Remainder));
+            ProgressBar.setValue(LoopCount+1);
+            CheckSum = BinFile.read(16);
+        }catch(...){
+            throw exLanguageModel("Invalid truncated BinFile");
         }
-        Crypto.addData(BinFile.read(Remainder));
-        ProgressBar.setValue(LoopCount+1);
-        CheckSum = BinFile.read(16);
-    }catch(...){
-        throw exLanguageModel("Invalid truncated BinFile");
+
+        if (Crypto.result() != CheckSum)
+            throw exLanguageModel(QString("Checksum has failed: %1 vs %2").arg(
+                                      CheckSum.toHex().constData()).arg(
+                                      Crypto.result().toHex().constData()));
+        BinFile.close();
     }
-
-    if (Crypto.result() != CheckSum)
-        throw exLanguageModel(QString("Checksum has failed: %1 vs %2").arg(
-                                  CheckSum.toHex().constData()).arg(
-                                  Crypto.result().toHex().constData()));
-    BinFile.close();
-
     /***********************************************************************************
          Load Bin File
      ***********************************************************************************/

@@ -33,7 +33,7 @@ public:
     virtual quint64 getID(const char* _word) const = 0;
     virtual QString getWordByID(Common::WordIndex_t _wordIndex) const = 0;
     virtual void    saveBinFile(const QString& _binFilePath, quint8 _order) = 0;
-    virtual quint8  loadBinFile(const QString& _binFilePath) = 0;
+    virtual quint8  loadBinFile(const QString& _binFilePath, bool _computeChecksum = true) = 0;
 
 protected:
     enuMemoryModel::Type  Type;

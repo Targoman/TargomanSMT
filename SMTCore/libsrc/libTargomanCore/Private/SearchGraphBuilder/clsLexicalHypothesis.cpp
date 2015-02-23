@@ -66,7 +66,7 @@ bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
     size_t InsertionPos = this->Data->Nodes.size();
     for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
         clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
-        if (false && HypoNode.haveSameFuture(_node)){
+        if (HypoNode.haveSameFuture(_node)){
             if (clsLexicalHypothesis::KeepRecombined.value()){
                 HypoNode.recombine(_node);
                 return true;

@@ -36,6 +36,8 @@ public:
     QList<clsTargetRule> TargetRules;
 };
 
+//RuleNode is not an adequated name must be changed to a  more common sense DB Row name
+
 class clsRuleNode
 {
 public:

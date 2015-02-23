@@ -22,6 +22,7 @@ namespace SearchGraphBuilder {
 using namespace RuleTable;
 
 clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
+clsSearchGraphNode* InvalidSearchGraphNodePointer = NULL;
 
 clsSearchGraphNode::clsSearchGraphNode():
     Data(InvalidSearchGraphNodeData)
@@ -116,10 +117,6 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
 clsSearchGraphNodeData::~clsSearchGraphNodeData()
 {
     //Just to Suppress compiler error on QScoppedPointer
-/*    if (this->TargetRule.size())
-        TargomanDebug(1, gConfigs.EmptyLMScorer->getWordByIndex(this->TargetRule.at(0))<<":"<<this->TargetRule.size())
-    else
-        TargomanDebug(1,"No TargetPhrase")*/
 }
 
 }

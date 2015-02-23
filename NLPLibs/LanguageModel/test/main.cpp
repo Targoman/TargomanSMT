@@ -46,9 +46,43 @@ int main(int argc, char *argv[])
 //        Word = "استخوان‌ها";
 //        Prob = SS.wordProb(Word, Gram);
 
-        qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en", languageModelConfig);
-        LM.convertBinary("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en.bin");
-        //LM.init("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en.bin", languageModelConfig);
+//        qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en", languageModelConfig);
+//        LM.convertBinary("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en.bin");
+        LM.init("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en.bin", languageModelConfig);
+
+
+        QString Sentence = QStringLiteral("the reactor required for it produces atom plutonium bomb .");
+        clsLMSentenceScorer SS1(LM);
+        qDebug()<<Sentence;
+        quint8 Gram;
+        float  SumLM = 0;
+        foreach (const QString& Word, Sentence.split(" ")){
+            Targoman::Common::LogP_t Prob = SS1.wordProb(Word, Gram);
+            qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
+            SumLM-=Prob;
+        }
+        qDebug()<<"Sum:"<<SumLM;
+        qDebug()<<"Sum after finalize:"<<SumLM - SS1.endOfSentenceProb(Gram);
+        qDebug()<<"Sum after finalizeScaled:"<<(SumLM - SS1.endOfSentenceProb(Gram)) *0.15442631832099 ;
+
+        Sentence = QStringLiteral("the reactor required for it produces . atom plutonium bomb");
+        clsLMSentenceScorer SS2(LM);
+
+        qDebug()<<Sentence;
+        Gram;
+        SumLM = 0;
+        foreach (const QString& Word, Sentence.split(" ")){
+            Targoman::Common::LogP_t Prob = SS2.wordProb(Word, Gram);
+            qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
+            SumLM-=Prob;
+        }
+        qDebug()<<"Sum:"<<SumLM;
+        qDebug()<<"Sum after finalize:"<<SumLM - SS2.endOfSentenceProb(Gram);
+        qDebug()<<"Sum after finalizeScaled:"<<(SumLM - SS2.endOfSentenceProb(Gram)) *0.15442631832099 ;
+
+
+
+
 
 exit(0);
         clsLanguageModel LM2;
@@ -65,10 +99,10 @@ exit(0);
 //        Word = "استخوان‌ها";
 //        Prob = SS.wordProb(Word, Gram);
 
-        QString Sentence =
+      /*  QString Sentence =
                 QStringLiteral("این استخوان‌ها شامل یک استخوان فک بالا و دو استخوان فک پایین با دندان‌های سالم , بخشی از استخوان انگشت پا و استخوان‌های سالم انگشت دست است .");
-
-        quint8 Gram;
+*/
+        //quint8 Gram;
         foreach (const QString& Word, Sentence.split(" ")){
             Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
             qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;

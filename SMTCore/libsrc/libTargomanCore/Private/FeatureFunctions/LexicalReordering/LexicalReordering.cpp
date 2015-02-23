@@ -73,8 +73,6 @@ void LexicalReordering::newSentence(const InputDecomposer::Sentence_t &_inputSen
 
 Common::Cost_t LexicalReordering::scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
 {
-
-
     enuLexicalReorderingFields::Type Orientation = this->getLeftOreientation(_newHypothesisNode);
     Cost_t Cost = _newHypothesisNode.targetRule().field(
                 this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();

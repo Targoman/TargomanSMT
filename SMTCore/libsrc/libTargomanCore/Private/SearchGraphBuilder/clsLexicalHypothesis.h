@@ -49,7 +49,7 @@ public:
 
     inline static clsLexicalHypothesis rootLexicalHypothesis(){
         clsLexicalHypothesis LexicalHypothesis;
-        LexicalHypothesis.Data->Nodes.append(clsSearchGraphNode());
+        LexicalHypothesis.Data->Nodes.append(*InvalidSearchGraphNodePointer);
         return LexicalHypothesis;
     }
 

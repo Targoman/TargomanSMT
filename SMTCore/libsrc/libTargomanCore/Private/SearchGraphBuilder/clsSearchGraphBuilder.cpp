@@ -88,6 +88,8 @@ void clsSearchGraphBuilder::init()
 
     //InvalidSearchGraphNodeData has been marshalled here because it depends on initialization of gConfigs
     InvalidSearchGraphNodeData = new clsSearchGraphNodeData;
+
+    InvalidSearchGraphNodePointer = new clsSearchGraphNode;
 }
 
 void clsSearchGraphBuilder::matchPhrase()
@@ -96,8 +98,22 @@ void clsSearchGraphBuilder::matchPhrase()
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseMatchTable.append(QVector<clsRuleNode>(this->Data->Sentence.size() - FirstPosition));
         RulesPrefixTree_t::Node* PrevNode = this->pRuleTable->getPrefixTree().rootNode();
+
+        { //On Uni-Grams
+            PrevNode = PrevNode->follow(this->Data->Sentence.at(FirstPosition).wordIndex());
+
+            if (PrevNode == NULL)
+                continue; // appending next word breaks phrase lookup
+
+            this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
+            if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false)
+                this->Data->MaxMatchingSourcePhraseCardinality = 1;
+            //else
+                //TODO getRulonde from OOVHandler
+        }
+
         //Max PhraseTable order will be implicitly checked by follow
-        for (size_t LastPosition = FirstPosition; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
+        for (size_t LastPosition = FirstPosition + 1; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
             PrevNode = PrevNode->follow(this->Data->Sentence.at(LastPosition).wordIndex());
 
             if (PrevNode == NULL)
@@ -107,11 +123,6 @@ void clsSearchGraphBuilder::matchPhrase()
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                 (int)(LastPosition - FirstPosition + 1));
-            double Sum = 0;
-            foreach(const clsTargetRule& TR, this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].targetRules()){
-                for(int i=0; i< TR.ColumnNames.size(); ++i)
-                    Sum+=TR.field(i);
-            }
         }
     }
 }
@@ -126,21 +137,25 @@ Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
     return ReorderingJumpCosts;
 }
 
-QString bitArray2Str(const QBitArray& _bits){
-    QString Output;
-    for(int i=0;i<_bits.size(); ++i)
-        Output+=_bits.testBit(i) ? '1' : '0';
-    return Output;
-}
-
-
 bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
 {
+    /* //Jane implementation that seems to be wrong
+     bool last = 0;
+    int runs=0;
+    for(unsigned i=0;i<_newCoverage.size();++i) {
+      bool curr=_newCoverage.testBit(i);
+      if(last==curr) continue;
+      if(last) last=0;
+      else {last=1;++runs;if(runs>this->ReorderingMaximumJumpWidth.value()) return false;}
+    }
+    return true;*/
+
+
     //Find last bit set then check how many bits are zero before this.
     for(int i=_newCoverage.size() - 1; i>=0; --i)
         if(_newCoverage.testBit(i)){
             size_t CoutOfPrevZeros = _newCoverage.count(false) + i - _newCoverage.size() + 1;
-            return (CoutOfPrevZeros <= this->ReorderingMaximumJumpWidth.value());
+            return (CoutOfPrevZeros <= this->ReorderingConstraintMaximumRuns.value());
         }
     return true;
 }
@@ -154,22 +169,26 @@ bool clsSearchGraphBuilder::parseSentence()
 
     this->initializeRestCostsMatrix();
 
-    int PrunedAt2 = 0;
-    int PrunedAt3 = 0;
-    int PrunedAt4 = 0;
-    int PrunedAtReored = 0;
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
-        bool IsFinal = (NewCardinality == this->Data->Sentence.size());
+        int PrunedAt2 = 0;
+        int PrunedAt3 = 0;
+        int PrunedAt4 = 0;
+        int PrunedAtReored = 0;
+        int prunedByIBMConstraint = 0;
 
-        for (int PrevCardinality = qMax(NewCardinality - this->Data->MaxMatchingSourcePhraseCardinality, 0);
+        bool IsFinal = (NewCardinality == this->Data->Sentence.size());
+        int MinPrevCardinality = qMax(NewCardinality - this->Data->MaxMatchingSourcePhraseCardinality, 0);
+
+        for (int PrevCardinality = MinPrevCardinality;
              PrevCardinality < NewCardinality; ++PrevCardinality) {
 
             unsigned short NewPhraseCardinality = NewCardinality - PrevCardinality;
 
             //This happens when we have for ex. 2 bi-grams and a quad-gram but no similar 3-gram. due to bad training
             if(this->Data->HypothesisHolder[PrevCardinality].isEmpty()) {
-                std::cout<<__LINE__<< ": ERROR: cardinality Container for previous cardinality empty.\n";
+                 //TODO targomanlogwarning
+                //std::cout<<__LINE__<< ": ERROR: cardinality Container for previous cardinality empty.\n";
                 continue;
             }
 
@@ -196,6 +215,34 @@ bool clsSearchGraphBuilder::parseSentence()
                     continue;
                 }
 
+/*************************************************
+ * PREMATURE OPTIMIZATION that does not work properly
+ *                 size_t StartLookingPos = 0;
+                size_t NeededSpace = NewPhraseCardinality;
+                while(StartLookingPos <= (size_t)this->Data->Sentence.size() - NewPhraseCardinality){
+                    size_t LookingPos = StartLookingPos;
+                    while (LookingPos < PrevCoverage.size()) {
+                        if (PrevCoverage.testBit(LookingPos)){
+                            NeededSpace = NewPhraseCardinality;
+                        }else{
+                            --NeededSpace;
+                            if(NeededSpace == 0)
+                                break;
+                        }
+                        ++LookingPos;
+                    }
+
+                    if (NeededSpace > 0)
+                        break;
+
+                    NeededSpace = 1;
+                    StartLookingPos = LookingPos+1;
+                    size_t NewPhraseBeginPos = LookingPos - NewPhraseCardinality + 1;
+                    size_t NewPhraseEndPos = NewPhraseBeginPos + NewPhraseCardinality;
+*************************************************/
+
+
+
                 /*
                  * TODO at this point pbt performs cardinality pruning (cf. discardedAtA / cardhist, cardthres pruning)
                  * this is not implemented here.
@@ -214,22 +261,24 @@ bool clsSearchGraphBuilder::parseSentence()
                             break;
                         }
                     if (SkipStep)
-                        continue;
+                        continue;//TODO if NewPhraseCardinality has not continous place breaK
 
                     // generate new coverage vector, containing the new coverage
                     Coverage_t NewCoverage(PrevCoverage);
                     for (size_t i=NewPhraseBeginPos; i<NewPhraseEndPos; ++i)
                         NewCoverage.setBit(i);
 
-                    if (this->conformsIBM1Constraint(NewCoverage) == false)
+                    if (this->conformsIBM1Constraint(NewCoverage) == false){
+                        ++prunedByIBMConstraint;
                         continue;
+                    }
 
                     clsRuleNode& PhraseCandidates =
                             this->Data->PhraseMatchTable[NewPhraseBeginPos][NewPhraseCardinality - 1];
 
                     //There is no rule defined in rule table for current phrase
                     if (PhraseCandidates.isInvalid())
-                        continue;
+                        continue; //TODO If there are no more places to fill after this startpos break
 
                     Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseEndPos);
                     Cost_t BestCandidateCost = clsSearchGraphBuilder::pPhraseTable->getTargetRuleCost(
@@ -243,13 +292,13 @@ bool clsSearchGraphBuilder::parseSentence()
                     //If best phrase candidate is combined with best previous node but computyed cost is worst than worst node then ignore it
                     if (this->PruneAtStage2.value() && NewLexHypoContainer.mustBePruned(
                                 BestCandidateCost + RestCost + PrevLexHypoContainer.getBestCost())){
-                        PrunedAt2++;
+                        ++PrunedAt2;
                         continue;
                     }
 
                     foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
                         // Get reordering distance
-                        size_t JumpWidth = qAbs(PrevLexHypoNode.sourceRangeEnd() - (int)NewPhraseBeginPos);
+                        size_t JumpWidth = qAbs((int)PrevLexHypoNode.sourceRangeEnd() - (int)NewPhraseBeginPos);
                         if (this->ReorderingHardJumpLimit.value() &&
                                 JumpWidth > this->ReorderingMaximumJumpWidth.value())
                             continue;
@@ -267,7 +316,7 @@ bool clsSearchGraphBuilder::parseSentence()
                         //If best phrase candidate combined with current HypoNode is worst than worst stored node ignore it
                         if (this->PruneAtStage3.value() &&
                                 NewLexHypoContainer.mustBePruned(HypoBaseCost + BestCandidateCost)){
-                            PrunedAt3++;
+                            ++PrunedAt3;
                             continue;
                         }
 
@@ -301,7 +350,7 @@ bool clsSearchGraphBuilder::parseSentence()
                             //If current phrase candidate combined with current HypoNode is worst than worst stored node ignore it
                             if (this->PruneAtStage4.value() &&
                                     NewLexHypoContainer.mustBePruned(HypoBaseCost + PhraseCost)){
-                                PrunedAt4++;
+                                ++PrunedAt4;
                                 //TODO This must be converted to break!!!! as RuleTable must store TargetPhrases sorted.
                                 continue;
                             }
@@ -365,7 +414,7 @@ bool clsSearchGraphBuilder::parseSentence()
         }
 
         TargomanDebug(1,"Total Hypo for card="<<NewCardinality<<" is: "<<Sum <<" which must be: "<<this->Data->HypothesisHolder[NewCardinality].totalSearchGraphNodeCount());
-        TargomanDebug(1," pruned at 2(%d) 3(%d) 4(%d) Reorder(%d): ", PrunedAt2, PrunedAt3, PrunedAt4,PrunedAtReored)
+        TargomanDebug(1," pruned at IBM(%d) 2(%d) 3(%d) 4(%d) Reorder(%d): ", prunedByIBMConstraint, PrunedAt2, PrunedAt3, PrunedAt4,PrunedAtReored)
 
         /*        if (verbosity_ >= Core::verbosityLevelAdditionalDebug) {
           log() << "before ro pruning: CovContainer size = " << cardinalityContainer_[newCardinality]->size() << "\n";
@@ -384,23 +433,42 @@ bool clsSearchGraphBuilder::parseSentence()
     {
         this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
 
-        this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
-
-        std::function<void(const clsSearchGraphNode&)> printNode = [&](const clsSearchGraphNode& _node) {
+        /********************************************************************/
+        /// JUST FOR DEBUG
+        std::function<QString (const clsSearchGraphNode&)> getNodeString = [&](const clsSearchGraphNode& _node) {
             if(_node.isInvalid())
-                return;
+                return QString();
 
-            printNode(_node.prevNode());
+            QString result = getNodeString(_node.prevNode());
 
             for(int i=0; i< _node.targetRule().size(); ++i)
-                qDebug()<<gConfigs.EmptyLMScorer->getWordByIndex(_node.targetRule().at(i));
+                result += gConfigs.EmptyLMScorer->getWordByIndex(_node.targetRule().at(i)) + " ";
+
+            return result;
         };
 
-        printNode(*this->Data->GoalNode);
+        intfLMSentenceScorer* Scorer = gConfigs.LM.getInstance<intfLMSentenceScorer>();
+        foreach(const clsSearchGraphNode& Node, this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes()){
+            std::cerr << "================================================" << std::endl;
+            QString NodeSentence = getNodeString(Node);
+            std::cout<< NodeSentence.toUtf8().constData()<<std::endl;
+            std::cerr<< NodeSentence.toUtf8().constData()<<std::endl;
+            LogP_t LMCost = 0;
+            Scorer->reset();
+            foreach(const QString& Token, NodeSentence.split(" ", QString::SkipEmptyParts))
+                LMCost -= Scorer->wordProb(Scorer->getWordIndex(Token));
+            LMCost -= Scorer->endOfSentenceProb();
+            std::cerr << "Total Cost: " << Node.getTotalCost() << ", LM Cost: " << LMCost << std::endl;
+            break;
+        }
+        /********************************************************************/
+
+        this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
 
         return true;
     } else {
         TargomanWarn(1,"No translation option");
+        std::cout<<"******************************* No translation option"<<std::endl;
         // no translation with full coverage found
         return false;
     }
