@@ -230,7 +230,7 @@ bool clsSearchGraphBuilder::conformsHardJumpConstraint(size_t _newPhraseBeginPos
 
 bool clsSearchGraphBuilder::parseSentence()
 {
-//#define DEBUG_PARSE_SENTENCE_CARDINALITY 5
+#define DEBUG_PARSE_SENTENCE_CARDINALITY 5
 
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
@@ -552,7 +552,7 @@ bool clsSearchGraphBuilder::parseSentence()
     {
         this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
 
-#if 0
+#if 1
         /********************************************************************/
         /// JUST FOR DEBUG
         std::function<QString (const clsSearchGraphNode&)> getNodeString = [&](const clsSearchGraphNode& _node) {

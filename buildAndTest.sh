@@ -9,9 +9,9 @@ if [ "$1" == "full" ]; then
 		cd  $BasePath/$Proj
 		make distclean
 		if [ "$2" != "release" ] ; then
- 			qmake CONFIG+=debug
+ 			qmake-qt5 CONFIG+=debug
 		else
-			qmake
+			qmake-qt5
 		fi
 		make
 		if [ $? -ne 0 ];then

@@ -67,19 +67,14 @@ void printMemoryUsage(const QString& _stepString){
 int main(int argc, char *argv[])
 {
     TARGOMAN_IO_SETTINGS.setDefault();
-    TARGOMAN_IO_SETTINGS.setSilent();
+    //TARGOMAN_IO_SETTINGS.setSilent();
 
     try{
         clsSafeCoreApplication App(argc, argv);
 
         printMemoryUsage("@first");
-#if 0
-        ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
-#elif 1
-        ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en.full/Targoman.conf");
-#elif 1
-        ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en.moses/Targoman.conf");
-#endif
+        ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf");
+
         printMemoryUsage("after init");
         clsTranslator::init(ConfigManager::instance().configFilePath());
         printMemoryUsage("after load all");
