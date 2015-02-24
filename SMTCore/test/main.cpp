@@ -67,13 +67,13 @@ void printMemoryUsage(const QString& _stepString){
 int main(int argc, char *argv[])
 {
     TARGOMAN_IO_SETTINGS.setDefault();
-    //TARGOMAN_IO_SETTINGS.setSilent();
+    TARGOMAN_IO_SETTINGS.setSilent();
 
     try{
         clsSafeCoreApplication App(argc, argv);
 
         printMemoryUsage("@first");
-#if 1
+#if 0
         ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
 #elif 1
         ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en.full/Targoman.conf");

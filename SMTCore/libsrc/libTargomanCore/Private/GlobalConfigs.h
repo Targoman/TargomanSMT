@@ -51,7 +51,7 @@ struct stuGlobalConfigs{
     static Targoman::Common::Configuration::clsModuleConfig          LM;
     static Targoman::Common::Configuration::clsModuleConfig          RuleTable;
 
-    static Targoman::Core::Private::LanguageModel::intfLMSentenceScorer*  EmptyLMScorer;
+    static QScopedPointer<Targoman::Core::Private::LanguageModel::intfLMSentenceScorer>  EmptyLMScorer;
     static QHash<QString, Common::WordIndex_t>                            SourceVocab;
 
     static QMap<QString, FeatureFunction::intfFeatureFunction*>       ActiveFeatureFunctions;

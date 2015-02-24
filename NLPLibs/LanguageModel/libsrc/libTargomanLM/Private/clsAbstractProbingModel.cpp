@@ -285,9 +285,6 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath, bool _c
     /***********************************************************************************
          Load Bin File
      ***********************************************************************************/
-    if (this->NGramHashTable)
-        delete this->NGramHashTable.take();
-
     TargomanInfo(5, "Allocating "<<this->HashTableSize * sizeof(stuNGramHash)<<
                  " Bytes for max "<<this->HashTableSize<<" Items. Curr Items = "<<this->NgramCount);
     this->NGramHashTable.reset(new stuNGramHash[this->HashTableSize + 1]);

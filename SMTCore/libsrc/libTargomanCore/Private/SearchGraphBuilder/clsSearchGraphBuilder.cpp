@@ -410,7 +410,7 @@ bool clsSearchGraphBuilder::parseSentence()
                                                     PhraseCandidates.targetRules().size());
 
                         for(size_t i = 0; i<MaxCandidates; ++i){
-                            intfLMSentenceScorer* LMScorer = gConfigs.LM.getInstance<intfLMSentenceScorer>();
+                            QScopedPointer<intfLMSentenceScorer> LMScorer(gConfigs.LM.getInstance<intfLMSentenceScorer>());
                             LMScorer->initHistory(PrevLexHypoNode.lmScorer());
 
                             const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
@@ -419,7 +419,7 @@ bool clsSearchGraphBuilder::parseSentence()
                                         0,
                                         0,
                                         CurrentPhraseCandidate);
-
+#if 0
                             std::cout<<"TestLOG-"<<"Cardinality: "<<NewCardinality<<
                                       " PrevCard: "<<PrevCardinality<<
                                       " Cov: "<<bitArray2Str(PrevCoverage).toLatin1().constData()<<
@@ -431,7 +431,7 @@ bool clsSearchGraphBuilder::parseSentence()
                                       " JumpW: "<<JumpWidth<<
                                       " ScaledJ:"<<ScaledReorderingJumpCost<<std::endl;
 
-
+#endif
                             //If current phrase candidate combined with current HypoNode is worst than worst stored node ignore it
                             if (this->PruneAtStage4.value() &&
                                     NewLexHypoContainer.mustBePruned(HypoBaseCost + PhraseCost)){
@@ -480,7 +480,7 @@ bool clsSearchGraphBuilder::parseSentence()
                                                            NewPhraseEndPos,
                                                            NewCoverage,
                                                            IsFinal,
-                                                           LMScorer);
+                                                           LMScorer.take());
 
                             if (HardJumpViolated){
                                 if (BestHardJumpViolatingNode){
@@ -522,7 +522,7 @@ bool clsSearchGraphBuilder::parseSentence()
             delete BestHardJumpViolatingNode;
         }
 
-#if TARGOMAN_SHOW_DEBUG
+#if 0
         quint64 Sum = 0;
         foreach(auto Iter , this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses()){
             Sum+= Iter.nodes().size();
@@ -552,6 +552,7 @@ bool clsSearchGraphBuilder::parseSentence()
     {
         this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
 
+#if 0
         /********************************************************************/
         /// JUST FOR DEBUG
         std::function<QString (const clsSearchGraphNode&)> getNodeString = [&](const clsSearchGraphNode& _node) {
@@ -581,7 +582,7 @@ bool clsSearchGraphBuilder::parseSentence()
             break;
         }
         /********************************************************************/
-
+#endif
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
 
         return true;

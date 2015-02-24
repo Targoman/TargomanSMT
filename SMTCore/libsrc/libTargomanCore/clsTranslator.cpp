@@ -39,7 +39,7 @@ void clsTranslator::init(const QString _configFilePath)
 {
     TextProcessor::instance().init(_configFilePath);
     InputDecomposer::clsInput::init();
-    gConfigs.EmptyLMScorer = gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>();
+    gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>());
     //Load vocab by LM
     gConfigs.EmptyLMScorer->init(false);
 
