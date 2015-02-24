@@ -255,6 +255,25 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
     }
 }
 
+/**
+  TAGGING PROBLEM:
+  @tag --> @tag --> Ok
+
+  @tag word --> @tag word | word @tag --> Ok
+
+  @tag --> word --> Ok
+
+  word --> @tag --> ??
+
+  @tag1 --> @tag2  --> ??
+
+  @tag @tag --> @tag [@tag]+ --> ??
+
+  @tag word --> @tag @tag  --> ??
+
+  @tag
+
+  **/
 }
 }
 }

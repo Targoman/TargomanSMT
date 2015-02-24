@@ -165,7 +165,7 @@
       return QString("Version: ") + \
              QString(TARGOMAN_M2STR(PROJ_VERSION)) + \
              QString(" [RELEASE] Last Build: ") + \
-             v(__DATE__);}
+             QString(__DATE__);}
 #endif
 
 /********************************************************************************************

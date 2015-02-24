@@ -28,9 +28,8 @@ class intfModule {
 public:
     intfModule(const QString& _moduleName, quint64 _instanceID = 0){
         this->InstanceID = _instanceID;
-      /*  TARGOMAN_REGISTER_ACTOR(
-                    _moduleName +
-                    (_instanceID ? "(" + QString::number(this->InstanceID) + ")" : ""));*/
+        if (_instanceID)
+            TARGOMAN_REGISTER_ACTOR(_moduleName);
     }
 
 protected:

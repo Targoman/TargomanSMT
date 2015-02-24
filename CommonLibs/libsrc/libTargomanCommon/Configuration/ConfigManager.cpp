@@ -116,10 +116,12 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         Modules = ConfigFile.childGroups();
         foreach (const QString& Key, ConfigFile.allKeys()){
             if (this->pPrivate->Configs.contains(Key) == false){
+                std::cout<<"Key: "<<Key.toLatin1().constData()<<std::endl;
                 QString BasePath = Key;
                 bool Found = false;
                 while(BasePath.contains("/")){
-                    BasePath.truncate(BasePath.lastIndexOf("/"));
+                    BasePath.truncate(BasePath.lastIndexOf('/'));
+                    BasePath.append('/');
                     if (this->pPrivate->Configs.value(BasePath) &&
                             this->pPrivate->Configs.value(BasePath)->canBemanaged() == false){
                         Found = true;
@@ -256,13 +258,9 @@ void ConfigManager::save2File(const QString &_fileName, bool _backup)
 
 void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
 {
-    QString Path = _path;
-    if(Path.startsWith("/"))
-        Path = Path.remove(0,1);
-
     if (this->pPrivate->Configs.contains(_path))
-        throw exConfiguration("Duplicate path key: " + Path);
-    this->pPrivate->Configs.insert(Path, _item);
+        throw exConfiguration("Duplicate path key: " + _path);
+    this->pPrivate->Configs.insert(_path, _item);
 }
 
 /**
@@ -291,7 +289,14 @@ QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default
     if (this->pPrivate->Initialized == false)
         throw exConfiguration("Configuration is not initialized yet.");
 
-    intfConfigurable* Item= this->pPrivate->Configs.value(_path);
+    if(_path.endsWith('/'))
+        throw exConfiguration("Invalid query to non terminal path: "+ _path);
+
+    QString Path = _path;
+    if (Path.startsWith('/'))
+        Path.remove(0,1);
+
+    intfConfigurable* Item= this->pPrivate->Configs.value(Path);
     if (Item && Item->toVariant().isValid() == false)
         return Item->toVariant();
     else
@@ -397,11 +402,14 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
         this->ShortSwitch = _shortSwitch;
         this->LongSwitch = _longSwitch;
         this->ShortHelp = _shortHelp;
-        this->ConfigPath = _configPath;
+        if (_configPath.startsWith('/'))
+            this->ConfigPath = _configPath.mid(1);
+        else
+            this->ConfigPath = _configPath;
         this->ArgCount = this->ShortHelp.split(" ").size();
         //this->ValidConfigSource = _validConfigSource;
 
-        ConfigManager::instance().addConfig(_configPath, this);
+        ConfigManager::instance().addConfig(this->ConfigPath, this);
     }catch(exTargomanBase &e){
         TargomanError(e.what());
         throw;

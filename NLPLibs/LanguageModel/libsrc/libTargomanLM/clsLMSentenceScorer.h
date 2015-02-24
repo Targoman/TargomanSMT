@@ -33,7 +33,7 @@ public:
     clsLMSentenceScorer(const clsLanguageModel& _lm);
     ~clsLMSentenceScorer();
 
-    void reset();
+    void reset(bool _withStartOfSentence = true);
 
     Common::LogP_t wordProb(const QString& _word, OUTPUT quint8 &_foundedGram);
     Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex, OUTPUT quint8& _foundedGram);

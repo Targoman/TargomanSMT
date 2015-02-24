@@ -8,7 +8,11 @@ if [ "$1" == "full" ]; then
 	do
 		cd  $BasePath/$Proj
 		make distclean
-		qmake CONFIG+=debug
+		if [ "$2" != "release" ] ; then
+ 			qmake CONFIG+=debug
+		else
+			qmake
+		fi
 		make
 		if [ $? -ne 0 ];then
 			echo -e "\n\e[31m!!!!!!!!!!!!!!!!! $Proj Build Has failed!!!!!!!!!!!!!!!! \e[39m\n"

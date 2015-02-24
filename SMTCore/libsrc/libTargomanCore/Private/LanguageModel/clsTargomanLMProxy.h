@@ -36,8 +36,11 @@ public:
 
     /**
      * @brief resets history of sentence scorer.
+     * @param _withStartOfSentence Initialize with StartOfSentence or not
      */
-    inline void reset(){this->LMSentenceScorer->reset();}
+    inline void reset(bool _withStartOfSentence){
+        this->LMSentenceScorer->reset(_withStartOfSentence);
+    }
 
     /**
      * @brief Initializes language model based on configuration values (which may come from config file or argument of program).

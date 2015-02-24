@@ -35,13 +35,15 @@ clsLMSentenceScorer::~clsLMSentenceScorer()
  * @brief clears string and index based history list.
  */
 
-void clsLMSentenceScorer::reset()
+void clsLMSentenceScorer::reset(bool _withStartOfSentence)
 {
     this->pPrivate->StringBasedHistory.clear();
     this->pPrivate->IndexBasedHistory.clear();
 
-    this->pPrivate->StringBasedHistory.append(LM_BEGIN_SENTENCE);
-    this->pPrivate->IndexBasedHistory.append(LM_BEGIN_SENTENCE_WINDEX);
+    if (_withStartOfSentence){
+        this->pPrivate->StringBasedHistory.append(LM_BEGIN_SENTENCE);
+        this->pPrivate->IndexBasedHistory.append(LM_BEGIN_SENTENCE_WINDEX);
+    }
 }
 
 /**

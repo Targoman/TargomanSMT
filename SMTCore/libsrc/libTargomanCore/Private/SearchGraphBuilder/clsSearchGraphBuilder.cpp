@@ -17,6 +17,11 @@
 #include "../GlobalConfigs.h"
 #include "Private/LanguageModel/intfLMSentenceScorer.hpp"
 
+
+#define PBT_MAXIMUM_COST 1e200
+#define PBT_IMMUNITY_BOUND 1e-10
+
+
 namespace Targoman{
 namespace Core {
 namespace Private{
@@ -107,7 +112,7 @@ void clsSearchGraphBuilder::matchPhrase()
 
             this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
 
-//#define DEBUG_MATCH_PHRASE
+            //#define DEBUG_MATCH_PHRASE
 #ifdef DEBUG_MATCH_PHRASE
             QString TargetPhrasesCounters;
             if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false){
@@ -131,9 +136,9 @@ void clsSearchGraphBuilder::matchPhrase()
 #endif
 
             if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false)
-                this->Data->MaxMatchingSourcePhraseCardinality = 1;
+                this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,1);
             //else
-                //TODO getRulonde from OOVHandler
+            //TODO getRulonde from OOVHandler
         }
 
         //Max PhraseTable order will be implicitly checked by follow
@@ -168,7 +173,7 @@ void clsSearchGraphBuilder::matchPhrase()
 #endif
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
-                                                                (int)(LastPosition - FirstPosition + 1));
+                                                                      (int)(LastPosition - FirstPosition + 1));
         }
     }
 
@@ -190,8 +195,8 @@ Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
 
 bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
 {
-     //Jane implementation that seems to be wrong
-/*     bool last = 0;
+   /* //Jane implementation that seems to be wrong
+         bool last = 0;
     int runs=0;
     for(unsigned i=0;i<_newCoverage.size();++i) {
       bool curr=_newCoverage.testBit(i);
@@ -200,8 +205,8 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
       else {last=1;++runs;if(runs>this->ReorderingMaximumJumpWidth.value()) return false;}
     }
     return true;
-
 */
+
     //Find last bit set then check how many bits are zero before this.
     for(int i=_newCoverage.size() - 1; i>=0; --i)
         if(_newCoverage.testBit(i)){
@@ -213,7 +218,7 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
 
 bool clsSearchGraphBuilder::parseSentence()
 {
-#define DEBUG_PARSE_SENTENCE_CARDINALITY 5
+//#define DEBUG_PARSE_SENTENCE_CARDINALITY 5
 
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
@@ -240,7 +245,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
             //This happens when we have for ex. 2 bi-grams and a quad-gram but no similar 3-gram. due to bad training
             if(this->Data->HypothesisHolder[PrevCardinality].isEmpty()) {
-                 //TODO targomanlogwarning
+                //TODO targomanlogwarning
                 //std::cout<<__LINE__<< ": ERROR: cardinality Container for previous cardinality empty.\n";
                 continue;
             }
@@ -261,14 +266,14 @@ bool clsSearchGraphBuilder::parseSentence()
                 if (PrevLexHypoContainer.nodes().isEmpty()){
                     //TODO convert to log
                     TargomanDebug(1,"Warning: prevLexHypContainer empty. PrevCard: " <<PrevCardinality
-                                     << "PrevCov: " << bitArray2Str(PrevCoverage)
+                                  << "PrevCov: " << bitArray2Str(PrevCoverage)
                                   <<" Addr:" <<(void*)PrevLexHypoContainer.Data.data());
 
 
                     continue;
                 }
 
-/*************************************************
+                /*************************************************
  * TODO PREMATURE OPTIMIZATION that does not work properly
  *                 size_t StartLookingPos = 0;
                 size_t NeededSpace = NewPhraseCardinality;
@@ -426,7 +431,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
                             CurrCost += LMCost * clsSearchGraphBuilder::ScalingFactorLM.value();
 
-                            if (NewLexHypoContainer.mustBePruned(CurrCost + RestCost + 1e-10))
+                            if (NewLexHypoContainer.mustBePruned(CurrCost + RestCost + PBT_IMMUNITY_BOUND))
                                 continue;
 
                             //Pruning among different reorderings
@@ -472,15 +477,17 @@ bool clsSearchGraphBuilder::parseSentence()
             Sum+= Iter.nodes().size();
         }
 
+#if 0
         TargomanDebug(1,"Total Hypo for card="<<NewCardinality<<" is: "<<Sum <<" which must be: "<<this->Data->HypothesisHolder[NewCardinality].totalSearchGraphNodeCount());
         TargomanDebug(1," pruned at IBM(%d) 2(%d) 3(%d) 4(%d) Reorder(%d): ", prunedByIBMConstraint, PrunedAt2, PrunedAt3, PrunedAt4,PrunedAtReored)
+#endif
         #ifdef DEBUG_PARSE_SENTENCE_CARDINALITY
-                    if (NewCardinality <= DEBUG_PARSE_SENTENCE_CARDINALITY){
-                        this->Data->HypothesisHolder[NewCardinality].dump("JANECOMPARE: Card["+
-                                                             QString::number(NewCardinality) +
-                                                             "] ");
-                    }
-        #endif
+                if (NewCardinality <= DEBUG_PARSE_SENTENCE_CARDINALITY){
+            this->Data->HypothesisHolder[NewCardinality].dump("JANECOMPARE: Card["+
+                                                              QString::number(NewCardinality) +
+                                                              "] ");
+        }
+#endif
 
         /*        if (verbosity_ >= Core::verbosityLevelAdditionalDebug) {
           log() << "before ro pruning: CovContainer size = " << cardinalityContainer_[newCardinality]->size() << "\n";
@@ -543,43 +550,58 @@ bool clsSearchGraphBuilder::parseSentence()
 void clsSearchGraphBuilder::initializeRestCostsMatrix()
 {
     this->Data->RestCostMatrix.resize(this->Data->Sentence.size());
-    for (int i=0; i<this->Data->Sentence.size(); ++i)
-        this->Data->RestCostMatrix[i].resize(this->Data->Sentence.size());
+    for (int SentenceStartPos=0; SentenceStartPos<this->Data->Sentence.size(); ++SentenceStartPos)
+        this->Data->RestCostMatrix[SentenceStartPos].fill(
+                PBT_MAXIMUM_COST,
+                this->Data->Sentence.size() - SentenceStartPos);
+
+    QScopedPointer<intfLMSentenceScorer> LMSentenceScorer(gConfigs.LM.getInstance<intfLMSentenceScorer>());
 
     for(size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition){
-        size_t MaxLength = qMin(this->Data->Sentence.size() - FirstPosition, (size_t)this->Data->MaxMatchingSourcePhraseCardinality);
+        size_t MaxLength = qMin(this->Data->Sentence.size() - FirstPosition,
+                                (size_t)this->Data->MaxMatchingSourcePhraseCardinality);
         for(size_t Length = 1; Length <= MaxLength; ++Length){
             clsRuleNode& PhraseCandidates = this->Data->PhraseMatchTable[FirstPosition][Length-1];
             if (PhraseCandidates.isInvalid() || PhraseCandidates.targetRules().isEmpty())
                 continue;
 
-            Cost_t BestCost = INFINITY;
+            Cost_t BestCost = PBT_MAXIMUM_COST;
 
-            for (size_t i= 0;
-                 i< (size_t)PhraseCandidates.targetRules().size() &&
-                 i< this->ObservationHistogramSize.value();
-                 ++i ){
+
+            for (size_t PhraseCandidateNumber= 0;
+                 PhraseCandidateNumber < (size_t)PhraseCandidates.targetRules().size() &&
+                 PhraseCandidateNumber < clsSearchGraphBuilder::ObservationHistogramSize.value();
+                 ++PhraseCandidateNumber ){
 
                 Cost_t Cost = 0;
                 foreach (FeatureFunction::intfFeatureFunction* FF , gConfigs.ActiveFeatureFunctions)
-                    Cost += FF->getApproximateCost(FirstPosition, FirstPosition + Length, PhraseCandidates.targetRules().at(i));
+                    Cost += FF->getApproximateCost(
+                                FirstPosition,
+                                FirstPosition + Length,
+                                PhraseCandidates.targetRules().at(PhraseCandidateNumber));
 
+                LMSentenceScorer->reset(false);
+                const clsTargetRule& TargetRule = PhraseCandidates.targetRules().at(PhraseCandidateNumber);
+                Cost_t LMCost = 0;
+                for (int i=0; i< TargetRule.size(); ++i)
+                    LMCost += LMSentenceScorer->wordProb(TargetRule.at(i));
 
-                BestCost = qMin(BestCost, Cost);
+                BestCost = qMin(BestCost, Cost - (LMCost * clsSearchGraphBuilder::ScalingFactorLM.value()));
             }
             this->Data->RestCostMatrix[FirstPosition][Length - 1]  = BestCost;
         }
     }
 
     for(size_t Length = 2; Length <= (size_t)this->Data->Sentence.size(); ++Length)
-      for(size_t FirstPosition = 0; FirstPosition + Length <= (size_t)this->Data->Sentence.size(); ++FirstPosition)
-        for(size_t SplitPosition = 1; SplitPosition < Length; ++SplitPosition){
-            Cost_t SumSplit = this->Data->RestCostMatrix[FirstPosition][SplitPosition - 1] +
-                    this->Data->RestCostMatrix[FirstPosition + SplitPosition][Length - 1 - SplitPosition];
-            this->Data->RestCostMatrix[FirstPosition][Length - 1]  = qMin(
-                        this->Data->RestCostMatrix[FirstPosition][Length - 1],
-                        SumSplit);
-        }
+        for(size_t FirstPosition = 0; FirstPosition + Length <= (size_t)this->Data->Sentence.size(); ++FirstPosition)
+            for(size_t SplitPosition = 1; SplitPosition < Length; ++SplitPosition){
+                Cost_t SumSplit = this->Data->RestCostMatrix[FirstPosition][SplitPosition - 1] +
+                        this->Data->RestCostMatrix[FirstPosition + SplitPosition][Length - 1 - SplitPosition];
+                this->Data->RestCostMatrix[FirstPosition][Length - 1]  =
+                        qMin(
+                            this->Data->RestCostMatrix[FirstPosition][Length - 1],
+                            SumSplit);
+            }
 }
 
 Common::Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t &_coverage, quint16 _lastPos) const
