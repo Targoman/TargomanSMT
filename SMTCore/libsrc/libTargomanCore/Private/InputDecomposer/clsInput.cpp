@@ -26,15 +26,20 @@ using namespace Common;
 
 QSet<QString>    clsInput::SpecialTags;
 
-Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags("Input/UserDefinedTags",
-                                                                   "User Defined valid XML tags. ",
-                                                                   ""); /// @todo complete description
-Configuration::tmplConfigurable<bool>    clsInput::IsIXML("Input/IsIXML",
-                                                          "Input is in Plain text or IXML format",
-                                                          false);
-Configuration::tmplConfigurable<bool>    clsInput::DoNormalize("Input/DoNormalize",
-                                                             "Normalize Input or let it unchanged",
-                                                             true);
+Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags(
+        "Input/UserDefinedTags",
+        "User Defined valid XML tags. ",
+        "Valid user defined XML tags that must be stored with their attributes."
+        "These must not overlap with predefined XML Tags"
+        /*TODO add lambda to check overlap*/);
+Configuration::tmplConfigurable<bool>    clsInput::IsIXML(
+        "Input/IsIXML",
+        "Input is in Plain text(default) or IXML format",
+        false);
+Configuration::tmplConfigurable<bool>    clsInput::DoNormalize(
+        "Input/DoNormalize",
+        "Normalize Input(default) or let it unchanged",
+        true);
 
 /**
  * @brief clsInput::clsInput Instructor of this class gets input string and based on input arguments parses that.

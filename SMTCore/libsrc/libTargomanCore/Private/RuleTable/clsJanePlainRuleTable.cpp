@@ -38,31 +38,28 @@ enum {
 using namespace Common;
 using namespace Common::Configuration;
 using namespace Common::CompressedStream;
+using namespace FeatureFunction;
 
 TARGOMAN_REGISTER_MODULE(clsJanePlainRuleTable)
 
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 
-tmplConfigurable<QString> clsJanePlainRuleTable::FileName(clsJanePlainRuleTable::baseConfigPath() + "/FileName",
-                                                  "Filename where phrase table is stored",
-                                                  "",
-                                                  Validators::tmplPathAccessValidator<
-                                                          (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
-                                                  );
+tmplConfigurable<QString> clsJanePlainRuleTable::FileName(
+        clsJanePlainRuleTable::baseConfigPath() + "/FileName",
+        "Filename where phrase table is stored",
+        "",
+        Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
+        );
 
-tmplConfigurable<QString> clsJanePlainRuleTable::PhraseCostNames(clsJanePlainRuleTable::baseConfigPath() + "/CostNames",
-                                                           "CostsNames as defined in Jane config File",
-                                                           "s2t,t2s,ibm1s2t,ibm1t2s,phrasePenalty,wordPenalty,s2tRatio,t2sRatio,cnt1,cnt2,cnt3"/*,
-                                                           [](const Targoman::Common::Configuration::intfConfigurable& _item,QString& _errorMessage){
-                                                               if (_item.toVariant().toString().split(",").size() < 11)
-                                                                    throw exJanePhraseTable("CostsNames needs at least 11 items");
-                                                               //TODO check names with phrase table
-                                                           }*/);
+tmplConfigurable<QString> clsJanePlainRuleTable::PhraseCostNames(
+        clsJanePlainRuleTable::baseConfigPath() + "/CostNames",
+        "CostsNames as defined in Jane config File",
+        "s2t,t2s,ibm1s2t,ibm1t2s,phrasePenalty,wordPenalty,s2tRatio,t2sRatio,cnt1,cnt2,cnt3");
 
 QList<tmplConfigurable<QString>> clsJanePlainRuleTable::FeatureFunctions = {
     tmplConfigurable<QString>(clsJanePlainRuleTable::baseConfigPath() +
     "/FeatureFunctions/" + FeatureFunction::LexicalReordering::moduleName() + FFCONFIG_KEY_IDENTIFIER,
-    "TODO Desc",
+    "Abbreviation used for each Feature function in the rule table file",
     "lrm")
 };
 
@@ -119,6 +116,8 @@ void clsJanePlainRuleTable::init()
         }
 
         if (Q_UNLIKELY(ColmnNamesNotSet)){
+            PhraseTable::setColumnNames(ColumnNames);
+
             bool Accepted = false;
             for (unsigned AdditionalFieldIndex = janeFormatStandardNumberOfFields;
                  AdditionalFieldIndex < (size_t)Fields.size();

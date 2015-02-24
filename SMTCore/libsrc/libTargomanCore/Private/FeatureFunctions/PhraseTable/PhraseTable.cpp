@@ -23,63 +23,35 @@ using namespace Common::Configuration;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable)
 
-tmplConfigurable<double>    PhraseTable::ScalingFactors[] = {
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/s2t",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/t2s",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/ibm1s2t",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/ibm1t2s",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/phrasePenalty",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/wordPenalty",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/s2tRatio",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/t2sRatio",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/cnt1",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/cnt2",
-    "TODO Desc",
-    0),
-    tmplConfigurable<double>(PhraseTable::baseConfigPath() + "/ScalingFactors/cnt3",
-    "TODO Desc",
-    0)
-};
+clsFileBasedConfig   PhraseTable::ScalingFactorsConfigSection(
+        PhraseTable::baseConfigPath() + "/ScalingFactors/");
 
-void PhraseTable::initialize()
+QStringList   PhraseTable::ColumnNames;
+
+void PhraseTable::initialize(const QString& _configFile)
 {
-    //TODO enuPhraseTableFields must be removed and this must be reported by RulTable reader (JanePT)
+    if (this->ColumnNames.isEmpty())
+        throw exPhraseTable("Seems that RuleTable loader has not initialized phrase table column names.");
 
-    for (int i=0; i< enuPhraseTableFields::getCount(); ++i){
-        this->FieldIndexes.append(RuleTable::clsTargetRule::getColumnIndex(
-                                      enuPhraseTableFields::toStr(
-                                          (enuPhraseTableFields::Type)(i))));
+    QSettings ConfigFile(_configFile, QSettings::IniFormat);
+    ConfigFile.beginGroup(PhraseTable::ScalingFactorsConfigSection.configPath());
+    foreach(const QString& ColumnName, this->ColumnNames){
+        if (ConfigFile.value(ColumnName).isValid()){
+            bool Ok;
+            double ScalingFactor = ConfigFile.value(ColumnName).toDouble(&Ok);
+            if (!Ok)
+                throw exPhraseTable("Invalid scaling factor defined for column: "+ ColumnName);
+            this->ScalingFactors.append(ScalingFactor);
+            this->FieldIndexes.append(
+                        RuleTable::clsTargetRule::getColumnIndex(ColumnName, this->moduleName()));
+        }else
+            throw exPhraseTable("No scaling factor found for column: "+ ColumnName);
     }
 }
 
 PhraseTable::PhraseTable() :
     intfFeatureFunction(this->moduleName())
 {
-}
-
-Common::Cost_t PhraseTable::getApproximateCost(unsigned _sourceStart,
-                                               unsigned _sourceEnd,
-                                               const RuleTable::clsTargetRule &_targetRule) const
-{
-    return this->getTargetRuleCost(_sourceStart, _sourceEnd, _targetRule);
 }
 
 Cost_t PhraseTable::getTargetRuleCost(unsigned _sourceStart,
@@ -90,20 +62,20 @@ Cost_t PhraseTable::getTargetRuleCost(unsigned _sourceStart,
     Q_UNUSED(_sourceEnd)
 
     Cost_t Cost = 0;
-    for(int i=0; i< enuPhraseTableFields::getCount(); ++i)
-        Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
+    for(int i=0; i< this->FieldIndexes.size(); ++i)
+        Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors.at(i);
     return Cost;
-    //TODO remove above
+    //TODO remove above using below cached implementation
 
-    //Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
+/*    //Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
     if (Cost == -INFINITY){
         Cost = 0;
-        for(int i=0; i< enuPhraseTableFields::getCount(); ++i)
-            Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
+    for(int i=0; i< this->FieldIndexes.size(); ++i)
+        Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors.at(i);
 
         static_cast<RuleTable::clsTargetRule>(_targetRule).setPrecomputedValue(this->PrecomputedIndex, Cost);
     }
-    return Cost;
+    return Cost;*/
 }
 
 }

@@ -30,8 +30,8 @@ using namespace InputDecomposer;
 
 tmplConfigurable<quint8> clsSearchGraphBuilder::ReorderingConstraintMaximumRuns(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingConstraintMaximumRuns",
-        "TODO Desc",
-        1);
+        "IBM1 reordering constraint",
+        2);
 tmplConfigurable<bool>   clsSearchGraphBuilder::DoComputeReorderingRestCosts(
         clsSearchGraphBuilder::moduleBaseconfig() + "/DoComputeReorderingRestCosts",
         "TODO Desc",

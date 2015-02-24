@@ -36,7 +36,7 @@ class LexicalReordering : public intfFeatureFunction
 {
 public:
     ~LexicalReordering(){}
-    void initialize();
+    void initialize(const QString&);
     void newSentence(const InputDecomposer::Sentence_t &inputSentence);
     virtual Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 

@@ -47,10 +47,11 @@ public:
     inline void setCosts(const QList<Common::Cost_t>& _costs);
     inline void setPrecomputedValue(size_t _index, Common::Cost_t _value);
 
-    static size_t getColumnIndex(const QString& _name){
-        if (clsTargetRule::ColumnNames.contains(_name) == false)
-            throw exRuleTable("Invalid filed name. not declared in Rule Table: " + _name);
-        return clsTargetRule::ColumnNames.indexOf(_name);
+    static size_t getColumnIndex(const QString& _columnName, const QString& _moduleName){
+        if (clsTargetRule::ColumnNames.contains(_columnName) == false)
+            throw exRuleTable("Invalid filed name <"+_columnName+
+                              "> not declared in Rule Table. Needed by:" + _moduleName);
+        return clsTargetRule::ColumnNames.indexOf(_columnName);
     }
 
     static void setColumnNames(const QStringList& _names){

@@ -26,33 +26,33 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(LexicalReordering)
 
 tmplConfigurable<bool>      LexicalReordering::IsBidirectional(
         LexicalReordering::baseConfigPath() + "/IsBidirectional",
-        "TODO Desc",
+        "Configs lexical reordering beahviour which can be bidirectional (default) or unidirectional",
         true);
 
 tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftMonotone",
-    "TODO Desc",
-    0),
+    "Scaling factor for LeftMonotone reordering score",
+    1),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightMonotone",
-    "TODO Desc",
-    0),
+    "Scaling factor for LeftMonotone reordering score",
+    1),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftSwap",
-    "TODO Desc",
-    0),
+    "Scaling factor for LeftMonotone reordering score",
+    1),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightSwap",
-    "TODO Desc",
-    0),
+    "Scaling factor for LeftMonotone reordering score",
+    1),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftDiscontinous",
-    "TODO Desc",
-    0),
+    "Scaling factor for LeftMonotone reordering score",
+    1),
     tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightDiscontinous",
-    "TODO Desc",
-    0)
+    "Scaling factor for LeftMonotone reordering score",
+    1)
 };
 
 
 
-void LexicalReordering::initialize()
+void LexicalReordering::initialize(const QString &)
 {
     for (int i=0;
          i< (LexicalReordering::IsBidirectional.value() ?
@@ -62,7 +62,11 @@ void LexicalReordering::initialize()
              ++i){
         this->FieldIndexes.append(RuleTable::clsTargetRule::getColumnIndex(
                                       enuLexicalReorderingFields::toStr(
-                                          (enuLexicalReorderingFields::Type)(i))));
+                                          (enuLexicalReorderingFields::Type)(i)),
+                                      this->moduleName() + (
+                                      LexicalReordering::IsBidirectional.value() ?
+                                          ":Bidirectional" :
+                                          ":Monodirectional")));
     }
 }
 

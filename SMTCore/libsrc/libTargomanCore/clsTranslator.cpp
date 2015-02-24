@@ -48,7 +48,7 @@ void clsTranslator::init(const QString _configFilePath)
     //gConfigs.EmptyLMScorer->init(false);
 
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
-        FF->initialize();
+        FF->initialize(_configFilePath);
 
     NBestFinder::clsNBestFinder::init();
     OutputComposer::clsOutputComposer::init();

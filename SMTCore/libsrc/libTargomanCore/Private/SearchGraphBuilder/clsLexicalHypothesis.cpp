@@ -31,7 +31,7 @@ tmplConfigurable<quint8> clsLexicalHypothesis::LexicalMaxHistogramSize(
 
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesis::KeepRecombined(
         clsSearchGraphBuilder::moduleBaseconfig() + "/KeepRecombined",
-        "TODO Desc",
+        "Do recombination(default) or let nodes to be separated",
         true
         );
 

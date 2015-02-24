@@ -45,7 +45,7 @@ public:
         return true;
     }
 
-    virtual void initialize()  = 0;
+    virtual void initialize(const QString& _configFile)  = 0;
     virtual void newSentence(const InputDecomposer::Sentence_t &_inputSentence) {Q_UNUSED(_inputSentence)}
 
     /*
