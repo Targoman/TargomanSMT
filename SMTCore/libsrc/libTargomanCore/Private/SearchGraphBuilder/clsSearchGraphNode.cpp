@@ -98,7 +98,6 @@ void clsSearchGraphNode::recombine(clsSearchGraphNode &_node)
 
 bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
 {
-
     if (this->sourceRangeEnd() != _node.sourceRangeEnd() ||
             this->lmScorer().haveSameHistoryAs(_node.lmScorer()) == false)
         return false;

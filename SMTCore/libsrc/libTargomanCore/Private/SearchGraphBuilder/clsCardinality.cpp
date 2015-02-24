@@ -56,7 +56,7 @@ void clsCardinality::dump(const QString& _prefix)
 
 }
 
-void clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesis &_container, clsSearchGraphNode &_node)
+bool clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesis &_container, clsSearchGraphNode &_node)
 {
     size_t OldContainerSize = _container.nodes().size();
 

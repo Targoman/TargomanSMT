@@ -244,7 +244,7 @@ bool clsSearchGraphBuilder::parseSentence()
         int PrunedAt2 = 0;
         int PrunedAt3 = 0;
         int PrunedAt4 = 0;
-        int PrunedAtReored = 0;
+        int PrunedAtReordering = 0;
         int PrunedByIBMConstraint = 0;
         int PrunedByHardJumpConstraint = 0;
 
@@ -381,9 +381,10 @@ bool clsSearchGraphBuilder::parseSentence()
                         bool HardJumpViolated = false;
                         if (this->ReorderingHardJumpLimit.value() &&
                             JumpWidth > this->ReorderingMaximumJumpWidth.value()){
-                            if (this->Data->HypothesisHolder[NewCardinality].totalSearchGraphNodeCount() > 0)
+                            if (this->Data->HypothesisHolder[NewCardinality].totalSearchGraphNodeCount() > 0){
+
                                 continue;
-                            else
+                            }else
                                 HardJumpViolated = true;
                         }
 
@@ -419,7 +420,7 @@ bool clsSearchGraphBuilder::parseSentence()
                                         0,
                                         CurrentPhraseCandidate);
 
-                            /*std::cout<<"TestLOG-"<<"Cardinality: "<<NewCardinality<<
+                            std::cout<<"TestLOG-"<<"Cardinality: "<<NewCardinality<<
                                       " PrevCard: "<<PrevCardinality<<
                                       " Cov: "<<bitArray2Str(PrevCoverage).toLatin1().constData()<<
                                       " StartPos: "<<NewPhraseBeginPos<<
@@ -428,7 +429,7 @@ bool clsSearchGraphBuilder::parseSentence()
                                       " PhraseCost: "<<PhraseCost<<
                                       " BaseCost: "<<HypoBaseCost<<
                                       " JumpW: "<<JumpWidth<<
-                                      " ScaledJ:"<<ScaledReorderingJumpCost<<std::endl;*/
+                                      " ScaledJ:"<<ScaledReorderingJumpCost<<std::endl;
 
 
                             //If current phrase candidate combined with current HypoNode is worst than worst stored node ignore it
@@ -457,12 +458,14 @@ bool clsSearchGraphBuilder::parseSentence()
 
                             CurrCost += LMCost * clsSearchGraphBuilder::ScalingFactorLM.value();
 
-                            if (NewLexHypoContainer.mustBePruned(CurrCost + RestCost + PBT_IMMUNITY_BOUND))
+/*                            if (NewLexHypoContainer.mustBePruned(CurrCost + RestCost + PBT_IMMUNITY_BOUND)){
+                                ++PrunedAtVerySmall;
                                 continue;
+                            }*/
 
                             //Pruning among different reorderings
                             if (this->Data->HypothesisHolder[NewCardinality].mustBePruned(CurrCost + RestCost)){
-                                ++PrunedAtReored;
+                                ++PrunedAtReordering;
                                 continue;
                             }
 
@@ -528,7 +531,7 @@ bool clsSearchGraphBuilder::parseSentence()
         TargomanDebug(1," pruned at IBM(%d) Jump(%d) 2(%d) 3(%d) 4(%d) Reorder(%d): ",
                       PrunedByIBMConstraint,
                       PrunedByHardJumpConstraint,
-                      PrunedAt2, PrunedAt3, PrunedAt4,PrunedAtReored)
+                      PrunedAt2, PrunedAt3, PrunedAt4,PrunedAtReordering)
 #endif
 #ifdef DEBUG_PARSE_SENTENCE_CARDINALITY
                 if (NewCardinality <= DEBUG_PARSE_SENTENCE_CARDINALITY){
