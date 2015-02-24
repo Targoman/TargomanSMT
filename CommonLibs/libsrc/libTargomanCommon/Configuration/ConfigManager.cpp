@@ -116,7 +116,6 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         Modules = ConfigFile.childGroups();
         foreach (const QString& Key, ConfigFile.allKeys()){
             if (this->pPrivate->Configs.contains(Key) == false){
-                std::cout<<"Key: "<<Key.toLatin1().constData()<<std::endl;
                 QString BasePath = Key;
                 bool Found = false;
                 while(BasePath.contains("/")){
