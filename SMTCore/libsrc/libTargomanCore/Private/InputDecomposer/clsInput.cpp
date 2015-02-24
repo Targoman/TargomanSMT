@@ -228,6 +228,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
                 this->Tokens.append(clsToken(Token, gConfigs.SourceVocab.value(Token,0), TagStr, Attributes));
                 Token.clear();
                 TempStr.clear();
+                TagStr.clear();
                 Attributes.clear();
                 AttrName.clear();
                 AttrValue.clear();

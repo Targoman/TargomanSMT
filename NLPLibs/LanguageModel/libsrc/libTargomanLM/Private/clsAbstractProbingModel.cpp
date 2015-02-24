@@ -105,7 +105,7 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
             ++this->StoredInHashTable;
 
             if(_order == 1)
-                this->Vocab.insert(HashLoc, _ngram);
+                this->Vocab.insert(HashLoc, QString::fromUtf8(_ngram));
 
             return;
         }
