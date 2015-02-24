@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
         clsSafeCoreApplication App(argc, argv);
 
         printMemoryUsage("@first");
-#if 0
+#if 1
         ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en/Targoman.conf");
 #elif 1
         ConfigManager::instance().init("kdsjh", QStringList()<<"-c"<<"../../Example/Model-fa2en.full/Targoman.conf");

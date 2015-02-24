@@ -25,14 +25,15 @@ class clsLanguageModelPrivate
 {
 public:
     clsLanguageModelPrivate();
+    ~clsLanguageModelPrivate();
 
     bool isBinary(const QString& _filePath);
 
 public:
-    quint8                Order;    /**< Order of NGram */
-    intfBaseModel*        Model;    /**< instance of NGram Model */
-    bool                  FullyInitialized;
-    bool                  WasBinary;
+    quint8                               Order;    /**< Order of NGram */
+    QScopedPointer<intfBaseModel>        Model;    /**< instance of NGram Model */
+    bool                                 FullyInitialized;
+    bool                                 WasBinary;
 };
 
 

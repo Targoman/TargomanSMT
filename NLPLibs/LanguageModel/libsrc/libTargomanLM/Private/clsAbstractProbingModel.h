@@ -55,15 +55,15 @@ class clsAbstractProbingModel : public intfBaseModel
             Q_ASSERT(_level <= 0x1F);
             this->HashValueLevel = (this->HashValueLevel & (HASHVALUE_CONTAINER | 0x80 | 0x40)) + (_level & 0x3F); }
         /** @return returns level of hashing from #HashValueLevel. */
-        inline quint8  hashLevel(){ return this->HashValueLevel & 0x3F; }
+        inline quint8  hashLevel() const{ return this->HashValueLevel & 0x3F; }
         /** @return returns hash value from #HashValueLevel. */
-        inline quint64 hashValue(){ return this->HashValueLevel & HASHVALUE_CONTAINER; }
+        inline quint64 hashValue() const{ return this->HashValueLevel & HASHVALUE_CONTAINER; }
         /** @brief Does continue flag of cell is set or not. */
-        inline bool    continues(){ return this->HashValueLevel & 0x40; }
+        inline bool    continues() const{ return this->HashValueLevel & 0x40; }
         /** @brief Sets continue flag of cell in #HashValueLevel. */
         inline void    setContinues(){ this->HashValueLevel |= 0x40; }
         /** @brief Does continue flag of cell is set or not. */
-        inline bool    isMultiIndex(){ return this->HashValueLevel & 0x80; }
+        inline bool    isMultiIndex() const{ return this->HashValueLevel & 0x80; }
         /** @brief Sets continue flag of cell in #HashValueLevel. */
         inline void    setMultiIndex(){ this->HashValueLevel |= 0x80; }
 
@@ -78,6 +78,8 @@ protected:
 
 public:
     clsAbstractProbingModel();
+    ~clsAbstractProbingModel();
+
     void setUnknownWordDefaults(Targoman::Common::LogP_t _prob, Targoman::Common::LogP_t _backoff);
     virtual void insert(const char *_ngram, quint8 _order, Common::LogP_t _prob, Common::LogP_t _backoff = 0);
     void init(quint32 _maxNGramCount);
@@ -114,7 +116,7 @@ protected:
 protected:
     quint32                     HashTableSize;                  /**< Size of hash table. */
     quint32                     NgramCount;                     /**< Max NGram Existed in language model. */
-    stuNGramHash*               NGramHashTable;                 /**< Hash table of NGram. */
+    QScopedArrayPointer<stuNGramHash> NGramHashTable;           /**< Hash table of NGram. */
     QHash<QString, stuProbAndBackoffWeights> RemainingHashes;   /**< A QHash container to insert NGram that can not be inserted in #NGramHashTable. */
     stuProbAndBackoffWeights    UnknownWeights;                 /**< Weight of unknown word. */
     quint8                      MaxLevel;                       /**< Maximum level that was needed during inserting NGrams in #NGramHashTable . */

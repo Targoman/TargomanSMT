@@ -92,7 +92,7 @@ void clsCmdProgressBar::setValue(quint32 _value)
             QString ProgressPrefix = this->Message + QString(" [%1][%2%][").arg(_value).arg(ProgressVal,3);
             quint16 ProgressBarMaxWidth = w.ws_col - ProgressPrefix.size() - 10;
             cerr<<QString("%1%2]\r").arg(ProgressPrefix).arg(
-                   QString(ProgressVal*(ProgressBarMaxWidth)/100, '#'),-ProgressBarMaxWidth).toUtf8().constData()<<flush;
+                   QString((ProgressVal*ProgressBarMaxWidth)/100, '#'),-ProgressBarMaxWidth).toUtf8().constData()<<flush;
             this->LastProgressValue = ProgressVal;
             this->LastShowTime.restart();
         }

@@ -33,7 +33,11 @@ clsAbstractProbingModel::clsAbstractProbingModel() : intfBaseModel(enuMemoryMode
     this->SumLevels = 0;
     this->MaxLevel = 0;
     this->StoredInHashTable = 0;
-    this->NGramHashTable = NULL;
+}
+
+clsAbstractProbingModel::~clsAbstractProbingModel()
+{
+    //Just To suppress Compiler Error using QScopped Pointer
 }
 
 /**
@@ -121,7 +125,7 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
 void clsAbstractProbingModel::init(quint32 _maxNGramCount)
 {
     this->HashTableSize = 0;
-    for (size_t i =0; i< qMax(1, TargomanGoodHashTableSizesCount - 10); i++)
+    for (size_t i =0; i< (size_t)qMax(1, TargomanGoodHashTableSizesCount - 10); i++)
         if (_maxNGramCount < TargomanGoodHashTableSizes[i]){
             this->HashTableSize = TargomanGoodHashTableSizes[i+10];
             break;
@@ -130,7 +134,7 @@ void clsAbstractProbingModel::init(quint32 _maxNGramCount)
     if (this->HashTableSize){
         TargomanInfo(5, "Allocating "<<this->HashTableSize * sizeof(stuNGramHash)<<
                      " Bytes for max "<<this->HashTableSize<<" Items. Curr Items = "<<_maxNGramCount);
-        this->NGramHashTable = new stuNGramHash[this->HashTableSize + 1];
+        this->NGramHashTable.reset(new stuNGramHash[this->HashTableSize + 1]);
         TargomanInfo(5, "Allocated");
         this->NgramCount = _maxNGramCount;
     }else
@@ -282,11 +286,11 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath, bool _c
          Load Bin File
      ***********************************************************************************/
     if (this->NGramHashTable)
-        delete [] this->NGramHashTable;
+        delete this->NGramHashTable.take();
 
     TargomanInfo(5, "Allocating "<<this->HashTableSize * sizeof(stuNGramHash)<<
                  " Bytes for max "<<this->HashTableSize<<" Items. Curr Items = "<<this->NgramCount);
-    this->NGramHashTable = new stuNGramHash[this->HashTableSize + 1];
+    this->NGramHashTable.reset(new stuNGramHash[this->HashTableSize + 1]);
     TargomanInfo(5, "Allocated");
 
     if (BinFile.open(QFile::ReadOnly) == false)

@@ -566,7 +566,7 @@ bool clsSearchGraphBuilder::parseSentence()
             return result;
         };
 
-        intfLMSentenceScorer* Scorer = gConfigs.LM.getInstance<intfLMSentenceScorer>();
+        QScopedPointer<intfLMSentenceScorer> Scorer(gConfigs.LM.getInstance<intfLMSentenceScorer>());
         foreach(const clsSearchGraphNode& Node, this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes()){
             std::cerr << "================================================" << std::endl;
             QString NodeSentence = getNodeString(Node);

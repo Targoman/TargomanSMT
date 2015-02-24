@@ -88,7 +88,7 @@ ARPAManager::ARPAManager()
  * @return returns  order of n-gram
  */
 
-quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _justVocab, bool _skipVocab)
+quint8 ARPAManager::load(const QString &_file, intfBaseModel& _model, bool _justVocab, bool _skipVocab)
 {
     TargomanLogInfo(5, "Loading ARPA File: " + _file);
 
@@ -166,7 +166,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                                                 i).arg(MaxGram));
                     MaxItems += NGramCounts.value(i);
                 }
-                _model->init(MaxItems);
+                _model.init(MaxItems);
 
                 if (_skipVocab){
                     ProgressBar.reset("Skipping load of uni-gram Items",NGramCounts.value(1));
@@ -194,7 +194,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                     Count = 0;
 
                     if (_justVocab){
-                        TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
+                        TargomanLogInfo(5, "ARPA File Loaded. " + _model.getStatsStr());
 
                         return 1;
                     }else
@@ -203,7 +203,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                     if (Count < NGramCounts.value(NGramOrder))
                         throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
                                                 NGramOrder).arg(NGramCounts.value(NGramOrder)));
-                    TargomanLogInfo(5, "@end ARPA File Loaded. " + _model->getStatsStr());
+                    TargomanLogInfo(5, "@end ARPA File Loaded. " + _model.getStatsStr());
                     return MaxGram;
                 }else
                     throw exARPAManager(QString("Invalid Tag at Line: %1").arg(LineNo));
@@ -246,7 +246,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                 if (Prob >=0)
                     throw exARPAManager(QString("Invalid Positive backoff at line: %1").arg(LineNo));
 
-                _model->insert(StartOfNGram, NGramOrder, Prob, Backoff);
+                _model.insert(StartOfNGram, NGramOrder, Prob, Backoff);
                 ++Count;
                 ProgressBar.setValue(Count);
             }
@@ -260,7 +260,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel* _model, bool _just
                                 NGramOrder).arg(NGramCounts.value(NGramOrder)));
 
     std::cout<<std::endl;
-    TargomanLogInfo(5, "ARPA File Loaded. " + _model->getStatsStr());
+    TargomanLogInfo(5, "ARPA File Loaded. " + _model.getStatsStr());
 
     return MaxGram;
 }

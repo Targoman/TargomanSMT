@@ -95,9 +95,9 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
         this->pPrivate->WasBinary = true;
         if (this->pPrivate->Model == NULL){
             if (_configs.UseIndexBasedModel)
-                this->pPrivate->Model = new clsIndexBasedProbingModel();
+                this->pPrivate->Model.reset(new clsIndexBasedProbingModel());
             else
-                this->pPrivate->Model = new clsStringBasedProbingModel();
+                this->pPrivate->Model.reset(new clsStringBasedProbingModel());
         }
 
         this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
@@ -112,13 +112,13 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
         this->pPrivate->WasBinary = false;
         if (this->pPrivate->Model == NULL){
             if (_configs.UseIndexBasedModel)
-                this->pPrivate->Model = new clsIndexBasedProbingModel();
+                this->pPrivate->Model.reset(new clsIndexBasedProbingModel());
             else
-                this->pPrivate->Model = new clsStringBasedProbingModel();
+                this->pPrivate->Model.reset(new clsStringBasedProbingModel());
 
             this->pPrivate->Model->setUnknownWordDefaults(_configs.UnknownWordDefault.Prob,
                                                           _configs.UnknownWordDefault.Backoff);
-            this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model, _justVocab);
+            this->pPrivate->Order = ARPAManager::instance().load(_filePath, *this->pPrivate->Model, _justVocab);
 
             LM_BEGIN_SENTENCE_WINDEX = this->pPrivate->Model->getID(LM_BEGIN_SENTENCE);
             LM_END_SENTENCE_WINDEX   = this->pPrivate->Model->getID(LM_END_SENTENCE);
@@ -127,7 +127,7 @@ quint8 clsLanguageModel::init(const QString &_filePath, const stuLMConfigs &_con
         }else{
             if (_justVocab)
                 return this->pPrivate->Order;
-            this->pPrivate->Order = ARPAManager::instance().load(_filePath, this->pPrivate->Model, false, true);
+            this->pPrivate->Order = ARPAManager::instance().load(_filePath, *this->pPrivate->Model, false, true);
             this->pPrivate->FullyInitialized = true;
         }
     }
@@ -191,7 +191,11 @@ WordIndex_t LM_END_SENTENCE_WINDEX;
 Private::clsLanguageModelPrivate::clsLanguageModelPrivate()
 {
     this->FullyInitialized = false;
-    this->Model = NULL;
+}
+
+clsLanguageModelPrivate::~clsLanguageModelPrivate()
+{
+    //Just to Suppress Compiler error using QScopped Pointer
 }
 
 bool clsLanguageModelPrivate::isBinary(const QString &_filePath)
