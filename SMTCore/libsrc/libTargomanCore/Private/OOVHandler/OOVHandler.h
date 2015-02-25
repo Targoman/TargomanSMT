@@ -14,36 +14,80 @@
 #ifndef OOVHANDLER_H
 #define OOVHANDLER_H
 
+#include "libTargomanCommon/tmplExpirableCache.hpp"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "Private/RuleTable/clsRuleNode.h"
 
 namespace Targoman{
 namespace Core {
 namespace Private{
+namespace OOV{
 
-class OOVHandler
+class intfOOVHandlerModule;
+
+TARGOMAN_ADD_EXCEPTION_HANDLER(exOOVHandler, exTargomanCore);
+
+class OOVHandler : public Common::Configuration::intfModule
 {
+    class clsExpiranbleOOVWord{
+    public:
+        clsExpiranbleOOVWord(){
+            this->WordIndex = 0;
+            this->NotSet = true;
+        }
 
-    struct stuOOVItem{
-        RuleTable::clsRuleNode RuleNode;
-        quint64                Usages;
+        clsExpiranbleOOVWord(Common::WordIndex_t _windex, const QVariantMap& _attrs){
+            this->WordIndex = _windex;
+            this->NotSet = false;
+            this->Attributes = _attrs;
+        }
+
+        ~clsExpiranbleOOVWord(){
+            if (this->WordIndex){
+               OOVHandler::instance().removeWordIndex(this->WordIndex);
+            }
+        }
+
+    public:
+        bool                    NotSet;
+        Common::WordIndex_t     WordIndex;
+        QVariantMap             Attributes;
     };
 
+    void initialize();
+
 public:
-    static OOVHandler& instance(){return Q_LIKELY(Instance) ? *Instance : *(Instance = new OOVHandler);}
-    //RuleTable::clsRuleNode& getOrCreateNode(const QString& _vo)
+    static OOVHandler& instance(){return *((OOVHandler*)moduleInstance());}
+    Common::WordIndex_t                getWordIndex(const QString& _token, QVariantMap &_attrs);
+    inline RuleTable::clsRuleNode      getRuleNode(Common::WordIndex_t _wordIndex) const {
+        return this->HandledOOVs.value(_wordIndex);
+    }
 
 private:
-    OOVHandler();
-    Q_DISABLE_COPY(OOVHandler)
+    OOVHandler():
+        intfModule(this->moduleName())
+    {}
+
+    void removeWordIndex(Common::WordIndex_t _wordIndex);
+    TARGOMAN_DEFINE_SINGLETONMODULE("OOVHandler", OOVHandler)
 
 private:
-    QHash<QString, stuOOVItem>              HandledOOVs;
-    QMap<Common::WordIndex_t,QString>       OOVocab;
-    Common::WordIndex_t                     WordIndexOffset;
-    QList<Common::WordIndex_t>              AvailableWordIndexes;
-    static OOVHandler* Instance;
+    QHash<Common::WordIndex_t, RuleTable::clsRuleNode>            HandledOOVs;
+    Common::tmplExpirableCache<QString, clsExpiranbleOOVWord>     OOVWords;
+    Common::WordIndex_t                                           WordIndexOffset;
+    QList<Common::WordIndex_t>                                    AvailableWordIndexes;
+    QList<intfOOVHandlerModule*>                                  ActiveOOVHandlers;
+    QMutex                                                        Lock;
+
+private:
+    static Targoman::Common::Configuration::tmplConfigurable<QString> OOVHandlerModules;
+    static QMap<QString, intfOOVHandlerModule*>                       AvailableOOVHandlers;
+
+    friend class clsExpiranbleOOVWord;
+    friend class intfOOVHandlerModule;
 };
 
+}
 }
 }
 }

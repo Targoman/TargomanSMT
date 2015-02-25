@@ -14,7 +14,7 @@
 #define TARGOMAN_COMMON_TMPLEXPIRABLECACHE_H
 
 #include <QHash>
-#include <QDateTime>
+#include <QTime>
 #include "libTargomanCommon/exTargomanBase.h"
 
 namespace Targoman {
@@ -41,7 +41,7 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
 
         inline void insert(itmplKey _key, itmplVal _val){
             while(this->Cache.size() >= this->MaxItems){
-                QList<QDateTime> Values = this->KeyAccessDateTime.values();
+                QList<QTime> Values = this->KeyAccessDateTime.values();
                 qStableSort(Values);
                 QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Values.first());
 
@@ -51,7 +51,7 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
                 }
             }
 
-            this->KeyAccessDateTime.insert(_key, QDateTime::currentDateTime());
+            this->KeyAccessDateTime.insert(_key, QTime::currentTime());
             this->Cache.insert(_key, _val);
         }
 
@@ -64,13 +64,13 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
             if (this->Cache.contains(_key) == false)
                 return _defaultValue;
 
-            if (this->TTL > 0 && QDateTime::currentDateTime().msecsTo(this->KeyAccessDateTime.value(_key)) > this->TTL){
+            if (this->TTL > 0 && QTime::currentTime().msecsTo(this->KeyAccessDateTime.value(_key)) > this->TTL){
                 this->KeyAccessDateTime.remove(_key);
                 this->Cache.remove(_key);
                 return _defaultValue;
             }
             if (_updateAccessTime)
-                this->KeyAccessDateTime.insert(_key, QDateTime::currentDateTime());
+                this->KeyAccessDateTime.insert(_key, QTime::currentTime());
             return this->Cache.value(_key, _defaultValue);
         }
 
@@ -79,12 +79,13 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
                 return this->Cache[_key];
 
             if (this->TTL > 0 &&
-                QDateTime::currentDateTime().msecsTo(this->KeyAccessDateTime.value(_key)) > this->TTL){
+                this->KeyAccessDateTime.value(_key).elapsed() > this->TTL){
                 this->KeyAccessDateTime.remove(_key);
                 return this->Cache.take(_key);
             }
 
-            this->KeyAccessDateTime.insert(_key, QDateTime::currentDateTime());
+            QTime AccessTime = QTime::currentTime();
+            this->KeyAccessDateTime.insert(_key, AccessTime);
 
             return this->Cache[_key];
         }
@@ -98,6 +99,7 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
         inline bool contains ( const itmplKey & _key ) const { return this->Cache.contains(_key); }
         inline const_iterator begin () const {return this->Cache.begin();}
         inline const_iterator	end () const {return this->Cache.end();}
+        inline size_t  size(){ return this->Cache.size(); }
 
         void setMaxItems(quint32 _maxItems){ this->MaxItems = _maxItems; }
         void setTTL(quint32 _ttl){ this->TTL = _ttl; }
@@ -106,8 +108,9 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
         quint32 ttl(){ return this->TTL; }
 
     private:
-        QHash<itmplKey, itmplVal >  Cache;
-        QHash<itmplKey, QDateTime > KeyAccessDateTime;
+        QHash<itmplKey, itmplVal >   Cache;
+        QHash<itmplKey, QTime >      KeyAccessDateTime;
+
         quint32 MaxItems;
         quint32 TTL;
     };

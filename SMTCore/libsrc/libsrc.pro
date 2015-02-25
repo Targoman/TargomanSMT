@@ -32,7 +32,8 @@ HEADERS += \
     libTargomanCore/Private/FeatureFunctions/PhraseTable/PhraseTable.h \
     libTargomanCore/Private/SearchGraphBuilder/clsHypothesisHolder.hpp \
     libTargomanCore/Private/OOVHandler/OOVHandler.h \
-    libTargomanCore/Private/RuleTable/clsMosesPlainRuleTable.h
+    libTargomanCore/Private/OOVHandler/intfOOVHandlerModule.hpp \
+    libTargomanCore/Private/OOVHandler/OOVDefaultHandlers.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -52,7 +53,7 @@ SOURCES += libID.cpp \
     libTargomanCore/Private/RuleTable/clsJanePlainRuleTable.cpp \
     libTargomanCore/Private/FeatureFunctions/PhraseTable/PhraseTable.cpp \
     libTargomanCore/Private/OOVHandler/OOVHandler.cpp \
-    libTargomanCore/Private/RuleTable/clsMosesPlainRuleTable.cpp
+    libTargomanCore/Private/OOVHandler/OOVDefaultHandlers.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

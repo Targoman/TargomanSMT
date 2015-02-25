@@ -33,8 +33,8 @@ class clsToken
 public:
     clsToken(const QString& _value,
              const Common::WordIndex_t _wordIndex,
-             const QString& _tagStr = "",
-             const QHash<QString, QString>& _attrs = QHash<QString, QString>()){
+             const QString& _tagStr,
+             const QVariantMap& _attrs){
         this->Value = _value;
         this->WordIndex = _wordIndex;
         this->TagStr = _tagStr;
@@ -45,13 +45,13 @@ public:
     inline const QString& value() const {return this->Value;}
     inline const Common::WordIndex_t& wordIndex() const {return this->WordIndex;}
     inline const QString& tagStr() const {return this->TagStr;}
-    inline const QHash<QString, QString>& attrs() const {return this->Attrs;}
+    inline const QVariantMap& attrs() const {return this->Attrs;}
 
 private:
     QString Value;                      /**< String of token. */
     Common::WordIndex_t WordIndex;      /**< Index of token in hash table. */
     QString TagStr;                     /**< If token is in ixml tag, its tag string will be recorded in this variable. */
-    QHash<QString, QString> Attrs;      /**< Some ixml tags has attributes. If token is in attributed ixml tag, attribute names and attributes values will be recorded in this variable.  */
+    QVariantMap         Attrs;      /**< Some ixml tags has attributes. If token is in attributed ixml tag, attribute names and attributes values will be recorded in this variable.  */
 };
 
 

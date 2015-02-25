@@ -205,9 +205,7 @@ void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
             Costs.append(FieldCosts.at(i).toDouble());
     }
 
-    RuleTable::clsTargetRule TargetRule(TargetPhrase, Costs);
-
-
+    clsTargetRule TargetRule(TargetPhrase, Costs);
 
     clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(SourcePhrase.toStdVector())->getData();
     RuleNode.detachInvalidData();

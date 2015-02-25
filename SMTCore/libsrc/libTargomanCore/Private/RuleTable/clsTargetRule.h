@@ -26,6 +26,7 @@ namespace RuleTable{
 TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);
 
 class clsTargetRuleData;
+extern clsTargetRuleData* InvalidTargetRuleData;
 
 class clsTargetRule
 {
@@ -39,6 +40,8 @@ public:
         Data(_other.Data)
     {}
     ~clsTargetRule(){}
+
+    inline bool isInvalid() const;
 
     inline Common::WordIndex_t at(int _index) const;
     inline size_t size() const;
@@ -69,6 +72,11 @@ public:
 
     }
 
+    void detachInvalidData(){
+        Q_ASSERT(this->Data == InvalidTargetRuleData);
+        this->Data.detach();
+    }
+
 //private:
 public:
     QExplicitlySharedDataPointer<clsTargetRuleData>   Data;
@@ -79,7 +87,7 @@ public:
 };
 
 extern clsTargetRule* InvalidTargetRule;
-
+/********************************************************************************/
 class clsTargetRuleData : public QSharedData
 {
 public:
@@ -127,7 +135,6 @@ inline size_t clsTargetRule::fieldCount() const {
 }
 #endif
 
-
 inline Common::Cost_t  clsTargetRule::field(size_t _index) const{
     Q_ASSERT(_index < (size_t)this->Data->Fields.size());
     return this->Data->Fields.at(_index);
@@ -150,6 +157,9 @@ inline void clsTargetRule::setPrecomputedValue(size_t _index, Common::Cost_t _va
     this->Data->PrecomputedValues[_index] = _value;
 }
 
+inline bool clsTargetRule::isInvalid() const{
+    return this->Data == InvalidTargetRuleData;
+}
 
 }
 }

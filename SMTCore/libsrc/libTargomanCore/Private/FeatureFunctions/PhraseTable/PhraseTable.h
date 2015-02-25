@@ -55,7 +55,6 @@ public:
 
 private:
     PhraseTable();
-    Q_DISABLE_COPY(PhraseTable)
     TARGOMAN_DEFINE_SINGLETONMODULE("PhraseTable", PhraseTable)
 
     QList<double> ScalingFactors;

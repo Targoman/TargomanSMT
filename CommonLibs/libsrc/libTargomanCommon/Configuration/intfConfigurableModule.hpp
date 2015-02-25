@@ -72,7 +72,7 @@ public:
 public: \
     void   unregister(){/*TARGOMAN_UNREGISTER_ACTOR;*/} \
     static QString moduleName(){_class::ActiveInstances.fetchAndAddOrdered(-1);return QStringLiteral(_name);}  \
-    static intfModule* instantiator(){_class::ActiveInstances.fetchAndAddOrdered(1); return new _class(_class::Instances.fetchAndAddOrdered(1));} \
+    static Targoman::Common::Configuration::intfModule* instantiator(){_class::ActiveInstances.fetchAndAddOrdered(1); return new _class(_class::Instances.fetchAndAddOrdered(1));} \
     static QString baseConfigPath(){return "/" + moduleName();} \
 private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
@@ -88,10 +88,11 @@ private: \
 #define TARGOMAN_DEFINE_SINGLETONMODULE(_name, _class) \
 public: \
     void   unregister(){}\
-    static intfModule* instance(){return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
+    static Targoman::Common::Configuration::intfModule* moduleInstance(){return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
     static QString moduleName(){return QStringLiteral(_name);}  \
     static QString baseConfigPath(){return "/" + moduleName();} \
 private: \
+    Q_DISABLE_COPY(_class) \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
     static _class* Instance;
 
@@ -110,7 +111,7 @@ private: \
 
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
-                      Targoman::Common::Configuration::stuInstantiator(_class::instance,true)); \
+                      Targoman::Common::Configuration::stuInstantiator(_class::moduleinstance,true)); \
     _class* _class::Instance = NULL;
 }
 }

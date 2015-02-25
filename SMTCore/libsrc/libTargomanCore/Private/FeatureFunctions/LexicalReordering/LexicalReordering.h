@@ -46,7 +46,6 @@ public:
 
 private:
     LexicalReordering();
-    Q_DISABLE_COPY(LexicalReordering)
 
     enuLexicalReorderingFields::Type getRightOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
     enuLexicalReorderingFields::Type getLeftOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;

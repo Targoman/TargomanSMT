@@ -24,9 +24,10 @@ QStringList  clsTargetRule::ColumnNames;
 size_t clsTargetRule::PrecomputedValuesSize = 0;
 
 clsTargetRule* InvalidTargetRule = NULL;
+clsTargetRuleData* InvalidTargetRuleData = NULL;
 
 clsTargetRule::clsTargetRule():
-    Data(new clsTargetRuleData)
+    Data(InvalidTargetRuleData)
 {}
 
 clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields):

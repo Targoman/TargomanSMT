@@ -16,7 +16,7 @@
 #include "clsSearchGraphBuilder.h"
 #include "../GlobalConfigs.h"
 #include "Private/LanguageModel/intfLMSentenceScorer.hpp"
-
+#include "Private/OOVHandler/OOVHandler.h"
 
 #define PBT_MAXIMUM_COST 1e200
 #define PBT_IMMUNITY_BOUND 1e-10
@@ -32,6 +32,7 @@ using namespace Common::Configuration;
 using namespace RuleTable;
 using namespace LanguageModel;
 using namespace InputDecomposer;
+using namespace OOV;
 
 tmplConfigurable<quint8> clsSearchGraphBuilder::ReorderingConstraintMaximumRuns(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingConstraintMaximumRuns",
@@ -91,6 +92,10 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
     clsSearchGraphBuilder::pRuleTable->loadTableData();
     clsSearchGraphBuilder::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 
+
+    //TODO check if <unk> to <unk> Rule exists
+
+
     //InvalidTargetRule has been marshalled here because it depends on loading RuleTable
     RuleTable::InvalidTargetRule = new RuleTable::clsTargetRule;
 
@@ -111,10 +116,12 @@ void clsSearchGraphBuilder::matchPhrase()
         { //On Uni-Grams
             PrevNode = PrevNode->follow(this->Data->Sentence.at(FirstPosition).wordIndex());
 
-            if (PrevNode == NULL)
-                continue; // appending next word breaks phrase lookup
-
-            this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
+            if (PrevNode == NULL){
+                this->Data->PhraseMatchTable[FirstPosition][0] =
+                        OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
+                continue;
+            }else
+                this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
 
 #ifdef DEBUG_MATCH_PHRASE
             if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false) {
@@ -145,8 +152,9 @@ void clsSearchGraphBuilder::matchPhrase()
 
             if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,1);
-            //else
-            //TODO getRulonde from OOVHandler
+
+            if (PrevNode == NULL)
+                continue;
         }
 
         //Max PhraseTable order will be implicitly checked by follow

@@ -86,7 +86,7 @@ public:
         }
     }
 
-    bool insertNewHypothesis(const Coverage_t& _coverage, clsLexicalHypothesis& _container, clsSearchGraphNode& _node);
+    void insertNewHypothesis(const Coverage_t& _coverage, clsLexicalHypothesis& _container, clsSearchGraphNode& _node);
 
     bool mustBePruned(Common::Cost_t _cost) const;
     void pruneAndUpdateWorstNode(const Coverage_t& _coverage, clsLexicalHypothesis& _lexicalHypo, const clsSearchGraphNode &_node);

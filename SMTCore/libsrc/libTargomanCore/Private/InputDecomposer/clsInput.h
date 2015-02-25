@@ -30,6 +30,12 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
 
 typedef QList<clsToken> Sentence_t;
 
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuDefaultAttrs,
+                              NoShow,
+                              NoDecode,
+                              ShowSource
+                              )
+
 /**
  * @brief This class is defined to manage input string tokens.
  * This input string can be in ixml or plain format.
@@ -45,10 +51,15 @@ public:
 
     inline const Sentence_t& tokens(){return this->Tokens;}
 
+    static QString moduleName(){return "Input";}
+
 private:
     void parsePlain(const QString &_inputStr, const QString& _lang);
     void parseRichIXML(const QString& _inputIXML);
     void parseRichIXML(const QString& _inputIXML, bool _normalize, const QString &_lang = "");
+    void newToken(const QString& _token,
+                  const QString &_tagStr = "",
+                  const QVariantMap &_attrs = QVariantMap());
 
     inline bool isSpace(const QChar& _ch){
         return _ch == ' ';
@@ -62,6 +73,7 @@ private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;  /**< Users can add their defined iXML tags to list of valid tags (#SpecialTags). */
     static Targoman::Common::Configuration::tmplConfigurable<bool>    IsIXML;           /**< A configurable to specify whether input string is xml or not. */
     static Targoman::Common::Configuration::tmplConfigurable<bool>    DoNormalize;      /**< A configurable to specify whether input string should be normalized or not. */
+    static Targoman::Common::Configuration::tmplConfigurable<bool>    TagNameEntities;  /**< Use NER to tag name entities */
 };
 
 }

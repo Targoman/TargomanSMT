@@ -14,6 +14,7 @@
 #include <QStringList>
 #include "libTargomanTextProcessor/TextProcessor.h"
 #include "clsInput.h"
+#include "Private/OOVHandler/OOVHandler.h"
 
 using Targoman::NLPLibs::TextProcessor;
 
@@ -23,23 +24,29 @@ namespace Private {
 namespace InputDecomposer {
 
 using namespace Common;
+using namespace OOV;
 
 QSet<QString>    clsInput::SpecialTags;
 
 Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags(
-        "Input/UserDefinedTags",
+        clsInput::moduleName() + "/UserDefinedTags",
         "User Defined valid XML tags. ",
         "Valid user defined XML tags that must be stored with their attributes."
         "These must not overlap with predefined XML Tags"
         /*TODO add lambda to check overlap*/);
 Configuration::tmplConfigurable<bool>    clsInput::IsIXML(
-        "Input/IsIXML",
+        clsInput::moduleName() + "/IsIXML",
         "Input is in Plain text(default) or IXML format",
         false);
 Configuration::tmplConfigurable<bool>    clsInput::DoNormalize(
-        "Input/DoNormalize",
+        clsInput::moduleName() + "/DoNormalize",
         "Normalize Input(default) or let it unchanged",
         true);
+
+Configuration::tmplConfigurable<bool>    clsInput::TagNameEntities(
+        clsInput::moduleName() + "/TagNameEntities",
+        "Use NER to tag name entities",
+        false);
 
 /**
  * @brief clsInput::clsInput Instructor of this class gets input string and based on input arguments parses that.
@@ -96,7 +103,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
 {
     if (_inputIXML.contains('<') == false) {
       foreach(const QString& Token, _inputIXML.split(" ", QString::SkipEmptyParts))
-          this->Tokens.append(clsToken(Token, gConfigs.SourceVocab.value(Token,0)));
+          this->newToken(Token);
       return;
     }
 
@@ -117,7 +124,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
     QString TempStr;
     QString AttrName;
     QString AttrValue;
-    QHash<QString, QString> Attributes;
+    QVariantMap Attributes;
     bool NextCharEscaped = false;
     int Index = 0;
 
@@ -135,7 +142,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             }
             NextCharEscaped = false;
             if (this->isSpace(Ch)){
-                this->Tokens.append(clsToken(Token,gConfigs.SourceVocab.value(Token,0)));
+                this->newToken(Token);
                 Token.clear();
             }else if (Ch == '\\'){
                 NextCharEscaped = true;
@@ -225,7 +232,8 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             else if (Ch == '>'){
                 if (TempStr != TagStr)
                     throw exInput("Invalid closing tag: <"+TempStr+"> while looking for <"+TagStr+">");
-                this->Tokens.append(clsToken(Token, gConfigs.SourceVocab.value(Token,0), TagStr, Attributes));
+                this->newToken(Token, TagStr, Attributes);
+
                 Token.clear();
                 TempStr.clear();
                 TagStr.clear();
@@ -254,6 +262,25 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
     case CollectAttrValue:
         throw exInput("XML Tag: <"+TagStr+"> Attribute: <"+AttrName+"> value not closed");
     }
+}
+
+void clsInput::newToken(const QString &_token, const QString &_tagStr, const QVariantMap &_attrs)
+{
+    WordIndex_t WordIndex;
+    QVariantMap Attributes = _attrs;
+
+    if (_tagStr.size())
+        WordIndex =  gConfigs.SourceVocab.value(_tagStr);
+    else{
+        WordIndex = gConfigs.SourceVocab.value(_token,0);
+        if (WordIndex == 0){
+            WordIndex = OOVHandler::instance().getWordIndex(_token, Attributes);
+            if (_attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
+                return; // OOVHandler says that I must ignore this word when decoding
+        }
+    }
+
+    this->Tokens.append(clsToken(_token, WordIndex, _tagStr, Attributes));
 }
 
 /**

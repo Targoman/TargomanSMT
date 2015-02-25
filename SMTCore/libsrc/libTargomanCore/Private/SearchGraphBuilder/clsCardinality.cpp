@@ -40,7 +40,7 @@ void clsCardinality::dump(const QString& _prefix)
         for(int i=0; i<Iter.value().nodes().size(); ++i){
             clsSearchGraphNode Node(Iter.value().nodes().at(i));
             QString TargetPhrase;
-            for(int j=0; j <Node.targetRule().size(); ++j)
+            for(size_t j=0; j <Node.targetRule().size(); ++j)
                 TargetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(Node.targetRule().at(j));
 
             std::cout<<(_prefix +
@@ -55,7 +55,7 @@ void clsCardinality::dump(const QString& _prefix)
 
 }
 
-bool clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesis &_container, clsSearchGraphNode &_node)
+void clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesis &_container, clsSearchGraphNode &_node)
 {
     size_t OldContainerSize = _container.nodes().size();
 
