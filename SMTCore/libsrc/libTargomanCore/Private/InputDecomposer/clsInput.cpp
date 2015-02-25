@@ -69,9 +69,14 @@ void clsInput::init()
 {
     if (UserDefinedTags.value().size())
         foreach(const QString& Tag, UserDefinedTags.value().split(gConfigs.Separator.value()))
-            SpecialTags.insert(Tag);
+            clsInput::SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
-        SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
+        clsInput::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
+
+    foreach(const QString& Tag, clsInput::SpecialTags){
+        WordIndex_t WordIndex = gConfigs.SourceVocab.size() + 1;
+        gConfigs.SourceVocab.insert(Tag, WordIndex);
+    }
 }
 
 /**

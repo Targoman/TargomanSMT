@@ -26,6 +26,8 @@ namespace Core {
 namespace Private{
 namespace SearchGraphBuilder {
 
+TARGOMAN_ADD_EXCEPTION_HANDLER(exSearchGraphBuilder, exTargomanCore);
+
 class clsSearchGraphBuilderData : public QSharedData
 {
 public:
@@ -67,6 +69,7 @@ public:
     clsSearchGraphBuilder(const InputDecomposer::Sentence_t& _sentence);
     clsSearchGraphBuilder(){}
 
+
     static void init(const QString &_configFilePath);
     void matchPhrase();
     bool parseSentence();
@@ -90,6 +93,7 @@ private:
 
     static RuleTable::intfRuleTable*                       pRuleTable;
     static FeatureFunction::intfFeatureFunction*           pPhraseTable;
+    static RuleTable::clsRuleNode*                         UnknownWordRuleNode;
     static Common::Configuration::tmplConfigurable<quint8> ReorderingConstraintMaximumRuns;
     static Common::Configuration::tmplConfigurable<bool>   DoComputeReorderingRestCosts;
     static Common::Configuration::tmplConfigurable<bool>   PruneAtStage2;

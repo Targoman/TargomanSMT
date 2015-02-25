@@ -21,7 +21,6 @@
 #define PBT_MAXIMUM_COST 1e200
 #define PBT_IMMUNITY_BOUND 1e-10
 
-
 namespace Targoman{
 namespace Core {
 namespace Private{
@@ -77,6 +76,7 @@ tmplConfigurable<double> clsSearchGraphBuilder::ScalingFactorLM(
 
 FeatureFunction::intfFeatureFunction*  clsSearchGraphBuilder::pPhraseTable = NULL;
 RuleTable::intfRuleTable*              clsSearchGraphBuilder::pRuleTable = NULL;
+RuleTable::clsRuleNode*                clsSearchGraphBuilder::UnknownWordRuleNode;
 
 /**********************************************************************************/
 clsSearchGraphBuilder::clsSearchGraphBuilder(const Sentence_t& _sentence):
@@ -92,9 +92,15 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
     clsSearchGraphBuilder::pRuleTable->loadTableData();
     clsSearchGraphBuilder::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 
+    RulesPrefixTree_t::Node* Node = clsSearchGraphBuilder::pRuleTable->getPrefixTree().rootNode();
+    if(Node == NULL)
+        throw exSearchGraphBuilder("Invalid empty Rule Table");
 
-    //TODO check if <unk> to <unk> Rule exists
+    Node = Node->follow(0); //Search for UNKNOWN word Index
+    if (Node == NULL)
+        throw exSearchGraphBuilder("No Rule defined for UNKNOWN word");
 
+    clsSearchGraphBuilder::UnknownWordRuleNode = new clsRuleNode(Node->getData());
 
     //InvalidTargetRule has been marshalled here because it depends on loading RuleTable
     RuleTable::InvalidTargetRule = new RuleTable::clsTargetRule;
@@ -117,8 +123,13 @@ void clsSearchGraphBuilder::matchPhrase()
             PrevNode = PrevNode->follow(this->Data->Sentence.at(FirstPosition).wordIndex());
 
             if (PrevNode == NULL){
-                this->Data->PhraseMatchTable[FirstPosition][0] =
+                clsRuleNode OOVRuleNode =
                         OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
+                if (OOVRuleNode.isInvalid())
+                    this->Data->PhraseMatchTable[FirstPosition][0] = *clsSearchGraphBuilder::UnknownWordRuleNode;
+                else
+                    this->Data->PhraseMatchTable[FirstPosition][0] = OOVRuleNode;
+                        ;
                 continue;
             }else
                 this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();

@@ -33,7 +33,7 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(OOVHandler)
 
 void OOVHandler::initialize()
 {
-    QStringList OOVHandlers = OOVHandler::OOVHandlerModules.value().split(",");
+    QStringList OOVHandlers = OOVHandler::OOVHandlerModules.value().split(",", QString::SkipEmptyParts);
     foreach(const QString& OOVHandlerName, OOVHandlers){
         intfOOVHandlerModule* pOOVHandler = this->AvailableOOVHandlers.value(OOVHandlerName);
         if (pOOVHandler == NULL)
