@@ -129,8 +129,6 @@ void clsSearchGraphBuilder::matchPhrase()
                     this->Data->PhraseMatchTable[FirstPosition][0] = *clsSearchGraphBuilder::UnknownWordRuleNode;
                 else
                     this->Data->PhraseMatchTable[FirstPosition][0] = OOVRuleNode;
-                        ;
-                continue;
             }else
                 this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
 
