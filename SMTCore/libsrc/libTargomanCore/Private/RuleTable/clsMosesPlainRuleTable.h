@@ -37,10 +37,14 @@ public:
 
 private:
     void addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTargetRule &_targetRule);
+    void addRule(const QVector<Targoman::Common::WordIndex_t> _sourcePhrase,
+                 const QList<Common::WordIndex_t> _targetPhrase,
+                 const QList<Targoman::Common::Cost_t> _costs);
     void addRule(const QString& _sourcePhrase,
                  const QString& _targetPhrase,
                  const QStringList &_costs,
                  size_t _ruleNumber);
+    void addUnkToUnkRule();
 private:
     int PhraseFeatureCount = 0;
     int ReorderingFeatureCount = 0;

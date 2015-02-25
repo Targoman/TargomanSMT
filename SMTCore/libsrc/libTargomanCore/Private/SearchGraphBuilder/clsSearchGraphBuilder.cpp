@@ -113,7 +113,7 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
 
 void clsSearchGraphBuilder::matchPhrase()
 {
-#define DEBUG_MATCH_PHRASE
+//#define DEBUG_MATCH_PHRASE
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseMatchTable.append(QVector<clsRuleNode>(this->Data->Sentence.size() - FirstPosition));
@@ -259,6 +259,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
+
         int PrunedAt2 = 0;
         int PrunedAt3 = 0;
         int PrunedAt4 = 0;
@@ -512,7 +513,10 @@ bool clsSearchGraphBuilder::parseSentence()
                                     BestHardJumpViolatingNode = NewHypoNode;
                                 }
                             }else{
-                                this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage, NewLexHypoContainer, *NewHypoNode);
+                                if(this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage, NewLexHypoContainer, *NewHypoNode)) {
+                                    // Vedadian
+                                    //std::cout << "Hypothesis added to " << bitArray2Str(NewCoverage).toStdString() << std::endl;
+                                }
 
                                 //NewHypoNode will be appended to QList as a new reference so we don't need it anymore
                                 delete NewHypoNode;
@@ -571,7 +575,6 @@ bool clsSearchGraphBuilder::parseSentence()
         this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
 
 #if 1
-        /********************************************************************/
         /// JUST FOR DEBUG
         std::function<QString (const clsSearchGraphNode&)> getNodeString = [&](const clsSearchGraphNode& _node) {
             if(_node.isInvalid())
@@ -585,6 +588,10 @@ bool clsSearchGraphBuilder::parseSentence()
             return result;
         };
 
+#if 1
+        std::cout << getNodeString(*this->Data->GoalNode).toStdString() << std::endl;
+#else
+        /********************************************************************/
         QScopedPointer<intfLMSentenceScorer> Scorer(gConfigs.LM.getInstance<intfLMSentenceScorer>());
         foreach(const clsSearchGraphNode& Node, this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes()){
             std::cerr << "================================================" << std::endl;
@@ -600,6 +607,7 @@ bool clsSearchGraphBuilder::parseSentence()
             break;
         }
         /********************************************************************/
+#endif
 #endif
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
 

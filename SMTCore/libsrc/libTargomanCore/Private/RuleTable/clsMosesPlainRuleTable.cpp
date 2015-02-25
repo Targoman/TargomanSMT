@@ -131,6 +131,8 @@ void clsMosesPlainRuleTable::loadTableData()
 
     clsCmdProgressBar ProgressBar("Loading MosesRuleTable");
 
+    addUnkToUnkRule();
+
     clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFileName.value().toStdString());
     clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFileName.value().toStdString());
     size_t RulesRead = 0;
@@ -207,7 +209,16 @@ void clsMosesPlainRuleTable::addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTarg
     }
     if(StartPos == EndPos)
         InsertionPos = StartPos;
-   TargetRuleList.insert(InsertionPos, _targetRule);
+    TargetRuleList.insert(InsertionPos, _targetRule);
+}
+
+void clsMosesPlainRuleTable::addRule(const QVector<WordIndex_t> _sourcePhrase, const QList<WordIndex_t> _targetPhrase, const QList<Cost_t> _costs)
+{
+    RuleTable::clsTargetRule TargetRule(_targetPhrase, _costs);
+
+    clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(_sourcePhrase.toStdVector())->getData();
+    RuleNode.detachInvalidData();
+    addToRuleNodeSorted(RuleNode, TargetRule);
 }
 
 void clsMosesPlainRuleTable::addRule(const QString& _sourcePhrase,
@@ -236,27 +247,19 @@ void clsMosesPlainRuleTable::addRule(const QString& _sourcePhrase,
     foreach(const QString& Word, _targetPhrase.split(" ", QString::SkipEmptyParts))
         TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(Word));
 
-    RuleTable::clsTargetRule TargetRule(TargetPhrase, Costs);
+    addRule(SourcePhrase, TargetPhrase, Costs);
+}
 
-    clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(SourcePhrase.toStdVector())->getData();
-    RuleNode.detachInvalidData();
-    addToRuleNodeSorted(RuleNode, TargetRule);
-    static int NumberOfTimesDebugDataPrinted = 0;
-    if(NumberOfTimesDebugDataPrinted < 15 && _sourcePhrase.trimmed() == "این راکتور") {
-        ++NumberOfTimesDebugDataPrinted;
-        QList<clsTargetRule>& TargetRuleList = RuleNode.targetRules();
-
-        PhraseTable& Evaluator = *static_cast<PhraseTable*>(PhraseTable::instance());
-
-        std::cout << "Currently added phrase :" << _targetPhrase.toStdString() << "(" << Evaluator.getTargetRuleCost(0, 0, TargetRule) << ")" << std::endl;
-
-        for(int i = 0; i < TargetRuleList.size(); ++i) {
-            QString ithTargetPhrase;
-            for(size_t j = 0; j < TargetRuleList[i].size(); ++j)
-                ithTargetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(TargetRuleList[i].at(j)) + " ";
-            std::cout << "[" << i << "] : " << ithTargetPhrase.toStdString() << "(" << Evaluator.getTargetRuleCost(0, 0, TargetRuleList[i]) << ")" << std::endl;
-        }
-    }
+void clsMosesPlainRuleTable::addUnkToUnkRule()
+{
+    QList<Cost_t> Costs;
+    for(int i = 0; i < this->PhraseFeatureCount + this->ReorderingFeatureCount; ++i)
+        Costs.append(0.0);
+    QVector<WordIndex_t> SrcUnk;
+    SrcUnk.append(0);
+    QList<WordIndex_t> TgtUnk;
+    TgtUnk.append(0);
+    addRule(SrcUnk, TgtUnk, Costs);
 }
 
 }

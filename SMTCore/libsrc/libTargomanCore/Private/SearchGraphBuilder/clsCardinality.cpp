@@ -57,9 +57,11 @@ void clsCardinality::dump(const QString& _prefix)
 
 void clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesis &_container, clsSearchGraphNode &_node)
 {
+
     size_t OldContainerSize = _container.nodes().size();
 
-    if (_container.insertHypothesis(_node)){
+    bool InsertionDone = _container.insertHypothesis(_node);
+    if (InsertionDone){
         if (this->Data->WorstLexicalHypothesis == NULL){
             this->Data->WorstLexicalHypothesis = &_container;
             this->Data->WorstCoverage = _coverage;
@@ -67,17 +69,9 @@ void clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexical
             this->pruneAndUpdateWorstNode(_coverage, _container, _node);
     }
 
-    Cost_t LastCost = -INFINITY;
-    for(int i=0; i< _container.nodes().size(); ++i){
-        if (_container.nodes().at(i).getTotalCost() < LastCost){
-            throw exConfiguration("List is not sorted" +
-                                  QString::number(_container.nodes().at(i).getTotalCost()) + " vs " + QString::number(LastCost));
-
-        }
-        LastCost = _container.nodes().at(i).getTotalCost();
-    }
-
     this->Data->TotalSearchGraphNodeCount += ((qint64)_container.nodes().size() - (qint64)OldContainerSize);
+
+    return InsertionDone;
 }
 
 bool clsCardinality::mustBePruned(Cost_t _cost) const
