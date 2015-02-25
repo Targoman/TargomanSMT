@@ -42,11 +42,13 @@ public:
 
     inline Common::WordIndex_t at(int _index) const;
     inline size_t size() const;
+#ifdef TARGOMAN_SHOW_DEBUG
+    inline size_t fieldCount() const;
+#endif
     inline Common::Cost_t  field(size_t _index) const;
     inline Common::Cost_t precomputedValue(size_t _index) const;
     inline void setCosts(const QList<Common::Cost_t>& _costs);
     inline void setPrecomputedValue(size_t _index, Common::Cost_t _value);
-
     static size_t getColumnIndex(const QString& _columnName, const QString& _moduleName){
         if (clsTargetRule::ColumnNames.contains(_columnName) == false)
             throw exRuleTable("Invalid filed name <"+_columnName+
@@ -118,6 +120,13 @@ inline Common::WordIndex_t clsTargetRule::at(int _index) const{
 inline size_t clsTargetRule::size() const {
     return this->Data->TargetPhrase.size();
 }
+
+#ifdef TARGOMAN_SHOW_DEBUG
+inline size_t clsTargetRule::fieldCount() const {
+    return (size_t)this->Data->Fields.size();
+}
+#endif
+
 
 inline Common::Cost_t  clsTargetRule::field(size_t _index) const{
     Q_ASSERT(_index < (size_t)this->Data->Fields.size());

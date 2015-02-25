@@ -41,11 +41,10 @@ void clsCardinality::dump(const QString& _prefix)
             clsSearchGraphNode Node(Iter.value().nodes().at(i));
             QString TargetPhrase;
             for(int j=0; j <Node.targetRule().size(); ++j)
-                TargetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(Node.targetRule().at(j))+
-                        "(" + QString::number(Node.targetRule().at(j))+")";
+                TargetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(Node.targetRule().at(j));
 
             std::cout<<(_prefix +
-                        QString("Cov[%1] Node[%2] Cost[%3] RestCost[%4] :").arg(
+                        QString("Cov[%1] Node[%2] Cost[%3] RestCost[%4] : ").arg(
                             bitArray2Str(Iter.key())).arg(
                             i).arg(
                             Node.getCost()).arg(

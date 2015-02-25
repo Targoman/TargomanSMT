@@ -67,7 +67,7 @@ public:
     clsSearchGraphBuilder(const InputDecomposer::Sentence_t& _sentence);
     clsSearchGraphBuilder(){}
 
-    static void init();
+    static void init(const QString &_configFilePath);
     void matchPhrase();
     bool parseSentence();
 

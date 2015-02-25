@@ -43,12 +43,9 @@ void clsTranslator::init(const QString _configFilePath)
     //Load vocab by LM
     gConfigs.EmptyLMScorer->init(false);
 
-    SearchGraphBuilder::clsSearchGraphBuilder::init();
+    SearchGraphBuilder::clsSearchGraphBuilder::init(_configFilePath);
     //continue to load rest of LM
     //gConfigs.EmptyLMScorer->init(false);
-
-    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
-        FF->initialize(_configFilePath);
 
     NBestFinder::clsNBestFinder::init();
     OutputComposer::clsOutputComposer::init();

@@ -72,7 +72,63 @@ clsJanePlainRuleTable::~clsJanePlainRuleTable()
     this->unregister();
 }
 
-void clsJanePlainRuleTable::init()
+void clsJanePlainRuleTable::initializeSchema()
+{
+    TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FileName.value());
+
+    this->PrefixTree.reset(new RulesPrefixTree_t());
+    QStringList ColumnNames = clsJanePlainRuleTable::PhraseCostNames.value().split(",");
+    size_t      PhraseCostsCount = ColumnNames.size();
+
+    clsCmdProgressBar ProgressBar("Loading RuleTable");
+
+    clsCompressedInputStream InputStream(clsJanePlainRuleTable::FileName.value().toStdString());
+
+    if(InputStream.peek() < 0)
+        throw exJanePhraseTable("Empty phrase table.");
+
+    std::string Line;
+    getline(InputStream, Line);
+    if (Line == "")
+        throw exJanePhraseTable("Empty first line.");
+
+    QStringList Fields = QString::fromUtf8(Line.c_str()).split("#");
+
+    if (Fields.size() < 3)
+        throw exJanePhraseTable(QString("Bad file format in first line : %2").arg(Line.c_str()));
+
+
+    PhraseTable::setColumnNames(ColumnNames);
+
+    bool Accepted = false;
+    for (unsigned AdditionalFieldIndex = janeFormatStandardNumberOfFields;
+         AdditionalFieldIndex < (size_t)Fields.size();
+         ++AdditionalFieldIndex) {
+        QStringList AdditionalField = Fields.at(AdditionalFieldIndex).split(" ", QString::SkipEmptyParts);
+        QString FieldName = AdditionalField.first();
+        for(int i = 0; i< clsJanePlainRuleTable::FeatureFunctions.size(); ++i){
+            const tmplConfigurable<QString>& FFConfig = clsJanePlainRuleTable::FeatureFunctions.at(i);
+            if (FFConfig.value() == FieldName){
+                QString FFModuleName = FFConfig.configPath().split("/").last();
+                FFModuleName.truncate(FFModuleName.size() - sizeof(FFCONFIG_KEY_IDENTIFIER) + 1);
+                if (gConfigs.ActiveFeatureFunctions.value(FFModuleName)->columnNames().size() != AdditionalField.size() - 1)
+                    throw exJanePhraseTable("Invalid count of costs for field: " + FFModuleName);
+                ColumnNames.append(gConfigs.ActiveFeatureFunctions.value(FFModuleName)->columnNames());
+                Accepted = true;
+                this->AcceptedAdditionalFieldsIndexes.append(AdditionalFieldIndex);
+                break;
+            }
+        }
+        if (Accepted == false){
+            TargomanWarn(5,"Unsupported Additional field <" + FieldName + "> ignored!!!");
+        }
+
+        clsTargetRule::setColumnNames(ColumnNames);
+    }
+
+}
+
+void clsJanePlainRuleTable::loadTableData()
 {
     TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FileName.value());
 
@@ -84,9 +140,6 @@ void clsJanePlainRuleTable::init()
 
     clsCompressedInputStream InputStream(clsJanePlainRuleTable::FileName.value().toStdString());
     size_t RulesRead = 0;
-
-    bool   ColmnNamesNotSet = true;
-    QList<size_t> AcceptedAdditionalFieldsIndexes;
 
     while (InputStream.peek() >= 0){
         std::string Line;
@@ -115,38 +168,7 @@ void clsJanePlainRuleTable::init()
             continue;
         }
 
-        if (Q_UNLIKELY(ColmnNamesNotSet)){
-            PhraseTable::setColumnNames(ColumnNames);
-
-            bool Accepted = false;
-            for (unsigned AdditionalFieldIndex = janeFormatStandardNumberOfFields;
-                 AdditionalFieldIndex < (size_t)Fields.size();
-                 ++AdditionalFieldIndex) {
-                QStringList AdditionalField = Fields.at(AdditionalFieldIndex).split(" ", QString::SkipEmptyParts);
-                QString FieldName = AdditionalField.first();
-                for(int i = 0; i< clsJanePlainRuleTable::FeatureFunctions.size(); ++i){
-                    const tmplConfigurable<QString>& FFConfig = clsJanePlainRuleTable::FeatureFunctions.at(i);
-                    if (FFConfig.value() == FieldName){
-                        QString FFModuleName = FFConfig.configPath().split("/").last();
-                        FFModuleName.truncate(FFModuleName.size() - sizeof(FFCONFIG_KEY_IDENTIFIER) + 1);
-                        if (gConfigs.ActiveFeatureFunctions.value(FFModuleName)->columnNames().size() != AdditionalField.size() - 1)
-                            throw exJanePhraseTable("Invalid count of costs for field: " + FFModuleName);
-                        ColumnNames.append(gConfigs.ActiveFeatureFunctions.value(FFModuleName)->columnNames());
-                        Accepted = true;
-                        AcceptedAdditionalFieldsIndexes.append(AdditionalFieldIndex);
-                        break;
-                    }
-                }
-                if (Accepted == false){
-                   TargomanWarn(5,"Unsupported Additional field <" + FieldName + "> ignored!!!");
-                }
-            }
-
-            clsTargetRule::setColumnNames(ColumnNames);
-            ColmnNamesNotSet = false;
-        }
-
-        this->addRule(PhraseCostsFields, Fields, AcceptedAdditionalFieldsIndexes, RulesRead);
+        this->addRule(PhraseCostsFields, Fields, this->AcceptedAdditionalFieldsIndexes, RulesRead);
     }
 
 }

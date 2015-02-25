@@ -32,13 +32,16 @@ public:
     clsJanePlainRuleTable(quint64 _instanceID);
     ~clsJanePlainRuleTable();
 
-    virtual void init();
+    virtual void initializeSchema();
+    virtual void loadTableData();
 
 private:
     void addRule(const QStringList &_phraseCosts,
                  const QStringList &_fields,
                  const QList<size_t> &_acceptedAdditionalFields,
                  size_t _ruleNumber);
+private:
+    QList<size_t> AcceptedAdditionalFieldsIndexes;
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;

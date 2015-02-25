@@ -82,10 +82,13 @@ clsSearchGraphBuilder::clsSearchGraphBuilder(const Sentence_t& _sentence):
     Data(new clsSearchGraphBuilderData(_sentence))
 {}
 
-void clsSearchGraphBuilder::init()
+void clsSearchGraphBuilder::init(const QString& _configFilePath)
 {
     clsSearchGraphBuilder::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
-    clsSearchGraphBuilder::pRuleTable->init();
+    clsSearchGraphBuilder::pRuleTable->initializeSchema();
+    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
+        FF->initialize(_configFilePath);
+    clsSearchGraphBuilder::pRuleTable->loadTableData();
     clsSearchGraphBuilder::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 
     //InvalidTargetRule has been marshalled here because it depends on loading RuleTable
@@ -99,6 +102,7 @@ void clsSearchGraphBuilder::init()
 
 void clsSearchGraphBuilder::matchPhrase()
 {
+#define DEBUG_MATCH_PHRASE
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseMatchTable.append(QVector<clsRuleNode>(this->Data->Sentence.size() - FirstPosition));
@@ -112,26 +116,30 @@ void clsSearchGraphBuilder::matchPhrase()
 
             this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
 
-            //#define DEBUG_MATCH_PHRASE
 #ifdef DEBUG_MATCH_PHRASE
-            QString TargetPhrasesCounters;
-            if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false){
-                clsRuleNode& RuleNode = this->Data->PhraseMatchTable[FirstPosition][0];
+            if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false) {
+                QBitArray Cov;
+                Cov.resize(this->Data->Sentence.size());
+                for (size_t i=FirstPosition; i<= FirstPosition; ++i )
+                    Cov.setBit(i);
 
-                for(int i=0; i< RuleNode.targetRules().size(); ++i)
-                    TargetPhrasesCounters += QString::number(RuleNode.targetRules().at(i).size()) + ";";
+                QList<clsTargetRule>& targetRules = this->Data->PhraseMatchTable[FirstPosition][0].targetRules();
+
+                std::cout<<"COMPARE: First:"<<FirstPosition<<
+                           " Last:"<<FirstPosition<<
+                           " Target:"<<targetRules.size()<<
+                           " Cov:"<<bitArray2Str(Cov).toLatin1().constData()<<std::endl;
+                std::cout << " Costs: " << std::endl;
+                for(int i = 0; i < qMin(targetRules.size(), 10); ++i) {
+                    QString targetPhrase;
+                    for(size_t j = 0; j < targetRules[i].size(); ++j)
+                        targetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(targetRules[i].at(j)) + " ";
+                    std::cout << "\t\t\t" << targetPhrase.toUtf8().constData() << ": ";
+                    for(size_t j = 0; j < targetRules[i].fieldCount(); ++ j)
+                        std::cout << targetRules[i].field(j) << " ";
+                    std::cout << std::endl;
+                }
             }
-
-            QBitArray Cov;
-            Cov.resize(this->Data->Sentence.size());
-            for (int i=FirstPosition; i<= FirstPosition; ++i )
-                Cov.setBit(i);
-
-            std::cout<<"JANECOMPARE: FP:"<<FirstPosition<<
-                       " LP:"<<FirstPosition<<
-                       " TRs:"<<this->Data->PhraseMatchTable[FirstPosition][0].targetRules().size()<<
-                       " TRTPs:"<<TargetPhrasesCounters.toLatin1().constData()<<
-                       " Cov:"<<bitArray2Str(Cov).toLatin1().constData()<<std::endl;
 
 #endif
 
@@ -151,24 +159,29 @@ void clsSearchGraphBuilder::matchPhrase()
             this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition] = PrevNode->getData();
 
 #ifdef DEBUG_MATCH_PHRASE
-            QString TargetPhrasesCounters;
-            if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false){
-                clsRuleNode& RuleNode = this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition];
-
-                for(int i=0; i< RuleNode.targetRules().size(); ++i)
-                    TargetPhrasesCounters += QString::number(RuleNode.targetRules().at(i).size()) + ";";
-            }
-
             QBitArray Cov;
             Cov.resize(this->Data->Sentence.size());
-            for (int i=FirstPosition; i<= LastPosition; ++i )
+            for (size_t i=FirstPosition; i<= LastPosition; ++i )
                 Cov.setBit(i);
 
-            std::cout<<"JANECOMPARE: FP:"<<FirstPosition<<
-                       " LP:"<<LastPosition<<
-                       " TRs:"<<this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].targetRules().size()<<
-                       " TRTPs:"<<TargetPhrasesCounters.toLatin1().constData()<<
+            QList<clsTargetRule>& targetRules = this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].targetRules();
+
+            std::cout<<"COMPARE: First:"<<FirstPosition<<
+                       " Last:"<<LastPosition<<
+                       " Target:"<<targetRules.size()<<
                        " Cov:"<<bitArray2Str(Cov).toLatin1().constData()<<std::endl;
+            for(int i = 0; i < qMin(targetRules.size(), 10); ++i) {
+                QBitArray DebugCov(Cov.size());
+                DebugCov.setBit(0);
+                DebugCov.setBit(1);
+                QString targetPhrase;
+                for(size_t j = 0; j < targetRules[i].size(); ++j)
+                    targetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(targetRules[i].at(j)) + " ";
+                std::cout << "\t\t\t" << targetPhrase.toUtf8().constData() << ": ";
+                for(size_t j = 0; j < targetRules[i].fieldCount(); ++ j)
+                    std::cout << targetRules[i].field(j) << " ";
+                std::cout << std::endl;
+            }
 
 #endif
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
@@ -195,18 +208,6 @@ Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
 
 bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
 {
-   /* //Jane implementation that seems to be wrong
-         bool last = 0;
-    int runs=0;
-    for(unsigned i=0;i<_newCoverage.size();++i) {
-      bool curr=_newCoverage.testBit(i);
-      if(last==curr) continue;
-      if(last) last=0;
-      else {last=1;++runs;if(runs>this->ReorderingMaximumJumpWidth.value()) return false;}
-    }
-    return true;
-*/
-
     //Find last bit set then check how many bits are zero before this.
     for(int i=_newCoverage.size() - 1; i>=0; --i)
         if(_newCoverage.testBit(i)){
@@ -230,7 +231,7 @@ bool clsSearchGraphBuilder::conformsHardJumpConstraint(size_t _newPhraseBeginPos
 
 bool clsSearchGraphBuilder::parseSentence()
 {
-#define DEBUG_PARSE_SENTENCE_CARDINALITY 5
+//#define DEBUG_PARSE_SENTENCE_CARDINALITY 5
 
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
@@ -561,7 +562,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
             QString result = getNodeString(_node.prevNode());
 
-            for(int i=0; i< _node.targetRule().size(); ++i)
+            for(size_t i=0; i< _node.targetRule().size(); ++i)
                 result += gConfigs.EmptyLMScorer->getWordByIndex(_node.targetRule().at(i)) + " ";
 
             return result;
@@ -629,7 +630,7 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
                 LMSentenceScorer->reset(false);
                 const clsTargetRule& TargetRule = PhraseCandidates.targetRules().at(PhraseCandidateNumber);
                 Cost_t LMCost = 0;
-                for (int i=0; i< TargetRule.size(); ++i)
+                for (size_t i=0; i< TargetRule.size(); ++i)
                     LMCost += LMSentenceScorer->wordProb(TargetRule.at(i));
 
                 BestCost = qMin(BestCost, Cost - (LMCost * clsSearchGraphBuilder::ScalingFactorLM.value()));

@@ -34,7 +34,8 @@ public:
 
     virtual ~intfRuleTable(){}
 
-    virtual void init() = 0;
+    virtual void initializeSchema() = 0;
+    virtual void loadTableData() = 0;
 
     virtual RuleTable::RulesPrefixTree_t& getPrefixTree(){
         return *this->PrefixTree;

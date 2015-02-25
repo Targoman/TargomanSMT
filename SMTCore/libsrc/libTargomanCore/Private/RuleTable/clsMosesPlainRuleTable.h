@@ -32,13 +32,18 @@ public:
     clsMosesPlainRuleTable(quint64 _instanceID);
     ~clsMosesPlainRuleTable();
 
-    virtual void init();
+    virtual void initializeSchema();
+    virtual void loadTableData();
 
 private:
+    void addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTargetRule &_targetRule);
     void addRule(const QString& _sourcePhrase,
                  const QString& _targetPhrase,
                  const QStringList &_costs,
                  size_t _ruleNumber);
+private:
+    int PhraseFeatureCount = 0;
+    int ReorderingFeatureCount = 0;
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseTableFileName;
