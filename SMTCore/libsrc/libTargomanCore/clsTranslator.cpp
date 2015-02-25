@@ -15,12 +15,14 @@
 
 #include "Private/clsTranslator_p.h"
 #include "libTargomanTextProcessor/TextProcessor.h"
+#include "Private/OOVHandler/OOVHandler.h"
 
 namespace Targoman{
 namespace Core {
 
 using namespace Private;
 using namespace NLPLibs;
+using namespace Private::OOV;
 
 bool clsTranslatorPrivate::Initialized = false;
 
@@ -38,6 +40,7 @@ clsTranslator::~clsTranslator()
 void clsTranslator::init(const QString _configFilePath)
 {
     TextProcessor::instance().init(_configFilePath);
+    OOVHandler::instance().initialize();
     InputDecomposer::clsInput::init();
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>());
     //Load vocab by LM

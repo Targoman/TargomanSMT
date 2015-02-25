@@ -78,9 +78,6 @@ void clsJanePlainRuleTable::initializeSchema()
 
     this->PrefixTree.reset(new RulesPrefixTree_t());
     QStringList ColumnNames = clsJanePlainRuleTable::PhraseCostNames.value().split(",");
-    size_t      PhraseCostsCount = ColumnNames.size();
-
-    clsCmdProgressBar ProgressBar("Loading RuleTable");
 
     clsCompressedInputStream InputStream(clsJanePlainRuleTable::FileName.value().toStdString());
 

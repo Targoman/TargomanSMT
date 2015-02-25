@@ -370,8 +370,8 @@ bool clsSearchGraphBuilder::parseSentence()
 
                     Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseEndPos);
                     Cost_t BestCandidateCost = clsSearchGraphBuilder::pPhraseTable->getTargetRuleCost(
-                                0,
-                                0,
+                                NewPhraseBeginPos,
+                                NewPhraseEndPos,
                                 PhraseCandidates.targetRules().first());
 
                     clsLexicalHypothesis& NewLexHypoContainer =
@@ -425,8 +425,8 @@ bool clsSearchGraphBuilder::parseSentence()
                             const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
                             Cost_t PhraseCost =
                                     clsSearchGraphBuilder::pPhraseTable->getTargetRuleCost(
-                                        0,
-                                        0,
+                                        NewPhraseBeginPos,
+                                        NewPhraseEndPos,
                                         CurrentPhraseCandidate);
 #if 0
                             std::cout<<"TestLOG-"<<"Cardinality: "<<NewCardinality<<

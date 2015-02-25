@@ -54,9 +54,9 @@ class OOVHandler : public Common::Configuration::intfModule
         QVariantMap             Attributes;
     };
 
-    void initialize();
 
 public:
+    void initialize();
     static OOVHandler& instance(){return *((OOVHandler*)moduleInstance());}
     Common::WordIndex_t                getWordIndex(const QString& _token, QVariantMap &_attrs);
     inline RuleTable::clsRuleNode      getRuleNode(Common::WordIndex_t _wordIndex) const {
