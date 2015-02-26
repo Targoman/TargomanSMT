@@ -48,8 +48,9 @@ public:
 
 private:
     ReorderingJump():
-        intfFeatureFunction(this->moduleName())
-    { this->CanComputePositionSpecificRestCost = true; }
+        intfFeatureFunction(this->moduleName(), true)
+    {}
+
     TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/ReorderingJump", ReorderingJump)
 
 private:

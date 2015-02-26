@@ -58,7 +58,7 @@ public:
 
 private:
     LexicalReordering():
-        intfFeatureFunction(this->moduleName())
+        intfFeatureFunction(this->moduleName(), false)
     {}
 
     enuLexicalReorderingFields::Type getRightOreientation(

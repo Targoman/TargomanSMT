@@ -286,7 +286,7 @@ void clsInputDecomposer::parseRichIXML(const QString &_inputIXML)
  * @param _attrs If token is wrapped with a tag and tag has some attributes, this argument inserts keys and value of those attributes.
  */
 
-void clsInput::newToken(const QString &_token, const QString &_tagStr, const QVariantMap &_attrs)
+void clsInputDecomposer::newToken(const QString &_token, const QString &_tagStr, const QVariantMap &_attrs)
 {
     if (_token.isEmpty())
         return;

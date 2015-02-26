@@ -51,7 +51,7 @@ public:
 
 private:
     LanguageModel():
-        intfFeatureFunction(this->moduleName())
+        intfFeatureFunction(this->moduleName(), false)
     {}
     TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/LanguageModel", LanguageModel)
 
