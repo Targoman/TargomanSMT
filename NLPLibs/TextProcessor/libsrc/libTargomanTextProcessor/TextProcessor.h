@@ -62,7 +62,7 @@ public:
                       bool _interactive = true,
                       bool _useSpellCorrector = true,
                       QList<enuTextTags::Type> _removingTags = QList<enuTextTags::Type>()) const;
-    QString text2RichIXML(const QString& _inStr, bool _normalize = true, const QString& _lang = "") const;
+    QString text2RichIXML(const QString& _inStr, const QString& _lang = "") const;
 
     QString ixml2Text(const QString& _ixml) const;
     QString richIXML2Text(const QString& _ixml) const;

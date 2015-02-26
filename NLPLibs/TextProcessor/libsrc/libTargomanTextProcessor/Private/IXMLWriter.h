@@ -43,7 +43,7 @@ public:
     static IXMLWriter& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new IXMLWriter));}
     void init(const QString &_configFile);
 
-    QString convert2IXML(const QString& _inStr, bool _normalize,
+    QString convert2IXML(const QString& _inStr,
                          const QString& _lang = "",
                          quint32 _lineNo = 0,
                          bool _interactive = false,
