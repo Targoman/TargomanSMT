@@ -33,7 +33,8 @@ typedef QList<clsToken> Sentence_t;
 TARGOMAN_DEFINE_ENHANCED_ENUM(enuDefaultAttrs,
                               NoShow,
                               NoDecode,
-                              ShowSource
+                              ShowSource,
+                              Translation
                               )
 
 /**
@@ -41,22 +42,26 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuDefaultAttrs,
  * This input string can be in ixml or plain format.
  */
 
-class clsInput
+class clsInputDecomposer
 {
 public:
-    clsInput(const QString& _inputStr);
-    ~clsInput(){}
+    clsInputDecomposer(const QString& _inputStr);
+    ~clsInputDecomposer(){}
 
     static void init();
 
-    inline const Sentence_t& tokens(){return this->Tokens;}
 
     static QString moduleName(){return "Input";}
 
+public:
+    inline const Sentence_t& tokens() const {return this->Tokens;}
+    inline const QString& normalizedString() const {return this->NormalizedString;}
+
+
 private:
-    void parsePlain(const QString &_inputStr, const QString& _lang);
+    void parsePlain(const QString &_inputStr);
     void parseRichIXML(const QString& _inputIXML);
-    void parseRichIXML(const QString& _inputIXML, bool _normalize, const QString &_lang = "");
+    void parseRichIXML(const QString& _inputIXML, bool _normalize);
     void newToken(const QString& _token,
                   const QString &_tagStr = "",
                   const QVariantMap &_attrs = QVariantMap());
@@ -68,6 +73,7 @@ private:
 private:
     Sentence_t Tokens;                                                                  /**< A list of clsToken class. Input string will be parsed and recorded in this structure. */
     static QSet<QString>    SpecialTags;                                                /**< List of valid tags. */
+    QString                 NormalizedString;                                           /**< Normalized String when using plain text */
 
     //Configuration
     static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;  /**< Users can add their defined iXML tags to list of valid tags (#SpecialTags). */

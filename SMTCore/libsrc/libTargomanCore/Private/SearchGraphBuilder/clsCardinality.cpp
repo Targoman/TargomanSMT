@@ -142,14 +142,3 @@ void clsCardinality::pruneAndUpdateWorstNode(const Coverage_t& _coverage, clsLex
 }
 }
 
-
-bool operator<(const QBitArray &a, const QBitArray &b)
-{
-    Q_ASSERT(a.size() == b.size());
-    for(int i = 0; i < a.size(); ++i)
-        if(a[i] < b[i])
-            return false;
-        else if(b[i] < a[i])
-            return true;
-    return false;
-}

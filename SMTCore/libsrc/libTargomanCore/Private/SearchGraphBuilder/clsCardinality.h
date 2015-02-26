@@ -17,8 +17,7 @@
 #include <QHash>
 #include <QBitArray>
 #include "clsLexicalHypothesis.h"
-
-bool operator<(const QBitArray& a, const QBitArray& b);
+#include "Private/PrivateTypes.h"
 
 namespace Targoman{
 namespace Core {
@@ -92,11 +91,11 @@ public:
     size_t totalSearchGraphNodeCount() const{return this->Data->TotalSearchGraphNodeCount;}
 
 public:
-    static Common::Configuration::tmplConfigurable<quint8> ReorderingHistogramSize;
-
     void updateWorstNode();
+
 private:
     QExplicitlySharedDataPointer<clsCardinalityData> Data;
+    static Common::Configuration::tmplConfigurable<quint8> ReorderingHistogramSize;
 };
 
 }

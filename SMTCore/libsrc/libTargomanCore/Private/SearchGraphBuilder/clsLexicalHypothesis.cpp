@@ -75,9 +75,8 @@ bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
                     this->Data->Nodes.removeAt(i);
                     InsertionPos = i;
                     break;
-                }else{
+                }else
                     return false;
-                }
             }
         }else if(HypoNode.getTotalCost() > _node.getTotalCost()){
             InsertionPos = i;

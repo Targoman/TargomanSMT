@@ -33,7 +33,7 @@ public:
     ~clsRuleNodeData(){}
 
 public:
-    QList<clsTargetRule> TargetRules;
+    TargetRulesContainer_t TargetRules;
 };
 
 //RuleNode is not an adequated name must be changed to a  more common sense DB Row name
@@ -46,7 +46,7 @@ public:
     ~clsRuleNode(){}
 
     bool isInvalid() const;
-    inline QList<clsTargetRule>& targetRules() {
+    inline TargetRulesContainer_t& targetRules() {
         return this->Data->TargetRules;
     }
 

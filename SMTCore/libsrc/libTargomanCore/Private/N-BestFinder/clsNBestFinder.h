@@ -15,6 +15,9 @@
 #define TARGOMAN_CORE_PRIVATE_NBESTFINDER_CLSNBESTFINDER_H
 
 #include "libTargomanCommon/CmdIO.h"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
+#include "libTargomanCommon/Types.h"
+#include "Private/SearchGraphBuilder/clsSearchGraphBuilder.h"
 
 namespace Targoman{
 namespace Core {
@@ -24,9 +27,40 @@ namespace NBestFinder {
 class clsNBestFinder
 {
 public:
-    clsNBestFinder();
-    ~clsNBestFinder(){}
-    static void init();
+    struct stuTargetOption{
+        stuPhrasePos Pos;
+        QList<RuleTable::clsTargetRule> TargetRules;
+
+
+        stuTargetOption(const stuPhrasePos& _pos,
+                        const QList<RuleTable::clsTargetRule>& _target){
+            this->Pos = _pos;
+            this->TargetRules = _target;
+        }
+    };
+
+    typedef QMap<stuPhrasePos, stuTargetOption> NBestOptions_t;
+
+public:
+    clsNBestFinder(const SearchGraphBuilder::clsSearchGraphBuilder& _searchGraphBuilder) :
+        SearchGraphBuilderRef(_searchGraphBuilder)
+    {}
+    const NBestOptions_t& nBestOptions();
+
+    const SearchGraphBuilder::clsSearchGraphNode& goalNode(){
+        return  this->SearchGraphBuilderRef.goalNode();
+    }
+
+
+private:
+    size_t fillBestOptions(const SearchGraphBuilder::clsSearchGraphNode &_node);
+
+private:
+    NBestOptions_t                                        NBestOptions;
+    const SearchGraphBuilder::clsSearchGraphBuilder&     SearchGraphBuilderRef;
+
+private:
+    static Common::Configuration::tmplConfigurable<quint8> MaxOptions;
 };
 
 }

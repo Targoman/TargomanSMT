@@ -36,7 +36,9 @@ HEADERS += \
     libTargomanCore/Private/OOVHandler/OOVDefaultHandlers.h \
     libTargomanCore/Private/RuleTable/clsMosesPlainRuleTable.h \
     libTargomanCore/Private/FeatureFunctions/LanguageModel/LanguageModel.h \
-    libTargomanCore/Private/FeatureFunctions/ReorderingJump/ReorderingJump.h
+    libTargomanCore/Private/FeatureFunctions/ReorderingJump/ReorderingJump.h \
+    libTargomanCore/Types.h \
+    libTargomanCore/Private/PrivateTypes.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \

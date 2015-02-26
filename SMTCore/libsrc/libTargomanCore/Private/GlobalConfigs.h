@@ -19,32 +19,11 @@
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
 #include "libTargomanCore/clsTranslator.h"
 #include "libTargomanCommon/Types.h"
+#include "Private/PrivateTypes.h"
 
 namespace Targoman {
 namespace Core {
 namespace Private {
-
-typedef QBitArray Coverage_t;
-
-#ifdef TARGOMAN_SHOW_DEBUG
-inline std::ostream& operator << (std::ostream& _outputStream, const Coverage_t& _coverage)
-{
-    if(_coverage.size() == 0)
-        return _outputStream;
-    for(int i = 0; i < _coverage.size(); ++i)
-        _outputStream << (_coverage.at(i) ? "1" : "0");
-    return _outputStream;
-}
-#endif
-
-//TODO move this to core common
-inline QString bitArray2Str(const QBitArray& _bits){
-    QString Output;
-    for(int i=0;i<_bits.size(); ++i)
-        Output+=_bits.testBit(i) ? '1' : '0';
-    return Output;
-}
-
 
 namespace FeatureFunction{
 class intfFeatureFunction;

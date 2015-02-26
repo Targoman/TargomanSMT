@@ -38,7 +38,6 @@ public:
     clsSearchGraphBuilderData(const clsSearchGraphBuilderData& _other):
         QSharedData(_other),
         PhraseMatchTable(_other.PhraseMatchTable),
-        RootNode(_other.RootNode),
         GoalNode(_other.GoalNode),
         MaxMatchingSourcePhraseCardinality(_other.MaxMatchingSourcePhraseCardinality),
         HypothesisHolder(_other.HypothesisHolder),
@@ -48,9 +47,8 @@ public:
     ~clsSearchGraphBuilderData(){}
 
 public:
-    QList<QVector<RuleTable::clsRuleNode>> PhraseMatchTable;
+    QList<QVector<RuleTable::clsRuleNode>>     PhraseMatchTable;
 
-    const clsSearchGraphNode*                  RootNode;
     const clsSearchGraphNode*                  GoalNode;
 
     int MaxMatchingSourcePhraseCardinality;
@@ -74,10 +72,24 @@ public:
     void matchPhrase();
     bool parseSentence();
 
+    inline const clsSearchGraphNode& goalNode() const{
+        return *this->Data->GoalNode;
+    }
+
+    inline const QList<clsSearchGraphNode>& getSameCoverageNodes(Coverage_t _coverage) const {
+        return this->Data->HypothesisHolder[_coverage.count(true)].lexicalHypotheses().value(_coverage).nodes();
+    }
+
+public:
     static inline QString moduleName(){return "SearchGraphBuilder";}
     static inline QString moduleBaseconfig(){return "/" + clsSearchGraphBuilder::moduleName();}
 
 private:
+    Common::Cost_t computeReorderingJumpCost(size_t JumpWidth) const;
+    void initializePhraseRestCostsMatrix();
+    Common::Cost_t calculateRestCost(const Coverage_t& _coverage, quint16 _lastPos) const;
+    Common::Cost_t computePhraseRestCosts(const Coverage_t& _coverage) const;
+    Common::Cost_t computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const;
     void initializeRestCostsMatrix();
     bool conformsIBM1Constraint(const Coverage_t& _newCoverage);
     Common::Cost_t calculateRestCost(const Coverage_t &_coverage, size_t _beginPos, size_t _endPos) const;

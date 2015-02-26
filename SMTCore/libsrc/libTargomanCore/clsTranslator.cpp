@@ -41,17 +41,15 @@ void clsTranslator::init(const QString _configFilePath)
 {
     TextProcessor::instance().init(_configFilePath);
     OOVHandler::instance().initialize();
-    InputDecomposer::clsInput::init();
+    InputDecomposer::clsInputDecomposer::init();
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());
     //Load vocab by LM
-    gConfigs.EmptyLMScorer->init(false);
+    gConfigs.EmptyLMScorer->init(true);
 
     SearchGraphBuilder::clsSearchGraphBuilder::init(_configFilePath);
-    //continue to load rest of LM
-    //gConfigs.EmptyLMScorer->init(false);
 
-    NBestFinder::clsNBestFinder::init();
-    OutputComposer::clsOutputComposer::init();
+    //continue to load rest of LM
+    gConfigs.EmptyLMScorer->init(false);
 
     clsTranslatorPrivate::Initialized = true;
 }

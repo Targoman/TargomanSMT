@@ -26,25 +26,25 @@ namespace InputDecomposer {
 using namespace Common;
 using namespace OOV;
 
-QSet<QString>    clsInput::SpecialTags;
+QSet<QString>    clsInputDecomposer::SpecialTags;
 
-Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags(
-        clsInput::moduleName() + "/UserDefinedTags",
+Configuration::tmplConfigurable<QString>  clsInputDecomposer::UserDefinedTags(
+        clsInputDecomposer::moduleName() + "/UserDefinedTags",
         "User Defined valid XML tags. ",
         "Valid user defined XML tags that must be stored with their attributes."
         "These must not overlap with predefined XML Tags"
         /*TODO add lambda to check overlap*/);
-Configuration::tmplConfigurable<bool>    clsInput::IsIXML(
-        clsInput::moduleName() + "/IsIXML",
+Configuration::tmplConfigurable<bool>    clsInputDecomposer::IsIXML(
+        clsInputDecomposer::moduleName() + "/IsIXML",
         "Input is in Plain text(default) or IXML format",
         false);
-Configuration::tmplConfigurable<bool>    clsInput::DoNormalize(
-        clsInput::moduleName() + "/DoNormalize",
+Configuration::tmplConfigurable<bool>    clsInputDecomposer::DoNormalize(
+        clsInputDecomposer::moduleName() + "/DoNormalize",
         "Normalize Input(default) or let it unchanged",
         true);
 
-Configuration::tmplConfigurable<bool>    clsInput::TagNameEntities(
-        clsInput::moduleName() + "/TagNameEntities",
+Configuration::tmplConfigurable<bool>    clsInputDecomposer::TagNameEntities(
+        clsInputDecomposer::moduleName() + "/TagNameEntities",
         "Use NER to tag name entities",
         false);
 
@@ -52,28 +52,29 @@ Configuration::tmplConfigurable<bool>    clsInput::TagNameEntities(
  * @brief clsInput::clsInput Instructor of this class gets input string and based on input arguments parses that.
  * @param _inputStr input string.
  */
-clsInput::clsInput(const QString &_inputStr)
+clsInputDecomposer::clsInputDecomposer(const QString &_inputStr)
 {
     if (this->IsIXML.value()) {
         if (this->DoNormalize.value())
-            this->parseRichIXML(_inputStr,true, gConfigs.SourceLanguage.value());
+            this->parseRichIXML(_inputStr,true);
         else
             this->parseRichIXML(_inputStr);
-    }else
-        this->parsePlain(_inputStr, gConfigs.SourceLanguage.value());
+    }else{
+        this->parsePlain(_inputStr);
+    }
 }
 /**
  * @brief clsInput::init This function inserts userdefined and default tags to #SpecialTags.
  */
-void clsInput::init()
+void clsInputDecomposer::init()
 {
     if (UserDefinedTags.value().size())
         foreach(const QString& Tag, UserDefinedTags.value().split(gConfigs.Separator.value()))
-            clsInput::SpecialTags.insert(Tag);
+            clsInputDecomposer::SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
-        clsInput::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
+        clsInputDecomposer::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
 
-    foreach(const QString& Tag, clsInput::SpecialTags){
+    foreach(const QString& Tag, clsInputDecomposer::SpecialTags){
         WordIndex_t WordIndex = gConfigs.SourceVocab.size() + 1;
         gConfigs.SourceVocab.insert(Tag, WordIndex);
     }
@@ -82,20 +83,23 @@ void clsInput::init()
 /**
  * @brief clsInput::parsePlain This function fisrt converts plain text to iXML format and then parses that.
  * @param _inputStr Input string
- * @param _lang Language.
  */
 
-void clsInput::parsePlain(const QString &_inputStr, const QString& _lang)
+void clsInputDecomposer::parsePlain(const QString &_inputStr)
 {
-    this->parseRichIXML(TextProcessor::instance().text2RichIXML(_inputStr, _lang), false);
+    this->NormalizedString =
+            TextProcessor::instance().normalizeText(_inputStr, false, gConfigs.SourceLanguage.value());
+    this->parseRichIXML(
+                TextProcessor::instance().text2RichIXML(_inputStr, gConfigs.SourceLanguage.value()), false);
 }
 
 
-void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize, const QString &_lang)
+void clsInputDecomposer::parseRichIXML(const QString &_inputIXML, bool _normalize)
 {
-    if (_normalize)
-        this->parseRichIXML(TextProcessor::instance().normalizeText(_inputIXML,false, _lang));
-    else
+    if (_normalize){
+        this->parseRichIXML(
+                    TextProcessor::instance().normalizeText(_inputIXML, false, gConfigs.SourceLanguage.value()));
+    }else
         this->parseRichIXML(_inputIXML);
 }
 
@@ -104,7 +108,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize, const Q
  * @param _inputIXML Input string.
  */
 
-void clsInput::parseRichIXML(const QString &_inputIXML)
+void clsInputDecomposer::parseRichIXML(const QString &_inputIXML)
 {
     if (_inputIXML.contains('<') == false) {
       foreach(const QString& Token, _inputIXML.split(" ", QString::SkipEmptyParts))
@@ -196,7 +200,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
                     AttrValue.append(Ch);
                 else{
                     if (Attributes.contains(AttrName))
-                        throw exInput("Attribute: <"+AttrName+" Was defined later.");
+                        throw exInput("Attribute: <"+AttrName+"> Was defined later.");
                     Attributes.insert(AttrName, AttrValue);
                     AttrName.clear();
                     AttrValue.clear();
@@ -269,8 +273,11 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
     }
 }
 
-void clsInput::newToken(const QString &_token, const QString &_tagStr, const QVariantMap &_attrs)
+void clsInputDecomposer::newToken(const QString &_token, const QString &_tagStr, const QVariantMap &_attrs)
 {
+    if (_token.isEmpty())
+        return;
+
     WordIndex_t WordIndex;
     QVariantMap Attributes = _attrs;
 

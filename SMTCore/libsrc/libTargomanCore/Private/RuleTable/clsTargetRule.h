@@ -42,6 +42,7 @@ public:
     ~clsTargetRule(){}
 
     inline bool isInvalid() const;
+    inline bool isSame(const clsTargetRule& _other) const;
 
     inline Common::WordIndex_t at(int _index) const;
     inline size_t size() const;
@@ -164,6 +165,11 @@ inline void clsTargetRule::setPrecomputedValue(size_t _index, Common::Cost_t _va
 inline bool clsTargetRule::isInvalid() const{
     return this->Data == InvalidTargetRuleData;
 }
+inline bool clsTargetRule::isSame(const clsTargetRule& _other) const{
+    return this->Data == _other.Data;
+}
+
+typedef  QList<RuleTable::clsTargetRule> TargetRulesContainer_t;
 
 #ifdef TARGOMAN_SHOW_DEBUG
 

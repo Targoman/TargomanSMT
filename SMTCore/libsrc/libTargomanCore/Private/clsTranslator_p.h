@@ -27,19 +27,19 @@ namespace Private{
 class clsTranslatorPrivate{
 public:
     clsTranslatorPrivate(const QString & _inputStr) :
-        Input(new InputDecomposer::clsInput (_inputStr)),
+        Input(new InputDecomposer::clsInputDecomposer (_inputStr)),
         SGB(new SearchGraphBuilder::clsSearchGraphBuilder(Input->tokens())),
-        NBF(new NBestFinder::clsNBestFinder),
-        OutComposer(new OutputComposer::clsOutputComposer){
-    }
+        NBest(new NBestFinder::clsNBestFinder(*this->SGB)),
+        Output(new OutputComposer::clsOutputComposer(*this->Input, *this->NBest))
+    {}
 
     ~clsTranslatorPrivate(){}
 
 public:
-    QScopedPointer<InputDecomposer::clsInput> Input;
+    QScopedPointer<InputDecomposer::clsInputDecomposer> Input;
     QScopedPointer<SearchGraphBuilder::clsSearchGraphBuilder> SGB;
-    QScopedPointer<NBestFinder::clsNBestFinder> NBF;
-    QScopedPointer<OutputComposer::clsOutputComposer> OutComposer;
+    QScopedPointer<NBestFinder::clsNBestFinder> NBest;
+    QScopedPointer<OutputComposer::clsOutputComposer> Output;
 
     static bool Initialized;
 };

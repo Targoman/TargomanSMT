@@ -48,7 +48,7 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
     clsExpiranbleOOVWord ExpiranbleOOVWord = this->OOVWords.value(_token);
     Locker.unlock();
     if (ExpiranbleOOVWord.NotSet){
-        QList<clsTargetRule> TargetRules;
+        TargetRulesContainer_t TargetRules;
         foreach(intfOOVHandlerModule* pOOVHandler, this->ActiveOOVHandlers){
             const clsTargetRule&  OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
             if (OOVHandlerTargetRule.isInvalid() == false){
