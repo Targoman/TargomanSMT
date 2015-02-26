@@ -23,9 +23,19 @@ namespace Core {
 namespace Private{
 namespace SearchGraphBuilder {
 
-typedef QBitArray Coverage_t; // TODO why it is redeclared? First Decalration in  clsCardinality.h
-
 class clsSearchGraphNodeData;
+
+class intfFeatureFunctionData{
+public:
+    intfFeatureFunctionData(size_t _costElementsSize) :
+        CostElements(_costElementsSize,INFINITY)
+    {}
+
+    inline const QVector<Common::Cost_t>&     costElements(){return this->CostElements;}
+
+protected:
+    QVector<Common::Cost_t>     CostElements;
+};
 
 class clsSearchGraphNode
 {
@@ -61,8 +71,18 @@ public:
     inline bool isRecombined() const;
     inline bool isInvalid() const;
 
+public:
+    static size_t allocateFeatureFunctionData(){
+        size_t AllocatedIndex = clsSearchGraphNode::RegisteredFeatureFunctionCount;
+        ++clsSearchGraphNode::RegisteredFeatureFunctionCount;
+        return AllocatedIndex;
+
+    }
+
+
 private:
-    QExplicitlySharedDataPointer<clsSearchGraphNodeData>          Data;
+    QExplicitlySharedDataPointer<clsSearchGraphNodeData>     Data;
+    static  size_t                                           RegisteredFeatureFunctionCount;
 };
 
 class clsSearchGraphNodeData : public QSharedData
@@ -129,8 +149,9 @@ public:
 
     mutable Common::Cost_t Cost;
     mutable Common::Cost_t RestCost;
-    const RuleTable::clsTargetRule& TargetRule;
-    bool                   IsRecombined;
+    const RuleTable::clsTargetRule&     TargetRule;
+    bool                                IsRecombined;
+    QVector<intfFeatureFunctionData*>   FeatureFunctionsData;
 
     Coverage_t             Coverage;
     size_t SourceRangeBegin;
@@ -139,6 +160,8 @@ public:
     QScopedPointer<LanguageModel::intfLMSentenceScorer>     LMScorer;
     const clsSearchGraphNode*                               PrevNode;
     QList<clsSearchGraphNode>                               CombinedNodes;
+
+    friend class clsSearchGraphNode;
 };
 
 inline Common::Cost_t clsSearchGraphNode::getTotalCost() const{

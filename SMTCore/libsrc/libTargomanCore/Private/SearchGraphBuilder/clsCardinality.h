@@ -25,7 +25,6 @@ namespace Core {
 namespace Private{
 namespace SearchGraphBuilder {
 
-typedef QBitArray Coverage_t;
 typedef QMap<Coverage_t, clsLexicalHypothesis> LexicalHypothesisContainer_t;
 
 class clsCardinalityData : public QSharedData
@@ -86,7 +85,7 @@ public:
         }
     }
 
-    void insertNewHypothesis(const Coverage_t& _coverage, clsLexicalHypothesis& _container, clsSearchGraphNode& _node);
+    bool insertNewHypothesis(const Coverage_t& _coverage, clsLexicalHypothesis& _container, clsSearchGraphNode& _node);
 
     bool mustBePruned(Common::Cost_t _cost) const;
     void pruneAndUpdateWorstNode(const Coverage_t& _coverage, clsLexicalHypothesis& _lexicalHypo, const clsSearchGraphNode &_node);

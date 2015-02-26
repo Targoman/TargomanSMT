@@ -20,6 +20,7 @@ namespace FeatureFunction{
 
 using namespace Common;
 using namespace Common::Configuration;
+using namespace SearchGraphBuilder;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable)
 
@@ -52,6 +53,7 @@ void PhraseTable::initialize(const QString& _configFile)
 PhraseTable::PhraseTable() :
     intfFeatureFunction(this->moduleName())
 {
+
 }
 
 Cost_t PhraseTable::getTargetRuleCost(unsigned _sourceStart,

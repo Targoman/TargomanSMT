@@ -77,11 +77,15 @@ public:
         this->Data.detach();
     }
 
+#ifdef TARGOMAN_SHOW_DEBUG
+    QString toStr() const;
+#endif
+
 //private:
 public:
     QExplicitlySharedDataPointer<clsTargetRuleData>   Data;
-    static  QStringList                     ColumnNames;
-    static  size_t                          PrecomputedValuesSize;
+    static  QStringList                               ColumnNames;
+    static  size_t                                    PrecomputedValuesSize;
 
     friend class clsTargetRuleData;
 };
@@ -160,6 +164,12 @@ inline void clsTargetRule::setPrecomputedValue(size_t _index, Common::Cost_t _va
 inline bool clsTargetRule::isInvalid() const{
     return this->Data == InvalidTargetRuleData;
 }
+
+#ifdef TARGOMAN_SHOW_DEBUG
+
+std::ostream& operator << (std::ostream& _outputStream, const clsTargetRule& _targetRule);
+
+#endif
 
 }
 }

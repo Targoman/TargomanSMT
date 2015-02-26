@@ -112,7 +112,7 @@ void clsMosesPlainRuleTable::initializeSchema()
 
     PhraseTable::setColumnNames(ColumnNames);
     ColumnNames.append(
-                reinterpret_cast<intfFeatureFunction*>(LexicalReordering::instance())->columnNames()
+                reinterpret_cast<intfFeatureFunction*>(LexicalReordering::moduleInstance())->columnNames()
                 );
     if(ReorderingCostsFields.size() == 3 && ColumnNames.size() != PhraseCostsFields.size() + 3)
         ColumnNames = ColumnNames.mid(0, ColumnNames.size() - 3);
@@ -188,7 +188,7 @@ void clsMosesPlainRuleTable::addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTarg
 {
     QList<clsTargetRule>& TargetRuleList = _ruleNode.targetRules();
 
-    PhraseTable& Evaluator = *static_cast<PhraseTable*>(PhraseTable::instance());
+    PhraseTable& Evaluator = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
 
     Cost_t CurrentTargetRuleCost = Evaluator.getTargetRuleCost(0, 0, _targetRule);
 

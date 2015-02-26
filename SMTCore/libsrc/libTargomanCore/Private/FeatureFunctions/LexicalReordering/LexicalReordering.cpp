@@ -50,8 +50,6 @@ tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
     1)
 };
 
-
-
 void LexicalReordering::initialize(const QString &)
 {
     for (int i=0;
@@ -81,7 +79,7 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNode(SearchGraphBuilder::clsSe
     Cost_t Cost = _newHypothesisNode.targetRule().field(
                 this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();
 
-    if (this->IsBidirectional.value()){
+    if (this->IsBidirectional.value() && _newHypothesisNode.prevNode().isInvalid() == false){
         Orientation = getRightOreientation(_newHypothesisNode);
         Cost += _newHypothesisNode.prevNode().targetRule().field(
                     this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();

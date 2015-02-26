@@ -34,6 +34,7 @@ public:
     {
         gConfigs.ActiveFeatureFunctions.insert(_moduleName, this);
         this->PrecomputedIndex = RuleTable::clsTargetRule::allocatePrecomputedValue();
+        this->DataIndex =  SearchGraphBuilder::clsSearchGraphNode::allocateFeatureFunctionData();
     }
 
     virtual ~intfFeatureFunction(){}
@@ -80,6 +81,7 @@ protected:
     static QString baseScalingFactorsConfigPath(){ return "/ScalingFactors"; }
     QVector<size_t>         FieldIndexes;
     size_t                  PrecomputedIndex;
+    size_t                  DataIndex;
 };
 
 }

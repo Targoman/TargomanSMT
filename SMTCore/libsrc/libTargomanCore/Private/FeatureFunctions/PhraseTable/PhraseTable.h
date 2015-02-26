@@ -26,6 +26,12 @@ namespace FeatureFunction{
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exFeatureFunction);
 
+class clsPhraseTableFeatureData : public SearchGraphBuilder::intfFeatureFunctionData{
+    clsPhraseTableFeatureData(size_t _costElements):
+        SearchGraphBuilder::intfFeatureFunctionData(_costElements)
+    {}
+};
+
 class PhraseTable : public intfFeatureFunction
 {
 public:
@@ -34,10 +40,7 @@ public:
     void initialize(const QString &_configFile);
 
     inline Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const{
-        Q_UNUSED(_newHypothesisNode)
-        //@TODO NASTY!!!!
-        //@note This will return zero to distinguish between phrase table and other feature funtions.
-        return 0;
+        return this->getTargetRuleCost(_newHypothesisNode.sourceRangeBegin(), _newHypothesisNode.sourceRangeEnd(), _newHypothesisNode.targetRule());
     }
 
     inline Common::Cost_t getApproximateCost(unsigned _sourceStart,

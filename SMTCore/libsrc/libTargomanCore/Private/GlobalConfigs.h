@@ -24,6 +24,19 @@ namespace Targoman {
 namespace Core {
 namespace Private {
 
+typedef QBitArray Coverage_t;
+
+#ifdef TARGOMAN_SHOW_DEBUG
+inline std::ostream& operator << (std::ostream& _outputStream, const Coverage_t& _coverage)
+{
+    if(_coverage.size() == 0)
+        return _outputStream;
+    for(int i = 0; i < _coverage.size(); ++i)
+        _outputStream << (_coverage.at(i) ? "1" : "0");
+    return _outputStream;
+}
+#endif
+
 //TODO move this to core common
 inline QString bitArray2Str(const QBitArray& _bits){
     QString Output;
@@ -41,12 +54,17 @@ namespace LanguageModel {
 class intfLMSentenceScorer;
 }
 
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuWorkingModes,
+                              Decode,
+                              Train,
+                              DebugDecode,
+                              DebugTrain);
+
 struct stuGlobalConfigs{
     static Targoman::Common::Configuration::tmplConfigurable<QString> Separator;
     static Targoman::Common::Configuration::tmplConfigurable<QString> SourceLanguage;
     static Targoman::Common::Configuration::tmplConfigurable<QString> TargetLanguage;
-
-
+    static Targoman::Common::Configuration::tmplConfigurable<enuWorkingModes::Type> WorkingMode;
 
     static Targoman::Common::Configuration::clsModuleConfig          LM;
     static Targoman::Common::Configuration::clsModuleConfig          RuleTable;
@@ -61,5 +79,12 @@ extern stuGlobalConfigs gConfigs;
 
 }
 }
+
+namespace Common {
+namespace Configuration {
+_SPECIAL_CONFIGURABLE(Core::Private::enuWorkingModes::Type)
+}
+}
+
 }
 #endif // TARGOMAN_CORE_PRIVATE_GLOBALCONFIGS_H

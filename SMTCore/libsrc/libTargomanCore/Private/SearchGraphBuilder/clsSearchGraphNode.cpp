@@ -23,6 +23,7 @@ using namespace RuleTable;
 
 clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
 clsSearchGraphNode* InvalidSearchGraphNodePointer = NULL;
+size_t                  clsSearchGraphNode::RegisteredFeatureFunctionCount;
 
 clsSearchGraphNode::clsSearchGraphNode():
     Data(InvalidSearchGraphNodeData)
@@ -114,9 +115,7 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
 
 /*****************************************************************************************************/
 clsSearchGraphNodeData::~clsSearchGraphNodeData()
-{
-    //Just to Suppress compiler error on QScoppedPointer
-}
+{}
 
 }
 }

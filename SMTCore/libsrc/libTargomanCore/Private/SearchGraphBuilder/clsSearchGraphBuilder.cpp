@@ -515,7 +515,14 @@ bool clsSearchGraphBuilder::parseSentence()
                             }else{
                                 if(this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage, NewLexHypoContainer, *NewHypoNode)) {
                                     // Vedadian
-                                    //std::cout << "Hypothesis added to " << bitArray2Str(NewCoverage).toStdString() << std::endl;
+                                    std::cout << "MOSESCOMPARE: Card[" << NewCardinality <<
+                                                 "] Cov:[" << NewHypoNode->coverage() <<
+                                                 "] Node[" << -1<<
+                                                 "] Cost[" << NewHypoNode->getCost() <<
+                                                 "] RestCost[" << NewHypoNode->getTotalCost() - NewHypoNode->getCost() <<
+                                                 "] : " << NewHypoNode->targetRule().toStr().toStdString()
+                                              << std::endl;
+                                    std::cout << "\t\t\tTargetRule: " << NewHypoNode->targetRule() << std::endl;
                                 }
 
                                 //NewHypoNode will be appended to QList as a new reference so we don't need it anymore
@@ -544,7 +551,7 @@ bool clsSearchGraphBuilder::parseSentence()
             delete BestHardJumpViolatingNode;
         }
 
-#if 0
+#if 1
         quint64 Sum = 0;
         foreach(auto Iter , this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses()){
             Sum+= Iter.nodes().size();
@@ -557,13 +564,16 @@ bool clsSearchGraphBuilder::parseSentence()
 #endif
 #ifdef DEBUG_PARSE_SENTENCE_CARDINALITY
                 if (NewCardinality <= DEBUG_PARSE_SENTENCE_CARDINALITY){
-            this->Data->HypothesisHolder[NewCardinality].dump("JANECOMPARE: Card["+
+            this->Data->HypothesisHolder[NewCardinality].dump("COMPARE: Card["+
                                                               QString::number(NewCardinality) +
                                                               "] ");
         }
 #endif
 
-
+        // Vedadian
+        while(1)
+            sleep(10);
+        ;
     }//for NewCardinality
 
     Coverage_t FullCoverage;
