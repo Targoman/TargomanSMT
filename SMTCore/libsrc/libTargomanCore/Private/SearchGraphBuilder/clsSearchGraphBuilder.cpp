@@ -342,12 +342,6 @@ bool clsSearchGraphBuilder::parseSentence()
                                 break;
                             }
 
-                            //Pruning among different reorderings
-                            if (this->Data->HypothesisHolder[NewCardinality].mustBePruned(NewHypoNode.getTotalCost())){
-                                ++PrunedAtReordering;
-                                continue;
-                            }
-
                             if(this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage,
                                                                                                 NewLexHypoContainer,
                                                                                                 NewHypoNode)) {

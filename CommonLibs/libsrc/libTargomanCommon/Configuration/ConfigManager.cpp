@@ -14,6 +14,7 @@
 #include <QCoreApplication>
 #include <QSettings>
 #include <QFileInfo>
+#include <QSet>
 #include <iostream>
 #include "ConfigManager.h"
 #include "Private/clsConfigManager_p.h"
@@ -109,15 +110,18 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     // ////////////////////////////////////////////////
     // /check configFile and load everything
     // ////////////////////////////////////////////////
-    QStringList Modules;
+    QSet<QString> Modules;
     if (FirstTimeConfigFile == false &&
         this->pPrivate->ConfigFilePath.size()){
         QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
         foreach (const QString& Key, ConfigFile.allKeys()){
+            if (Key.contains('/'))
+                Modules.insert(Key.mid(0, Key.lastIndexOf('/')));
+
             if (this->pPrivate->Configs.contains(Key) == false){
                 QString BasePath = Key;
                 bool Found = false;
-                while(BasePath.contains("/")){
+                do {
                     BasePath.truncate(BasePath.lastIndexOf('/'));
                     BasePath.append('/');
                     Configuration::intfConfigurable* ConfigItem =
@@ -125,15 +129,15 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                     if (ConfigItem &&
                             ConfigItem->canBemanaged() == false){
                         Found = true;
-                        Modules.append(ConfigItem->configPath());
                         break;
                     }
-                }
+                } while(BasePath.count('/') > 1);
                 if (Found)
                     continue; // Continue to next key
                 else
                     throw exConfiguration("Configuration path <"+Key+"> is not registered");
             }
+
             intfConfigurable* ConfigItem  = this->pPrivate->Configs[Key];
             QVariant Value = ConfigFile.value(Key);
             if (ConfigItem->validate(Value, ErrorMessage) == false)
@@ -182,7 +186,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             if(!ArgumentIsConfigItem)
             {
                 if ( KeyIter->startsWith("--") && this->pPrivate->ModuleInstantiators.value(KeyIter->mid(2)).IsSingleton){
-                    Modules.append(KeyIter->mid(2));
+                    Modules.insert(KeyIter->mid(2));
                 }else{
                     throw exConfiguration("Unrecognized argument: " + *KeyIter);
                 }
