@@ -15,7 +15,7 @@
 
 #ifdef TARGOMAN_SHOW_DEBUG
 #include "Private/GlobalConfigs.h"
-#include "Private/LanguageModel/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/intfLMSentenceScorer.hpp"
 #endif
 
 namespace Targoman {

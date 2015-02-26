@@ -19,8 +19,8 @@ HEADERS += \
     libTargomanCore/Private/N-BestFinder/clsNBestFinder.h \
     libTargomanCore/Private/OutputComposer/clsOutputComposer.h \
     libTargomanCore/Private/SearchGraphBuilder/clsLexicalHypothesis.h \
-    libTargomanCore/Private/LanguageModel/intfLMSentenceScorer.hpp \
-    libTargomanCore/Private/LanguageModel/clsTargomanLMProxy.h \
+    libTargomanCore/Private/Proxies/intfLMSentenceScorer.hpp \
+    libTargomanCore/Private/Proxies/LanguageModel/clsTargomanLMProxy.h \
     libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphNode.h \
     libTargomanCore/Private/SearchGraphBuilder/clsCardinality.h \
     libTargomanCore/Private/FeatureFunctions/intfFeatureFunction.hpp \
@@ -34,7 +34,9 @@ HEADERS += \
     libTargomanCore/Private/OOVHandler/OOVHandler.h \
     libTargomanCore/Private/OOVHandler/intfOOVHandlerModule.hpp \
     libTargomanCore/Private/OOVHandler/OOVDefaultHandlers.h \
-    libTargomanCore/Private/RuleTable/clsMosesPlainRuleTable.h
+    libTargomanCore/Private/RuleTable/clsMosesPlainRuleTable.h \
+    libTargomanCore/Private/FeatureFunctions/LanguageModel/LanguageModel.h \
+    libTargomanCore/Private/FeatureFunctions/ReorderingJump/ReorderingJump.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -44,7 +46,7 @@ SOURCES += libID.cpp \
     libTargomanCore/Private/N-BestFinder/clsNBestFinder.cpp \
     libTargomanCore/Private/OutputComposer/clsOutputComposer.cpp \
     libTargomanCore/Private/SearchGraphBuilder/clsLexicalHypothesis.cpp \
-    libTargomanCore/Private/LanguageModel/clsTargomanLMProxy.cpp \
+    libTargomanCore/Private/Proxies/LanguageModel/clsTargomanLMProxy.cpp \
     libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphNode.cpp \
     libTargomanCore/Private/SearchGraphBuilder/clsCardinality.cpp \
     libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphBuilder.cpp \
@@ -55,7 +57,9 @@ SOURCES += libID.cpp \
     libTargomanCore/Private/FeatureFunctions/PhraseTable/PhraseTable.cpp \
     libTargomanCore/Private/OOVHandler/OOVHandler.cpp \
     libTargomanCore/Private/OOVHandler/OOVDefaultHandlers.cpp \
-    libTargomanCore/Private/RuleTable/clsMosesPlainRuleTable.cpp
+    libTargomanCore/Private/RuleTable/clsMosesPlainRuleTable.cpp \
+    libTargomanCore/Private/FeatureFunctions/LanguageModel/LanguageModel.cpp \
+    libTargomanCore/Private/FeatureFunctions/ReorderingJump/ReorderingJump.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

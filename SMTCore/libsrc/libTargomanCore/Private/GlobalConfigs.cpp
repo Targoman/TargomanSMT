@@ -12,7 +12,7 @@
  */
 
 #include "GlobalConfigs.h"
-#include "Private/LanguageModel/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/intfLMSentenceScorer.hpp"
 
 namespace Targoman {
 namespace Core {
@@ -49,7 +49,7 @@ clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM",
 clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable",
                                                     "TODO Desc",
                                                     "JanePTPlain");
-QScopedPointer<Targoman::Core::Private::LanguageModel::intfLMSentenceScorer>  stuGlobalConfigs::EmptyLMScorer;
+QScopedPointer<Targoman::Core::Private::Proxies::intfLMSentenceScorer>  stuGlobalConfigs::EmptyLMScorer;
 QHash<QString, Common::WordIndex_t>                            stuGlobalConfigs::SourceVocab;
 
 

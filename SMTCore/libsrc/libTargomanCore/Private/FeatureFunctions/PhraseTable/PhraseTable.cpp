@@ -21,6 +21,7 @@ namespace FeatureFunction{
 using namespace Common;
 using namespace Common::Configuration;
 using namespace SearchGraphBuilder;
+using namespace RuleTable;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable)
 
@@ -28,6 +29,13 @@ clsFileBasedConfig   PhraseTable::ScalingFactorsConfigSection(
         PhraseTable::baseConfigPath() + "/ScalingFactors/");
 
 QStringList   PhraseTable::ColumnNames;
+
+class clsPhraseTableFeatureData : public intfFeatureFunctionData{
+public:
+    clsPhraseTableFeatureData(size_t _costElementsSize):
+        intfFeatureFunctionData(_costElementsSize)
+    {}
+};
 
 void PhraseTable::initialize(const QString& _configFile)
 {
@@ -50,35 +58,32 @@ void PhraseTable::initialize(const QString& _configFile)
     }
 }
 
-PhraseTable::PhraseTable() :
-    intfFeatureFunction(this->moduleName())
+Cost_t PhraseTable::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
+    if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
+        clsPhraseTableFeatureData* Data = new clsPhraseTableFeatureData(this->ColumnNames.size());
+        _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
+        for(int i = 0; i < this->ColumnNames.size(); ++i)
+            Data->CostElements[i] = _newHypothesisNode.targetRule().field(this->FieldIndexes.at(i));
+    }
 
+    return getPhraseCost(_newHypothesisNode.targetRule());
 }
 
-Cost_t PhraseTable::getTargetRuleCost(unsigned _sourceStart,
-                                      unsigned _sourceEnd,
-                                      const RuleTable::clsTargetRule &_targetRule) const
+Cost_t PhraseTable::getPhraseCost(const clsTargetRule &_targetRule) const
 {
-    Q_UNUSED(_sourceStart)
-    Q_UNUSED(_sourceEnd)
-
-    Cost_t Cost = 0;
-    for(int i=0; i< this->FieldIndexes.size(); ++i)
-        Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors.at(i);
-    return Cost;
-    //TODO remove above using below cached implementation
-
-/*    //Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
+    Cost_t Cost = _targetRule.precomputedValue(this->PrecomputedIndex);
     if (Cost == -INFINITY){
         Cost = 0;
     for(int i=0; i< this->FieldIndexes.size(); ++i)
         Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors.at(i);
 
-        static_cast<RuleTable::clsTargetRule>(_targetRule).setPrecomputedValue(this->PrecomputedIndex, Cost);
+        static_cast<RuleTable::clsTargetRule>(_targetRule).setPrecomputedValue(
+                this->PrecomputedIndex, Cost);
     }
-    return Cost;*/
+    return Cost;
 }
+
 
 }
 }

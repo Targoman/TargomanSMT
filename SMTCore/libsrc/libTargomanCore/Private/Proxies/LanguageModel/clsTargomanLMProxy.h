@@ -11,10 +11,10 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
-#define TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
+#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
+#define TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
 
-#include "intfLMSentenceScorer.hpp"
+#include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "libTargomanLM/clsLMSentenceScorer.h"
 #include "libTargomanLM/clsLanguageModel.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
@@ -22,6 +22,7 @@
 namespace Targoman {
 namespace Core {
 namespace Private {
+namespace Proxies {
 namespace LanguageModel{
 
 /**
@@ -114,5 +115,6 @@ private:
 }
 }
 }
+}
 
-#endif // TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
+#endif // TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP

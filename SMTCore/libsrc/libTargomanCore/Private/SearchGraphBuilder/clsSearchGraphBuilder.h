@@ -59,7 +59,7 @@ public:
 
     const InputDecomposer::Sentence_t &  Sentence;
 
-    QVector<QVector<Common::Cost_t> > RestCostMatrix;
+    RestCostMatrix_t RestCostMatrix;
 };
 
 

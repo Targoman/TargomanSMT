@@ -11,8 +11,8 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
-#define TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
+#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
+#define TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
 
 #include "libTargomanCommon/Types.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
@@ -23,7 +23,7 @@
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace LanguageModel{
+namespace Proxies {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);
 
@@ -50,4 +50,4 @@ public:
 }
 }
 }
-#endif // TARGOMAN_CORE_PRIVATE_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
+#endif // TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP

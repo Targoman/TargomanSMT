@@ -113,7 +113,6 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     if (FirstTimeConfigFile == false &&
         this->pPrivate->ConfigFilePath.size()){
         QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
-        Modules = ConfigFile.childGroups();
         foreach (const QString& Key, ConfigFile.allKeys()){
             if (this->pPrivate->Configs.contains(Key) == false){
                 QString BasePath = Key;
@@ -121,9 +120,12 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                 while(BasePath.contains("/")){
                     BasePath.truncate(BasePath.lastIndexOf('/'));
                     BasePath.append('/');
-                    if (this->pPrivate->Configs.value(BasePath) &&
-                            this->pPrivate->Configs.value(BasePath)->canBemanaged() == false){
+                    Configuration::intfConfigurable* ConfigItem =
+                            this->pPrivate->Configs.value(BasePath);
+                    if (ConfigItem &&
+                            ConfigItem->canBemanaged() == false){
                         Found = true;
+                        Modules.append(ConfigItem->configPath());
                         break;
                     }
                 }

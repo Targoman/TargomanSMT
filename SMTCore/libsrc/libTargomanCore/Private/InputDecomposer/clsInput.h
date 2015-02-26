@@ -18,7 +18,7 @@
 
 #include "Private/GlobalConfigs.h"
 #include "libTargomanCommon/Types.h"
-#include "Private/LanguageModel/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "Private/InputDecomposer/clsToken.h"
 
 namespace Targoman {

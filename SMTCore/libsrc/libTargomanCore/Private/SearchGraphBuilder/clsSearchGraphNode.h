@@ -15,7 +15,7 @@
 #define TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSSEARCHGRAPHNODE_H
 
 #include "libTargomanCommon/Types.h"
-#include "Private/LanguageModel/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "Private/RuleTable/clsTargetRule.h"
 
 namespace Targoman{
@@ -28,30 +28,29 @@ class clsSearchGraphNodeData;
 class intfFeatureFunctionData{
 public:
     intfFeatureFunctionData(size_t _costElementsSize) :
-        CostElements(_costElementsSize,INFINITY)
+        CostElements(_costElementsSize,0)
     {}
 
     inline const QVector<Common::Cost_t>&     costElements(){return this->CostElements;}
 
-protected:
+public:
     QVector<Common::Cost_t>     CostElements;
 };
+
+typedef QVector<QVector<Common::Cost_t> > RestCostMatrix_t;
 
 class clsSearchGraphNode
 {
 public:
     clsSearchGraphNode();
     clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
-            const RuleTable::clsTargetRule& _targetRule,
-            Common::Cost_t _cost,
-            Common::Cost_t _reorderingJumpCost,
-            Common::Cost_t _restCost,
-            Common::Cost_t _lmCost,
-            quint8 _startPos,
-            quint8 _endPos,
-            const Coverage_t &_newCoverage,
-            bool _isFinal,
-            LanguageModel::intfLMSentenceScorer* _lmscorer);
+                       quint16 _startPos,
+                       quint16 _endPos,
+                       const Coverage_t &_newCoverage,
+                       const RuleTable::clsTargetRule& _targetRule,
+                       bool _isFinal,
+                       Common::Cost_t _restCost);
+
     ~clsSearchGraphNode(){}
 
     inline Common::Cost_t getTotalCost() const;
@@ -61,8 +60,6 @@ public:
 
     bool haveSameFuture(const clsSearchGraphNode& _node) const;
 
-    inline const LanguageModel::intfLMSentenceScorer& lmScorer() const;
-
     inline size_t sourceRangeBegin() const;
     inline size_t sourceRangeEnd() const;
     inline const clsSearchGraphNode&  prevNode() const;
@@ -70,6 +67,10 @@ public:
     inline const Coverage_t&    coverage() const;
     inline bool isRecombined() const;
     inline bool isInvalid() const;
+    inline void setFeatureFunctionData(size_t _index, intfFeatureFunctionData* _data);
+    inline const intfFeatureFunctionData* featureFunctionDataAt(size_t _index) const;
+
+    inline bool isFinal();
 
 public:
     static size_t allocateFeatureFunctionData(){
@@ -97,34 +98,26 @@ public:
         Coverage(Coverage_t()),
         SourceRangeBegin(0),
         SourceRangeEnd(0),
-        LMScorer(gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>()),
         PrevNode(NULL)
     {}
 
     clsSearchGraphNodeData(const clsSearchGraphNode& _prevNode,
-                           const RuleTable::clsTargetRule &_targetRule,
-                           Common::Cost_t _cost,
-                           Common::Cost_t _reorderingJumpCost,
-                           Common::Cost_t _restCost,
-                           Common::Cost_t _lmCost,
                            quint8 _startPos,
                            quint8 _endPos,
                            const Coverage_t &_newCoverage,
+                           const RuleTable::clsTargetRule &_targetRule,
                            bool _isFinal,
-                           LanguageModel::intfLMSentenceScorer *_lmscorer):
+                           Common::Cost_t _restCost):
         IsFinal(_isFinal),
-        Cost(_cost),
+        Cost(_prevNode.getTotalCost()),
         RestCost(_restCost),
         TargetRule(_targetRule),
         IsRecombined(false),
         Coverage(_newCoverage),
         SourceRangeBegin(_startPos),
         SourceRangeEnd(_endPos),
-        LMScorer(_lmscorer),
         PrevNode(&_prevNode)
     {
-        Q_UNUSED(_reorderingJumpCost) // used when training
-        Q_UNUSED(_lmCost)// used when training
     }
 
     clsSearchGraphNodeData(clsSearchGraphNodeData& _other) :
@@ -137,7 +130,6 @@ public:
         Coverage(_other.Coverage),
         SourceRangeBegin(_other.SourceRangeBegin),
         SourceRangeEnd(_other.SourceRangeEnd),
-        LMScorer(_other.LMScorer.data()),
         PrevNode(_other.PrevNode),
         CombinedNodes(_other.CombinedNodes)
     {}
@@ -147,8 +139,8 @@ public:
 public:
     bool IsFinal;
 
-    mutable Common::Cost_t Cost;
-    mutable Common::Cost_t RestCost;
+    Common::Cost_t Cost;
+    Common::Cost_t RestCost;
     const RuleTable::clsTargetRule&     TargetRule;
     bool                                IsRecombined;
     QVector<intfFeatureFunctionData*>   FeatureFunctionsData;
@@ -157,7 +149,6 @@ public:
     size_t SourceRangeBegin;
     size_t SourceRangeEnd;
 
-    QScopedPointer<LanguageModel::intfLMSentenceScorer>     LMScorer;
     const clsSearchGraphNode*                               PrevNode;
     QList<clsSearchGraphNode>                               CombinedNodes;
 
@@ -172,21 +163,25 @@ inline  Common::Cost_t clsSearchGraphNode::getCost() const{
     return this->Data->Cost;
 }
 
-inline const LanguageModel::intfLMSentenceScorer& clsSearchGraphNode::lmScorer() const{
-    return *this->Data->LMScorer;
-}
-
-
 extern clsSearchGraphNodeData* InvalidSearchGraphNodeData;
-extern clsSearchGraphNode* InvalidSearchGraphNodePointer;
+extern clsSearchGraphNode* pInvalidSearchGraphNode;
 
 inline size_t clsSearchGraphNode::sourceRangeBegin() const { return this->Data->SourceRangeBegin;}
 inline size_t clsSearchGraphNode::sourceRangeEnd() const { return this->Data->SourceRangeEnd;}
-inline const clsSearchGraphNode&  clsSearchGraphNode::prevNode() const {return *this->Data->PrevNode;}
+inline const clsSearchGraphNode&  clsSearchGraphNode::prevNode() const {
+    return Q_LIKELY(this->Data->PrevNode) ? *this->Data->PrevNode : *pInvalidSearchGraphNode;
+}
 inline const RuleTable::clsTargetRule& clsSearchGraphNode::targetRule() const {return this->Data->TargetRule;}
 inline const Coverage_t&    clsSearchGraphNode::coverage() const{return this->Data->Coverage;}
 inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecombined;}
 inline bool clsSearchGraphNode::isInvalid() const {return this->Data == InvalidSearchGraphNodeData;}
+inline bool clsSearchGraphNode::isFinal(){return this->Data->IsFinal;}
+inline void clsSearchGraphNode::setFeatureFunctionData(size_t _index, intfFeatureFunctionData* _data){
+    this->Data->FeatureFunctionsData[_index] = _data;
+}
+const intfFeatureFunctionData *clsSearchGraphNode::featureFunctionDataAt(size_t _index) const {
+    return this->Data->FeatureFunctionsData.at(_index);
+}
 
 }
 }

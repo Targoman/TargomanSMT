@@ -38,17 +38,22 @@ public:
     ~LexicalReordering(){}
     void initialize(const QString&);
     void newSentence(const InputDecomposer::Sentence_t &inputSentence);
-    virtual Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
+    virtual Common::Cost_t scoreSearchGraphNode(
+            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 
     virtual Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                               unsigned _sourceEnd,
                                               const RuleTable::clsTargetRule& _targetRule);
 
 private:
-    LexicalReordering();
+    LexicalReordering():
+        intfFeatureFunction(this->moduleName())
+    {}
 
-    enuLexicalReorderingFields::Type getRightOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
-    enuLexicalReorderingFields::Type getLeftOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
+    enuLexicalReorderingFields::Type getRightOreientation(
+            SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
+    enuLexicalReorderingFields::Type getLeftOreientation(
+            SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
 
     inline QStringList columnNames() const{
         return LexicalReordering::IsBidirectional.value() ?
@@ -61,7 +66,7 @@ private:
     static Common::Configuration::tmplConfigurable<double>    ScalingFactors[6];
 
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("LRM", LexicalReordering)
+    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/LexicalReordering", LexicalReordering)
 };
 
 }

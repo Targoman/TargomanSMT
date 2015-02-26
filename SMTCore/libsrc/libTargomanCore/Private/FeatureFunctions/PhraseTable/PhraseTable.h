@@ -16,7 +16,6 @@
 
 
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
-#include "libTargomanCommon/tmplExpirableCache.hpp"
 #include "libTargomanCommon/Configuration/clsFileBasedConfig.hpp"
 
 namespace Targoman {
@@ -26,11 +25,6 @@ namespace FeatureFunction{
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exPhraseTable, exFeatureFunction);
 
-class clsPhraseTableFeatureData : public SearchGraphBuilder::intfFeatureFunctionData{
-    clsPhraseTableFeatureData(size_t _costElements):
-        SearchGraphBuilder::intfFeatureFunctionData(_costElements)
-    {}
-};
 
 class PhraseTable : public intfFeatureFunction
 {
@@ -39,26 +33,28 @@ public:
 
     void initialize(const QString &_configFile);
 
-    inline Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const{
-        return this->getTargetRuleCost(_newHypothesisNode.sourceRangeBegin(), _newHypothesisNode.sourceRangeEnd(), _newHypothesisNode.targetRule());
-    }
-
+    Common::Cost_t scoreSearchGraphNode(
+            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
     inline Common::Cost_t getApproximateCost(unsigned _sourceStart,
-                                      unsigned _sourceEnd,
-                                      const RuleTable::clsTargetRule& _targetRule) const{
-        return this->getTargetRuleCost(_sourceStart, _sourceEnd, _targetRule);
+                                             unsigned _sourceEnd,
+                                             const RuleTable::clsTargetRule& _targetRule) const{
+        Q_UNUSED(_sourceStart)
+        Q_UNUSED(_sourceEnd)
+        return this->getPhraseCost(_targetRule);
     }
 
-    Common::Cost_t getTargetRuleCost(unsigned _sourceStart,
-                                     unsigned _sourceEnd,
-                                     const RuleTable::clsTargetRule &_targetRule) const;
 
     inline QStringList columnNames() const{return PhraseTable::ColumnNames;}
-    static inline void setColumnNames(const QStringList _columnNames){PhraseTable::ColumnNames = _columnNames;}
+    static inline void setColumnNames(const QStringList _columnNames){
+        PhraseTable::ColumnNames = _columnNames;}
 
 private:
-    PhraseTable();
-    TARGOMAN_DEFINE_SINGLETONMODULE("PhraseTable", PhraseTable)
+    PhraseTable():
+        intfFeatureFunction(this->moduleName())
+    {};
+    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/PhraseTable", PhraseTable)
+    Common::Cost_t getPhraseCost(const RuleTable::clsTargetRule& _targetRule) const;
+
 
     QList<double> ScalingFactors;
     static QStringList   ColumnNames;

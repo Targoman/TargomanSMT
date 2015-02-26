@@ -42,7 +42,7 @@ void clsTranslator::init(const QString _configFilePath)
     TextProcessor::instance().init(_configFilePath);
     OOVHandler::instance().initialize();
     InputDecomposer::clsInput::init();
-    gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<LanguageModel::intfLMSentenceScorer>());
+    gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());
     //Load vocab by LM
     gConfigs.EmptyLMScorer->init(false);
 

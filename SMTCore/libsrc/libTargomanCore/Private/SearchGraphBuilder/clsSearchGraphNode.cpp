@@ -20,40 +20,32 @@ namespace Private{
 namespace SearchGraphBuilder {
 
 using namespace RuleTable;
+using namespace Common;
 
 clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
-clsSearchGraphNode* InvalidSearchGraphNodePointer = NULL;
+clsSearchGraphNode* pInvalidSearchGraphNode = NULL;
 size_t                  clsSearchGraphNode::RegisteredFeatureFunctionCount;
 
 clsSearchGraphNode::clsSearchGraphNode():
     Data(InvalidSearchGraphNodeData)
 {}
 
-clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
-                                       const clsTargetRule &_targetRule,
-                                       Common::Cost_t _cost,
-                                       Common::Cost_t _reorderingJumpCost,
-                                       Common::Cost_t _restCost,
-                                       Common::Cost_t _lmCost,
-                                       quint8 _startPos,
-                                       quint8 _endPos,
+clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
+                                       quint16 _startPos,
+                                       quint16 _endPos,
                                        const Coverage_t &_newCoverage,
+                                       const clsTargetRule &_targetRule,
                                        bool _isFinal,
-                                       LanguageModel::intfLMSentenceScorer *_lmscorer) :
+                                       Cost_t _restCost):
     Data(new clsSearchGraphNodeData(
              _prevNode,
-             _targetRule,
-             _cost,
-             _reorderingJumpCost,
-             _restCost,
-             _lmCost,
              _startPos,
              _endPos,
              _newCoverage,
+             _targetRule,
              _isFinal,
-             _lmscorer))
+             _restCost))
 {
-    //TODO Seems that this must be moved to SearchGraphBuilder.
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions){
         this->Data->Cost += FF->scoreSearchGraphNode(*this);
     }
@@ -99,8 +91,7 @@ void clsSearchGraphNode::recombine(clsSearchGraphNode &_node)
 
 bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
 {
-    if (this->sourceRangeEnd() != _node.sourceRangeEnd() ||
-            this->lmScorer().haveSameHistoryAs(_node.lmScorer()) == false)
+    if (this->sourceRangeEnd() != _node.sourceRangeEnd())
         return false;
 
     foreach(FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions.values())

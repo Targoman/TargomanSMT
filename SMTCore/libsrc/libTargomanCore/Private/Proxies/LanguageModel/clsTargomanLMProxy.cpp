@@ -16,7 +16,8 @@
 namespace Targoman {
 namespace Core {
 namespace Private {
-namespace LanguageModel{
+namespace Proxies {
+namespace LanguageModel {
 
 Targoman::NLPLibs::clsLanguageModel clsTargomanLMProxy::LM;
 TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy)
@@ -32,6 +33,7 @@ clsTargomanLMProxy::clsTargomanLMProxy(quint64 _instanceID)  :
 clsTargomanLMProxy::~clsTargomanLMProxy()
 {this->unregister();}
 
+}
 }
 }
 }

@@ -21,6 +21,9 @@ namespace FeatureFunction {
 
 using namespace Common;
 using namespace Common::Configuration;
+using namespace SearchGraphBuilder;
+using namespace InputDecomposer;
+using namespace RuleTable;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(LexicalReordering)
 
@@ -50,6 +53,14 @@ tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
     1)
 };
 
+
+class clsLexicalReorderingFeatureData : public intfFeatureFunctionData{
+public:
+    clsLexicalReorderingFeatureData(size_t _costElementsSize):
+        intfFeatureFunctionData(_costElementsSize)
+    {}
+};
+
 void LexicalReordering::initialize(const QString &)
 {
     for (int i=0;
@@ -68,27 +79,43 @@ void LexicalReordering::initialize(const QString &)
     }
 }
 
-void LexicalReordering::newSentence(const InputDecomposer::Sentence_t &_inputSentence)
+void LexicalReordering::newSentence(const Sentence_t &_inputSentence)
 {
     Q_UNUSED(_inputSentence)
 }
 
-Common::Cost_t LexicalReordering::scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
+Common::Cost_t LexicalReordering::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
+    clsLexicalReorderingFeatureData* Data =
+            new clsLexicalReorderingFeatureData(this->IsBidirectional.value() ? 6 : 3);
+    _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
+
     enuLexicalReorderingFields::Type Orientation = this->getLeftOreientation(_newHypothesisNode);
     Cost_t Cost = _newHypothesisNode.targetRule().field(
                 this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();
+
+    if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
+        Data->CostElements[Orientation] =
+                _newHypothesisNode.targetRule().field(this->FieldIndexes.at(Orientation));
+    }
+
 
     if (this->IsBidirectional.value() && _newHypothesisNode.prevNode().isInvalid() == false){
         Orientation = getRightOreientation(_newHypothesisNode);
         Cost += _newHypothesisNode.prevNode().targetRule().field(
                     this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();
+        if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
+            Data->CostElements[Orientation] =
+                    _newHypothesisNode.targetRule().field(this->FieldIndexes.at(Orientation));
+        }
     }
 
     return Cost;
 }
 
-Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart, unsigned _sourceEnd, const RuleTable::clsTargetRule &_targetRule)
+Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
+                                                     unsigned _sourceEnd,
+                                                     const clsTargetRule &_targetRule)
 {
     Q_UNUSED(_sourceStart)
     Q_UNUSED(_sourceEnd)
@@ -104,12 +131,6 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart, unsi
         }
     }
     return Cost;
-}
-
-LexicalReordering::LexicalReordering() :
-    intfFeatureFunction(this->moduleName())
-{
-
 }
 
 enuLexicalReorderingFields::Type LexicalReordering::getRightOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
