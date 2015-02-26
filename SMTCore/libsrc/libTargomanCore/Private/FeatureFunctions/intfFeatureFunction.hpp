@@ -79,7 +79,7 @@ public:
     virtual Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                               unsigned _sourceEnd,
                                               const RuleTable::clsTargetRule& _targetRule) const = 0;
-
+    virtual void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode) = 0;
 
     virtual QStringList columnNames() const = 0;
 

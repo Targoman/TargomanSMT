@@ -46,6 +46,8 @@ public:
 
     inline QStringList columnNames() const{return QStringList();}
 
+    void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
+
 private:
     ReorderingJump():
         intfFeatureFunction(this->moduleName(), true)

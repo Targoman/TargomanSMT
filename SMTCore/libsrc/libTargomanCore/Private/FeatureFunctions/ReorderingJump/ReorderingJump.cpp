@@ -23,6 +23,8 @@ using namespace SearchGraphBuilder;
 using namespace Proxies;
 using namespace RuleTable;
 
+TARGOMAN_REGISTER_SINGLETON_MODULE(ReorderingJump)
+
 Common::Configuration::tmplConfigurable<double>  ReorderingJump::ScalingFactor(
         ReorderingJump::baseConfigPath() + "/ScalingFactor",
         "Scaling factor for reordering jump model feature.",
@@ -88,6 +90,11 @@ Cost_t ReorderingJump::getRestCostForPosition(const Coverage_t& _coverage, size_
     SumJumpCost += ReorderingJump::getJumpCost(JumpWidth);
     Q_ASSERT(SumJumpCost >= 0);
     return SumJumpCost * ReorderingJump::ScalingFactor.value();
+}
+
+void ReorderingJump::initRootNode(clsSearchGraphNode &_rootNode)
+{
+    _rootNode.setFeatureFunctionData(this->DataIndex, new clsReorderingJumpFeatureData);
 }
 
 }

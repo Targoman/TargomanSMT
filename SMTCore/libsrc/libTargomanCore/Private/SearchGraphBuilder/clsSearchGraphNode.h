@@ -73,17 +73,10 @@ public:
     inline bool isFinal();
 
 public:
-    static size_t allocateFeatureFunctionData(){
-        size_t AllocatedIndex = clsSearchGraphNode::RegisteredFeatureFunctionCount;
-        ++clsSearchGraphNode::RegisteredFeatureFunctionCount;
-        return AllocatedIndex;
-
-    }
-
+    static size_t allocateFeatureFunctionData();
 
 private:
     QExplicitlySharedDataPointer<clsSearchGraphNodeData>     Data;
-    static  size_t                                           RegisteredFeatureFunctionCount;
 };
 
 class clsSearchGraphNodeData : public QSharedData
@@ -98,7 +91,8 @@ public:
         Coverage(Coverage_t()),
         SourceRangeBegin(0),
         SourceRangeEnd(0),
-        PrevNode(NULL)
+        PrevNode(NULL),
+        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount)
     {}
 
     clsSearchGraphNodeData(const clsSearchGraphNode& _prevNode,
@@ -116,7 +110,8 @@ public:
         Coverage(_newCoverage),
         SourceRangeBegin(_startPos),
         SourceRangeEnd(_endPos),
-        PrevNode(&_prevNode)
+        PrevNode(&_prevNode),
+        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount)
     {
     }
 
@@ -134,25 +129,23 @@ public:
         CombinedNodes(_other.CombinedNodes)
     {}
 
-    ~clsSearchGraphNodeData();
-
 public:
-    bool IsFinal;
+    bool                                IsFinal;
 
-    Common::Cost_t Cost;
-    Common::Cost_t RestCost;
+    Common::Cost_t                      Cost;
+    Common::Cost_t                      RestCost;
     const RuleTable::clsTargetRule&     TargetRule;
     bool                                IsRecombined;
+
+    Coverage_t                          Coverage;
+    size_t                              SourceRangeBegin;
+    size_t                              SourceRangeEnd;
+
+    const clsSearchGraphNode*           PrevNode;
+    QList<clsSearchGraphNode>           CombinedNodes;
+
     QVector<intfFeatureFunctionData*>   FeatureFunctionsData;
-
-    Coverage_t             Coverage;
-    size_t SourceRangeBegin;
-    size_t SourceRangeEnd;
-
-    const clsSearchGraphNode*                               PrevNode;
-    QList<clsSearchGraphNode>                               CombinedNodes;
-
-    friend class clsSearchGraphNode;
+    static  size_t                      RegisteredFeatureFunctionCount;
 };
 
 inline Common::Cost_t clsSearchGraphNode::getTotalCost() const{

@@ -97,6 +97,13 @@ Cost_t PhraseTable::getPhraseCost(const clsTargetRule &_targetRule) const
     return Cost;
 }
 
+void PhraseTable::initRootNode(clsSearchGraphNode &_rootNode)
+{
+    _rootNode.setFeatureFunctionData(this->DataIndex,
+                                     new clsPhraseTableFeatureData(
+                                         this->ColumnNames.size()));
+}
+
 }
 }
 }

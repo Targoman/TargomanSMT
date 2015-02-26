@@ -73,7 +73,7 @@ public:
      *
      */
     void detachInvalidData(){
-        Q_ASSERT(isInvalid());
+        Q_ASSERT(this->isInvalid());
         this->Data.detach();
     }
 

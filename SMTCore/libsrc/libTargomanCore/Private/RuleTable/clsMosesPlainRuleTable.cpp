@@ -217,7 +217,8 @@ void clsMosesPlainRuleTable::addRule(const QVector<WordIndex_t> _sourcePhrase, c
     RuleTable::clsTargetRule TargetRule(_targetPhrase, _costs);
 
     clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(_sourcePhrase.toStdVector())->getData();
-    RuleNode.detachInvalidData();
+    if (RuleNode.isInvalid())
+        RuleNode.detachInvalidData();
     addToRuleNodeSorted(RuleNode, TargetRule);
 }
 
@@ -247,7 +248,7 @@ void clsMosesPlainRuleTable::addRule(const QString& _sourcePhrase,
     foreach(const QString& Word, _targetPhrase.split(" ", QString::SkipEmptyParts))
         TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(Word));
 
-    addRule(SourcePhrase, TargetPhrase, Costs);
+    this->addRule(SourcePhrase, TargetPhrase, Costs);
 }
 
 void clsMosesPlainRuleTable::addUnkToUnkRule()

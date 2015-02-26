@@ -115,8 +115,11 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         this->pPrivate->ConfigFilePath.size()){
         QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
         foreach (const QString& Key, ConfigFile.allKeys()){
-            if (Key.contains('/'))
-                Modules.insert(Key.mid(0, Key.lastIndexOf('/')));
+            QString BasePath = Key;
+            do{
+                BasePath.truncate(BasePath.lastIndexOf('/'));
+                Modules.insert(BasePath);
+            }while(BasePath.contains('/'));
 
             if (this->pPrivate->Configs.contains(Key) == false){
                 QString BasePath = Key;

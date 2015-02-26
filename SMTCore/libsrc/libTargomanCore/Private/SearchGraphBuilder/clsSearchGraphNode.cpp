@@ -24,11 +24,14 @@ using namespace Common;
 
 clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
 clsSearchGraphNode* pInvalidSearchGraphNode = NULL;
-size_t                  clsSearchGraphNode::RegisteredFeatureFunctionCount;
+size_t  clsSearchGraphNodeData::RegisteredFeatureFunctionCount;
 
 clsSearchGraphNode::clsSearchGraphNode():
     Data(InvalidSearchGraphNodeData)
-{}
+{
+    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
+        FF->initRootNode(*this);
+}
 
 clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
                                        quint16 _startPos,
@@ -46,9 +49,8 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
              _isFinal,
              _restCost))
 {
-    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions){
+    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
         this->Data->Cost += FF->scoreSearchGraphNode(*this);
-    }
 }
 
 template<class Class_t, class Container_t, typename Functor_t>
@@ -104,9 +106,14 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
     return true;
 }
 
-/*****************************************************************************************************/
-clsSearchGraphNodeData::~clsSearchGraphNodeData()
-{}
+size_t clsSearchGraphNode::allocateFeatureFunctionData()
+{
+    size_t AllocatedIndex = clsSearchGraphNodeData::RegisteredFeatureFunctionCount;
+    ++clsSearchGraphNodeData::RegisteredFeatureFunctionCount;
+    return AllocatedIndex;
+
+}
+
 
 }
 }

@@ -24,6 +24,8 @@ using namespace SearchGraphBuilder;
 using namespace Proxies;
 using namespace RuleTable;
 
+TARGOMAN_REGISTER_SINGLETON_MODULE(LanguageModel)
+
 Common::Configuration::tmplConfigurable<double>  LanguageModel::ScalingFactor(
         LanguageModel::baseConfigPath() + "/ScalingFactor",
         "Scaling factor for language model feature.",
@@ -86,6 +88,11 @@ bool LanguageModel::nodesHaveSameState(const clsSearchGraphNode &_first, const c
     const clsLanguageModelFeatureData* SecondNodeData =
             static_cast<const clsLanguageModelFeatureData*>(_second.featureFunctionDataAt(this->DataIndex));
     return FirstNodeData->SentenceScorer->haveSameHistoryAs(*SecondNodeData->SentenceScorer);
+}
+
+void LanguageModel::initRootNode(clsSearchGraphNode &_rootNode)
+{
+    _rootNode.setFeatureFunctionData(this->DataIndex, new clsLanguageModelFeatureData);
 }
 
 }

@@ -55,6 +55,8 @@ public:
 
     Common::Cost_t getPhraseCost(const RuleTable::clsTargetRule& _targetRule) const;
 
+    void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
+
 private:
     PhraseTable():
         intfFeatureFunction(this->moduleName(), false)

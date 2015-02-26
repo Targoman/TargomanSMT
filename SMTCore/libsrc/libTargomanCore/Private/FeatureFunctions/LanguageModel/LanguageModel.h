@@ -49,6 +49,8 @@ public:
 
     inline QStringList columnNames() const{return QStringList();}
 
+    void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
+
 private:
     LanguageModel():
         intfFeatureFunction(this->moduleName(), false)

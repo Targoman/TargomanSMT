@@ -153,6 +153,13 @@ enuLexicalReorderingFields::Type LexicalReordering::getLeftOreientation(SearchGr
         return enuLexicalReorderingFields::LeftDiscontinous;
 }
 
+void LexicalReordering::initRootNode(clsSearchGraphNode &_rootNode)
+{
+    _rootNode.setFeatureFunctionData(this->DataIndex,
+                                     new clsLexicalReorderingFeatureData(
+                                         this->IsBidirectional.value() ? 6 : 3));
+}
+
 }
 }
 }

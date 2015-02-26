@@ -72,6 +72,8 @@ private:
                     enuLexicalReorderingFields::options().mid(0,3);
     }
 
+    void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
+
 private:
     static Common::Configuration::tmplConfigurable<bool>      IsBidirectional;      /**< Whether our lexical reordering is biderctional or not.*/
     static Common::Configuration::tmplConfigurable<double>    ScalingFactors[6];    /**< Scale factor of lrm costs.*/

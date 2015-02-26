@@ -106,7 +106,7 @@ public:
     }
 
     void detachInvalidData(){
-        Q_ASSERT(this->Data == InvalidTargetRuleData);
+        Q_ASSERT(this->isInvalid());
         this->Data.detach();
     }
 
@@ -239,7 +239,7 @@ inline void clsTargetRule::setPrecomputedValue(size_t _index, Common::Cost_t _va
 }
 
 inline bool clsTargetRule::isInvalid() const{
-    return this->Data == InvalidTargetRuleData;
+    return this->Data.data() == InvalidTargetRuleData;
 }
 inline bool clsTargetRule::isSame(const clsTargetRule& _other) const{
     return this->Data == _other.Data;
