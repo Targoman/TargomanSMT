@@ -19,12 +19,27 @@ namespace Private {
 namespace RuleTable{
 
 using namespace Common;
-
+/**
+ * This instance of clsRuleNodeData class is static and is used in initilization of clsRuleNode class.
+ */
 clsRuleNodeData* InvalidRuleNodeData = new clsRuleNodeData;
 
+
+/**
+ * @brief This is default constructor of clsRuleNode class and it always instantiates #Data member with InvalidRuleNodeData which is a static data pointer of type clsRuleNodeData.
+ * This default value for #Data ables us check validity of rule node.
+ */
 clsRuleNode::clsRuleNode() :
     Data(InvalidRuleNodeData)
 {}
+
+/**
+ * @brief #Data member of class is inititialized to InvalidRuleNodeData which is a static instance of clsRuleNodeData.
+ * So if we have changed #Data member it is not equal to InvalidRuleNodeData anymore.
+ * So if #Data member is not equal to InvalidRuleNodeData is a valid node.
+ *
+ * @return whether it is a valid node or not.
+ */
 
 bool clsRuleNode::isInvalid() const
 {

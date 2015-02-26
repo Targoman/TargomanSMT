@@ -23,6 +23,10 @@ namespace Core {
 namespace Private {
 namespace RuleTable{
 
+/**
+ * @brief The clsRuleNodeData class is used to store data member of clsRuleNode class.
+ */
+
 class clsRuleNodeData : public QSharedData{
 public:
     clsRuleNodeData(){}
@@ -33,11 +37,17 @@ public:
     ~clsRuleNodeData(){}
 
 public:
-    TargetRulesContainer_t TargetRules;
+    QList<clsTargetRule> TargetRules;   /**< A container to store translations for this node (source phrase). */
 };
 
-//RuleNode is not an adequated name must be changed to a  more common sense DB Row name
-
+//TODO: RuleNode is not an adequated name must be changed to a  more common sense DB Row name
+/**
+ * @brief Nodes of Rule Table data structutre is of this type. Each node is corresponding to a source phrase.
+ * This class stores translation phrases of target language for this node (source phrase).
+ *
+ * @note: The string (vector of wordIndex) of source phrase is not stored here or anywhere (It is not important for us).
+ *
+ */
 class clsRuleNode
 {
 public:
@@ -53,11 +63,23 @@ public:
     // Following functions are needed for the binary input/output
     void readBinary(std::istream &_input);
     void writeBinary(std::ostream &_output) const;
-    void detachInvalidData(){this->Data.detach();}
+    /**
+     * @brief detachInvalidData
+     *
+     * #Data member of every instance of this class points to the same memory place, because it is a shared pointer.
+     * we can individualize the memory for an instance by detaching it.
+     * detaching should be done once, when the data is invalid.
+     * In this function we first check whether it is invalid or not and if it is invalid we detach its memory.
+     *
+     */
+    void detachInvalidData(){
+        Q_ASSERT(isInvalid());
+        this->Data.detach();
+    }
 
 //private:
 public:
-    QExplicitlySharedDataPointer<clsRuleNodeData> Data;
+    QExplicitlySharedDataPointer<clsRuleNodeData> Data;  /**< Data member of this class is stored in a seperate class. A shared pointer of this seperate class is stored here */
 };
 
 extern clsRuleNodeData* InvalidRuleNodeData;

@@ -25,6 +25,17 @@ namespace RuleTable{
 
 typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;
 
+/**
+ * @brief The intfRuleTable class is used to store source and target phrases in #prefixTree.
+ * This class is an interface so clsJaneRuleTable or clsMosesRuleTable can be derived from this class.
+ *
+ * @note: For each phrases in the source language, there is a node in the #PrefixTree.
+ * Type of each node is clsRuleNode and it stores the list of translations (phrases in target language) for source phrase.
+ *
+ * @note: The string (vector of wordIndex) of source phrase is not stored anywhere.
+ * PrefixTree helps us to store translations for each source phrase in correct place.
+ *
+ */
 class intfRuleTable : public Common::Configuration::intfModule
 {
 public:
@@ -42,7 +53,7 @@ public:
     }
 
 protected:
-    QScopedPointer<RulesPrefixTree_t> PrefixTree;
+    QScopedPointer<RulesPrefixTree_t> PrefixTree;               /**< The container which stores the source and target phrases. */
 };
 
 

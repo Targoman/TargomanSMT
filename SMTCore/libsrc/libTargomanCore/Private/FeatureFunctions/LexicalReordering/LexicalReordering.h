@@ -32,6 +32,10 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuLexicalReorderingFields,
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exLexicalReordering, exFeatureFunction);
 
+/**
+ * @brief The LexicalReordering class is a derived class from intfFeatureFunction which handles lexical reordering costs.
+ */
+
 class LexicalReordering : public intfFeatureFunction
 {
 public:
@@ -69,8 +73,8 @@ private:
     }
 
 private:
-    static Common::Configuration::tmplConfigurable<bool>      IsBidirectional;
-    static Common::Configuration::tmplConfigurable<double>    ScalingFactors[6];
+    static Common::Configuration::tmplConfigurable<bool>      IsBidirectional;      /**< Whether our lexical reordering is biderctional or not.*/
+    static Common::Configuration::tmplConfigurable<double>    ScalingFactors[6];    /**< Scale factor of lrm costs.*/
 
 
     TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/LexicalReordering", LexicalReordering)

@@ -25,7 +25,9 @@ namespace Private {
 namespace RuleTable {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exJanePhraseTable, exRuleTable);
-
+/**
+ * @brief The clsJanePlainRuleTable class is used to load Jane phrase table.
+ */
 class clsJanePlainRuleTable : intfRuleTable
 {
 public:
@@ -36,7 +38,7 @@ public:
     virtual void loadTableData();
 
 private:
-    void addRule(const QStringList &_phraseCosts,
+    void addRule(const QStringList &_phraseFieldValue,
                  const QStringList &_fields,
                  const QList<size_t> &_acceptedAdditionalFields,
                  size_t _ruleNumber);
@@ -44,10 +46,9 @@ private:
     QList<size_t> AcceptedAdditionalFieldsIndexes;
 
 private:
-    static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;
-    static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseCostNames;
-    static Targoman::Common::Configuration::tmplConfigurable<QString> AdditionalModels;
-    static QList<Targoman::Common::Configuration::tmplConfigurable<QString>> FeatureFunctions;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;                 /**< File name of phrase table. */
+    static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseCostNames;          /**< Name of field(features) of target rule. */
+    static QList<Targoman::Common::Configuration::tmplConfigurable<QString>> FeatureFunctions;  /**< Name of aditional featurs like lrm*/
 
     TARGOMAN_DEFINE_MODULE("JanePTPlain", clsJanePlainRuleTable)
 };

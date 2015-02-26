@@ -26,12 +26,12 @@ namespace Private {
 namespace RuleTable {
 
 enum {
-    janeFormatCostsPosition = 0,
-    janeFormatLeftHandSidePosition,
-    janeFormatSourcePosition,
-    janeFormatTargetPosition,
-    janeFormatCountPosition,
-    janeFormatStandardNumberOfFields
+    janeFormatCostsPosition = 0,        /// First part of jane phrase table corresponds to feature values. Feature values are seperated with space in this part
+    janeFormatLeftHandSidePosition,     /// Second part of jane phrase table specifies whether phrase is hirarchichal (S) or not (X).
+    janeFormatSourcePosition,           /// Third part of jane phrase table specifies source phrase. Word strings are seperated with space in this part.
+    janeFormatTargetPosition,           /// Fourth part of jane phrase table specifies target phrase. Word strings are seperated with space in this part.
+    janeFormatCountPosition,            /// Fifth part of jane phrase table is not important for us
+    janeFormatStandardNumberOfFields    /// Sixth and next parts of jane phrase table are correspond to additional features like lexiacal reordering. Name of additional feature is first field and other fields in each part are feature values.
 };
 
 
@@ -72,6 +72,10 @@ clsJanePlainRuleTable::~clsJanePlainRuleTable()
     this->unregister();
 }
 
+
+/**
+ * @brief clsJanePlainRuleTable::initializeSchema Just loads first line of phrase table to set column names.
+ */
 void clsJanePlainRuleTable::initializeSchema()
 {
     TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FileName.value());
@@ -125,6 +129,9 @@ void clsJanePlainRuleTable::initializeSchema()
 
 }
 
+/**
+ * @brief clsJanePlainRuleTable::loadTableData Loads phrase table from file and adds each phrase (rule) to pefix tree.
+ */
 void clsJanePlainRuleTable::loadTableData()
 {
     TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FileName.value());
@@ -151,7 +158,7 @@ void clsJanePlainRuleTable::loadTableData()
         if (Fields.size() < 3)
             throw exJanePhraseTable(QString("Bad file format in line %1 : %2").arg(RulesRead).arg(Line.c_str()));
 
-        if (Fields[janeFormatLeftHandSidePosition] == "S")
+        if (Fields[janeFormatLeftHandSidePosition] == "S") // we ignore hierachichal phrases.
             continue;
 
         if (Fields[janeFormatCostsPosition].isEmpty()){
@@ -169,6 +176,14 @@ void clsJanePlainRuleTable::loadTableData()
     }
 
 }
+
+/**
+ * @brief clsJanePlainRuleTable::addRule    Adds phrases to prefix tree.
+ * @param _phraseCosts                      Feature values.
+ * @param _allFields                        All fields of input rule.
+ * @param _acceptedAdditionalFields         Additional accepted fields like lexical reordering model.
+ * @param _ruleNumber                       line number of rule table.
+ */
 
 void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
                                     const QStringList &_allFields,

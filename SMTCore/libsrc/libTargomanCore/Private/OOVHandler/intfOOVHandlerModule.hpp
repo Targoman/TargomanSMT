@@ -24,9 +24,14 @@ namespace Private{
 namespace OOV{
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exOOVHandlerModule, exOOVHandler);
-
+/**
+ * @brief The intfOOVHandlerModule class is an interface class that every other Special OOV Handlers like clsOOVRemoveOnTarget or clsOOVKeepSource can be derive from this interface class.
+ */
 class intfOOVHandlerModule : public Common::Configuration::intfModule{
 public:
+    /**
+     * @brief When an instance of any kind special OOV handler instantiates, its name and pointer of itself will be added to AvailableOOVHandlers data member of OOVHandler class.
+     */
     intfOOVHandlerModule(const QString& _moduleName, quint64 _instanceID) :
         intfModule(_moduleName)
     {

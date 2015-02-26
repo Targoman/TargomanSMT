@@ -13,6 +13,7 @@
 
 #include "OOVHandler.h"
 #include "intfOOVHandlerModule.hpp"
+#include "Private/GlobalConfigs.h"
 
 namespace Targoman{
 namespace Core {
@@ -31,6 +32,11 @@ QMap<QString, intfOOVHandlerModule*>                       OOVHandler::Available
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(OOVHandler)
 
+/**
+ * @brief OOVHandler::initialize Sets #ActivesOOVHandlers from #OOVHandlerModules and checks whethere they are available handlers or not.
+ * @exception throws exception if name of special OOV handler is not in #AvailableOOVHandlers.
+ */
+
 void OOVHandler::initialize()
 {
     QStringList OOVHandlers = OOVHandler::OOVHandlerModules.value().split(",", QString::SkipEmptyParts);
@@ -40,14 +46,22 @@ void OOVHandler::initialize()
             throw exOOVHandler("Invalid OOVHandler name: "+ OOVHandlerName );
         this->ActiveOOVHandlers.append(pOOVHandler);
     }
+    this->WordIndexOffset = gConfigs.SourceVocab.size() + 1;
 }
+
+/**
+ * @brief OOVHandler::getWordIndex  This function stores types of used special OOV Handler in _attrs and returns a word index for it.
+ * @param[in] _token                input OOV word string.
+ * @param[in,out] _attrs            Types of special OOV handlers will be set in this argument.
+ * @return                          Word index of input OOV word.
+ */
 
 Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap &_attrs)
 {
     QMutexLocker Locker(&this->Lock);
-    clsExpiranbleOOVWord ExpiranbleOOVWord = this->OOVWords.value(_token);
+    clsExpirableOOVWord ExpirableOOVWord = this->OOVWords.value(_token);
     Locker.unlock();
-    if (ExpiranbleOOVWord.NotSet){
+    if (ExpirableOOVWord.NotSet){
         TargetRulesContainer_t TargetRules;
         foreach(intfOOVHandlerModule* pOOVHandler, this->ActiveOOVHandlers){
             const clsTargetRule&  OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
@@ -56,7 +70,7 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
             }
         }
         if (TargetRules.isEmpty()){
-            this->OOVWords.insert(_token,clsExpiranbleOOVWord(0,_attrs));
+            this->OOVWords.insert(_token,clsExpirableOOVWord(0,_attrs));
             return 0; // There are no new handlers so keep it as unknown and cache result
         }
 
@@ -71,22 +85,25 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
         else
             WordIndex = this->WordIndexOffset + this->OOVWords.keys().size();
 
-        this->OOVWords.insert(_token, clsExpiranbleOOVWord(WordIndex, _attrs));
+        this->OOVWords.insert(_token, clsExpirableOOVWord(WordIndex, _attrs));
         this->HandledOOVs.insert(WordIndex, RuleNode);
 
         return WordIndex;
     }
 
     //When ExpiranbleOOVWord has been found
-    for(QVariantMap::ConstIterator Attr = ExpiranbleOOVWord.Attributes.begin();
-        Attr != ExpiranbleOOVWord.Attributes.end();
+    for(QVariantMap::ConstIterator Attr = ExpirableOOVWord.Attributes.begin();
+        Attr != ExpirableOOVWord.Attributes.end();
         ++Attr){
         _attrs.insert(Attr.key(), Attr.value());
     }
 
-    return ExpiranbleOOVWord.WordIndex;
+    return ExpirableOOVWord.WordIndex;
 }
-
+/**
+ * @brief OOVHandler::removeWordIndex When an OOV exipres this function  will be called to removes that word index from #HandledOOVs and add that word index to #AvailableWordIndexes.
+ * @param _wordIndex input word index.
+ */
 void OOVHandler::removeWordIndex(WordIndex_t _wordIndex)
 {
     QMutexLocker Locker(&this->Lock);

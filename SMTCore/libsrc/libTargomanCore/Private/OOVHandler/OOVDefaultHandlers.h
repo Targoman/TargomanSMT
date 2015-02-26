@@ -24,10 +24,21 @@ namespace OOV{
 
 using namespace RuleTable;
 
+/**
+ * @brief This type of Special OOV handler removes the OOV in the output but it doesn't ignore in decoding process.
+ */
+
 class clsOOVRemoveOnTarget : public intfOOVHandlerModule{
 public:
     clsOOVRemoveOnTarget(quint64 _instanceID): intfOOVHandlerModule(this->moduleName(), _instanceID){}
     ~clsOOVRemoveOnTarget();
+
+    /**
+     * @brief process       Sets type of OOV handling and returns an appropriate target rule.
+     * @param[in] _token    Input string of token.
+     * @param[out] _attrs   Type of  OOV handling will be stored in this argument.
+     * @return              Returns an invalid target rule.
+     */
 
     RuleTable::clsTargetRule process(const QString &_token, QVariantMap& _attrs){
         Q_UNUSED(_token)
@@ -41,10 +52,21 @@ private:
     TARGOMAN_DEFINE_MODULE("OOVRemoveOnTarget", clsOOVRemoveOnTarget)
 };
 
+/**
+ * @brief This type of Special OOV handler ignores OOV word in decoding process.
+ */
+
 class clsOOVRemoveDecoding : public intfOOVHandlerModule{
 public:
     clsOOVRemoveDecoding(quint64 _instanceID): intfOOVHandlerModule(this->moduleName(), _instanceID){}
     ~clsOOVRemoveDecoding();
+
+    /**
+     * @brief process       Sets type of OOV handling and returns an appropriate target rule.
+     * @param[in] _token    Input string of token.
+     * @param[out] _attrs   Type of  OOV handling will be stored in this argument.
+     * @return              Returns an invalid target rule.
+     */
 
     RuleTable::clsTargetRule process(const QString &_token, QVariantMap& _attrs){
         Q_UNUSED(_token)
@@ -58,10 +80,21 @@ private:
     TARGOMAN_DEFINE_MODULE("OOVRemoveDecoding", clsOOVRemoveDecoding)
 };
 
+/**
+ * @brief This type of Special OOV handler keeps OOV word as it is in the output.
+ */
+
 class clsOOVKeepSource : public intfOOVHandlerModule{
 public:
     clsOOVKeepSource(quint64 _instanceID): intfOOVHandlerModule(this->moduleName(), _instanceID){}
     ~clsOOVKeepSource();
+
+    /**
+     * @brief process       Sets type of OOV handling and returns an appropriate target rule.
+     * @param[in] _token    Input string of token.
+     * @param[out] _attrs   Type of  OOV handling will be stored in this argument.
+     * @return              Returns an invalid target rule.
+     */
 
     RuleTable::clsTargetRule process(const QString &_token, QVariantMap& _attrs){
         Q_UNUSED(_token)

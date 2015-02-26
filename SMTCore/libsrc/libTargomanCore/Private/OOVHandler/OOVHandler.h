@@ -27,22 +27,26 @@ class intfOOVHandlerModule;
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exOOVHandler, exTargomanCore);
 
+/**
+ * @brief The OOVHandler class is responsible for associating word index, string, caching and making rule node for OOV words.
+ */
+
 class OOVHandler : public Common::Configuration::intfModule
 {
-    class clsExpiranbleOOVWord{
+    class clsExpirableOOVWord{
     public:
-        clsExpiranbleOOVWord(){
+        clsExpirableOOVWord(){
             this->WordIndex = 0;
             this->NotSet = true;
         }
 
-        clsExpiranbleOOVWord(Common::WordIndex_t _windex, const QVariantMap& _attrs){
+        clsExpirableOOVWord(Common::WordIndex_t _windex, const QVariantMap& _attrs){
             this->WordIndex = _windex;
             this->NotSet = false;
             this->Attributes = _attrs;
         }
 
-        ~clsExpiranbleOOVWord(){
+        ~clsExpirableOOVWord(){
             if (this->WordIndex){
                OOVHandler::instance().removeWordIndex(this->WordIndex);
             }
@@ -72,18 +76,18 @@ private:
     TARGOMAN_DEFINE_SINGLETONMODULE("OOVHandler", OOVHandler)
 
 private:
-    QHash<Common::WordIndex_t, RuleTable::clsRuleNode>            HandledOOVs;
-    Common::tmplExpirableCache<QString, clsExpiranbleOOVWord>     OOVWords;
-    Common::WordIndex_t                                           WordIndexOffset;
-    QList<Common::WordIndex_t>                                    AvailableWordIndexes;
-    QList<intfOOVHandlerModule*>                                  ActiveOOVHandlers;
-    QMutex                                                        Lock;
+    QHash<Common::WordIndex_t, RuleTable::clsRuleNode>            HandledOOVs;              /**< This hash, caches calculated rule nodes for each word index*/
+    Common::tmplExpirableCache<QString, clsExpirableOOVWord>      OOVWords;                 /**< This expirable map, cashes calculated word indices and attributes for OOV words.*/
+    Common::WordIndex_t                                           WordIndexOffset;          /**< OOV word indices should be start from this number which is size of source vocab */
+    QList<Common::WordIndex_t>                                    AvailableWordIndexes;     /**< #OOVWords removes not recently seen chashed OOVs, indices of those deleted OOVs will be stored in this variable to reuse them.*/
+    QList<intfOOVHandlerModule*>                                  ActiveOOVHandlers;        /**< List of active special OOV handlers.*/
+    QMutex                                                        Lock;                     /**< Used to prevent simultaneous access of threads to some part of code. */
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> OOVHandlerModules;
-    static QMap<QString, intfOOVHandlerModule*>                       AvailableOOVHandlers;
+    static QMap<QString, intfOOVHandlerModule*>                       AvailableOOVHandlers; /**< List of available special OOV handlers*/
 
-    friend class clsExpiranbleOOVWord;
+    friend class clsExpirableOOVWord;
     friend class intfOOVHandlerModule;
 };
 

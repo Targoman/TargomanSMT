@@ -273,7 +273,20 @@ void clsInputDecomposer::parseRichIXML(const QString &_inputIXML)
     }
 }
 
-void clsInputDecomposer::newToken(const QString &_token, const QString &_tagStr, const QVariantMap &_attrs)
+/**
+ * @brief This function finds wordIndex of input (token or tag string) then inserts token, tag string, attributes and word index to #Tokens.
+ *
+ * If token is wrapped with a tag, word index of that tag will be find and the token string is not important in finding the word index.
+ * If word index of token can not be found using SourceVocab, OOVHandler helps us to allocate a word index for that OOV word.
+ * If OOVHandler inform us that this unknown token should be ignored in decoding process we don't add #Tokens.
+ *
+ * @note: SourceVocab has already been filled in loading phrase table phase.
+ * @param _token Input token
+ * @param _tagStr If token is wrapped with a tag, this argument inserts string of tag to the function.
+ * @param _attrs If token is wrapped with a tag and tag has some attributes, this argument inserts keys and value of those attributes.
+ */
+
+void clsInput::newToken(const QString &_token, const QString &_tagStr, const QVariantMap &_attrs)
 {
     if (_token.isEmpty())
         return;
@@ -287,7 +300,7 @@ void clsInputDecomposer::newToken(const QString &_token, const QString &_tagStr,
         WordIndex = gConfigs.SourceVocab.value(_token,0);
         if (WordIndex == 0){
             WordIndex = OOVHandler::instance().getWordIndex(_token, Attributes);
-            if (_attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
+            if (Attributes.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid()) //zhnDebug: I think it should be "Attributes.value(..."
                 return; // OOVHandler says that I must ignore this word when decoding
         }
     }
