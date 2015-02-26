@@ -42,18 +42,24 @@ public:
         Q_UNUSED(_sourceEnd)
         return this->getPhraseCost(_targetRule);
     }
-
+    Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
+        Q_UNUSED(_coverage);
+        Q_UNUSED(_beginPos);
+        Q_UNUSED(endPos);
+        return 0;
+    }
 
     inline QStringList columnNames() const{return PhraseTable::ColumnNames;}
     static inline void setColumnNames(const QStringList _columnNames){
         PhraseTable::ColumnNames = _columnNames;}
 
+    Common::Cost_t getPhraseCost(const RuleTable::clsTargetRule& _targetRule) const;
+
 private:
     PhraseTable():
         intfFeatureFunction(this->moduleName())
-    {};
+    {}
     TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/PhraseTable", PhraseTable)
-    Common::Cost_t getPhraseCost(const RuleTable::clsTargetRule& _targetRule) const;
 
 
     QList<double> ScalingFactors;

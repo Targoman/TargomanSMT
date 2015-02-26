@@ -33,6 +33,8 @@ public:
 
     Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 
+    Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const;
+
     inline Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                              unsigned _sourceEnd,
                                              const RuleTable::clsTargetRule& _targetRule) const {
@@ -45,8 +47,20 @@ public:
     inline QStringList columnNames() const{return QStringList();}
 
 private:
-    ReorderingJump();
+    ReorderingJump():
+        intfFeatureFunction(this->moduleName())
+    { this->CanComputePositionSpecificRestCost = true; }
     TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/ReorderingJump", ReorderingJump)
+
+private:
+    static Common::Cost_t getJumpCost(size_t _jumpWidth) {
+        Common::Cost_t Cost = _jumpWidth;
+
+        if (_jumpWidth > ReorderingJump::MaximumJumpWidth.value())
+            Cost = _jumpWidth + (_jumpWidth * _jumpWidth);
+
+        return Cost;
+    }
 
 private:
     static Common::Configuration::tmplConfigurable<double> ScalingFactor;

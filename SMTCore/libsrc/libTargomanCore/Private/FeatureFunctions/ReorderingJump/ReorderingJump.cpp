@@ -48,15 +48,46 @@ Common::Cost_t ReorderingJump::scoreSearchGraphNode(clsSearchGraphNode &_newHypo
     size_t JumpWidth = qAbs((int)_newHypothesisNode.sourceRangeBegin() -
                             (int)_newHypothesisNode.prevNode().sourceRangeEnd());
 
-    Cost_t Cost = JumpWidth;
-
-    if (JumpWidth > ReorderingJump::MaximumJumpWidth.value())
-        Cost = JumpWidth + (JumpWidth * JumpWidth);
+    Cost_t Cost = ReorderingJump::getJumpCost(JumpWidth);
 
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode)
         Data->CostElements[0] = Cost;
 
     return Cost * ReorderingJump::ScalingFactor.value();
+}
+
+Cost_t ReorderingJump::getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const
+{
+    Q_UNUSED(_beginPos)
+    size_t LastPos = endPos - 1;
+
+    Cost_t SumJumpCost = 0.0;
+    bool LastPositionCovered = false;
+    bool CurrentPositionCovered = false;
+    bool NextPositionCovered = _coverage.at(0);
+    size_t InputSentenceSize = _coverage.size();
+    size_t JumpWidth = 0;
+
+    size_t Position = 0;
+    for(; Position < InputSentenceSize; ++Position)
+    {
+        LastPositionCovered = CurrentPositionCovered;
+        CurrentPositionCovered = NextPositionCovered;
+        NextPositionCovered = (Position + 1 == InputSentenceSize || _coverage.at(Position + 1));
+
+        if( (Position == 0 || LastPositionCovered) && CurrentPositionCovered == 0 )
+        {
+            JumpWidth = std::abs((int)(LastPos - Position));
+            SumJumpCost += ReorderingJump::getJumpCost(JumpWidth);
+        }
+
+        if(Position > 0 && CurrentPositionCovered == 0 && NextPositionCovered )
+            LastPos = Position + 1;
+    }
+    JumpWidth = std::abs((int)(LastPos - Position));
+    SumJumpCost += ReorderingJump::getJumpCost(JumpWidth);
+    Q_ASSERT(SumJumpCost >= 0);
+    return SumJumpCost * ReorderingJump::ScalingFactor.value();
 }
 
 }

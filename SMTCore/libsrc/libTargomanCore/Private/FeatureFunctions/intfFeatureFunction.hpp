@@ -33,6 +33,7 @@ public:
         intfModule(_moduleName)
     {
         gConfigs.ActiveFeatureFunctions.insert(_moduleName, this);
+        this->CanComputePositionSpecificRestCost = false;
         this->PrecomputedIndex = RuleTable::clsTargetRule::allocatePrecomputedValue();
         this->DataIndex =  SearchGraphBuilder::clsSearchGraphNode::allocateFeatureFunctionData();
     }
@@ -56,29 +57,33 @@ public:
      */
     virtual Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const =0 ;
 
+    /*
+     * Returns wether this feature function can compute node specific rest costs or not. If it can
+     * the the getRestCostForPosition must return valid values
+     * otherwise getApproximateCost will be called when creating RestCost matrix
+     */
+    inline bool canComputePositionSpecificRestCost() const { return this->CanComputePositionSpecificRestCost; }
+
+    /*
+     * This can be called to compute node specific rest costs is implemented
+     * If the implemeneted feature function does not have this capability it
+     * must explicitly return a 0 as the result of execution of this function
+     * NOTE: Either getApproximateCost or this function must return 0
+     */
+    virtual Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const = 0;
+
     //This is to add an approximate cost to the future cost heuristic in SCSS
+    // NOTE: Either getRestCostForPosition or this function must return 0
     virtual Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                               unsigned _sourceEnd,
-                                              const RuleTable::clsTargetRule& _targetRule) const{
-        Q_UNUSED(_sourceStart)
-        Q_UNUSED(_sourceEnd)
-        Q_UNUSED(_targetRule)
-        return 0;
-    }
+                                              const RuleTable::clsTargetRule& _targetRule) const = 0;
 
-    virtual Common::Cost_t getTargetRuleCost(unsigned _sourceStart,
-                                             unsigned _sourceEnd,
-                                             const RuleTable::clsTargetRule& _targetPhrase) const {
-        Q_UNUSED(_sourceStart)
-        Q_UNUSED(_sourceEnd)
-        Q_UNUSED(_targetPhrase)
-        throw Common::exTargomanNotImplemented("getTargetRuleCost must be implemented in subclasses");
-    }
 
     virtual QStringList columnNames() const = 0;
 
 protected:
     static QString baseScalingFactorsConfigPath(){ return "/ScalingFactors"; }
+    bool                    CanComputePositionSpecificRestCost;
     QVector<size_t>         FieldIndexes;
     size_t                  PrecomputedIndex;
     size_t                  DataIndex;

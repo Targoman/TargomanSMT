@@ -37,7 +37,7 @@ tmplConfigurable<quint8> clsSearchGraphBuilder::ReorderingConstraintMaximumRuns(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingConstraintMaximumRuns",
         "IBM1 reordering constraint",
         2);
-tmplConfigurable<bool>   clsSearchGraphBuilder::DoComputeReorderingRestCosts(
+tmplConfigurable<bool>   clsSearchGraphBuilder::DoComputePositionSpecificRestCosts(
         clsSearchGraphBuilder::moduleBaseconfig() + "/DoComputeReorderingRestCosts",
         "TODO Desc",
         true);
@@ -53,26 +53,10 @@ tmplConfigurable<bool>   clsSearchGraphBuilder::PruneAtStage4(
         clsSearchGraphBuilder::moduleBaseconfig() + "/PruneAtStage4",
         "TODO Desc",
         true);
-tmplConfigurable<bool>   clsSearchGraphBuilder::ReorderingHardJumpLimit(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingHardJumpLimit",
-        "TODO Desc",
-        true);
-tmplConfigurable<quint8> clsSearchGraphBuilder::ReorderingMaximumJumpWidth(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingMaximumJumpWidth",
-        "TODO Desc",
-        5);
 tmplConfigurable<quint8> clsSearchGraphBuilder::ObservationHistogramSize(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ObservationHistogramSize",
         "TODO Desc",
         100);
-tmplConfigurable<double> clsSearchGraphBuilder::ScalingFactorReorderingJump(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/ScalingFactorReorderingJump",
-        "TODO Desc",
-        1);
-tmplConfigurable<double> clsSearchGraphBuilder::ScalingFactorLM(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/ScalingFactorLM",
-        "TODO Desc",
-        1);
 
 FeatureFunction::intfFeatureFunction*  clsSearchGraphBuilder::pPhraseTable = NULL;
 RuleTable::intfRuleTable*              clsSearchGraphBuilder::pRuleTable = NULL;
@@ -213,16 +197,6 @@ void clsSearchGraphBuilder::matchPhrase()
 #endif
 }
 
-Cost_t clsSearchGraphBuilder::computeReorderingJumpCost(size_t JumpWidth) const
-{
-    Cost_t ReorderingJumpCosts = JumpWidth;
-
-    if (JumpWidth > this->ReorderingMaximumJumpWidth.value())
-        ReorderingJumpCosts = JumpWidth + (JumpWidth * JumpWidth);
-
-    return ReorderingJumpCosts;
-}
-
 bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
 {
     //Find last bit set then check how many bits are zero before this.
@@ -230,18 +204,6 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
         if(_newCoverage.testBit(i)){
             size_t CoutOfPrevZeros = _newCoverage.count(false) + i - _newCoverage.size() + 1;
             return (CoutOfPrevZeros <= this->ReorderingConstraintMaximumRuns.value());
-        }
-    return true;
-}
-
-bool clsSearchGraphBuilder::conformsHardJumpConstraint(size_t _newPhraseBeginPos, Coverage_t _newCoverage, size_t _newPhraseEndPos)
-{
-    for (int i=_newPhraseBeginPos - 1; i>=0; --i)
-        if (_newCoverage.testBit(i) == false){
-            if(_newPhraseEndPos - i > clsSearchGraphBuilder::ReorderingMaximumJumpWidth.value())
-                return false;
-            else
-                return true;
         }
     return true;
 }
@@ -353,7 +315,7 @@ bool clsSearchGraphBuilder::parseSentence()
                     clsLexicalHypothesis& NewLexHypoContainer =
                             this->Data->HypothesisHolder[NewCardinality][NewCoverage];
 
-                    Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseEndPos);
+                    Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseBeginPos, NewPhraseEndPos);
 
                     foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
 
@@ -502,8 +464,6 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
                 PBT_MAXIMUM_COST,
                 this->Data->Sentence.size() - SentenceStartPos);
 
-    QScopedPointer<intfLMSentenceScorer> LMSentenceScorer(gConfigs.LM.getInstance<intfLMSentenceScorer>());
-
     for(size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition){
         size_t MaxLength = qMin(this->Data->Sentence.size() - FirstPosition,
                                 (size_t)this->Data->MaxMatchingSourcePhraseCardinality);
@@ -521,18 +481,13 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
 
                 Cost_t Cost = 0;
                 foreach (FeatureFunction::intfFeatureFunction* FF , gConfigs.ActiveFeatureFunctions)
-                    Cost += FF->getApproximateCost(
-                                FirstPosition,
-                                FirstPosition + Length,
-                                PhraseCandidates.targetRules().at(PhraseCandidateNumber));
+                    if(FF->canComputePositionSpecificRestCost() == false)
+                        Cost += FF->getApproximateCost(
+                                    FirstPosition,
+                                    FirstPosition + Length,
+                                    PhraseCandidates.targetRules().at(PhraseCandidateNumber));
 
-                LMSentenceScorer->reset(false);
-                const clsTargetRule& TargetRule = PhraseCandidates.targetRules().at(PhraseCandidateNumber);
-                Cost_t LMCost = 0;
-                for (size_t i=0; i< TargetRule.size(); ++i)
-                    LMCost += LMSentenceScorer->wordProb(TargetRule.at(i));
-
-                BestCost = qMin(BestCost, Cost - (LMCost * clsSearchGraphBuilder::ScalingFactorLM.value()));
+                BestCost = qMin(BestCost, Cost);
             }
             this->Data->RestCostMatrix[FirstPosition][Length - 1]  = BestCost;
         }
@@ -550,7 +505,7 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
             }
 }
 
-Common::Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t &_coverage, quint16 _lastPos) const
+Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t& _coverage, size_t _beginPos, size_t _endPos) const
 {
     Cost_t RestCosts = 0.0;
     size_t StartPosition = 0;
@@ -568,41 +523,13 @@ Common::Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t &_cover
     if(Length)
         RestCosts += this->Data->RestCostMatrix[StartPosition][Length-1];
 
-    if(this->DoComputeReorderingRestCosts.value()) {
-        RestCosts += this->computeReorderingRestCosts(_coverage,_lastPos);
+    if(this->DoComputePositionSpecificRestCosts.value()) {
+        foreach(FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions.values()) {
+            if(FF->canComputePositionSpecificRestCost())
+                RestCosts += FF->getRestCostForPosition(_coverage, _beginPos, _endPos);
+        }
     }
     return RestCosts;
-}
-
-Common::Cost_t clsSearchGraphBuilder::computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const
-{
-    Cost_t Sum = 0.0;
-    bool LastPositionCovered = false;
-    bool CurrentPositionCovered = false;
-    bool NextPositionCovered = _coverage.at(0);
-    size_t InputSentenceSize = _coverage.size();
-    size_t JumpWidth = 0;
-
-    size_t Position = 0;
-    for(; Position < InputSentenceSize; ++Position)
-    {
-        LastPositionCovered = CurrentPositionCovered;
-        CurrentPositionCovered = NextPositionCovered;
-        NextPositionCovered = (Position + 1 == InputSentenceSize || _coverage.at(Position + 1));
-
-        if( (Position == 0 || LastPositionCovered) && CurrentPositionCovered == 0 )
-        {
-            JumpWidth = std::abs((int)(_lastPos - Position));
-            Sum += this->computeReorderingJumpCost(JumpWidth);
-        }
-
-        if(Position > 0 && CurrentPositionCovered == 0 && NextPositionCovered )
-            _lastPos = Position + 1;
-    }
-    JumpWidth = std::abs((int)(_lastPos - Position));
-    Sum += this->computeReorderingJumpCost(JumpWidth);;
-    Q_ASSERT(Sum >= 0);
-    return clsSearchGraphBuilder::ScalingFactorReorderingJump.value() * Sum;
 }
 
 }

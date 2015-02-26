@@ -190,14 +190,14 @@ void clsMosesPlainRuleTable::addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTarg
 
     PhraseTable& Evaluator = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
 
-    Cost_t CurrentTargetRuleCost = Evaluator.getTargetRuleCost(0, 0, _targetRule);
+    Cost_t CurrentTargetRuleCost = Evaluator.getPhraseCost(_targetRule);
 
     int InsertionPos = TargetRuleList.size();
 
     int StartPos = 0, EndPos = TargetRuleList.size();
     while(EndPos > StartPos) {
         int MidPos = (StartPos + EndPos) / 2;
-        Cost_t TargetRuleCost = Evaluator.getTargetRuleCost(0, 0, TargetRuleList.at(MidPos));
+        Cost_t TargetRuleCost = Evaluator.getPhraseCost(TargetRuleList.at(MidPos));
         if(TargetRuleCost > CurrentTargetRuleCost)
             EndPos = MidPos;
         else if (TargetRuleCost < CurrentTargetRuleCost)

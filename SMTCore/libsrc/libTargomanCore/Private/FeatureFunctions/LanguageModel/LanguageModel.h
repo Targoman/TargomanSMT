@@ -33,6 +33,13 @@ public:
 
     Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 
+    Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
+        Q_UNUSED(_coverage);
+        Q_UNUSED(_beginPos);
+        Q_UNUSED(endPos);
+        return 0;
+    }
+
     inline Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                       unsigned _sourceEnd,
                                       const RuleTable::clsTargetRule& _targetRule) const;
@@ -43,7 +50,9 @@ public:
     inline QStringList columnNames() const{return QStringList();}
 
 private:
-    LanguageModel();
+    LanguageModel():
+        intfFeatureFunction(this->moduleName())
+    {}
     TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/LanguageModel", LanguageModel)
 
 private:

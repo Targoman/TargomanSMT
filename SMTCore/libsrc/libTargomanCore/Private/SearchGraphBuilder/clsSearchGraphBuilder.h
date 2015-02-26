@@ -74,19 +74,13 @@ public:
     void matchPhrase();
     bool parseSentence();
 
-    Common::Cost_t computeReorderingJumpCost(size_t JumpWidth) const;
     static inline QString moduleName(){return "SearchGraphBuilder";}
     static inline QString moduleBaseconfig(){return "/" + clsSearchGraphBuilder::moduleName();}
 
 private:
-    void initializePhraseRestCostsMatrix();
-    Common::Cost_t calculateRestCost(const Coverage_t& _coverage, quint16 _lastPos) const;
-    Common::Cost_t computePhraseRestCosts(const Coverage_t& _coverage) const;
-    Common::Cost_t computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const;
     void initializeRestCostsMatrix();
     bool conformsIBM1Constraint(const Coverage_t& _newCoverage);
-    bool conformsHardJumpConstraint(size_t _newPhraseBeginPos, Coverage_t _newCoverage, size_t _newPhraseEndPos);
-
+    Common::Cost_t calculateRestCost(const Coverage_t &_coverage, size_t _beginPos, size_t _endPos) const;
 
 private:
     QExplicitlySharedDataPointer<clsSearchGraphBuilderData> Data;
@@ -95,19 +89,12 @@ private:
     static FeatureFunction::intfFeatureFunction*           pPhraseTable;
     static RuleTable::clsRuleNode*                         UnknownWordRuleNode;
     static Common::Configuration::tmplConfigurable<quint8> ReorderingConstraintMaximumRuns;
-    static Common::Configuration::tmplConfigurable<bool>   DoComputeReorderingRestCosts;
+    static Common::Configuration::tmplConfigurable<bool>   DoComputePositionSpecificRestCosts;
     static Common::Configuration::tmplConfigurable<bool>   PruneAtStage2;
     static Common::Configuration::tmplConfigurable<bool>   PruneAtStage3;
     static Common::Configuration::tmplConfigurable<bool>   PruneAtStage4;
 
-    static Common::Configuration::tmplConfigurable<bool>   ReorderingHardJumpLimit;
-    static Common::Configuration::tmplConfigurable<quint8> ReorderingMaximumJumpWidth;
     static Common::Configuration::tmplConfigurable<quint8> ObservationHistogramSize;
-
-    static Common::Configuration::tmplConfigurable<double> ScalingFactorReorderingJump;
-    static Common::Configuration::tmplConfigurable<double> ScalingFactorLM;
-
-
 };
 
 }

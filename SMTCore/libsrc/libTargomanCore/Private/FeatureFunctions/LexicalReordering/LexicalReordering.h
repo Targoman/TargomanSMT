@@ -37,13 +37,20 @@ class LexicalReordering : public intfFeatureFunction
 public:
     ~LexicalReordering(){}
     void initialize(const QString&);
-    void newSentence(const InputDecomposer::Sentence_t &inputSentence);
-    virtual Common::Cost_t scoreSearchGraphNode(
-            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 
-    virtual Common::Cost_t getApproximateCost(unsigned _sourceStart,
-                                              unsigned _sourceEnd,
-                                              const RuleTable::clsTargetRule& _targetRule);
+    void newSentence(const InputDecomposer::Sentence_t &inputSentence);
+
+    Common::Cost_t scoreSearchGraphNode(
+            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
+    Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
+        Q_UNUSED(_coverage);
+        Q_UNUSED(_beginPos);
+        Q_UNUSED(endPos);
+        return 0;
+    }
+    Common::Cost_t getApproximateCost(unsigned _sourceStart,
+                                      unsigned _sourceEnd,
+                                      const RuleTable::clsTargetRule& _targetRule) const;
 
 private:
     LexicalReordering():

@@ -115,7 +115,7 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNode(clsSearchGraphNode &_newH
 
 Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
                                                      unsigned _sourceEnd,
-                                                     const clsTargetRule &_targetRule)
+                                                     const clsTargetRule &_targetRule) const
 {
     Q_UNUSED(_sourceStart)
     Q_UNUSED(_sourceEnd)
