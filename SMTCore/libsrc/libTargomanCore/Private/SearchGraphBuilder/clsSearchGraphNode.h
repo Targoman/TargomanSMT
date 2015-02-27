@@ -72,6 +72,11 @@ public:
 
     inline bool isFinal();
 
+#ifdef TARGOMAN_SHOW_DEBUG
+public:
+    inline QList<Common::Cost_t> costElements() const;
+#endif
+
 public:
     static size_t allocateFeatureFunctionData();
 
@@ -169,6 +174,16 @@ inline const Coverage_t&    clsSearchGraphNode::coverage() const{return this->Da
 inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecombined;}
 inline bool clsSearchGraphNode::isInvalid() const {return this->Data == InvalidSearchGraphNodeData;}
 inline bool clsSearchGraphNode::isFinal(){return this->Data->IsFinal;}
+
+QList<Common::Cost_t> clsSearchGraphNode::costElements() const
+{
+    QList<Common::Cost_t> result;
+    for(size_t i = 0; i < this->Data->RegisteredFeatureFunctionCount; ++i)
+        if(this->Data->FeatureFunctionsData.at(i) != NULL)
+            result.append(this->Data->FeatureFunctionsData.at(i)->costElements().toList());
+    return result;
+}
+
 inline void clsSearchGraphNode::setFeatureFunctionData(size_t _index, intfFeatureFunctionData* _data){
     this->Data->FeatureFunctionsData[_index] = _data;
 }

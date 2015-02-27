@@ -15,6 +15,9 @@
 
 #include <QBitArray>
 #include "Types.h"
+#ifdef TARGOMAN_SHOW_DEBUG
+#include <QTextStream>
+#endif
 
 namespace Targoman {
 namespace Core {
@@ -23,7 +26,7 @@ namespace Private {
 typedef QBitArray Coverage_t;
 
 #ifdef TARGOMAN_SHOW_DEBUG
-inline std::ostream& operator << (std::ostream& _outputStream, const Coverage_t& _coverage)
+inline QTextStream& operator << (QTextStream& _outputStream, const Coverage_t& _coverage)
 {
     if(_coverage.size() == 0)
         return _outputStream;
@@ -38,6 +41,18 @@ inline QString bitArray2Str(const Coverage_t& _bits){
         Output+=_bits.testBit(i) ? '1' : '0';
     return Output;
 }
+
+template<typename Type_t>
+inline QTextStream& operator << (QTextStream& _outputStream, const QList<Type_t>& _list)
+{
+    if(_list.size() == 0)
+        return _outputStream;
+    _outputStream << _list.at(0);
+    for(int i = 1; i < _list.size(); ++i)
+        _outputStream << " " << _list.at(i);
+    return _outputStream;
+}
+
 #endif
 
 }

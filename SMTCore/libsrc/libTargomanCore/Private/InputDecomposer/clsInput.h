@@ -21,6 +21,10 @@
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "Private/InputDecomposer/clsToken.h"
 
+#ifdef TARGOMAN_SHOW_DEBUG
+#include <QTextStream>
+#endif
+
 namespace Targoman {
 namespace Core {
 namespace Private {
@@ -86,4 +90,17 @@ private:
 }
 }
 }
+
+#ifdef TARGOMAN_SHOW_DEBUG
+inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::Core::Private::InputDecomposer::Sentence_t& _sentence)
+{
+    if(_sentence.size() == 0)
+        return _outputStream;
+    _outputStream << _sentence.at(0);
+    for(int i = 0; i < _sentence.size(); ++i)
+        _outputStream << " " << _sentence.at(i);
+    return _outputStream;
+}
+#endif
+
 #endif // TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSINPUT_H

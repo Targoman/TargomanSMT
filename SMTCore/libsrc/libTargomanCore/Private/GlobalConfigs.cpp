@@ -21,6 +21,8 @@ namespace Private{
 using namespace Common;
 using namespace Common::Configuration;
 
+QString ActorUUID;
+
 stuGlobalConfigs gConfigs;
 
 tmplConfigurable<QString> stuGlobalConfigs::Separator(

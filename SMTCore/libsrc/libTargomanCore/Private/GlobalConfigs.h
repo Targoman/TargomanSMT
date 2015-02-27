@@ -33,6 +33,9 @@ namespace Proxies {
 class intfLMSentenceScorer;
 }
 
+// Global ActorUUID, back-off when the logging class is not a module or singlton
+extern QString ActorUUID;
+
 TARGOMAN_DEFINE_ENHANCED_ENUM(enuWorkingModes,
                               Decode,
                               Train,

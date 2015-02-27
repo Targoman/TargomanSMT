@@ -38,7 +38,8 @@ HEADERS += \
     libTargomanCore/Private/FeatureFunctions/LanguageModel/LanguageModel.h \
     libTargomanCore/Private/FeatureFunctions/ReorderingJump/ReorderingJump.h \
     libTargomanCore/Types.h \
-    libTargomanCore/Private/PrivateTypes.h
+    libTargomanCore/Private/PrivateTypes.h \
+    libTargomanCore/Private/FeatureFunctions/WordPenalty/WordPenalty.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -61,7 +62,8 @@ SOURCES += libID.cpp \
     libTargomanCore/Private/OOVHandler/OOVDefaultHandlers.cpp \
     libTargomanCore/Private/RuleTable/clsMosesPlainRuleTable.cpp \
     libTargomanCore/Private/FeatureFunctions/LanguageModel/LanguageModel.cpp \
-    libTargomanCore/Private/FeatureFunctions/ReorderingJump/ReorderingJump.cpp
+    libTargomanCore/Private/FeatureFunctions/ReorderingJump/ReorderingJump.cpp \
+    libTargomanCore/Private/FeatureFunctions/WordPenalty/WordPenalty.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

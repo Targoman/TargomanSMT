@@ -66,7 +66,8 @@ void printMemoryUsage(const QString& _stepString){
 
 int main(int argc, char *argv[])
 {
-    TARGOMAN_IO_SETTINGS.setDefault();
+    //TARGOMAN_IO_SETTINGS.setDefault();
+    TARGOMAN_IO_SETTINGS.setDefault(7);
     //TARGOMAN_IO_SETTINGS.setSilent();
 
     try{

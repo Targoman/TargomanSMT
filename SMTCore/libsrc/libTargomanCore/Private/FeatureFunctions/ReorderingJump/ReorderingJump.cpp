@@ -86,8 +86,6 @@ Cost_t ReorderingJump::getRestCostForPosition(const Coverage_t& _coverage, size_
         if(Position > 0 && CurrentPositionCovered == 0 && NextPositionCovered )
             LastPos = Position + 1;
     }
-    JumpWidth = std::abs((int)(LastPos - Position));
-    SumJumpCost += ReorderingJump::getJumpCost(JumpWidth);
     Q_ASSERT(SumJumpCost >= 0);
     return SumJumpCost * ReorderingJump::ScalingFactor.value();
 }

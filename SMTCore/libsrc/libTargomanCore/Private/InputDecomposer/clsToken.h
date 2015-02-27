@@ -19,6 +19,10 @@
 #include "libTargomanCommon/Types.h"
 #include "libTargomanCommon/CmdIO.h"
 
+#ifdef TARGOMAN_SHOW_DEBUG
+#include <QTextStream>
+#endif
+
 namespace Targoman {
 namespace Core {
 namespace Private {
@@ -59,5 +63,14 @@ private:
 }
 }
 }
+
+#ifdef TARGOMAN_SHOW_DEBUG
+inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::Core::Private::InputDecomposer::clsToken& _token)
+{
+    _outputStream << _token.string();
+    return _outputStream;
+}
+#endif
+
 
 #endif // TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSTOKEN_H

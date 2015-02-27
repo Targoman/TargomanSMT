@@ -19,7 +19,6 @@
 #include "Private/OOVHandler/OOVHandler.h"
 
 #define PBT_MAXIMUM_COST 1e200
-#define PBT_IMMUNITY_BOUND 1e-10
 
 namespace Targoman{
 namespace Core {
@@ -97,7 +96,6 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
 
 void clsSearchGraphBuilder::matchPhrase()
 {
-//#define DEBUG_MATCH_PHRASE
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseMatchTable.append(QVector<clsRuleNode>(this->Data->Sentence.size() - FirstPosition));
@@ -116,33 +114,6 @@ void clsSearchGraphBuilder::matchPhrase()
             }else
                 this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
 
-#ifdef DEBUG_MATCH_PHRASE
-            if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false) {
-                QBitArray Cov;
-                Cov.resize(this->Data->Sentence.size());
-                for (size_t i=FirstPosition; i<= FirstPosition; ++i )
-                    Cov.setBit(i);
-
-                TargetRulesContainer_t& targetRules = this->Data->PhraseMatchTable[FirstPosition][0].targetRules();
-
-                std::cout<<"COMPARE: First:"<<FirstPosition<<
-                           " Last:"<<FirstPosition<<
-                           " Target:"<<targetRules.size()<<
-                           " Cov:"<<bitArray2Str(Cov).toLatin1().constData()<<std::endl;
-                std::cout << " Costs: " << std::endl;
-                for(int i = 0; i < qMin(targetRules.size(), 10); ++i) {
-                    QString targetPhrase;
-                    for(size_t j = 0; j < targetRules[i].size(); ++j)
-                        targetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(targetRules[i].at(j)) + " ";
-                    std::cout << "\t\t\t" << targetPhrase.toUtf8().constData() << ": ";
-                    for(size_t j = 0; j < targetRules[i].fieldCount(); ++ j)
-                        std::cout << targetRules[i].field(j) << " ";
-                    std::cout << std::endl;
-                }
-            }
-
-#endif
-
             if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,1);
 
@@ -158,43 +129,11 @@ void clsSearchGraphBuilder::matchPhrase()
                 break; // appending next word breaks phrase lookup
 
             this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition] = PrevNode->getData();
-
-#ifdef DEBUG_MATCH_PHRASE
-            QBitArray Cov;
-            Cov.resize(this->Data->Sentence.size());
-            for (size_t i=FirstPosition; i<= LastPosition; ++i )
-                Cov.setBit(i);
-
-            TargetRulesContainer_t& targetRules = this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].targetRules();
-
-            std::cout<<"COMPARE: First:"<<FirstPosition<<
-                       " Last:"<<LastPosition<<
-                       " Target:"<<targetRules.size()<<
-                       " Cov:"<<bitArray2Str(Cov).toLatin1().constData()<<std::endl;
-            for(int i = 0; i < qMin(targetRules.size(), 10); ++i) {
-                QBitArray DebugCov(Cov.size());
-                DebugCov.setBit(0);
-                DebugCov.setBit(1);
-                QString targetPhrase;
-                for(size_t j = 0; j < targetRules[i].size(); ++j)
-                    targetPhrase += gConfigs.EmptyLMScorer->getWordByIndex(targetRules[i].at(j)) + " ";
-                std::cout << "\t\t\t" << targetPhrase.toUtf8().constData() << ": ";
-                for(size_t j = 0; j < targetRules[i].fieldCount(); ++ j)
-                    std::cout << targetRules[i].field(j) << " ";
-                std::cout << std::endl;
-            }
-
-#endif
             if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                       (int)(LastPosition - FirstPosition + 1));
         }
     }
-
-
-#ifdef DEBUG_MATCH_PHRASE
-    exit(0);
-#endif
 }
 
 bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
@@ -210,8 +149,6 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
 
 bool clsSearchGraphBuilder::parseSentence()
 {
-//#define DEBUG_PARSE_SENTENCE_CARDINALITY 5
-
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
 
@@ -220,12 +157,8 @@ bool clsSearchGraphBuilder::parseSentence()
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
 
-        int PrunedAt2 = 0;
-        int PrunedAt3 = 0;
-        int PrunedAt4 = 0;
-        int PrunedAtReordering = 0;
-        int PrunedByIBMConstraint = 0;
-        int PrunedByHardJumpConstraint = 0;
+        int PrunedByIBMConstraint;
+        int PrunedByLexicalHypothesis;
 
         bool IsFinal = (NewCardinality == this->Data->Sentence.size());
         int MinPrevCardinality = qMax(NewCardinality - this->Data->MaxMatchingSourcePhraseCardinality, 0);
@@ -237,7 +170,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
             //This happens when we have for ex. 2 bi-grams and a quad-gram but no similar 3-gram. due to bad training
             if(this->Data->HypothesisHolder[PrevCardinality].isEmpty()) {
-                //TODO targomanlogwarning
+
                 //std::cout<<__LINE__<< ": ERROR: cardinality Container for previous cardinality empty.\n";
                 continue;
             }
@@ -285,7 +218,6 @@ bool clsSearchGraphBuilder::parseSentence()
                     if (SkipStep)
                         continue;//TODO if NewPhraseCardinality has not continous place breaK
 
-                    // generate new coverage vector, containing the new coverage
                     Coverage_t NewCoverage(PrevCoverage);
                     for (size_t i=NewPhraseBeginPos; i<NewPhraseEndPos; ++i)
                         NewCoverage.setBit(i);
@@ -294,14 +226,6 @@ bool clsSearchGraphBuilder::parseSentence()
                         ++PrunedByIBMConstraint;
                         continue;
                     }
-/*predict that in future we will generate HardJump limitlfgjdfklj
-                    if (clsSearchGraphBuilder::ReorderingHardJumpLimit.value() &&
-                        IsFinal == false &&
-                        this->conformsHardJumpConstraint(NewPhraseBeginPos, NewCoverage, NewPhraseEndPos) == false){
-                        ++PrunedByHardJumpConstraint;
-                        continue;
-                    }
-                    */
 
                     clsRuleNode& PhraseCandidates =
                             this->Data->PhraseMatchTable[NewPhraseBeginPos][NewPhraseCardinality - 1];
@@ -333,11 +257,21 @@ bool clsSearchGraphBuilder::parseSentence()
                                                            IsFinal,
                                                            RestCost);
 
+                            TargomanDebug(7,
+                                          "\nNewHypoNode: " <<
+                                          "Cardinality: [" << NewCardinality << "] " <<
+                                          "Coverage[" << NewCoverage << "] " <<
+                                          "Cost: [" << NewHypoNode.getCost() << "] " <<
+                                          "RestCost: [" << RestCost << "] " <<
+                                          "TargetPhrase: [" << CurrentPhraseCandidate.toStr() << "]\n" <<
+                                          "\t\t\tScores: " << NewHypoNode.costElements()
+                                          )
 
-                            //If current phrase candidate combined with current HypoNode is worst than worst stored node ignore it
+
+                            // If current NewHypoNode is worse than worst stored node ignore it
                             if (this->PruneAtStage4.value() &&
                                 NewLexHypoContainer.mustBePruned(NewHypoNode.getTotalCost())){
-                                ++PrunedAt4;
+                                ++PrunedByLexicalHypothesis;
                                 MustBreak = true;
                                 break;
                             }
@@ -345,53 +279,25 @@ bool clsSearchGraphBuilder::parseSentence()
                             if(this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage,
                                                                                                 NewLexHypoContainer,
                                                                                                 NewHypoNode)) {
-                                // Vedadian
-                                std::cout << "MOSESCOMPARE: Card[" << NewCardinality <<
-                                             "] Cov:[" << NewHypoNode.coverage() <<
-                                             "] Node[" << -1 <<
-                                             "] Cost[" << NewHypoNode.getCost() <<
-                                             "] RestCost[" << NewHypoNode.getTotalCost() - NewHypoNode.getCost() <<
-                                             "] : " << NewHypoNode.targetRule().toStr().toStdString()
-                                          << std::endl;
-                                std::cout << "\t\t\tTargetRule: " << NewHypoNode.targetRule() << std::endl;
+                                TargomanDebug(7, "\nNew Hypothesis Inserted.")
                             }
                         }
 
+                        // In case the currently created node is not worth putting in the stack,
+                        // its inferiors are definitely are not worth also
                         if(MustBreak)
                                 break;
 
-                    }//foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes())
-
+                    }//foreach PrevLexHypoNode
                     if (NewLexHypoContainer.nodes().isEmpty())
                         this->Data->HypothesisHolder[NewCardinality].remove(NewCoverage);
 
                 }//for NewPhraseBeginPos
             }//for PrevCoverageIter
         }//for PrevCardinality
-
-#if 1
-        quint64 Sum = 0;
-        foreach(auto Iter , this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses()){
-            Sum+= Iter.nodes().size();
-        }
-        TargomanDebug(1,"Total Hypo for card="<<NewCardinality<<" is: "<<Sum <<" which must be: "<<this->Data->HypothesisHolder[NewCardinality].totalSearchGraphNodeCount());
-        TargomanDebug(1," pruned at IBM(%d) Jump(%d) 2(%d) 3(%d) 4(%d) Reorder(%d): ",
-                      PrunedByIBMConstraint,
-                      PrunedByHardJumpConstraint,
-                      PrunedAt2, PrunedAt3, PrunedAt4,PrunedAtReordering)
-#endif
-#ifdef DEBUG_PARSE_SENTENCE_CARDINALITY
-                if (NewCardinality <= DEBUG_PARSE_SENTENCE_CARDINALITY){
-            this->Data->HypothesisHolder[NewCardinality].dump("COMPARE: Card["+
-                                                              QString::number(NewCardinality) +
-                                                              "] ");
-        }
-#endif
-
         // Vedadian
-        while(1)
-            sleep(10);
-        ;
+        if(NewCardinality == 1)
+            exit(0);
     }//for NewCardinality
 
     Coverage_t FullCoverage;
@@ -401,50 +307,10 @@ bool clsSearchGraphBuilder::parseSentence()
             this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().isEmpty() == false)
     {
         this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
-
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
-#if 1
-        /// JUST FOR DEBUG
-        std::function<QString (const clsSearchGraphNode&)> getNodeString = [&](const clsSearchGraphNode& _node) {
-            if(_node.isInvalid())
-                return QString();
-
-            QString result = getNodeString(_node.prevNode());
-
-            for(size_t i=0; i< _node.targetRule().size(); ++i)
-                result += gConfigs.EmptyLMScorer->getWordByIndex(_node.targetRule().at(i)) + " ";
-
-            return result;
-        };
-
-#if 1
-        std::cout << getNodeString(*this->Data->GoalNode).toStdString() << std::endl;
-#else
-        /********************************************************************/
-        QScopedPointer<intfLMSentenceScorer> Scorer(gConfigs.LM.getInstance<intfLMSentenceScorer>());
-        foreach(const clsSearchGraphNode& Node, this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes()){
-            std::cerr << "================================================" << std::endl;
-            QString NodeSentence = getNodeString(Node);
-            std::cout<< NodeSentence.toUtf8().constData()<<std::endl;
-            std::cerr<< NodeSentence.toUtf8().constData()<<std::endl;
-            LogP_t LMCost = 0;
-            Scorer->reset();
-            foreach(const QString& Token, NodeSentence.split(" ", QString::SkipEmptyParts))
-                LMCost -= Scorer->wordProb(Scorer->getWordIndex(Token));
-            LMCost -= Scorer->endOfSentenceProb();
-            std::cerr << "Total Cost: " << Node.getTotalCost() << ", LM Cost: " << LMCost << std::endl;
-            break;
-        }
-        /********************************************************************/
-#endif
-#endif
-        this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
-
         return true;
     } else {
-        TargomanWarn(1,"No translation option");
-        std::cout<<"******************************* No translation option"<<std::endl;
-        // no translation with full coverage found
+        TargomanLogWarn(1, "No translation option for: " << this->Data->Sentence);
         return false;
     }
 }

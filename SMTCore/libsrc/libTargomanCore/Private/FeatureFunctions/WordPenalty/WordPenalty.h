@@ -11,8 +11,8 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_FEATUREFUNCTIONS_REORDERINGJUMP_H
-#define TARGOMAN_CORE_PRIVATE_FEATUREFUNCTIONS_REORDERINGJUMP_H
+#ifndef TARGOMAN_CORE_PRIVATE_FEATUREFUNCTIONS_WORDPENALTY_H
+#define TARGOMAN_CORE_PRIVATE_FEATUREFUNCTIONS_WORDPENALTY_H
 
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
 
@@ -21,27 +21,31 @@ namespace Core {
 namespace Private {
 namespace FeatureFunction{
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exReorderingJump, exFeatureFunction);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exWordPenalty, exFeatureFunction);
 
 
-class ReorderingJump : public intfFeatureFunction
+class WordPenalty : public intfFeatureFunction
 {
 public:
-    ~ReorderingJump(){}
+    ~WordPenalty(){}
 
     void initialize(const QString &){}
 
     Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 
-    Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const;
+    Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
+        Q_UNUSED(_coverage)
+        Q_UNUSED(_beginPos)
+        Q_UNUSED(endPos)
+        return 0;
+    }
 
     inline Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                              unsigned _sourceEnd,
                                              const RuleTable::clsTargetRule& _targetRule) const {
         Q_UNUSED(_sourceStart)
         Q_UNUSED(_sourceEnd)
-        Q_UNUSED(_targetRule)
-        return 0;
+        return (Common::Cost_t)_targetRule.size();
     }
 
     inline QStringList columnNames() const{return QStringList();}
@@ -49,32 +53,24 @@ public:
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
 private:
-    ReorderingJump():
-        intfFeatureFunction(this->moduleName(), true)
+    WordPenalty():
+        intfFeatureFunction(this->moduleName(), false)
     {}
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/ReorderingJump", ReorderingJump)
+    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/WordPenalty", WordPenalty)
 
 private:
-    static Common::Cost_t getJumpCost(size_t _jumpWidth) {
-        Common::Cost_t Cost = _jumpWidth;
-
-        if (_jumpWidth > ReorderingJump::MaximumJumpWidth.value())
-            Cost = _jumpWidth + (_jumpWidth * _jumpWidth);
-
-        return Cost;
-    }
 
 private:
     static Common::Configuration::tmplConfigurable<double> ScalingFactor;
-    static Common::Configuration::tmplConfigurable<quint8> MaximumJumpWidth;
 
 };
 
+
 }
 }
 }
 }
 
 
-#endif // TARGOMAN_CORE_PRIVATE_FEATUREFUNCTIONS_REORDERINGJUMP_H
+#endif // TARGOMAN_CORE_PRIVATE_FEATUREFUNCTIONS_WORDPENALTY_H

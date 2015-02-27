@@ -34,39 +34,39 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
     Targoman::Common::Logger::instance().unregisterActor(ActorUUID);
 
 /** @brief These are helper macros to ease usage of Logger */
-#define TargomanLogWarn(_level, _message) \
+#define TargomanLogWarn(_level, _message) {\
     QString Buffer; \
     Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Warning, \
                                                _level,\
-                                               (QTextStream(&Buffer)<<_message).string());\
+                                               *(QTextStream(&Buffer)<<_message).string());\
 }
 
-#define TargomanLogInfo( _level, _message) \
+#define TargomanLogInfo( _level, _message) {\
     QString Buffer; \
     Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Info, \
                                                _level,\
-                                               (QTextStream(&Buffer)<<_message).string());\
+                                               *(QTextStream(&Buffer)<<_message).string());\
 }
 
-#define TargomanLogError( _message) \
+#define TargomanLogError( _message) {\
+    QString Buffer; \
+    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, \
+                                               1,\
+                                               *(QTextStream(&Buffer)<<_message).string());\
+}
+
+#define TargomanLogDebug(_level, _message) {\
     QString Buffer; \
     Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, \
                                                _level,\
-                                               (QTextStream(&Buffer)<<_message).string());\
-}
-
-#define TargomanLogDebug(_level, _message) \
-    QString Buffer; \
-    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, \
-                                               _level,\
-                                               (QTextStream(&Buffer)<<_message).string());\
+                                               *(QTextStream(&Buffer)<<_message).string());\
 }
 
 #define TargomanLogHappy(_level, _message) {\
     QString Buffer; \
     Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Happy, \
                                                _level,\
-                                               (QTextStream(&Buffer)<<_message).string());\
+                                               *(QTextStream(&Buffer)<<_message).string());\
 }
 
 namespace Private {

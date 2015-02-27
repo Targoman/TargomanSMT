@@ -53,9 +53,13 @@ QString clsTargetRule::toStr() const
 
 #endif
 
-#ifdef TARGOMAN_SHOW_DEBUG
+}
+}
+}
+}
 
-std::ostream& operator << (std::ostream& _outputStream, const clsTargetRule& _targetRule)
+#ifdef TARGOMAN_SHOW_DEBUG
+QTextStream& operator << (QTextStream& _outputStream, const Targoman::Core::Private::RuleTable::clsTargetRule& _targetRule)
 {
     if(_targetRule.fieldCount() == 0)
         return _outputStream;
@@ -66,8 +70,3 @@ std::ostream& operator << (std::ostream& _outputStream, const clsTargetRule& _ta
 }
 
 #endif
-
-}
-}
-}
-}

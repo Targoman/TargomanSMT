@@ -17,6 +17,9 @@
 #include <QList>
 #include "libTargomanCommon/Types.h"
 #include "libTargomanCore/clsTranslator.h"
+#ifdef TARGOMAN_SHOW_DEBUG
+#include <QTextStream>
+#endif
 
 namespace Targoman {
 namespace Core {
@@ -247,15 +250,13 @@ inline bool clsTargetRule::isSame(const clsTargetRule& _other) const{
 
 typedef  QList<RuleTable::clsTargetRule> TargetRulesContainer_t;
 
+}
+}
+}
+}
+
 #ifdef TARGOMAN_SHOW_DEBUG
-
-std::ostream& operator << (std::ostream& _outputStream, const clsTargetRule& _targetRule);
-
+QTextStream& operator << (QTextStream& _outputStream, const Targoman::Core::Private::RuleTable::clsTargetRule& _targetRule);
 #endif
-
-}
-}
-}
-}
 
 #endif // TARGOMAN_CORE_PRIVATE_RULETABLE_CLSTARGETRULE_H
