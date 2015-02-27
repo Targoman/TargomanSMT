@@ -47,17 +47,12 @@ public:
     ~clsSearchGraphBuilderData(){}
 
 public:
-    QList<QVector<RuleTable::clsRuleNode>>     PhraseMatchTable;
-
-    const clsSearchGraphNode*                  GoalNode;
-
-    int MaxMatchingSourcePhraseCardinality;
-
-    clsHypothesisHolder                  HypothesisHolder;
-
-    const InputDecomposer::Sentence_t &  Sentence;
-
-    RestCostMatrix_t RestCostMatrix;
+    QList<QVector<RuleTable::clsRuleNode>>      PhraseMatchTable;
+    const clsSearchGraphNode*                   GoalNode;
+    int                                         MaxMatchingSourcePhraseCardinality;
+    clsHypothesisHolder                         HypothesisHolder;
+    const InputDecomposer::Sentence_t &         Sentence;
+    RestCostMatrix_t                            RestCostMatrix;
 };
 
 

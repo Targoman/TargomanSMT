@@ -86,9 +86,9 @@ public:
 protected:
     static QString baseScalingFactorsConfigPath(){ return "/ScalingFactors"; }
     bool                    CanComputePositionSpecificRestCost;
-    QVector<size_t>         FieldIndexes;  /**<  List of indices of this feature function in rule table.*/
-    size_t                  PrecomputedIndex; /**<  Precomputed values of this feature function should be stored in this index of precomputedValues of targetRule.*/
-    size_t                  DataIndex;
+    QVector<size_t>         FieldIndexes;           /**<  List of indices correspond to this feature function in rule table.*/
+    size_t                  PrecomputedIndex;       /**<  Precomputed values of this feature function should be stored in this index of precomputedValues of targetRule.*/
+    size_t                  DataIndex;              /**<  Each feature function has a field in FeatureFunctionsData data of clsSearchGraphNode class. Index of This feature is stored in this data member. */
 };
 
 }

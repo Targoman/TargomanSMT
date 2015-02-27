@@ -43,18 +43,18 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuWorkingModes,
                               DebugTrain);
 
 struct stuGlobalConfigs{
-    static Common::Configuration::tmplConfigurable<QString> Separator;
-    static Common::Configuration::tmplConfigurable<QString> SourceLanguage;
-    static Common::Configuration::tmplConfigurable<QString> TargetLanguage;
-    static Common::Configuration::tmplConfigurable<enuWorkingModes::Type> WorkingMode;
+    static Common::Configuration::tmplConfigurable<QString>                 Separator;
+    static Common::Configuration::tmplConfigurable<QString>                 SourceLanguage;
+    static Common::Configuration::tmplConfigurable<QString>                 TargetLanguage;
+    static Common::Configuration::tmplConfigurable<enuWorkingModes::Type>   WorkingMode;
 
-    static Common::Configuration::clsModuleConfig          LM;
-    static Common::Configuration::clsModuleConfig          RuleTable;
+    static Common::Configuration::clsModuleConfig                           LM;
+    static Common::Configuration::clsModuleConfig                           RuleTable;
 
-    static QScopedPointer<Core::Private::Proxies::intfLMSentenceScorer>  EmptyLMScorer;
-    static QHash<QString, Common::WordIndex_t>                            SourceVocab;
+    static QScopedPointer<Core::Private::Proxies::intfLMSentenceScorer>     EmptyLMScorer;
+    static QHash<QString, Common::WordIndex_t>                              SourceVocab;
 
-    static QMap<QString, FeatureFunction::intfFeatureFunction*>       ActiveFeatureFunctions;
+    static QMap<QString, FeatureFunction::intfFeatureFunction*>             ActiveFeatureFunctions;
 };
 
 extern stuGlobalConfigs gConfigs;
