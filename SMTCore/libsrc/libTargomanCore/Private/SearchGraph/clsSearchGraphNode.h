@@ -23,6 +23,8 @@ namespace Core {
 namespace Private{
 namespace SearchGraph {
 
+TARGOMAN_ADD_EXCEPTION_HANDLER(exSearchGraph, exTargomanCore);
+
 class clsSearchGraphNodeData;
 
 class intfFeatureFunctionData{
@@ -98,7 +100,8 @@ public:
         SourceRangeEnd(0),
         PrevNode(NULL),
         FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount)
-    {}
+    {
+    }
 
     clsSearchGraphNodeData(const clsSearchGraphNode& _prevNode,
                            quint8 _startPos,

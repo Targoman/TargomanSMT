@@ -77,15 +77,18 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
 
     RulesPrefixTree_t::Node* Node = clsSearchGraphBuilder::pRuleTable->getPrefixTree().rootNode();
     if(Node == NULL)
-        throw exSearchGraphBuilder("Invalid empty Rule Table");
+        throw exSearchGraph("Invalid empty Rule Table");
 
     Node = Node->follow(0); //Search for UNKNOWN word Index
     if (Node == NULL)
-        throw exSearchGraphBuilder("No Rule defined for UNKNOWN word");
+        throw exSearchGraph("No Rule defined for UNKNOWN word");
 
     clsSearchGraphBuilder::UnknownWordRuleNode = new clsRuleNode(Node->getData());
 
-    //InvalidTargetRule has been marshalled here because it depends on loading RuleTable
+    //InvalidTargetRuleData has been marshalled here because it depends on loading RuleTable
+    RuleTable::InvalidTargetRuleData = new RuleTable::clsTargetRuleData;
+
+    //InvalidTargetRule has been marshalled here because it depends on instantiation of InvalidTargetRuleData
     RuleTable::InvalidTargetRule = new RuleTable::clsTargetRule;
 
     //InvalidSearchGraphNodeData has been marshalled here because it depends on initialization of gConfigs

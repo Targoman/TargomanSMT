@@ -33,7 +33,10 @@ clsTargetRuleData* InvalidTargetRuleData = NULL;
 
 clsTargetRule::clsTargetRule():
     Data(InvalidTargetRuleData)
-{}
+{
+    if(RuleTable::InvalidTargetRuleData == NULL)
+        throw exRuleTable("Invalid target rule instantiated before InvalidTargetRuleData initialization.");
+}
 
 clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields):
     Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize))

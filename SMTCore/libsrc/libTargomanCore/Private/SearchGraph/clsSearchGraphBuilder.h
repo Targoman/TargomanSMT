@@ -26,8 +26,6 @@ namespace Core {
 namespace Private{
 namespace SearchGraph {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exSearchGraphBuilder, exTargomanCore);
-
 class clsSearchGraphBuilderData : public QSharedData
 {
 public:
