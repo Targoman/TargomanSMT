@@ -30,6 +30,10 @@ clsFileBasedConfig   PhraseTable::ScalingFactorsConfigSection(
 
 QStringList   PhraseTable::ColumnNames;
 
+/**
+ * @brief This constructor just calls the base class constructor with its cost element count.
+ * @param _costElementsSize number of cost elements can be infered from size of ColumnNames.
+ */
 class clsPhraseTableFeatureData : public intfFeatureFunctionData{
 public:
     clsPhraseTableFeatureData(size_t _costElementsSize):
@@ -42,7 +46,6 @@ public:
  * @param _configFile Address of input config file.
  * @exception throws exception if phrase table loader has not initialized phrase table column names.
  */
-
 void PhraseTable::initialize(const QString& _configFile)
 {
     if (this->ColumnNames.isEmpty())
@@ -64,6 +67,10 @@ void PhraseTable::initialize(const QString& _configFile)
     }
 }
 
+/**
+ * @brief PhraseTable::scoreSearchGraphNode   Sets CostElements values and compute phrase cost.
+ * @return Returns score of phrase table for this search graph node.
+ */
 Cost_t PhraseTable::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
@@ -97,6 +104,12 @@ Cost_t PhraseTable::getPhraseCost(const clsTargetRule &_targetRule) const
     return Cost;
 }
 
+
+/**
+ * @brief PhraseTable::initRootNode This function will be called in the constructor of searchGraphNode
+ * in order to always have a valid previous node data for feature functions in scoreSearchGraphNode function.
+ * @param _rootNode
+ */
 void PhraseTable::initRootNode(clsSearchGraphNode &_rootNode)
 {
     _rootNode.setFeatureFunctionData(this->DataIndex,

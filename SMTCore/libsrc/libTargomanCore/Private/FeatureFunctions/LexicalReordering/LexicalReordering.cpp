@@ -54,12 +54,24 @@ tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
 };
 
 
+/**
+ * @brief The clsLexicalReorderingFeatureData class is a derviation of intfFeatureFunctionData class.
+ */
 class clsLexicalReorderingFeatureData : public intfFeatureFunctionData{
 public:
+    /**
+     * @brief This constructor just calls the base class constructor with its cost element count.
+     * @param _costElementsSize number of cost elements depends on whether
+     * it is bidirectional or not.
+     */
     clsLexicalReorderingFeatureData(size_t _costElementsSize):
         intfFeatureFunctionData(_costElementsSize)
     {}
 };
+
+/**
+ * @brief LexicalReordering::initialize Stores field indices of lexical reordering table to #FieldIndexes.
+ */
 
 void LexicalReordering::initialize(const QString &)
 {
@@ -83,6 +95,12 @@ void LexicalReordering::newSentence(const Sentence_t &_inputSentence)
 {
     Q_UNUSED(_inputSentence)
 }
+
+/**
+ * @brief LexicalReordering::scoreSearchGraphNode   computes score of search graph node based on its orientation and wether it is bidirectional or not.
+ * @param _newHypothesisNode input search graph node.
+ * @return Returns score of lexical reordering search graph node.
+ */
 
 Common::Cost_t LexicalReordering::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
@@ -114,6 +132,11 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNode(clsSearchGraphNode &_newH
     return Cost;
 }
 
+/**
+ * @brief LexicalReordering::getApproximateCost Computes approximate cost of target rule using cost of all orientations.
+ * @return Returns approximate cost.
+ */
+
 Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
                                                      unsigned _sourceEnd,
                                                      const clsTargetRule &_targetRule) const
@@ -136,6 +159,12 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
     return Cost;
 }
 
+/**
+ * @brief LexicalReordering::getBackwardOreientation Checks whether orientation of input search graph node is "Backward Monotone", "Backward Swap" or "Backward Discontinous"
+ * @param _newHypothesisNode input search graph node.
+ * @return Return orientation of backward reordering.
+ */
+
 enuLexicalReorderingFields::Type LexicalReordering::getBackwardOreientation(
         SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
 {
@@ -153,6 +182,12 @@ enuLexicalReorderingFields::Type LexicalReordering::getBackwardOreientation(
         return enuLexicalReorderingFields::BackwardDiscontinous;
 }
 
+/**
+ * @brief LexicalReordering::getForwardOreientation Checks whether orientation of input search graph node is "Forward Monotone", "forward_as_tupleSwap" or "Forward Discontinous"
+ * @param _newHypothesisNode   input search graph node.
+ * @return  Return orientation of Forward reordering.
+ */
+
 enuLexicalReorderingFields::Type LexicalReordering::getForwardOreientation(
         SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
 {
@@ -169,6 +204,12 @@ enuLexicalReorderingFields::Type LexicalReordering::getForwardOreientation(
     else
         return enuLexicalReorderingFields::ForwardDiscontinous;
 }
+
+/**
+ * @brief LexicalReordering::initRootNode This function will be called in the constructor of searchGraphNode
+ * in order to always have a valid previous node data for feature functions in scoreSearchGraphNode function.
+ * @param _rootNode
+ */
 
 void LexicalReordering::initRootNode(clsSearchGraphNode &_rootNode)
 {

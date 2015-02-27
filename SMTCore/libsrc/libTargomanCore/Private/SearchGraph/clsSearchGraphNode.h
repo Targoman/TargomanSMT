@@ -27,8 +27,16 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exSearchGraph, exTargomanCore);
 
 class clsSearchGraphNodeData;
 
+/**
+ * @brief Every feature function has some data. This base class is an interface to hold function basic data.
+ * every feature function oveloads this class to store its feature specific data.
+ */
 class intfFeatureFunctionData{
 public:
+    /**
+     * @brief constructor of this class resizes #CostElemnts vector with _costElementsSize and initializes those with zero.
+     * @param _costElementsSize resize size.
+     */
     intfFeatureFunctionData(size_t _costElementsSize) :
         CostElements(_costElementsSize,0)
     {}
@@ -36,7 +44,7 @@ public:
     inline const QVector<Common::Cost_t>&     costElements(){return this->CostElements;}
 
 public:
-    QVector<Common::Cost_t>     CostElements;
+    QVector<Common::Cost_t>     CostElements;           /**< Feature fucntion stores its costs to this vector. */
 };
 
 typedef QVector<QVector<Common::Cost_t> > RestCostMatrix_t;

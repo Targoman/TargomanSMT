@@ -31,8 +31,18 @@ Common::Configuration::tmplConfigurable<double>  LanguageModel::ScalingFactor(
         "Scaling factor for language model feature.",
         1.0);
 
+/**
+ * @brief The clsLanguageModelFeatureData class is a derviation of intfFeatureFunctionData class to store specific
+ * data correspond to language model feature funciton. In addition to CostElements data memeber this overloaded class
+ * has an instance of intfLMSentenceScorer class to track its state.
+ */
+
 class clsLanguageModelFeatureData : public intfFeatureFunctionData {
 public:
+    /**
+     * @brief constructor of this class resizes costElements to 1 in order to store language model cost
+     * of search graph node.
+     */
     clsLanguageModelFeatureData():
         intfFeatureFunctionData(1),
         SentenceScorer(gConfigs.LM.getInstance<intfLMSentenceScorer>())
@@ -40,9 +50,13 @@ public:
 
     ~clsLanguageModelFeatureData(){}
 
-    QScopedPointer<intfLMSentenceScorer> SentenceScorer;
+    QScopedPointer<intfLMSentenceScorer> SentenceScorer;        /**< An instance of intfLMSentenceScorer to track previous seen words */
 };
 
+/**
+ * @brief This function computes cost of language model with the help of previous node LM history.
+ * @return Returns score of language model for this search graph node.
+ */
 Common::Cost_t LanguageModel::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
     const clsLanguageModelFeatureData* PrevNodeData =
@@ -66,6 +80,10 @@ Common::Cost_t LanguageModel::scoreSearchGraphNode(clsSearchGraphNode &_newHypot
     return Cost * LanguageModel::ScalingFactor.value();
 }
 
+/**
+ * @brief Computes approximate cost to the future cost heuristic
+ * @note Either getRestCostForPosition or this function must return 0
+ */
 Cost_t LanguageModel::getApproximateCost(unsigned _sourceStart,
                                          unsigned _sourceEnd,
                                          const RuleTable::clsTargetRule &_targetRule) const
@@ -81,6 +99,13 @@ Cost_t LanguageModel::getApproximateCost(unsigned _sourceStart,
     return Cost;
 }
 
+/**
+ * @brief nodesHaveSameState checks equality of states of two search graph noedes.
+ * Checks whether first and second node have same sentence score history or not.
+ * @param _first First node.
+ * @param _second Second node.
+ * @return returns true if both of nodes have same state.
+ */
 bool LanguageModel::nodesHaveSameState(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
 {
     const clsLanguageModelFeatureData* FirstNodeData =
@@ -90,6 +115,11 @@ bool LanguageModel::nodesHaveSameState(const clsSearchGraphNode &_first, const c
     return FirstNodeData->SentenceScorer->haveSameHistoryAs(*SecondNodeData->SentenceScorer);
 }
 
+/**
+ * @brief This function will be called in the constructor of searchGraphNode
+ * in order to always have a valid previous node data for feature functions in scoreSearchGraphNode function.
+ * @param _rootNode
+ */
 void LanguageModel::initRootNode(clsSearchGraphNode &_rootNode)
 {
     _rootNode.setFeatureFunctionData(this->DataIndex, new clsLanguageModelFeatureData);

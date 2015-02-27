@@ -35,13 +35,25 @@ Common::Configuration::tmplConfigurable<quint8>  ReorderingJump::MaximumJumpWidt
         "Maximum jump width.",
         6);
 
+
+/**
+ * @brief The clsReorderingJumpFeatureData class is a derviation of intfFeatureFunctionData class.
+ */
 class clsReorderingJumpFeatureData : public intfFeatureFunctionData{
 public:
+    /**
+     * @brief constructor of this class sets CostElements to 1 because we have cost for reordering jump feature.
+     */
     clsReorderingJumpFeatureData():
         intfFeatureFunctionData(1)
     {}
 };
 
+/**
+ * @brief LexicalReordering::scoreSearchGraphNode   Sets CostElement value and computes reordering jump based on
+ * range of source phrase words of this node and previous node.
+ * @return Returns score of ReorderingJumpfor this search graph node.
+ */
 Common::Cost_t ReorderingJump::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
     clsReorderingJumpFeatureData* Data = new clsReorderingJumpFeatureData;
@@ -58,6 +70,13 @@ Common::Cost_t ReorderingJump::scoreSearchGraphNode(clsSearchGraphNode &_newHypo
     return Cost * ReorderingJump::ScalingFactor.value();
 }
 
+/**
+ * @brief ReorderingJump::getRestCostForPosition
+ * @param _coverage
+ * @param _beginPos
+ * @param endPos
+ * @return
+ */
 Cost_t ReorderingJump::getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const
 {
     Q_UNUSED(_beginPos)
@@ -90,6 +109,12 @@ Cost_t ReorderingJump::getRestCostForPosition(const Coverage_t& _coverage, size_
     return SumJumpCost * ReorderingJump::ScalingFactor.value();
 }
 
+
+/**
+ * @brief ReorderingJump::initRootNode This function will be called in the constructor of searchGraphNode
+ * in order to always have a valid previous node data for feature functions in scoreSearchGraphNode function.
+ * @param _rootNode
+ */
 void ReorderingJump::initRootNode(clsSearchGraphNode &_rootNode)
 {
     _rootNode.setFeatureFunctionData(this->DataIndex, new clsReorderingJumpFeatureData);
