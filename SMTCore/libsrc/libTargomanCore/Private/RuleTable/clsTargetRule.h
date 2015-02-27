@@ -151,7 +151,7 @@ public:
         if (clsTargetRule::ColumnNames.size() == 0)
             throw exRuleTable("Invalid TargetRule must be called after initialization");
         for(int i=0; i< clsTargetRule::ColumnNames.size(); ++i)
-            this->Fields.append(INFINITY);
+            this->Fields.append(0);
     }
 
     /**

@@ -22,12 +22,12 @@ namespace Private{
 namespace FeatureFunction {
 
 TARGOMAN_DEFINE_ENHANCED_ENUM(enuLexicalReorderingFields,
-                              LeftMonotone,
-                              LeftSwap,
-                              LeftDiscontinous,
-                              RightMonotone,
-                              RightSwap,
-                              RightDiscontinous
+                              ForwardMonotone,
+                              ForwardSwap,
+                              ForwardDiscontinous,
+                              BackwardMonotone,
+                              BackwardSwap,
+                              BackwardDiscontinous
                               )
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exLexicalReordering, exFeatureFunction);
@@ -61,9 +61,9 @@ private:
         intfFeatureFunction(this->moduleName(), false)
     {}
 
-    enuLexicalReorderingFields::Type getRightOreientation(
+    enuLexicalReorderingFields::Type getBackwardOreientation(
             SearchGraph::clsSearchGraphNode &_newHypothesisNode) const;
-    enuLexicalReorderingFields::Type getLeftOreientation(
+    enuLexicalReorderingFields::Type getForwardOreientation(
             SearchGraph::clsSearchGraphNode &_newHypothesisNode) const;
 
     inline QStringList columnNames() const{

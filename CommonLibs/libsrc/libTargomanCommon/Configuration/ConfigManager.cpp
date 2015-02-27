@@ -126,9 +126,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                 bool Found = false;
                 do {
                     BasePath.truncate(BasePath.lastIndexOf('/'));
-                    BasePath.append('/');
                     Configuration::intfConfigurable* ConfigItem =
-                            this->pPrivate->Configs.value(BasePath);
+                            this->pPrivate->Configs.value(BasePath + "/");
                     if (ConfigItem &&
                             ConfigItem->canBemanaged() == false){
                         Found = true;

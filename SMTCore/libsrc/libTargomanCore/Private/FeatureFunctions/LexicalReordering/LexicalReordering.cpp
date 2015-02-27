@@ -33,23 +33,23 @@ tmplConfigurable<bool>      LexicalReordering::IsBidirectional(
         true);
 
 tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftMonotone",
-    "Scaling factor for LeftMonotone reordering score",
+    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/ForwardMonotone",
+    "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightMonotone",
-    "Scaling factor for LeftMonotone reordering score",
+    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/BackwardMonotone",
+    "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftSwap",
-    "Scaling factor for LeftMonotone reordering score",
+    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/ForwardSwap",
+    "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightSwap",
-    "Scaling factor for LeftMonotone reordering score",
+    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/BackwardSwap",
+    "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/LeftDiscontinous",
-    "Scaling factor for LeftMonotone reordering score",
+    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/ForwardDiscontinous",
+    "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/RightDiscontinous",
-    "Scaling factor for LeftMonotone reordering score",
+    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/BackwardDiscontinous",
+    "Scaling factor for ForwardMonotone reordering score",
     1)
 };
 
@@ -90,20 +90,21 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNode(clsSearchGraphNode &_newH
             new clsLexicalReorderingFeatureData(this->IsBidirectional.value() ? 6 : 3);
     _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
 
-    enuLexicalReorderingFields::Type Orientation = this->getLeftOreientation(_newHypothesisNode);
-    Cost_t Cost = _newHypothesisNode.targetRule().field(
-                this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();
+    enuLexicalReorderingFields::Type Orientation = this->getForwardOreientation(_newHypothesisNode);
+    Cost_t Cost =
+            _newHypothesisNode.prevNode().targetRule().field(this->FieldIndexes.at(Orientation)) *
+            this->ScalingFactors[Orientation].value();
 
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
         Data->CostElements[Orientation] =
-                _newHypothesisNode.targetRule().field(this->FieldIndexes.at(Orientation));
+                _newHypothesisNode.prevNode().targetRule().field(this->FieldIndexes.at(Orientation));
     }
 
-
-    if (this->IsBidirectional.value() && _newHypothesisNode.prevNode().isInvalid() == false){
-        Orientation = getRightOreientation(_newHypothesisNode);
-        Cost += _newHypothesisNode.prevNode().targetRule().field(
-                    this->FieldIndexes.at(Orientation)) * this->ScalingFactors[Orientation].value();
+    if (this->IsBidirectional.value()) {
+        Orientation = getBackwardOreientation(_newHypothesisNode);
+        Cost +=
+                _newHypothesisNode.targetRule().field(this->FieldIndexes.at(Orientation)) *
+                this->ScalingFactors[Orientation].value();
         if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
             Data->CostElements[Orientation] =
                     _newHypothesisNode.targetRule().field(this->FieldIndexes.at(Orientation));
@@ -121,36 +122,52 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
     Q_UNUSED(_sourceEnd)
 
     Cost_t Cost = 0;
-    for (int i = enuLexicalReorderingFields::LeftMonotone; i<= enuLexicalReorderingFields::LeftDiscontinous; ++i){
+    for (int i = enuLexicalReorderingFields::ForwardMonotone; i<= enuLexicalReorderingFields::ForwardDiscontinous; ++i){
         Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
     }
 
     if (this->IsBidirectional.value()){
-        for (int i = enuLexicalReorderingFields::RightMonotone; i<= enuLexicalReorderingFields::RightDiscontinous; ++i){
+        for (int i = enuLexicalReorderingFields::BackwardMonotone;
+             i<= enuLexicalReorderingFields::BackwardDiscontinous;
+             ++i){
             Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
         }
     }
     return Cost;
 }
 
-enuLexicalReorderingFields::Type LexicalReordering::getRightOreientation(SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
+enuLexicalReorderingFields::Type LexicalReordering::getBackwardOreientation(
+        SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
 {
+    if (_newHypothesisNode.prevNode().isInvalid()) {
+        if (_newHypothesisNode.sourceRangeBegin() == 0)
+            return enuLexicalReorderingFields::BackwardMonotone;
+        else
+            return enuLexicalReorderingFields::BackwardDiscontinous;
+    }
     if (_newHypothesisNode.sourceRangeBegin() == _newHypothesisNode.prevNode().sourceRangeEnd())
-        return enuLexicalReorderingFields::RightMonotone;
+        return enuLexicalReorderingFields::BackwardMonotone;
     else if (_newHypothesisNode.sourceRangeEnd() == _newHypothesisNode.prevNode().sourceRangeBegin())
-        return enuLexicalReorderingFields::RightSwap;
+        return enuLexicalReorderingFields::BackwardSwap;
     else
-        return enuLexicalReorderingFields::RightDiscontinous;
+        return enuLexicalReorderingFields::BackwardDiscontinous;
 }
 
-enuLexicalReorderingFields::Type LexicalReordering::getLeftOreientation(SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
+enuLexicalReorderingFields::Type LexicalReordering::getForwardOreientation(
+        SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
 {
+    if (_newHypothesisNode.prevNode().isInvalid()) {
+        if (_newHypothesisNode.sourceRangeBegin() == 0)
+            return enuLexicalReorderingFields::ForwardMonotone;
+        else
+            return enuLexicalReorderingFields::ForwardDiscontinous;
+    }
     if (_newHypothesisNode.sourceRangeBegin() == _newHypothesisNode.prevNode().sourceRangeEnd())
-        return enuLexicalReorderingFields::LeftSwap;
+        return enuLexicalReorderingFields::ForwardMonotone;
     else if (_newHypothesisNode.sourceRangeEnd() == _newHypothesisNode.prevNode().sourceRangeBegin())
-        return enuLexicalReorderingFields::LeftMonotone;
+        return enuLexicalReorderingFields::ForwardSwap;
     else
-        return enuLexicalReorderingFields::LeftDiscontinous;
+        return enuLexicalReorderingFields::ForwardDiscontinous;
 }
 
 void LexicalReordering::initRootNode(clsSearchGraphNode &_rootNode)
