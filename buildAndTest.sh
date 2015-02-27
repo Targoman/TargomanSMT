@@ -1,6 +1,6 @@
 #!/bin/sh
 
-Projects="CommonLibs NLPLibs/LanguageModel/ NLPLibs/TextProcessor/ SMTCore"
+Projects="TargomanCommon NLPLibs/TargomanLM/ NLPLibs/TargomanTextProcessor/ TargomanSMT"
 BasePath=`pwd`
 if [ "$1" == "full" ]; then
 	rm -rf out
