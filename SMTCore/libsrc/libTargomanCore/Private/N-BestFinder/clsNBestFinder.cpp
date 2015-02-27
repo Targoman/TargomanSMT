@@ -20,7 +20,7 @@ namespace NBestFinder {
 
 using namespace Common;
 using namespace Common::Configuration;
-using namespace SearchGraphBuilder;
+using namespace SearchGraph;
 using namespace RuleTable;
 
 tmplConfigurable<quint8> clsNBestFinder::MaxOptions(
@@ -36,7 +36,7 @@ const clsNBestFinder::NBestOptions_t &clsNBestFinder::nBestOptions()
     return this->NBestOptions;
 }
 
-size_t clsNBestFinder::fillBestOptions(const SearchGraphBuilder::clsSearchGraphNode &_node)
+size_t clsNBestFinder::fillBestOptions(const SearchGraph::clsSearchGraphNode &_node)
 {
     if(_node.isInvalid())
         return 0;

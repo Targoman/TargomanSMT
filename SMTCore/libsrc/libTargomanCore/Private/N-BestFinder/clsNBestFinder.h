@@ -17,7 +17,7 @@
 #include "libTargomanCommon/CmdIO.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Types.h"
-#include "Private/SearchGraphBuilder/clsSearchGraphBuilder.h"
+#include "Private/SearchGraph/clsSearchGraphBuilder.h"
 
 namespace Targoman{
 namespace Core {
@@ -42,22 +42,22 @@ public:
     typedef QMap<stuPhrasePos, stuTargetOption> NBestOptions_t;
 
 public:
-    clsNBestFinder(const SearchGraphBuilder::clsSearchGraphBuilder& _searchGraphBuilder) :
+    clsNBestFinder(const SearchGraph::clsSearchGraphBuilder& _searchGraphBuilder) :
         SearchGraphBuilderRef(_searchGraphBuilder)
     {}
     const NBestOptions_t& nBestOptions();
 
-    const SearchGraphBuilder::clsSearchGraphNode& goalNode(){
+    const SearchGraph::clsSearchGraphNode& goalNode(){
         return  this->SearchGraphBuilderRef.goalNode();
     }
 
 
 private:
-    size_t fillBestOptions(const SearchGraphBuilder::clsSearchGraphNode &_node);
+    size_t fillBestOptions(const SearchGraph::clsSearchGraphNode &_node);
 
 private:
     NBestOptions_t                                        NBestOptions;
-    const SearchGraphBuilder::clsSearchGraphBuilder&     SearchGraphBuilderRef;
+    const SearchGraph::clsSearchGraphBuilder&     SearchGraphBuilderRef;
 
 private:
     static Common::Configuration::tmplConfigurable<quint8> MaxOptions;

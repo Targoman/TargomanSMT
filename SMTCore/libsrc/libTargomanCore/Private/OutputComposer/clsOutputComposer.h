@@ -15,7 +15,7 @@
 #define TARGOMAN_CORE_PRIVATE_OUTPUTCOMPOSER_CLSOUTPUTCOMPOSER_H
 
 #include "Private/N-BestFinder/clsNBestFinder.h"
-#include "Private/SearchGraphBuilder/clsSearchGraphNode.h"
+#include "Private/SearchGraph/clsSearchGraphNode.h"
 #include "libTargomanCore/Types.h"
 
 namespace Targoman{
@@ -38,7 +38,7 @@ public:
 
 private:
     QString getTargetString(const RuleTable::clsTargetRule& _target, const stuPhrasePos& _sourcePos);
-    QString nodeTranslation(const SearchGraphBuilder::clsSearchGraphNode& _node);
+    QString nodeTranslation(const SearchGraph::clsSearchGraphNode& _node);
 
 private:
     InputDecomposer::clsInputDecomposer&  InputDecomposerRef;

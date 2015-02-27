@@ -34,7 +34,7 @@ public:
     void initialize(const QString &_configFile);
 
     Common::Cost_t scoreSearchGraphNode(
-            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
+            SearchGraph::clsSearchGraphNode& _newHypothesisNode) const;
     inline Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                              unsigned _sourceEnd,
                                              const RuleTable::clsTargetRule& _targetRule) const{
@@ -55,7 +55,7 @@ public:
 
     Common::Cost_t getPhraseCost(const RuleTable::clsTargetRule& _targetRule) const;
 
-    void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
+    void initRootNode(SearchGraph::clsSearchGraphNode &_rootNode);
 
 private:
     PhraseTable():

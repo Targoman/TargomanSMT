@@ -22,33 +22,33 @@
 namespace Targoman{
 namespace Core {
 namespace Private{
-namespace SearchGraphBuilder {
+namespace SearchGraph {
 
-class clsLexicalHypothesisData :public QSharedData
+class clsLexicalHypothesisContainerData :public QSharedData
 {
 public:
-    clsLexicalHypothesisData(){}
-    clsLexicalHypothesisData(clsLexicalHypothesisData &_other):
+    clsLexicalHypothesisContainerData(){}
+    clsLexicalHypothesisContainerData(clsLexicalHypothesisContainerData &_other):
         QSharedData(_other),
         Nodes(_other.Nodes)
     {}
-    ~clsLexicalHypothesisData(){}
+    ~clsLexicalHypothesisContainerData(){}
     QList<clsSearchGraphNode> Nodes;
 };
 
-class clsLexicalHypothesis
+class clsLexicalHypothesisContainer
 {
 public:
-    clsLexicalHypothesis();
-    ~clsLexicalHypothesis(){}
+    clsLexicalHypothesisContainer();
+    ~clsLexicalHypothesisContainer(){}
 
     const clsSearchGraphNode& bestNode() const{
         return this->Data->Nodes.first();
     }
 
 
-    inline static clsLexicalHypothesis rootLexicalHypothesis(){
-        clsLexicalHypothesis LexicalHypothesis;
+    inline static clsLexicalHypothesisContainer rootLexicalHypothesis(){
+        clsLexicalHypothesisContainer LexicalHypothesis;
         LexicalHypothesis.Data->Nodes.append(*pInvalidSearchGraphNode);
         return LexicalHypothesis;
     }
@@ -68,7 +68,7 @@ public:
 //TODO uncomment
 //private:
 public:
-    QExplicitlySharedDataPointer<clsLexicalHypothesisData> Data;
+    QExplicitlySharedDataPointer<clsLexicalHypothesisContainerData> Data;
 
     static Common::Configuration::tmplConfigurable<quint8> LexicalMaxHistogramSize;
     static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;

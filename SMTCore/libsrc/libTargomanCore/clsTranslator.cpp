@@ -46,7 +46,7 @@ void clsTranslator::init(const QString _configFilePath)
     //Load vocab by LM
     gConfigs.EmptyLMScorer->init(true);
 
-    SearchGraphBuilder::clsSearchGraphBuilder::init(_configFilePath);
+    SearchGraph::clsSearchGraphBuilder::init(_configFilePath);
 
     //continue to load rest of LM
     gConfigs.EmptyLMScorer->init(false);
@@ -60,8 +60,8 @@ stuTranslationOutput clsTranslator::translate()
         throw exTargomanCore("Translator is not initialized");
 
     //Input was decomposed in constructor
-    this->pPrivate->SGB->matchPhrase();
-    this->pPrivate->SGB->parseSentence();
+    this->pPrivate->SearchGraphBuilder->matchPhrase();
+    this->pPrivate->SearchGraphBuilder->parseSentence();
 
     stuTranslationOutput Output;
     // find NBest

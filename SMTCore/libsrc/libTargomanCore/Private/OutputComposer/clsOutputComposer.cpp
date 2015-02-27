@@ -82,7 +82,7 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
     return String;
 }
 
-QString clsOutputComposer::nodeTranslation(const SearchGraphBuilder::clsSearchGraphNode &_node)
+QString clsOutputComposer::nodeTranslation(const SearchGraph::clsSearchGraphNode &_node)
 {
     if(_node.isInvalid())
         return QString();

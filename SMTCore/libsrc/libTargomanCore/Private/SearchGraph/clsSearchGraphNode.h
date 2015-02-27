@@ -21,7 +21,7 @@
 namespace Targoman{
 namespace Core {
 namespace Private{
-namespace SearchGraphBuilder {
+namespace SearchGraph {
 
 class clsSearchGraphNodeData;
 

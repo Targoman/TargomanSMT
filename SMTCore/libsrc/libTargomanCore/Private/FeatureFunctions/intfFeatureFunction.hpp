@@ -17,7 +17,7 @@
 #include "Private/InputDecomposer/clsInput.h"
 #include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
 #include "libTargomanCore/clsTranslator.h"
-#include "Private/SearchGraphBuilder/clsSearchGraphNode.h"
+#include "Private/SearchGraph/clsSearchGraphNode.h"
 
 namespace Targoman{
 namespace Core {
@@ -37,13 +37,13 @@ public:
         gConfigs.ActiveFeatureFunctions.insert(_moduleName, this);
         this->CanComputePositionSpecificRestCost = _canComputePositionSpecificRestCost;
         this->PrecomputedIndex = RuleTable::clsTargetRule::allocatePrecomputedValue();
-        this->DataIndex =  SearchGraphBuilder::clsSearchGraphNode::allocateFeatureFunctionData();
+        this->DataIndex =  SearchGraph::clsSearchGraphNode::allocateFeatureFunctionData();
     }
 
     virtual ~intfFeatureFunction(){}
 
-    virtual bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode& _first,
-                                    const SearchGraphBuilder::clsSearchGraphNode& _second) const {
+    virtual bool nodesHaveSameState(const SearchGraph::clsSearchGraphNode& _first,
+                                    const SearchGraph::clsSearchGraphNode& _second) const {
         Q_UNUSED(_first)
         Q_UNUSED(_second)
         return true;
@@ -57,7 +57,7 @@ public:
      * The first secondary model will encounter an uninitialized hypothesis state, thus don't forget to call
      * newHypothesisNode.getHypothesisState()->initializeSecondaryModelStatesIfNecessary();
      */
-    virtual Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const =0 ;
+    virtual Common::Cost_t scoreSearchGraphNode(SearchGraph::clsSearchGraphNode& _newHypothesisNode) const =0 ;
 
     /*
      * Returns wether this feature function can compute node specific rest costs or not. If it can
@@ -79,7 +79,7 @@ public:
     virtual Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                               unsigned _sourceEnd,
                                               const RuleTable::clsTargetRule& _targetRule) const = 0;
-    virtual void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode) = 0;
+    virtual void initRootNode(SearchGraph::clsSearchGraphNode &_rootNode) = 0;
 
     virtual QStringList columnNames() const = 0;
 

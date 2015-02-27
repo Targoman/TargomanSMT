@@ -22,7 +22,7 @@
 namespace Targoman{
 namespace Core {
 namespace Private{
-namespace SearchGraphBuilder {
+namespace SearchGraph {
 
 class clsHypothesisHolderData : public QSharedData
 {
@@ -33,12 +33,12 @@ public:
     }
     clsHypothesisHolderData(const clsHypothesisHolderData& _other):
         QSharedData(_other),
-        Cardinalities(_other.Cardinalities)
+        CardinalityHypotheses(_other.CardinalityHypotheses)
     {}
     ~clsHypothesisHolderData() {}
 
 public:
-    QVector<clsCardinality> Cardinalities;
+    QVector<clsCardinalityHypothesisContainer> CardinalityHypotheses;
     Coverage_t EmptyCoverage;
 };
 
@@ -51,23 +51,23 @@ public:
     clsHypothesisHolder(){}
 
     void clear() {
-        this->Data->Cardinalities.clear();
-        this->Data->Cardinalities.append(clsCardinality::rootCoverageContainer(this->Data->EmptyCoverage));
+        this->Data->CardinalityHypotheses.clear();
+        this->Data->CardinalityHypotheses.append(clsCardinalityHypothesisContainer::rootCoverageContainer(this->Data->EmptyCoverage));
     }
     void resize(size_t _size) {
-            this->Data->Cardinalities.resize(_size);
+            this->Data->CardinalityHypotheses.resize(_size);
     }
 
     inline const clsSearchGraphNode& getRootNode(){
-        return this->Data->Cardinalities[0][this->Data->EmptyCoverage].bestNode();
+        return this->Data->CardinalityHypotheses[0][this->Data->EmptyCoverage].bestNode();
     }
 
-    inline clsCardinality& operator [](size_t _index){
-        return this->Data->Cardinalities[_index];
+    inline clsCardinalityHypothesisContainer& operator [](size_t _index){
+        return this->Data->CardinalityHypotheses[_index];
     }
 
     inline size_t size() const{
-        return this->Data->Cardinalities.size();
+        return this->Data->CardinalityHypotheses.size();
     }
 
 

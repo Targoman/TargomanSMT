@@ -23,7 +23,7 @@
 namespace Targoman{
 namespace Core {
 namespace Private{
-namespace SearchGraphBuilder {
+namespace SearchGraph {
 
 using namespace Common;
 using namespace Common::Configuration;
@@ -175,13 +175,13 @@ bool clsSearchGraphBuilder::parseSentence()
                 continue;
             }
 
-            for(LexicalHypothesisContainer_t::Iterator PrevCoverageIter = this->Data->HypothesisHolder[PrevCardinality].lexicalHypotheses().begin();
+            for(CoverageLexicalHypothesisMap_t::Iterator PrevCoverageIter = this->Data->HypothesisHolder[PrevCardinality].lexicalHypotheses().begin();
                 PrevCoverageIter != this->Data->HypothesisHolder[PrevCardinality].lexicalHypotheses().end();
                 ++PrevCoverageIter){
 
 
                 const Coverage_t& PrevCoverage = PrevCoverageIter.key();
-                clsLexicalHypothesis& PrevLexHypoContainer = PrevCoverageIter.value();
+                clsLexicalHypothesisContainer& PrevLexHypoContainer = PrevCoverageIter.value();
 
                 Q_ASSERT(PrevCoverage.count(true) == PrevCardinality);
                 Q_ASSERT(PrevLexHypoContainer.nodes().size());
@@ -234,7 +234,7 @@ bool clsSearchGraphBuilder::parseSentence()
                     if (PhraseCandidates.isInvalid())
                         continue; //TODO If there are no more places to fill after this startpos break
 
-                    clsLexicalHypothesis& NewLexHypoContainer =
+                    clsLexicalHypothesisContainer& NewLexHypoContainer =
                             this->Data->HypothesisHolder[NewCardinality][NewCoverage];
 
                     Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseBeginPos, NewPhraseEndPos);

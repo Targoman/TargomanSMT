@@ -17,7 +17,7 @@
 namespace Targoman{
 namespace Core {
 namespace Private{
-namespace SearchGraphBuilder {
+namespace SearchGraph {
 
 using namespace RuleTable;
 using namespace Common;

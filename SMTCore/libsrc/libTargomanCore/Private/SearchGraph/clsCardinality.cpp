@@ -18,23 +18,23 @@
 namespace Targoman{
 namespace Core {
 namespace Private{
-namespace SearchGraphBuilder {
+namespace SearchGraph {
 
 using namespace Common;
 using namespace Common::Configuration;
 
-tmplConfigurable<quint8> clsCardinality::ReorderingHistogramSize(
+tmplConfigurable<quint8> clsCardinalityHypothesisContainer::ReorderingHistogramSize(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingHistogramSize",
         "TODO Desc",
         100);
 
-clsCardinality::clsCardinality() :
-    Data(new clsCardinalityData)
+clsCardinalityHypothesisContainer::clsCardinalityHypothesisContainer() :
+    Data(new clsCardinalityHypothesisContainerData)
 {}
 
-void clsCardinality::dump(const QString& _prefix)
+void clsCardinalityHypothesisContainer::dump(const QString& _prefix)
 {
-    for(LexicalHypothesisContainer_t::ConstIterator Iter = this->Data->LexicalHypothesisContainer.begin();
+    for(CoverageLexicalHypothesisMap_t::ConstIterator Iter = this->Data->LexicalHypothesisContainer.begin();
         Iter != this->Data->LexicalHypothesisContainer.end();
         ++Iter){
         for(int i=0; i<Iter.value().nodes().size(); ++i){
@@ -55,7 +55,7 @@ void clsCardinality::dump(const QString& _prefix)
 
 }
 
-bool clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesis &_container, clsSearchGraphNode &_node)
+bool clsCardinalityHypothesisContainer::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesisContainer &_container, clsSearchGraphNode &_node)
 {
 
     size_t OldContainerSize = _container.nodes().size();
@@ -74,10 +74,10 @@ bool clsCardinality::insertNewHypothesis(const Coverage_t &_coverage, clsLexical
     return InsertionDone;
 }
 
-bool clsCardinality::mustBePruned(Cost_t _cost) const
+bool clsCardinalityHypothesisContainer::mustBePruned(Cost_t _cost) const
 {
-    if (clsCardinality::ReorderingHistogramSize.value() ||
-        this->Data->TotalSearchGraphNodeCount < clsCardinality::ReorderingHistogramSize.value())
+    if (clsCardinalityHypothesisContainer::ReorderingHistogramSize.value() ||
+        this->Data->TotalSearchGraphNodeCount < clsCardinalityHypothesisContainer::ReorderingHistogramSize.value())
         return false;
 
     if (_cost > this->Data->WorstLexicalHypothesis->nodes().last().getTotalCost())
@@ -86,12 +86,12 @@ bool clsCardinality::mustBePruned(Cost_t _cost) const
     return false;
 }
 
-void clsCardinality::updateWorstNode()
+void clsCardinalityHypothesisContainer::updateWorstNode()
 {
     Cost_t  WorstCost = -INFINITY;
-    LexicalHypothesisContainer_t::Iterator WorstLexIter = this->Data->LexicalHypothesisContainer.end();
+    CoverageLexicalHypothesisMap_t::Iterator WorstLexIter = this->Data->LexicalHypothesisContainer.end();
     Coverage_t WorstLexCoverage;
-    for(LexicalHypothesisContainer_t::Iterator LexIter = this->Data->LexicalHypothesisContainer.begin();
+    for(CoverageLexicalHypothesisMap_t::Iterator LexIter = this->Data->LexicalHypothesisContainer.begin();
         LexIter != this->Data->LexicalHypothesisContainer.end();
         ++LexIter){
         //TODO Why we have empty container
@@ -110,13 +110,13 @@ void clsCardinality::updateWorstNode()
     this->Data->WorstCoverage = WorstLexCoverage;
 }
 
-void clsCardinality::pruneAndUpdateWorstNode(const Coverage_t& _coverage, clsLexicalHypothesis &_lexicalHypo, const clsSearchGraphNode &_node)
+void clsCardinalityHypothesisContainer::pruneAndUpdateWorstNode(const Coverage_t& _coverage, clsLexicalHypothesisContainer &_lexicalHypo, const clsSearchGraphNode &_node)
 {
     if (_node.isRecombined())
         return;
 
-    if (clsCardinality::ReorderingHistogramSize.value() &&
-        this->Data->TotalSearchGraphNodeCount > clsCardinality::ReorderingHistogramSize.value()){
+    if (clsCardinalityHypothesisContainer::ReorderingHistogramSize.value() &&
+        this->Data->TotalSearchGraphNodeCount > clsCardinalityHypothesisContainer::ReorderingHistogramSize.value()){
 
         Q_ASSERT(this->Data->WorstLexicalHypothesis->nodes().size());
         this->Data->WorstLexicalHypothesis->nodes().removeLast();

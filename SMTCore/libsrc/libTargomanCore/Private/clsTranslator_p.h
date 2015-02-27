@@ -16,7 +16,7 @@
 
 #include <QScopedPointer>
 #include "InputDecomposer/clsInput.h"
-#include "SearchGraphBuilder/clsSearchGraphBuilder.h"
+#include "SearchGraph/clsSearchGraphBuilder.h"
 #include "N-BestFinder/clsNBestFinder.h"
 #include "OutputComposer/clsOutputComposer.h"
 
@@ -28,8 +28,8 @@ class clsTranslatorPrivate{
 public:
     clsTranslatorPrivate(const QString & _inputStr) :
         Input(new InputDecomposer::clsInputDecomposer (_inputStr)),
-        SGB(new SearchGraphBuilder::clsSearchGraphBuilder(Input->tokens())),
-        NBest(new NBestFinder::clsNBestFinder(*this->SGB)),
+        SearchGraphBuilder(new SearchGraph::clsSearchGraphBuilder(Input->tokens())),
+        NBest(new NBestFinder::clsNBestFinder(*this->SearchGraphBuilder)),
         Output(new OutputComposer::clsOutputComposer(*this->Input, *this->NBest))
     {}
 
@@ -37,7 +37,7 @@ public:
 
 public:
     QScopedPointer<InputDecomposer::clsInputDecomposer> Input;
-    QScopedPointer<SearchGraphBuilder::clsSearchGraphBuilder> SGB;
+    QScopedPointer<SearchGraph::clsSearchGraphBuilder> SearchGraphBuilder;
     QScopedPointer<NBestFinder::clsNBestFinder> NBest;
     QScopedPointer<OutputComposer::clsOutputComposer> Output;
 

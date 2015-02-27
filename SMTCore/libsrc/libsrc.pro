@@ -13,16 +13,16 @@ HEADERS += \
     libTargomanCore/Private/InputDecomposer/clsInput.h \
     libTargomanCore/Private/InputDecomposer/clsToken.h \
     libTargomanCore/clsTranslator.h \
-    libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphBuilder.h \
+    libTargomanCore/Private/SearchGraph/clsSearchGraphBuilder.h \
     libTargomanCore/Private/clsTranslator_p.h \
     libTargomanCore/Private/GlobalConfigs.h \
     libTargomanCore/Private/N-BestFinder/clsNBestFinder.h \
     libTargomanCore/Private/OutputComposer/clsOutputComposer.h \
-    libTargomanCore/Private/SearchGraphBuilder/clsLexicalHypothesis.h \
+    libTargomanCore/Private/SearchGraph/clsLexicalHypothesis.h \
     libTargomanCore/Private/Proxies/intfLMSentenceScorer.hpp \
     libTargomanCore/Private/Proxies/LanguageModel/clsTargomanLMProxy.h \
-    libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphNode.h \
-    libTargomanCore/Private/SearchGraphBuilder/clsCardinality.h \
+    libTargomanCore/Private/SearchGraph/clsSearchGraphNode.h \
+    libTargomanCore/Private/SearchGraph/clsCardinality.h \
     libTargomanCore/Private/FeatureFunctions/intfFeatureFunction.hpp \
     libTargomanCore/Private/FeatureFunctions/LexicalReordering/LexicalReordering.h \
     libTargomanCore/Private/RuleTable/clsRuleNode.h \
@@ -30,7 +30,7 @@ HEADERS += \
     libTargomanCore/Private/RuleTable/clsJanePlainRuleTable.h \
     libTargomanCore/Private/RuleTable/intfRuleTable.hpp \
     libTargomanCore/Private/FeatureFunctions/PhraseTable/PhraseTable.h \
-    libTargomanCore/Private/SearchGraphBuilder/clsHypothesisHolder.hpp \
+    libTargomanCore/Private/SearchGraph/clsHypothesisHolder.hpp \
     libTargomanCore/Private/OOVHandler/OOVHandler.h \
     libTargomanCore/Private/OOVHandler/intfOOVHandlerModule.hpp \
     libTargomanCore/Private/OOVHandler/OOVDefaultHandlers.h \
@@ -48,11 +48,11 @@ SOURCES += libID.cpp \
     libTargomanCore/Private/GlobalConfigs.cpp \
     libTargomanCore/Private/N-BestFinder/clsNBestFinder.cpp \
     libTargomanCore/Private/OutputComposer/clsOutputComposer.cpp \
-    libTargomanCore/Private/SearchGraphBuilder/clsLexicalHypothesis.cpp \
+    libTargomanCore/Private/SearchGraph/clsLexicalHypothesis.cpp \
     libTargomanCore/Private/Proxies/LanguageModel/clsTargomanLMProxy.cpp \
-    libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphNode.cpp \
-    libTargomanCore/Private/SearchGraphBuilder/clsCardinality.cpp \
-    libTargomanCore/Private/SearchGraphBuilder/clsSearchGraphBuilder.cpp \
+    libTargomanCore/Private/SearchGraph/clsSearchGraphNode.cpp \
+    libTargomanCore/Private/SearchGraph/clsCardinality.cpp \
+    libTargomanCore/Private/SearchGraph/clsSearchGraphBuilder.cpp \
     libTargomanCore/Private/FeatureFunctions/LexicalReordering/LexicalReordering.cpp \
     libTargomanCore/Private/RuleTable/clsRuleNode.cpp \
     libTargomanCore/Private/RuleTable/clsTargetRule.cpp \

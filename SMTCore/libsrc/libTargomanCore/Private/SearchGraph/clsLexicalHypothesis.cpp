@@ -17,29 +17,29 @@
 namespace Targoman{
 namespace Core {
 namespace Private{
-namespace SearchGraphBuilder {
+namespace SearchGraph {
 
 using namespace Common;
 using namespace Common::Configuration;
 
 const Cost_t PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST = 1e10;
-tmplConfigurable<quint8> clsLexicalHypothesis::LexicalMaxHistogramSize(
+tmplConfigurable<quint8> clsLexicalHypothesisContainer::LexicalMaxHistogramSize(
         clsSearchGraphBuilder::moduleBaseconfig() + "/LexicalMaxHistogramSize",
         "TODO Desc",
         100
         );
 
-Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesis::KeepRecombined(
+Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesisContainer::KeepRecombined(
         clsSearchGraphBuilder::moduleBaseconfig() + "/KeepRecombined",
         "Do recombination(default) or let nodes to be separated",
         true
         );
 
-clsLexicalHypothesis::clsLexicalHypothesis() :
-    Data(new clsLexicalHypothesisData)
+clsLexicalHypothesisContainer::clsLexicalHypothesisContainer() :
+    Data(new clsLexicalHypothesisContainerData)
 {}
 
-bool clsLexicalHypothesis::mustBePruned(Cost_t _totalCost)
+bool clsLexicalHypothesisContainer::mustBePruned(Cost_t _totalCost)
 {
     if (this->Data->Nodes.isEmpty())
         return false;
@@ -53,7 +53,7 @@ bool clsLexicalHypothesis::mustBePruned(Cost_t _totalCost)
     return true;
 }
 
-Cost_t clsLexicalHypothesis::getBestCost() const
+Cost_t clsLexicalHypothesisContainer::getBestCost() const
 {
     if (this->Data->Nodes.isEmpty())
         return PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST;
@@ -61,13 +61,13 @@ Cost_t clsLexicalHypothesis::getBestCost() const
     return this->bestNode().getCost();
 }
 
-bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
+bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
     size_t InsertionPos = this->Data->Nodes.size();
     for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
         clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
         if (HypoNode.haveSameFuture(_node)){
-            if (clsLexicalHypothesis::KeepRecombined.value()){
+            if (clsLexicalHypothesisContainer::KeepRecombined.value()){
                 HypoNode.recombine(_node);
                 return true;
             }else{
@@ -96,9 +96,9 @@ bool clsLexicalHypothesis::insertHypothesis(clsSearchGraphNode& _node)
     return true;
 }
 
-void clsLexicalHypothesis::finalizeRecombination()
+void clsLexicalHypothesisContainer::finalizeRecombination()
 {
-    if(clsLexicalHypothesis::KeepRecombined.value() == false)
+    if(clsLexicalHypothesisContainer::KeepRecombined.value() == false)
         return;
     while (this->nodes().size() > 1) {
         this->Data->Nodes[0].recombine(this->Data->Nodes[1]);

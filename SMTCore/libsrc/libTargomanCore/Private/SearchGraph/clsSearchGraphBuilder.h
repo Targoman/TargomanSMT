@@ -24,7 +24,7 @@
 namespace Targoman{
 namespace Core {
 namespace Private{
-namespace SearchGraphBuilder {
+namespace SearchGraph {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exSearchGraphBuilder, exTargomanCore);
 

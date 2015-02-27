@@ -21,7 +21,7 @@ namespace FeatureFunction {
 
 using namespace Common;
 using namespace Common::Configuration;
-using namespace SearchGraphBuilder;
+using namespace SearchGraph;
 using namespace InputDecomposer;
 using namespace RuleTable;
 
@@ -133,7 +133,7 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
     return Cost;
 }
 
-enuLexicalReorderingFields::Type LexicalReordering::getRightOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
+enuLexicalReorderingFields::Type LexicalReordering::getRightOreientation(SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
 {
     if (_newHypothesisNode.sourceRangeBegin() == _newHypothesisNode.prevNode().sourceRangeEnd())
         return enuLexicalReorderingFields::RightMonotone;
@@ -143,7 +143,7 @@ enuLexicalReorderingFields::Type LexicalReordering::getRightOreientation(SearchG
         return enuLexicalReorderingFields::RightDiscontinous;
 }
 
-enuLexicalReorderingFields::Type LexicalReordering::getLeftOreientation(SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
+enuLexicalReorderingFields::Type LexicalReordering::getLeftOreientation(SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
 {
     if (_newHypothesisNode.sourceRangeBegin() == _newHypothesisNode.prevNode().sourceRangeEnd())
         return enuLexicalReorderingFields::LeftSwap;
