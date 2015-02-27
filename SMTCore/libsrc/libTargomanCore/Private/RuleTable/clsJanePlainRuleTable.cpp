@@ -184,7 +184,6 @@ void clsJanePlainRuleTable::loadTableData()
  * @param _acceptedAdditionalFields         Additional accepted fields like lexical reordering model.
  * @param _ruleNumber                       line number of rule table.
  */
-
 void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
                                     const QStringList &_allFields,
                                     const QList<size_t>& _acceptedAdditionalFields,
@@ -220,7 +219,8 @@ void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
     clsTargetRule TargetRule(TargetPhrase, Costs);
 
     clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(SourcePhrase.toStdVector())->getData();
-    RuleNode.detachInvalidData();
+    if(RuleNode.isInvalid())
+        RuleNode.detachInvalidData();
     RuleNode.targetRules().append(TargetRule);
 }
 

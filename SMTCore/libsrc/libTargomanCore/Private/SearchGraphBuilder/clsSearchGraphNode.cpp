@@ -65,6 +65,8 @@ size_t findInsertionPos(const Container_t& _conatiner, const Class_t& _element, 
 
 void clsSearchGraphNode::recombine(clsSearchGraphNode &_node)
 {
+    Q_ASSERT(this->Data->IsRecombined == false && _node.Data->IsRecombined == false);
+
     if (_node.getTotalCost() < this->getTotalCost()){
         this->Data.swap(_node.Data);
     }
@@ -73,20 +75,18 @@ void clsSearchGraphNode::recombine(clsSearchGraphNode &_node)
         return _secondNode.getTotalCost() - _firstNode.getTotalCost();
     };
 
-    this->Data->CombinedNodes.insert(findInsertionPos(this->Data->CombinedNodes, _node, NodeComparator),
-                                     _node);
-
-    foreach(const clsSearchGraphNode& Node, _node.Data->CombinedNodes){
-        int InsertionPos = findInsertionPos(this->Data->CombinedNodes, _node, NodeComparator);
-        for (int i = InsertionPos; i>=0; --i){
-            if (_node.Data == Node.Data){
-                InsertionPos = -1;
-                break;
-            }
-        }
-        if (InsertionPos >= 0)
-            this->Data->CombinedNodes.insert(InsertionPos, Node);
-    }
+    this->Data->CombinedNodes.insert(
+                findInsertionPos(this->Data->CombinedNodes, _node, NodeComparator),
+                _node);
+    // We do not need to find ...
+    /*
+    foreach(const clsSearchGraphNode& Node, _node.Data->CombinedNodes)
+        this->Data->CombinedNodes.insert(
+                findInsertionPos(this->Data->CombinedNodes, Node, NodeComparator),
+                Node);
+    */
+    // TODO CombinedNodes QList can be swapped instead if appended and cleared because one of the QLists is surely empty
+    this->Data->CombinedNodes.append(_node.Data->CombinedNodes);
     _node.Data->CombinedNodes.clear();
     _node.Data->IsRecombined = true;
 }
