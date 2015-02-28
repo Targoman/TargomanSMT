@@ -26,14 +26,24 @@ namespace SMT {
 namespace Private{
 namespace SearchGraph {
 
+/**
+ * @brief The clsPhraseCandidateCollectionData class container for the clsPhraseCandidateCollection data
+ */
 class clsPhraseCandidateCollectionData : public QSharedData {
 public:
+    /**
+     * @brief clsPhraseCandidateCollectionData  invalid phrase collection data constructor
+     */
     clsPhraseCandidateCollectionData()
     {
         this->UsableTargetRuleCount = 0;
         this->BestApproximateCost = INFINITY;
     }
 
+    /**
+     * @brief clsPhraseCandidateCollectionData  copy constructor
+     * @param _other                            the data class from which copy will be done
+     */
     clsPhraseCandidateCollectionData(const clsPhraseCandidateCollectionData& _other) :
         QSharedData(_other),
         UsableTargetRuleCount(_other.UsableTargetRuleCount),
@@ -41,6 +51,12 @@ public:
         BestApproximateCost(_other.BestApproximateCost)
     {}
 
+    /**
+     * @brief clsPhraseCandidateCollectionData  main constructor that gets rule node, beginning and ending position for the candidate phrase and builds the usable target rule list
+     * @param _beginPos                         beginning position of source phrase
+     * @param _endPos                           ending position of source phrase
+     * @param _ruleNode                         the rule node from which target rules will be considered
+     */
     clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const RuleTable::clsRuleNode& _ruleNode);
 
 public:
@@ -52,29 +68,64 @@ private:
     static Common::Configuration::tmplConfigurable<quint8> ObservationHistogramSize;
 };
 
+/**
+ * @brief The clsPhraseCandidateCollection class    placeholder for the possible translations of an input phrase precomputed to speed up the translation process
+ */\
 class clsPhraseCandidateCollection {
 public:
+    /**
+     * @brief clsPhraseCandidateCollection  invalid phrase collection constructor
+     */
     clsPhraseCandidateCollection() :
         Data(new clsPhraseCandidateCollectionData)
     {}
+
+    /**
+     * @brief clsPhraseCandidateCollection  copy constructor
+     * @param _other                        the collection to be copied
+     */
     clsPhraseCandidateCollection(const clsPhraseCandidateCollection& _other) :
         Data(_other.Data)
     {}
+
+    /**
+     * @brief clsPhraseCandidateCollection  main constructor that gets rule node, beginning and ending position for the candidate phrase and calls the data constructor to build the usable rule list
+     * @param _beginPos                     beginning position of source phrase
+     * @param _endPos                       ending position of source phrase
+     * @param _ruleNode                     the rule node from which target rules will be considered
+     */
     clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos,  const RuleTable::clsRuleNode& _ruleNode) :
         Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, _ruleNode))
     {}
 
+    /**
+     * @brief targetRules   getter function for target rules
+     * @return
+     */
     const QList<RuleTable::clsTargetRule>& targetRules() const {
         return this->Data->TargetRules;
     }
+
+    /**
+     * @brief bestApproximateCost   computed best approximate cost used for filling the rest cost precomputation matrix
+     * @return
+     */
     Common::Cost_t bestApproximateCost() const {
         return this->Data->BestApproximateCost;
     }
 
+    /**
+     * @brief isInvalid             finds out whether any target rules were found for the given source phrase
+     * @return                      true if there are any candidate translations for the source phrase and false otherwise
+     */
     bool isInvalid() const {
         return this->Data->TargetRules.size() == 0;
     }
 
+    /**
+     * @brief usableTargetRuleCount returns number of usable target rules taking into accout histogram pruning (limiting ourselves to n-best translation candidates for any given source phrase)
+     * @return                      returns number of usable target rules taking into accout histogram pruning (limiting ourselves to n-best translation candidates for any given source phrase)
+     */
     inline int usableTargetRuleCount() const {
         return this->Data->UsableTargetRuleCount;
     }
