@@ -40,18 +40,6 @@ tmplConfigurable<bool>   clsSearchGraphBuilder::DoComputePositionSpecificRestCos
         clsSearchGraphBuilder::moduleBaseconfig() + "/DoComputeReorderingRestCosts",
         "TODO Desc",
         true);
-tmplConfigurable<bool>   clsSearchGraphBuilder::PruneAtStage2(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/PruneAtStage2",
-        "TODO Desc",
-        true);
-tmplConfigurable<bool>   clsSearchGraphBuilder::PruneAtStage3(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/PruneAtStage3",
-        "TODO Desc",
-        true);
-tmplConfigurable<bool>   clsSearchGraphBuilder::PruneAtStage4(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/PruneAtStage4",
-        "TODO Desc",
-        true);
 tmplConfigurable<quint8> clsPhraseCandidateCollectionData::ObservationHistogramSize(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ObservationHistogramSize",
         "TODO Desc",
@@ -65,7 +53,10 @@ RuleTable::clsRuleNode*                clsSearchGraphBuilder::UnknownWordRuleNod
 clsSearchGraphBuilder::clsSearchGraphBuilder(const Sentence_t& _sentence):
     Data(new clsSearchGraphBuilderData(_sentence))
 {}
-
+/**
+ * @brief Loads rule and phrase tables, inititializes all feature functions and sets #UnknownWordRuleNode.
+ * @param _configFilePath Address of config file.
+ */
 void clsSearchGraphBuilder::init(const QString& _configFilePath)
 {
     clsSearchGraphBuilder::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
@@ -96,6 +87,11 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
 
     pInvalidSearchGraphNode = new clsSearchGraphNode;
 }
+
+/**
+ * @brief Looks up prefix tree for all phrases that matches with some parts of input sentence and stores them in the
+ * PhraseCandidateCollections of #Data. This function also calculates maximum length of matching source phrase with phrase table.
+ */
 
 void clsSearchGraphBuilder::collectPhraseCandidates()
 {
@@ -139,6 +135,14 @@ void clsSearchGraphBuilder::collectPhraseCandidates()
     }
 }
 
+
+/**
+ * @brief This function checks IBM1 Constraints.
+ *
+ * Checks whether number of zeros before last 1 in the input coverage is less than #ReorderingConstraintMaximumRuns or not.
+ * @param _newCoverage
+ * @return
+ */
 bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
 {
     //Find last bit set then check how many bits are zero before this.
@@ -149,6 +153,20 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
         }
     return true;
 }
+
+
+/**
+ * @brief This is the main function that performs the decoding process.
+ *
+ * This function first initializes the rest cost matrix in order to be able to calculate rest costs in each path of translation.
+ * Then in order to seperate all search graph nodes, this function seperates them by their number of translated words. This notion is called cardinality.
+ * For each cardinality loops over all posible previous cardinalities and for each one of them finds all nodes with those cardinalities.
+ * In the next step, these founded previous nodes, based on their translation coverage, will be expanded to make new search
+ * graph nodes with NewCardinality size. In this process, some of new Nodes will be prunned to have valid and more
+ * promising search graph nodes.
+ *
+ * @return Returns whether it was able to find a translation or not.
+ */
 
 bool clsSearchGraphBuilder::decode()
 {
@@ -267,7 +285,7 @@ bool clsSearchGraphBuilder::decode()
                                           "RestCost: [" << RestCost << "] " <<
                                           "TargetPhrase: [" << CurrentPhraseCandidate.toStr() << "]\n" <<
                                           "\t\t\tScores: " << NewHypoNode.costElements()
-                                          )
+                                          );
 
 
                             // If current NewHypoNode is worse than worst stored node ignore it
@@ -281,7 +299,7 @@ bool clsSearchGraphBuilder::decode()
                             if(this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage,
                                                                                                 NewLexHypoContainer,
                                                                                                 NewHypoNode)) {
-                                TargomanDebug(7, "\nNew Hypothesis Inserted.")
+                                TargomanDebug(7, "\nNew Hypothesis Inserted.");
                             }
                         }
 
@@ -317,6 +335,12 @@ bool clsSearchGraphBuilder::decode()
     }
 }
 
+/**
+ * @brief Initializes rest cost matrix
+ *
+ * For every possible range of words of input sentence, finds approximate cost of every feature fucntions, then
+ * tries to reduce that computed rest cost if sum of rest cost of splited phrase is less than whole phrase rest cost.
+ */
 void clsSearchGraphBuilder::initializeRestCostsMatrix()
 {
     this->Data->RestCostMatrix.resize(this->Data->Sentence.size());
@@ -344,6 +368,16 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
                             SumSplit);
             }
 }
+
+/**
+ * @brief This function approximates rest cost of translation for every feature function.
+ * This approximation is based on covered word of transltion and begin and end position of source sentence words.
+ * @param _coverage Covered word for translation.
+ * @param _beginPos start postion of source sentence.
+ * @param _endPos end position of source sentence
+ * @note _beginPos and _endPos helps us to infer previous node coverage.
+ * @return returns approximate cost of rest cost.
+ */
 
 Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t& _coverage, size_t _beginPos, size_t _endPos) const
 {

@@ -94,9 +94,17 @@ private:
     QExplicitlySharedDataPointer<clsSearchGraphNodeData>     Data;
 };
 
+
+/**
+ * @brief The clsSearchGraphNodeData class is responsible for storing and managing data member of clsSearchGraphNode class.
+ */
 class clsSearchGraphNodeData : public QSharedData
 {
 public:
+
+    /**
+     * @brief This is the default constructor of this class.
+     */
     clsSearchGraphNodeData() :
         IsFinal(false),
         Cost(0),
@@ -111,6 +119,17 @@ public:
     {
     }
 
+
+    /**
+     * @brief                   Constructor of this class.
+     * @param _prevNode         Previous node of this search graph node.
+     * @param _startPos         This node has a translation for a phrase of input sentence, start position of this phrase in input sentence is this variable.
+     * @param _endPos           This node has a translation for a phrase of input sentence, end position of this phrase in input sentence is this variable.
+     * @param _newCoverage      Updated covered for that is translated is stored in this variable.
+     * @param _targetRule       Target language phrase translation.
+     * @param _isFinal          Has this node covered translation for all word of input sentence.
+     * @param _restCost         approximated cost of rest of translation.
+     */
     clsSearchGraphNodeData(const clsSearchGraphNode& _prevNode,
                            quint8 _startPos,
                            quint8 _endPos,
@@ -131,6 +150,9 @@ public:
     {
     }
 
+    /**
+     * @brief Copy constructor of this class.
+     */
     clsSearchGraphNodeData(clsSearchGraphNodeData& _other) :
         QSharedData(_other),
         IsFinal(_other.IsFinal),
@@ -146,28 +168,32 @@ public:
     {}
 
 public:
-    bool                                IsFinal;
-
-    Common::Cost_t                      Cost;
-    Common::Cost_t                      RestCost;
-    const RuleTable::clsTargetRule&     TargetRule;
-    bool                                IsRecombined;
-
-    Coverage_t                          Coverage;
-    size_t                              SourceRangeBegin;
-    size_t                              SourceRangeEnd;
-
-    const clsSearchGraphNode*           PrevNode;
-    QList<clsSearchGraphNode>           CombinedNodes;
-
-    QVector<intfFeatureFunctionData*>   FeatureFunctionsData;
-    static  size_t                      RegisteredFeatureFunctionCount;
+    bool                                IsFinal;                        /**< Has this node covered translation for all word of input sentence.*/
+    Common::Cost_t                      Cost;                           /**< Cost of translation up to now.*/
+    Common::Cost_t                      RestCost;                       /**< Approximated cost of rest of translation.*/
+    const RuleTable::clsTargetRule&     TargetRule;                     /**< Target language phrase translation is stored in this variable.*/
+    bool                                IsRecombined;                   /**< Has this node been combined with another node or not.*/
+    Coverage_t                          Coverage;                       /**< Covered words for translation.*/
+    size_t                              SourceRangeBegin;               /**< This node has a translation for a phrase of input sentence, start position of this phrase in input sentence is this variable.*/
+    size_t                              SourceRangeEnd;                 /**< This node has a translation for a phrase of input sentence, end position of this phrase in input sentence is this variable.*/
+    const clsSearchGraphNode*           PrevNode;                       /**< Previous node of this search graph node.*/
+    QList<clsSearchGraphNode>           CombinedNodes;                  /**< List of nodes that are combined with this node.*/
+    QVector<intfFeatureFunctionData*>   FeatureFunctionsData;           /**< Every feature function has a special data. Each index of this list stores data for one the feature function. Each feature function knows his own index in this list.  */
+    static  size_t                      RegisteredFeatureFunctionCount; /**< Number of active feature functions.*/
 };
 
+
+/**
+ * @brief Sum of cost and rest cost of this node.
+ * @return Returns total cost for this node.
+ */
 inline Common::Cost_t clsSearchGraphNode::getTotalCost() const{
     return this->Data->Cost + this->Data->RestCost;
 }
 
+/**
+ * @brief Returns Cost of this node up to now.
+ */
 inline  Common::Cost_t clsSearchGraphNode::getCost() const{
     return this->Data->Cost;
 }
@@ -186,6 +212,9 @@ inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecom
 inline bool clsSearchGraphNode::isInvalid() const {return this->Data == InvalidSearchGraphNodeData;}
 inline bool clsSearchGraphNode::isFinal(){return this->Data->IsFinal;}
 
+/**
+ * @brief Returns a list of cost of all feature funcitons.
+ */
 QList<Common::Cost_t> clsSearchGraphNode::costElements() const
 {
     QList<Common::Cost_t> result;
@@ -194,10 +223,18 @@ QList<Common::Cost_t> clsSearchGraphNode::costElements() const
             result.append(this->Data->FeatureFunctionsData.at(i)->costElements().toList());
     return result;
 }
-
+/**
+ * @brief sets data of a feature function in FeatureFunctionsData member of #Data.
+ * @param _index    index of feature function.
+ * @param _data     data of that feature function.
+ */
 inline void clsSearchGraphNode::setFeatureFunctionData(size_t _index, intfFeatureFunctionData* _data){
     this->Data->FeatureFunctionsData[_index] = _data;
 }
+/**
+ * @brief Return data of a feature function.
+ * @param _index index of feature funciton.
+ */
 const intfFeatureFunctionData *clsSearchGraphNode::featureFunctionDataAt(size_t _index) const {
     return this->Data->FeatureFunctionsData.at(_index);
 }

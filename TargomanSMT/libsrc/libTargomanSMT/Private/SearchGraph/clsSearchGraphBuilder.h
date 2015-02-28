@@ -83,13 +83,26 @@ private:
     QExplicitlySharedDataPointer<clsPhraseCandidateCollectionData> Data;
 };
 
+/**
+ * @brief The clsSearchGraphBuilderData class stores data members of clsSearchGraphBuilder class
+ * and it is the top most container. #HypothesisHolder stores a list clsCardinalityHypothesisContainer instances
+ * for translation process.
+ */
 class clsSearchGraphBuilderData : public QSharedData
 {
 public:
+    /**
+     * @brief Constructor of this class stores input sentence to one of its data members
+     * and resizes hypothesis holder with input sentence size.
+     * @param _sentence input sentence.
+     */
     clsSearchGraphBuilderData(const InputDecomposer::Sentence_t& _sentence):
         HypothesisHolder(_sentence.size()),
         Sentence(_sentence)
     {}
+    /**
+     * @brief This is a copy constructor for this class
+     */
     clsSearchGraphBuilderData(const clsSearchGraphBuilderData& _other):
         QSharedData(_other),
         PhraseCandidateCollections(_other.PhraseCandidateCollections),
@@ -102,15 +115,17 @@ public:
     ~clsSearchGraphBuilderData(){}
 
 public:
-    QList<QVector<clsPhraseCandidateCollection>>    PhraseCandidateCollections;
-    const clsSearchGraphNode*                       GoalNode;
-    int                                             MaxMatchingSourcePhraseCardinality;
-    clsHypothesisHolder                             HypothesisHolder;
-    const InputDecomposer::Sentence_t &             Sentence;
-    RestCostMatrix_t                                RestCostMatrix;
+    QList<QVector<clsPhraseCandidateCollection>>        PhraseMatchTable;                       /**< Loaded phrase table will be stored in this 2D container. The first dimension is correspond to begin position of sentence and the second dimesion is for end position of sentence.*/
+    const clsSearchGraphNode*                           GoalNode;                               /**< Our best founded translation*/
+    int                                                 MaxMatchingSourcePhraseCardinality;     /**< Max length of source phrases loaded from phrase table.*/
+    clsHypothesisHolder                                 HypothesisHolder;                       /**< A Container to hold clsCardinalityHypothesisContainer */
+    const InputDecomposer::Sentence_t&                  Sentence;                               /**< Input sentence.*/
+    RestCostMatrix_t                                    RestCostMatrix;                         /**< A 2D container to store approximate rest cost of translation dim one correspond to begin pos of sentence and dim two correspond to end pos of sentence.*/
 };
 
-
+/**
+ * @brief The clsSearchGraphBuilder class has the main duty of decoding process and loading phrase table contents.
+ */
 class clsSearchGraphBuilder
 {
 public:
@@ -124,10 +139,17 @@ public:
     void collectPhraseCandidates();
     bool decode();
 
+    /**
+     * @brief Returns out best founded translation.
+     */
     inline const clsSearchGraphNode& goalNode() const{
         return *this->Data->GoalNode;
     }
 
+    /**
+     * @brief Returns a list of search graph node that has similar coverage of translation.
+     * @param[in] _coverage Covered translated words.
+     */
     inline const QList<clsSearchGraphNode>& getSameCoverageNodes(Coverage_t _coverage) const {
         return this->Data->HypothesisHolder[_coverage.count(true)].lexicalHypotheses().value(_coverage).nodes();
     }
