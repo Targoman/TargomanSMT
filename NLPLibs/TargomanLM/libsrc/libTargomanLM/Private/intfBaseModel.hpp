@@ -24,6 +24,7 @@ class intfBaseModel
 {
 public:
     intfBaseModel(enuMemoryModel::Type _type) : Type(_type){}
+    virtual ~intfBaseModel(){}
 
     virtual void init(quint32 _maxNGramCount) = 0;
     virtual void setUnknownWordDefaults(Targoman::Common::LogP_t _prob, Targoman::Common::LogP_t _backoff)=0;
