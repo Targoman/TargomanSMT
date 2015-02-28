@@ -102,12 +102,12 @@ public:
     ~clsSearchGraphBuilderData(){}
 
 public:
-    QList<QVector<clsPhraseCandidateCollection>>      PhraseCandidateCollections;
-    const clsSearchGraphNode*                   GoalNode;
-    int                                         MaxMatchingSourcePhraseCardinality;
-    clsHypothesisHolder                         HypothesisHolder;
-    const InputDecomposer::Sentence_t &         Sentence;
-    RestCostMatrix_t                            RestCostMatrix;
+    QList<QVector<clsPhraseCandidateCollection>>    PhraseCandidateCollections;
+    const clsSearchGraphNode*                       GoalNode;
+    int                                             MaxMatchingSourcePhraseCardinality;
+    clsHypothesisHolder                             HypothesisHolder;
+    const InputDecomposer::Sentence_t &             Sentence;
+    RestCostMatrix_t                                RestCostMatrix;
 };
 
 

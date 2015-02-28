@@ -77,7 +77,8 @@ Common::Cost_t LanguageModel::scoreSearchGraphNode(clsSearchGraphNode &_newHypot
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode)
         Data->CostElements[0] = Cost;
 
-    return Cost * LanguageModel::ScalingFactor.value();
+    // For compatiblity reasons
+    return Cost * log(10) * LanguageModel::ScalingFactor.value();
 }
 
 /**
@@ -90,8 +91,9 @@ Cost_t LanguageModel::getLanguageModelCost(const RuleTable::clsTargetRule &_targ
     SentenceScorer->reset(false);
     for(size_t i = 0; i < _targetRule.size(); ++i)
         Cost -= SentenceScorer->wordProb(_targetRule.at(i));
+
     // For compatiblity reasons
-    return Cost * log(10);
+    return Cost * log(10) * LanguageModel::ScalingFactor.value();
 }
 
 /**

@@ -23,6 +23,10 @@ using namespace InputDecomposer;
 using namespace NBestFinder;
 using namespace RuleTable;
 
+/**
+ * @brief clsOutputComposer::translationOutput  creates the translation output structure and returns the value
+ * @return                                      created translation output strucutre
+ */
 stuTranslationOutput clsOutputComposer::translationOutput()
 {
     stuTranslationOutput Output;

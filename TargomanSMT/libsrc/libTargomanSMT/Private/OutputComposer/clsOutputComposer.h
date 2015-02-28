@@ -21,6 +21,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
+
 /**
  *  @brief Output composition module
  */

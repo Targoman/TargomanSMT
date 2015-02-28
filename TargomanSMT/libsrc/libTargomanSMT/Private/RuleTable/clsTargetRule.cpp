@@ -50,7 +50,7 @@ QString clsTargetRule::toStr() const
 {
     QString result = gConfigs.EmptyLMScorer->getWordByIndex(this->Data->TargetPhrase.at(0));
     for(int i = 1; i < this->Data->TargetPhrase.size(); ++i)
-        result += " " + gConfigs.EmptyLMScorer->getWordByIndex(this->Data->TargetPhrase.at(0));
+        result += " " + gConfigs.EmptyLMScorer->getWordByIndex(this->Data->TargetPhrase.at(i));
     return result;
 }
 

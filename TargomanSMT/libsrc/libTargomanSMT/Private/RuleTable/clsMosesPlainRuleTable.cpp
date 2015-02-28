@@ -67,6 +67,9 @@ clsMosesPlainRuleTable::~clsMosesPlainRuleTable()
     this->unregister();
 }
 
+/**
+ * @brief clsMosesPlainRuleTable::initializeSchema Just loads first line of phrase table to set column names and table parameters.
+ */
 void clsMosesPlainRuleTable::initializeSchema()
 {
     TargomanLogInfo(5,
@@ -123,6 +126,9 @@ void clsMosesPlainRuleTable::initializeSchema()
     clsTargetRule::setColumnNames(ColumnNames);
 }
 
+/**
+ * @brief clsMosesPlainRuleTable::loadTableData Loads phrase table from file and adds each phrase (rule) to pefix tree.
+ */
 void clsMosesPlainRuleTable::loadTableData()
 {
     TargomanLogInfo(5,
@@ -190,17 +196,27 @@ void clsMosesPlainRuleTable::loadTableData()
 
 }
 
+/**
+ * @brief getPrematureTargetRuleCost    helper function for clsMosesPlainRuleTable::addToRuleNodeSorted() that computes a score for target rules forgetting about where they are to be placed
+ * @param _targetRule                   input target rule for which the cost is computed
+ * @return                              the computed cost
+ */
 inline Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule)
 {
-    PhraseTable& PhraseScorerFeature = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
+    PhraseTable& PhraseCostFeature = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
     LanguageModel& LanguageModelFeature = *static_cast<LanguageModel*>(LanguageModel::moduleInstance());
     WordPenalty& WordPenaltyFeature = *static_cast<WordPenalty*>(WordPenalty::moduleInstance());
-    return  PhraseScorerFeature.getPhraseCost(_targetRule) +
-            LanguageModelFeature.getLanguageModelCost(_targetRule) +
-            WordPenaltyFeature.getWordPenaltyCost(_targetRule);
-
+    Cost_t PhraseCost = PhraseCostFeature.getPhraseCost(_targetRule);
+    Cost_t LanguageModelCost = LanguageModelFeature.getLanguageModelCost(_targetRule);
+    Cost_t WordPenaltyCost = WordPenaltyFeature.getWordPenaltyCost(_targetRule);
+    return  PhraseCost + LanguageModelCost + WordPenaltyCost;
 }
 
+/**
+ * @brief clsMosesPlainRuleTable::addToRuleNodeSorted   gets a rule node and a target rule and inserts the new target rule into the node while keeping the target rules list sorted
+ * @param _ruleNode                                     rule node into which the target rule will be inserted
+ * @param _targetRule                                   target rule to be inserted
+ */
 void clsMosesPlainRuleTable::addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTargetRule &_targetRule)
 {
     QList<clsTargetRule>& TargetRuleList = _ruleNode.targetRules();
@@ -229,6 +245,13 @@ void clsMosesPlainRuleTable::addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTarg
     TargetRuleList.insert(InsertionPos, _targetRule);
 }
 
+/**
+ * @brief clsMosesPlainRuleTable::addRule   adds a new rule to the rule prefix tree
+ * @param _sourcePhrase                     source phrase, pointing to the specific prefix tree node
+ * @param _targetPhrase                     target phrase for which a target rule will be created
+ * @param _costs                            list of cost fields read from the files
+ * @note                                    the prefix tree node will be created if it does not exist already
+ */
 void clsMosesPlainRuleTable::addRule(const QVector<WordIndex_t> _sourcePhrase, const QList<WordIndex_t> _targetPhrase, const QList<Cost_t> _costs)
 {
     RuleTable::clsTargetRule TargetRule(_targetPhrase, _costs);
@@ -239,6 +262,13 @@ void clsMosesPlainRuleTable::addRule(const QVector<WordIndex_t> _sourcePhrase, c
     addToRuleNodeSorted(RuleNode, TargetRule);
 }
 
+/**
+ * @brief clsMosesPlainRuleTable::addRule   creates source phrase and target phrase representations from their string counterparts and adds a rule to prefix tree
+ * @param _sourcePhrase                     string representation of the source phrase
+ * @param _targetPhrase                     string representation of the target phrase
+ * @param _costs                            the list containing string representations of the cost field values
+ * @param _ruleNumber                       index of the line read from the input file
+ */
 void clsMosesPlainRuleTable::addRule(const QString& _sourcePhrase,
                                      const QString& _targetPhrase,
                                      const QStringList &_costs,
@@ -268,6 +298,9 @@ void clsMosesPlainRuleTable::addRule(const QString& _sourcePhrase,
     this->addRule(SourcePhrase, TargetPhrase, Costs);
 }
 
+/**
+ * @brief clsMosesPlainRuleTable::addUnkToUnkRule   adds the unknown to unkown word translation rule to avoid stucking at unknown words
+ */
 void clsMosesPlainRuleTable::addUnkToUnkRule()
 {
     QList<Cost_t> Costs;

@@ -26,6 +26,9 @@ namespace RuleTable {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exMosesPhraseTable, exRuleTable);
 
+/**
+ * @brief The clsMosesPlainRuleTable class is used to load moses phrase and reordering table.
+ */
 class clsMosesPlainRuleTable : intfRuleTable
 {
 public:
@@ -51,8 +54,8 @@ private:
     int PrecomputedValueIndex = -1;
 
 private:
-    static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseTableFileName;
-    static Targoman::Common::Configuration::tmplConfigurable<QString> ReorderingTableFileName;
+    static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseTableFileName;      /**< File name of phrase table. */
+    static Targoman::Common::Configuration::tmplConfigurable<QString> ReorderingTableFileName;  /**< File name of reordering table. */
 
     TARGOMAN_DEFINE_MODULE("MosesPTPlain", clsMosesPlainRuleTable)
 };

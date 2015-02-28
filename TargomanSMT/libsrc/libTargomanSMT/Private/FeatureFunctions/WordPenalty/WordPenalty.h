@@ -61,7 +61,7 @@ private:
 
 public:
     inline Common::Cost_t getWordPenaltyCost(const RuleTable::clsTargetRule& _targetRule) const {
-        return _targetRule.size();
+        return _targetRule.size() * WordPenalty::ScalingFactor.value();
     }
 
 private:
