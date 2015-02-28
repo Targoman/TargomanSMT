@@ -45,6 +45,11 @@ tmplConfigurable<quint8> clsPhraseCandidateCollectionData::ObservationHistogramS
         "TODO Desc",
         100);
 
+tmplConfigurable<bool>   clsSearchGraphBuilder::PrunePreInsertion(
+        clsSearchGraphBuilder::moduleBaseconfig() + "/PrunePreInsertion",
+        "TODO Desc",
+        true);
+
 FeatureFunction::intfFeatureFunction*  clsSearchGraphBuilder::pPhraseTable = NULL;
 RuleTable::intfRuleTable*              clsSearchGraphBuilder::pRuleTable = NULL;
 RuleTable::clsRuleNode*                clsSearchGraphBuilder::UnknownWordRuleNode;
@@ -289,7 +294,7 @@ bool clsSearchGraphBuilder::decode()
 
 
                             // If current NewHypoNode is worse than worst stored node ignore it
-                            if (this->PruneAtStage4.value() &&
+                            if (clsSearchGraphBuilder::PrunePreInsertion.value() &&
                                 NewLexHypoContainer.mustBePruned(NewHypoNode.getTotalCost())){
                                 ++PrunedByLexicalHypothesis;
                                 MustBreak = true;

@@ -166,7 +166,7 @@ public:
     ~clsSearchGraphBuilderData(){}
 
 public:
-    QList<QVector<clsPhraseCandidateCollection>>        PhraseMatchTable;                       /**< Loaded phrase table will be stored in this 2D container. The first dimension is correspond to begin position of sentence and the second dimesion is for end position of sentence.*/
+    QList<QVector<clsPhraseCandidateCollection>>        PhraseCandidateCollections;             /**< Loaded phrase table will be stored in this 2D container. The first dimension is correspond to begin position of sentence and the second dimesion is for end position of sentence.*/
     const clsSearchGraphNode*                           GoalNode;                               /**< Our best founded translation*/
     int                                                 MaxMatchingSourcePhraseCardinality;     /**< Max length of source phrases loaded from phrase table.*/
     clsHypothesisHolder                                 HypothesisHolder;                       /**< A Container to hold clsCardinalityHypothesisContainer */
@@ -227,6 +227,7 @@ private:
     static RuleTable::clsRuleNode*                         UnknownWordRuleNode;                 /**< An instance of rule node for unknown word.*/
     static Common::Configuration::tmplConfigurable<quint8> ReorderingConstraintMaximumRuns;     /**< A threshold that will be used in IBM1 constrains.*/
     static Common::Configuration::tmplConfigurable<bool>   DoComputePositionSpecificRestCosts;
+    static Common::Configuration::tmplConfigurable<bool>   PrunePreInsertion;
 };
 
 }
