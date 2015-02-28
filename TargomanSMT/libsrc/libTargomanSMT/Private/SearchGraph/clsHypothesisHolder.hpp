@@ -52,7 +52,7 @@ public:
 
     void clear() {
         this->Data->CardinalityHypotheses.clear();
-        this->Data->CardinalityHypotheses.append(clsCardinalityHypothesisContainer::rootCoverageContainer(this->Data->EmptyCoverage));
+        this->Data->CardinalityHypotheses.append(clsCardinalityHypothesisContainer::rootCardinalityHypothesisContainer(this->Data->EmptyCoverage));
     }
     void resize(size_t _size) {
             this->Data->CardinalityHypotheses.resize(_size);

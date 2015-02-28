@@ -32,6 +32,7 @@ clsCardinalityHypothesisContainer::clsCardinalityHypothesisContainer() :
     Data(new clsCardinalityHypothesisContainerData)
 {}
 
+#ifdef TARGOMAN_SHOW_DEBUG
 void clsCardinalityHypothesisContainer::dump(const QString& _prefix)
 {
     for(CoverageLexicalHypothesisMap_t::ConstIterator Iter = this->Data->LexicalHypothesisContainer.begin();
@@ -54,6 +55,7 @@ void clsCardinalityHypothesisContainer::dump(const QString& _prefix)
     }
 
 }
+#endif
 
 bool clsCardinalityHypothesisContainer::insertNewHypothesis(const Coverage_t &_coverage, clsLexicalHypothesisContainer &_container, clsSearchGraphNode &_node)
 {
