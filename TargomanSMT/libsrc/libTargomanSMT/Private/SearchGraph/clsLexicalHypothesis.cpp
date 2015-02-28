@@ -39,6 +39,14 @@ clsLexicalHypothesisContainer::clsLexicalHypothesisContainer() :
     Data(new clsLexicalHypothesisContainerData)
 {}
 
+/**
+ * @brief Checks whether new hypothesis with cost of _totalCost should be pruned or not.
+ *
+ * If list is not empty and max size of list (#LexicalMaxHistogramSize) is not zero and If size of list of nodes is greater than #LexicalMaxHistogramSize and cost of new hypothesis
+ * (input cost) is greater than worse node it should pruned.
+ * @param _totalCost
+ * @return
+ */
 bool clsLexicalHypothesisContainer::mustBePruned(Cost_t _totalCost)
 {
     if (this->Data->Nodes.isEmpty())
@@ -53,6 +61,9 @@ bool clsLexicalHypothesisContainer::mustBePruned(Cost_t _totalCost)
     return true;
 }
 
+/**
+ * @brief returns cost of best node.
+ */
 Cost_t clsLexicalHypothesisContainer::getBestCost() const
 {
     if (this->Data->Nodes.isEmpty())
@@ -61,6 +72,15 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
     return this->bestNode().getCost();
 }
 
+
+/**
+ * @brief first checks whether input node should be recombined with another existing node,
+ * if not it inserts new node in list of nodes in a sorted order.
+ * So our list is always sorted by node costs from less cost to highest cost.
+ *
+ * @param _node
+ * @return
+ */
 bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
     size_t InsertionPos = this->Data->Nodes.size();
@@ -96,6 +116,11 @@ bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
     return true;
 }
 
+/**
+ * @brief it will be used in the last cardinality.
+ * Because every node has same coverage (full coverage) and no other word is remained,
+ * so all of them has same future and should be recombined with best node.
+ */
 void clsLexicalHypothesisContainer::finalizeRecombination()
 {
     if(clsLexicalHypothesisContainer::KeepRecombined.value() == false)

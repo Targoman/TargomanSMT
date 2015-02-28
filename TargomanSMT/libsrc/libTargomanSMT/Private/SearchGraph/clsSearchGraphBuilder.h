@@ -220,16 +220,13 @@ private:
     Common::Cost_t calculateRestCost(const Coverage_t &_coverage, size_t _beginPos, size_t _endPos) const;
 
 private:
-    QExplicitlySharedDataPointer<clsSearchGraphBuilderData> Data;
+    QExplicitlySharedDataPointer<clsSearchGraphBuilderData> Data;                               /**< A pointer to clsSearchGraphBuilderData class which manages data member of this class*/
 
-    static RuleTable::intfRuleTable*                       pRuleTable;
+    static RuleTable::intfRuleTable*                       pRuleTable;                          /**< Rule table loader e.g. Jane phrase Table loader */
     static FeatureFunction::intfFeatureFunction*           pPhraseTable;
-    static RuleTable::clsRuleNode*                         UnknownWordRuleNode;
-    static Common::Configuration::tmplConfigurable<quint8> ReorderingConstraintMaximumRuns;
+    static RuleTable::clsRuleNode*                         UnknownWordRuleNode;                 /**< An instance of rule node for unknown word.*/
+    static Common::Configuration::tmplConfigurable<quint8> ReorderingConstraintMaximumRuns;     /**< A threshold that will be used in IBM1 constrains.*/
     static Common::Configuration::tmplConfigurable<bool>   DoComputePositionSpecificRestCosts;
-    static Common::Configuration::tmplConfigurable<bool>   PruneAtStage2;
-    static Common::Configuration::tmplConfigurable<bool>   PruneAtStage3;
-    static Common::Configuration::tmplConfigurable<bool>   PruneAtStage4;
 };
 
 }

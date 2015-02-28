@@ -24,6 +24,9 @@ namespace SMT {
 namespace Private{
 namespace SearchGraph {
 
+/**
+ * @brief The clsLexicalHypothesisContainerData class holds and manages A list of nodes.
+ */
 class clsLexicalHypothesisContainerData :public QSharedData
 {
 public:
@@ -33,9 +36,13 @@ public:
         Nodes(_other.Nodes)
     {}
     ~clsLexicalHypothesisContainerData(){}
-    QList<clsSearchGraphNode> Nodes;
+    QList<clsSearchGraphNode> Nodes;            /**< list of search graph nodes */
 };
 
+/**
+ * @brief The clsLexicalHypothesisContainer class manages same coverage nodes.
+ * It stores and manages a list of these nodes.
+ */
 class clsLexicalHypothesisContainer
 {
 public:
@@ -68,10 +75,10 @@ public:
 //TODO uncomment
 //private:
 public:
-    QExplicitlySharedDataPointer<clsLexicalHypothesisContainerData> Data;
+    QExplicitlySharedDataPointer<clsLexicalHypothesisContainerData> Data;           /**< A pointer of clsLexicalHypothesisContainerData class that stores a list of nodes.*/
 
-    static Common::Configuration::tmplConfigurable<quint8> LexicalMaxHistogramSize;
-    static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;
+    static Common::Configuration::tmplConfigurable<quint8> LexicalMaxHistogramSize; /**< Max size of hypothesis that can be expanded in each step.*/
+    static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;  /**< Store recombined node or node.*/
 };
 
 }
