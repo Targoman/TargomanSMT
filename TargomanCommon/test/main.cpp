@@ -69,7 +69,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuTest,
                               Val1,
                               Val2,
                               Val3
-                              )
+                              );
 
 TARGOMAN_DEFINE_ENUM(enuBaba,
                      qq=2,

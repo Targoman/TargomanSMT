@@ -30,7 +30,7 @@ Targoman::Common::Configuration::tmplConfigurable<QString> OOVHandler::OOVHandle
 
 QMap<QString, intfOOVHandlerModule*>                       OOVHandler::AvailableOOVHandlers;
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(OOVHandler)
+TARGOMAN_REGISTER_SINGLETON_MODULE(OOVHandler);
 
 /**
  * @brief OOVHandler::initialize Sets #ActivesOOVHandlers from #OOVHandlerModules and checks whethere they are available handlers or not.

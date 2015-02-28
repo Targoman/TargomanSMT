@@ -34,7 +34,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuParseState,
                               Looking4Start,
                               Started,
                               NGram
-                              )
+                              );
 
 ARPAManager* ARPAManager::Instance = NULL;
 

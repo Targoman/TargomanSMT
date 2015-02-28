@@ -38,7 +38,7 @@ using namespace Common::Configuration;
 using namespace Common::CompressedStream;
 using namespace FeatureFunction;
 
-TARGOMAN_REGISTER_MODULE(clsMosesPlainRuleTable)
+TARGOMAN_REGISTER_MODULE(clsMosesPlainRuleTable);
 
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 

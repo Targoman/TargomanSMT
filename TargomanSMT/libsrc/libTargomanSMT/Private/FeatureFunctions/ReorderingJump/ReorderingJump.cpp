@@ -23,7 +23,7 @@ using namespace SearchGraph;
 using namespace Proxies;
 using namespace RuleTable;
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(ReorderingJump)
+TARGOMAN_REGISTER_SINGLETON_MODULE(ReorderingJump);
 
 Common::Configuration::tmplConfigurable<double>  ReorderingJump::ScalingFactor(
         ReorderingJump::baseConfigPath() + "/ScalingFactor",

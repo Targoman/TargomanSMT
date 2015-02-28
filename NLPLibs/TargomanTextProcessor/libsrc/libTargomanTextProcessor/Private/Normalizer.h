@@ -35,7 +35,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuDicType,
                               ZeroWidthSpaceCharacters,
                               NotSure,
                               EndOfFile
-                              )
+                              );
 
 #define ARABIC_ZWNJ                QChar(0x200C)
 #define ARABIC_YE                  QChar(0x06CC)

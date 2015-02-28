@@ -21,7 +21,7 @@
 namespace Targoman {
 /**
  * @brief Namespace containing classes, macros and usefull functions used all over the
- *        project without any other project dependency.
+ *        project without any other project dependency.Lo
  */
 namespace Common {
 

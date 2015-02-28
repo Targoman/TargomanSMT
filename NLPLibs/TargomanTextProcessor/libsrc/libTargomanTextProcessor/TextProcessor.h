@@ -33,7 +33,8 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuTextTags,
                               Date,
                               Ordinals,
                               Symbol
-                              )
+                              );
+
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTextProcessor, Targoman::Common::exTargomanBase);
 
 //Used by Logger Methods

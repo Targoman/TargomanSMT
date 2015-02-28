@@ -29,7 +29,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuMemoryModel,
                               Plain,          //Plain ARPA with no binarization
                               Probing,        //probing hash tables
                               RestProbing,    //probing hash tables with rest costs
-                              )
+                              );
 
 //Definitions for special string in ARPA file
 extern const char* LM_UNKNOWN_WORD;

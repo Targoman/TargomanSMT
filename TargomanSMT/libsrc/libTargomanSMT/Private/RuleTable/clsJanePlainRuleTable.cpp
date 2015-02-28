@@ -40,7 +40,7 @@ using namespace Common::Configuration;
 using namespace Common::CompressedStream;
 using namespace FeatureFunction;
 
-TARGOMAN_REGISTER_MODULE(clsJanePlainRuleTable)
+TARGOMAN_REGISTER_MODULE(clsJanePlainRuleTable);
 
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 

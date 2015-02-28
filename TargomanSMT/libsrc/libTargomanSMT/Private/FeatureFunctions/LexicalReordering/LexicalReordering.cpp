@@ -25,7 +25,7 @@ using namespace SearchGraph;
 using namespace InputDecomposer;
 using namespace RuleTable;
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(LexicalReordering)
+TARGOMAN_REGISTER_SINGLETON_MODULE(LexicalReordering);
 
 tmplConfigurable<bool>      LexicalReordering::IsBidirectional(
         LexicalReordering::baseConfigPath() + "/IsBidirectional",

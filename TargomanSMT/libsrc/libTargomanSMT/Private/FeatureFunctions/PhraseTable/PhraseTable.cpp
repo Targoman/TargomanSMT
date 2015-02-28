@@ -23,7 +23,7 @@ using namespace Common::Configuration;
 using namespace SearchGraph;
 using namespace RuleTable;
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable)
+TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable);
 
 clsFileBasedConfig   PhraseTable::ScalingFactorsConfigSection(
         PhraseTable::baseConfigPath() + "/ScalingFactors/");

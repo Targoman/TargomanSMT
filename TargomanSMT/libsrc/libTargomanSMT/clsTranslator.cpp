@@ -17,6 +17,7 @@
 #include "libTargomanTextProcessor/TextProcessor.h"
 #include "Private/OOVHandler/OOVHandler.h"
 
+
 namespace Targoman{
 /**
  * @brief Base namespace of TargomanSMT library surrounding all other namespaces
@@ -42,6 +43,11 @@ clsTranslator::~clsTranslator()
 
 void clsTranslator::init(const QString _configFilePath)
 {
+    if (clsTranslatorPrivate::Initialized){
+        TargomanWarn(5, "Reinitialization of translator has no effect");
+        return;
+    }
+
     OOVHandler::instance().initialize();
     InputDecomposer::clsInputDecomposer::init(_configFilePath);
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());

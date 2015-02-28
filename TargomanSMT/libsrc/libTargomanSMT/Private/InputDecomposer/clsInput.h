@@ -35,17 +35,17 @@ namespace InputDecomposer {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
 
-typedef QList<clsToken> Sentence_t;
-
 TARGOMAN_DEFINE_ENHANCED_ENUM(enuDefaultAttrs,
                               NoShow,
                               NoDecode,
                               ShowSource,
                               Translation
-                              )
+                              );
+
+typedef QList<clsToken> Sentence_t;
 
 /**
- * @brief class clsInputDecomposer is defined to manage input string tokens.
+ * @brief class clsInputDecomposer This class is defined to manage input string tokens.
  * This input string can be in ixml or plain format.
  */
 class clsInputDecomposer

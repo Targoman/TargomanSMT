@@ -24,7 +24,7 @@ using namespace SearchGraph;
 using namespace Proxies;
 using namespace RuleTable;
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(LanguageModel)
+TARGOMAN_REGISTER_SINGLETON_MODULE(LanguageModel);
 
 Common::Configuration::tmplConfigurable<double>  LanguageModel::ScalingFactor(
         LanguageModel::baseConfigPath() + "/ScalingFactor",

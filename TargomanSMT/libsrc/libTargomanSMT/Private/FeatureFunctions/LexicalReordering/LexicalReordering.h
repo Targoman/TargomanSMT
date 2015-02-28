@@ -28,7 +28,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuLexicalReorderingFields,
                               BackwardMonotone,
                               BackwardSwap,
                               BackwardDiscontinous
-                              )
+                              );
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exLexicalReordering, exFeatureFunction);
 

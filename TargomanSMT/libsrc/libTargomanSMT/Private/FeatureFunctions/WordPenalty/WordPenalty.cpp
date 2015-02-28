@@ -23,7 +23,7 @@ using namespace SearchGraph;
 using namespace Proxies;
 using namespace RuleTable;
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(WordPenalty)
+TARGOMAN_REGISTER_SINGLETON_MODULE(WordPenalty);
 
 Common::Configuration::tmplConfigurable<double>  WordPenalty::ScalingFactor(
         WordPenalty::baseConfigPath() + "/ScalingFactor",

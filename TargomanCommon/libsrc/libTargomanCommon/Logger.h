@@ -87,7 +87,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuLogType,
                               Error,
                               Debug,
                               Happy
-                              )
+                              );
 
 /**
  * @class clsLogSettings
