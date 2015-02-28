@@ -25,6 +25,8 @@ using namespace RuleTable;
 
 /**
  * @brief clsOutputComposer::translationOutput  creates the translation output structure and returns the value
+ *
+ * this function is an interface that calls N-Best Finder and Input Decomposer modules and puts their return values together in a well formed manner
  * @return                                      created translation output strucutre
  */
 stuTranslationOutput clsOutputComposer::translationOutput()
@@ -53,11 +55,22 @@ stuTranslationOutput clsOutputComposer::translationOutput()
     return Output;
 }
 
+/**
+ * @brief clsOutputComposer::translationString  creates the string representation of the best translation hypothesis useful for debugging purposes
+ * @return
+ */
 QString clsOutputComposer::translationString()
 {
     return this->nodeTranslation(this->NBestFinderRef.goalNode());
 }
 
+
+/**
+ * @brief clsOutputComposer::getTargetString    helping function for creating the string representation of the translation hypothesis
+ * @param _target                               the target rule for which the string representation is to be created, this will be a part of the hypothesis string representation
+ * @param _sourcePos                            position of the source phrase for which the hypothesis holds the given target rule, used for extracting input attributes and using them in creating the string representation
+ * @return
+ */
 QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const stuPhrasePos &_sourcePos)
 {
     if (_sourcePos.isSingleWord() &&
@@ -86,6 +99,11 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
     return String;
 }
 
+/**
+ * @brief clsOutputComposer::nodeTranslation    helping function for creating the string representation of any partial or full translation hypothesis
+ * @param _node                                 input translation hypothesis
+ * @return
+ */
 QString clsOutputComposer::nodeTranslation(const SearchGraph::clsSearchGraphNode &_node)
 {
     if(_node.isInvalid())

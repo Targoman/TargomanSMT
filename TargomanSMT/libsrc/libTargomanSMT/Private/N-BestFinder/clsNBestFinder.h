@@ -22,6 +22,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
+
 /**
  *  @brief NBest finder module
  */
