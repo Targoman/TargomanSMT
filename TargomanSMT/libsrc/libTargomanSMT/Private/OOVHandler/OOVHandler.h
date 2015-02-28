@@ -19,8 +19,11 @@
 #include "Private/RuleTable/clsRuleNode.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
+/**
+ *  @brief Namespace surrounding all of the classes related to Out Of Vocabulary handling
+ */
 namespace OOV{
 
 class intfOOVHandlerModule;

@@ -20,6 +20,10 @@
 namespace Targoman {
 namespace Common {
 namespace Configuration {
+/**
+ *  @brief Private section of Targoman::Common module where internal functionalities needed to be obfuscated
+ *  are defined
+ */
 namespace Private {
 
 class clsConfigManagerPrivate

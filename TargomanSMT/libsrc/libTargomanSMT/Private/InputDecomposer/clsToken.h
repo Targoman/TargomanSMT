@@ -24,7 +24,7 @@
 #endif
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace InputDecomposer {
 
@@ -65,7 +65,7 @@ private:
 }
 
 #ifdef TARGOMAN_SHOW_DEBUG
-inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::Core::Private::InputDecomposer::clsToken& _token)
+inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::SMT::Private::InputDecomposer::clsToken& _token)
 {
     _outputStream << _token.string();
     return _outputStream;

@@ -20,6 +20,9 @@
 
 namespace Targoman {
 namespace Common {
+/**
+ * @brief A usefull module to read and write gzip files as stream
+ */
 namespace CompressedStream {
 
 // ----------------------------------------------------------------------------

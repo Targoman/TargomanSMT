@@ -19,8 +19,11 @@
 #include "libTargomanSMT/Types.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
+/**
+ *  @brief Output composition module
+ */
 namespace OutputComposer {
 
 class clsOutputComposer

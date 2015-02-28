@@ -15,7 +15,10 @@
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
+/**
+ * @brief Private section of TargomanSMT library which obfuscates all internal namespaces and classes
+ */
 namespace Private{
 
 using namespace Common;
@@ -51,7 +54,7 @@ clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM",
 clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable",
                                                     "TODO Desc",
                                                     "JanePTPlain");
-QScopedPointer<Targoman::Core::Private::Proxies::intfLMSentenceScorer>  stuGlobalConfigs::EmptyLMScorer;
+QScopedPointer<Targoman::SMT::Private::Proxies::intfLMSentenceScorer>  stuGlobalConfigs::EmptyLMScorer;
 QHash<QString, Common::WordIndex_t>                            stuGlobalConfigs::SourceVocab;
 
 
@@ -61,7 +64,7 @@ QHash<QString, Common::WordIndex_t>                            stuGlobalConfigs:
 namespace Common {
 namespace Configuration {
 
-using namespace Core::Private;
+using namespace SMT::Private;
 
 template <>
 bool tmplConfigurable<enuWorkingModes::Type>::validate(const QVariant& _value, QString& _errorMessage) const{

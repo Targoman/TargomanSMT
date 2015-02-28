@@ -20,7 +20,9 @@
 namespace Targoman {
 namespace Common {
 namespace Configuration {
-
+/**
+ * @brief Private section of Configuration module where obfuscated classes are defined
+ */
 namespace Private {
 class intfConfigurablePrivate;
 }

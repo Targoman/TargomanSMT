@@ -19,7 +19,7 @@
 #include "libTargomanSMT/Types.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 
 namespace Private {
 class clsTranslatorPrivate;
@@ -33,7 +33,7 @@ public:
     static void init(const QString _configFilePath);
 
     //Input language is predefined
-    stuTranslationOutput translate();
+    stuTranslationOutput translate(bool _justTranslationString = false);
 
 private:
     QScopedPointer<Private::clsTranslatorPrivate> pPrivate;

@@ -20,7 +20,7 @@
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace Proxies {
 namespace LanguageModel{

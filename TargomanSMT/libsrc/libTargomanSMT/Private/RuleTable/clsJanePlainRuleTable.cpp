@@ -21,7 +21,7 @@
 #include "Private/FeatureFunctions/LexicalReordering/LexicalReordering.h"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace RuleTable {
 

@@ -19,8 +19,7 @@
 #include "Private/RuleTable/clsRuleNode.h"
 
 namespace Targoman {
-namespace Core {
-namespace Private {
+namespace SMT {
 namespace RuleTable{
 
 typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;

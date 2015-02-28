@@ -19,7 +19,7 @@
 #include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace RuleTable{
 

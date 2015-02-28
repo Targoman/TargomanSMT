@@ -16,7 +16,7 @@
 #include <iostream>
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
 namespace SearchGraph {
 

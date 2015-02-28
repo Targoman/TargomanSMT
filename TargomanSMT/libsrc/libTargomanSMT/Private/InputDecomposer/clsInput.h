@@ -26,8 +26,11 @@
 #endif
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
+/**
+ *  @brief Input Decomposition module
+ */
 namespace InputDecomposer {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exInput, exTargomanCore);
@@ -92,7 +95,7 @@ private:
 }
 
 #ifdef TARGOMAN_SHOW_DEBUG
-inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::Core::Private::InputDecomposer::Sentence_t& _sentence)
+inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::SMT::Private::InputDecomposer::Sentence_t& _sentence)
 {
     if(_sentence.size() == 0)
         return _outputStream;

@@ -21,6 +21,9 @@
 
 namespace Targoman {
 namespace Common {
+/**
+ * @brief Configuration module with many interfaces and templates to ease application configuration
+ */
 namespace Configuration {
 
 namespace Private {

@@ -20,8 +20,11 @@
 #include "Private/SearchGraph/clsSearchGraphNode.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
+/**
+ * @brief Namespace surrounding all feature function.
+ */
 namespace FeatureFunction {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exFeatureFunction, exTargomanCore);

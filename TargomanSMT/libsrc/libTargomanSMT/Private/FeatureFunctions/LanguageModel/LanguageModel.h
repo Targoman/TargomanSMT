@@ -17,7 +17,7 @@
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace FeatureFunction{
 
@@ -66,6 +66,5 @@ private:
 }
 }
 }
-
 
 #endif // TARGOMAN_CORE_PRIVATE_FEATUREFUNCTIONS_LANGUAGEMODEL_H

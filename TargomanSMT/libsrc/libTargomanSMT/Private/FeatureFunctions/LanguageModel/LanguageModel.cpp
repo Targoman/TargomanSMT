@@ -15,7 +15,7 @@
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace FeatureFunction{
 

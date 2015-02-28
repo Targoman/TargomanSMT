@@ -21,8 +21,11 @@
 #include "Private/GlobalConfigs.h"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
+/**
+ *  @brief Namespace surrounding all classes and interfaces to external libraries
+ */
 namespace Proxies {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);

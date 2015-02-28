@@ -15,7 +15,14 @@
 
 #include <QtCore>
 #include "limits.h"
+/**
+ * @brief Base namespace surrounding all other namespaces
+ */
 namespace Targoman {
+/**
+ * @brief Namespace containing classes, macros and usefull functions used all over the
+ *        project without any other project dependency.
+ */
 namespace Common {
 
 typedef float LogP_t;

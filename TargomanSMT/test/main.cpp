@@ -24,7 +24,7 @@
 
 using namespace Targoman::Common;
 using namespace Targoman::Common::Configuration;
-using namespace Targoman::Core;
+using namespace Targoman::SMT;
 
 void printMemoryUsage(const QString& _stepString){
     QFile ProcessMemStatFile(QString("/proc/%1/status").arg(QCoreApplication::applicationPid()));

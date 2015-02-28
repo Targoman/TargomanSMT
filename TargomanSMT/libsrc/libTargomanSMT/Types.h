@@ -18,7 +18,7 @@
 #include <QPair>
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanCore, Targoman::Common::exTargomanBase);
 

@@ -22,7 +22,7 @@
 #endif
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace RuleTable{
 
@@ -256,7 +256,7 @@ typedef  QList<RuleTable::clsTargetRule> TargetRulesContainer_t;
 }
 
 #ifdef TARGOMAN_SHOW_DEBUG
-QTextStream& operator << (QTextStream& _outputStream, const Targoman::Core::Private::RuleTable::clsTargetRule& _targetRule);
+QTextStream& operator << (QTextStream& _outputStream, const Targoman::SMT::Private::RuleTable::clsTargetRule& _targetRule);
 #endif
 
 #endif // TARGOMAN_CORE_PRIVATE_RULETABLE_CLSTARGETRULE_H

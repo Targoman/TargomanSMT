@@ -21,7 +21,7 @@
 #include "OutputComposer/clsOutputComposer.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
 
 class clsTranslatorPrivate{

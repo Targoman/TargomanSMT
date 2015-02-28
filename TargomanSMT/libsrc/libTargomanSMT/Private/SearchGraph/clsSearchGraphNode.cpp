@@ -15,8 +15,11 @@
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
+/**
+ * @brief Namespace surrounding all classes related to generate, store and manage SearchGraph
+ */
 namespace SearchGraph {
 
 using namespace RuleTable;

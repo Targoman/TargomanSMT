@@ -21,7 +21,7 @@
 #define PBT_MAXIMUM_COST 1e200
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
 namespace SearchGraph {
 

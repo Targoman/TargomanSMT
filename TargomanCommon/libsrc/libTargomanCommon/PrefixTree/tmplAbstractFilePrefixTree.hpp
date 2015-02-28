@@ -11,6 +11,9 @@
 
 namespace Targoman {
 namespace Common {
+/**
+ *  A template based prefix tree with on-demand disk lookup. This module was directly driven from Jane
+ */
 namespace PrefixTree {
     /**
      * @brief Extends the tmplPrefixTreeAbstractNode by file accessing methods

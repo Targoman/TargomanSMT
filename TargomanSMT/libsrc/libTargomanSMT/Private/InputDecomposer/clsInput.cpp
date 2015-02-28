@@ -19,7 +19,7 @@
 using Targoman::NLPLibs::TargomanTextProcessor;
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace InputDecomposer {
 

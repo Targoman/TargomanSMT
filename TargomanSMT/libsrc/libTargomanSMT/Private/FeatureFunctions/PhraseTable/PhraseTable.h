@@ -19,7 +19,7 @@
 #include "libTargomanCommon/Configuration/clsFileBasedConfig.hpp"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace FeatureFunction{
 

@@ -18,7 +18,10 @@
 #include "Private/OOVHandler/OOVHandler.h"
 
 namespace Targoman{
-namespace Core {
+/**
+ * @brief Base namespace of TargomanSMT library surrounding all other namespaces
+ */
+namespace SMT {
 
 using namespace Private;
 using namespace NLPLibs;
@@ -53,7 +56,7 @@ void clsTranslator::init(const QString _configFilePath)
     clsTranslatorPrivate::Initialized = true;
 }
 
-stuTranslationOutput clsTranslator::translate()
+stuTranslationOutput clsTranslator::translate(bool _justTranslationString)
 {
     if (clsTranslatorPrivate::Initialized == false)
         throw exTargomanCore("Translator is not initialized");
@@ -62,13 +65,12 @@ stuTranslationOutput clsTranslator::translate()
     this->pPrivate->SearchGraphBuilder->matchPhrase();
     this->pPrivate->SearchGraphBuilder->parseSentence();
 
-    stuTranslationOutput Output;
-    // find NBest
-    // Output composer
-    // IO -Alignment
-    // Postprocess
-
-    return Output;
+    if (_justTranslationString){
+        stuTranslationOutput Output;
+        Output.Translation = this->pPrivate->Output->translationString();
+        return Output;
+    }else
+        return this->pPrivate->Output->translationOutput();
 }
 }
 }

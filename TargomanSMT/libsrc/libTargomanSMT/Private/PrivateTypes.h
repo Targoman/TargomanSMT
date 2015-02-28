@@ -20,7 +20,7 @@
 #endif
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 
 typedef QBitArray Coverage_t;
@@ -59,7 +59,7 @@ inline QTextStream& operator << (QTextStream& _outputStream, const QList<Type_t>
 }
 }
 
-inline bool operator<(const Targoman::Core::Private::Coverage_t &_a, const Targoman::Core::Private::Coverage_t &_b)
+inline bool operator<(const Targoman::SMT::Private::Coverage_t &_a, const Targoman::SMT::Private::Coverage_t &_b)
 {
     Q_ASSERT(_a.size() == _b.size());
     for(int i = 0; i < _a.size(); ++i)

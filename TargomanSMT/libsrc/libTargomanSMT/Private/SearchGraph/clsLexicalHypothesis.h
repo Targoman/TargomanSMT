@@ -20,7 +20,7 @@
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
 namespace SearchGraph {
 

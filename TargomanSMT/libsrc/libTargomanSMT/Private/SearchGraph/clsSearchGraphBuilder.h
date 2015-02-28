@@ -22,7 +22,7 @@
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
 namespace SearchGraph {
 

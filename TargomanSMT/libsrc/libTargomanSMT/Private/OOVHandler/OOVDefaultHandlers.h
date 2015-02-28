@@ -18,7 +18,7 @@
 #include "Private/InputDecomposer/clsInput.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
 namespace OOV{
 

@@ -22,7 +22,7 @@
 #include "Private/PrivateTypes.h"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 
 namespace FeatureFunction{
@@ -51,7 +51,7 @@ struct stuGlobalConfigs{
     static Common::Configuration::clsModuleConfig                           LM;
     static Common::Configuration::clsModuleConfig                           RuleTable;
 
-    static QScopedPointer<Core::Private::Proxies::intfLMSentenceScorer>     EmptyLMScorer;
+    static QScopedPointer<SMT::Private::Proxies::intfLMSentenceScorer>     EmptyLMScorer;
     static QHash<QString, Common::WordIndex_t>                              SourceVocab;
 
     static QMap<QString, FeatureFunction::intfFeatureFunction*>             ActiveFeatureFunctions;
@@ -64,7 +64,7 @@ extern stuGlobalConfigs gConfigs;
 
 namespace Common {
 namespace Configuration {
-_SPECIAL_CONFIGURABLE(Core::Private::enuWorkingModes::Type)
+_SPECIAL_CONFIGURABLE(SMT::Private::enuWorkingModes::Type)
 }
 }
 

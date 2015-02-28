@@ -15,7 +15,7 @@
 #include "Private/RuleTable/clsRuleNode.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
 namespace FeatureFunction {
 

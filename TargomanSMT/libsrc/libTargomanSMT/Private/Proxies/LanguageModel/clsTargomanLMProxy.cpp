@@ -14,9 +14,12 @@
 #include "clsTargomanLMProxy.h"
 
 namespace Targoman {
-namespace Core {
+namespace SMT {
 namespace Private {
 namespace Proxies {
+/**
+ *  @brief Proxy to all supported external LanguageModel libraries including TargomanLM
+ */
 namespace LanguageModel {
 
 Targoman::NLPLibs::TargomanLM::clsLanguageModel clsTargomanLMProxy::LM;

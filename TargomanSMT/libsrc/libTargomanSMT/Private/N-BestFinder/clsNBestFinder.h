@@ -20,8 +20,11 @@
 #include "Private/SearchGraph/clsSearchGraphBuilder.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
+/**
+ *  @brief NBest finder module
+ */
 namespace NBestFinder {
 
 class clsNBestFinder

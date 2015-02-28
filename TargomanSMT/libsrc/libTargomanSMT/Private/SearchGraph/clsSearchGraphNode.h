@@ -19,7 +19,7 @@
 #include "Private/RuleTable/clsTargetRule.h"
 
 namespace Targoman{
-namespace Core {
+namespace SMT {
 namespace Private{
 namespace SearchGraph {
 
