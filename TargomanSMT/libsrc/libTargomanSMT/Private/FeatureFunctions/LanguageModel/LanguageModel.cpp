@@ -81,22 +81,17 @@ Common::Cost_t LanguageModel::scoreSearchGraphNode(clsSearchGraphNode &_newHypot
 }
 
 /**
- * @brief Computes approximate cost to the future cost heuristic
- * @note Either getRestCostForPosition or this function must return 0
+ * @brief Computes language model score for the given target rule
  */
-Cost_t LanguageModel::getApproximateCost(unsigned _sourceStart,
-                                         unsigned _sourceEnd,
-                                         const RuleTable::clsTargetRule &_targetRule) const
+Cost_t LanguageModel::getLanguageModelCost(const RuleTable::clsTargetRule &_targetRule) const
 {
-    Q_UNUSED(_sourceStart)
-    Q_UNUSED(_sourceEnd)
-
     Cost_t Cost = 0.0;
     QScopedPointer<intfLMSentenceScorer> SentenceScorer(gConfigs.LM.getInstance<intfLMSentenceScorer>());
     SentenceScorer->reset(false);
     for(size_t i = 0; i < _targetRule.size(); ++i)
         Cost -= SentenceScorer->wordProb(_targetRule.at(i));
-    return Cost;
+    // For compatiblity reasons
+    return Cost * log(10);
 }
 
 /**

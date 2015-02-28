@@ -56,7 +56,13 @@ public:
     clsTargetRule(const clsTargetRule& _other):
         Data(_other.Data)
     {}
+
     ~clsTargetRule(){}
+
+    inline clsTargetRule& operator = (const clsTargetRule& _other) {
+        this->Data = _other.Data;
+        return *this;
+    }
 
     inline bool isInvalid() const;
     inline bool isSame(const clsTargetRule& _other) const;
@@ -127,9 +133,9 @@ public:
 };
 
 /**
- * This instance of InvalidTargetRule class is static and is used in initilization of clsRuleNode class in constructor of clsSearchGraphNodeData class.
+ * This instance of pInvalidTargetRule is static and is used in initilization of clsRuleNode class in constructor of clsSearchGraphNodeData class.
  */
-extern clsTargetRule* InvalidTargetRule;
+extern clsTargetRule* pInvalidTargetRule;
 /********************************************************************************/
 class clsTargetRuleData : public QSharedData
 {

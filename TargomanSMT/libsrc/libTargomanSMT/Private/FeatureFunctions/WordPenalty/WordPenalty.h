@@ -45,7 +45,7 @@ public:
                                              const RuleTable::clsTargetRule& _targetRule) const {
         Q_UNUSED(_sourceStart)
         Q_UNUSED(_sourceEnd)
-        return (Common::Cost_t)_targetRule.size();
+        return this->getWordPenaltyCost(_targetRule);
     }
 
     inline QStringList columnNames() const{return QStringList();}
@@ -59,7 +59,10 @@ private:
 
     TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/WordPenalty", WordPenalty)
 
-private:
+public:
+    inline Common::Cost_t getWordPenaltyCost(const RuleTable::clsTargetRule& _targetRule) const {
+        return _targetRule.size();
+    }
 
 private:
     static Common::Configuration::tmplConfigurable<double> ScalingFactor;

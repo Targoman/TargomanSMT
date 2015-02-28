@@ -48,6 +48,7 @@ private:
 private:
     int PhraseFeatureCount = 0;
     int ReorderingFeatureCount = 0;
+    int PrecomputedValueIndex = -1;
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseTableFileName;

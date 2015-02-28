@@ -20,6 +20,7 @@
 
 namespace Targoman {
 namespace SMT {
+namespace Private {
 namespace RuleTable{
 
 typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;

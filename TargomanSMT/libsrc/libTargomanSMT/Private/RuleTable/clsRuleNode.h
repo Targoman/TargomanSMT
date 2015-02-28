@@ -60,6 +60,10 @@ public:
         return this->Data->TargetRules;
     }
 
+    inline const TargetRulesContainer_t& targetRules() const {
+        return this->Data->TargetRules;
+    }
+
     // Following functions are needed for the binary input/output
     void readBinary(std::istream &_input);
     void writeBinary(std::ostream &_output) const;
@@ -83,6 +87,7 @@ public:
 };
 
 extern clsRuleNodeData* InvalidRuleNodeData;
+
 }
 }
 }

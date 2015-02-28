@@ -18,6 +18,8 @@
 #include "libTargomanCommon/clsCmdProgressBar.h"
 
 #include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
+#include "Private/FeatureFunctions/LanguageModel/LanguageModel.h"
+#include "Private/FeatureFunctions/WordPenalty/WordPenalty.h"
 #include "Private/FeatureFunctions/LexicalReordering/LexicalReordering.h"
 
 namespace Targoman {
@@ -56,7 +58,9 @@ tmplConfigurable<QString> clsMosesPlainRuleTable::ReorderingTableFileName(
 
 clsMosesPlainRuleTable::clsMosesPlainRuleTable(quint64 _instanceID)  :
     intfRuleTable(this->moduleName(), _instanceID)
-{}
+{
+    this->PrecomputedValueIndex = clsTargetRule::allocatePrecomputedValue();
+}
 
 clsMosesPlainRuleTable::~clsMosesPlainRuleTable()
 {
@@ -177,10 +181,23 @@ void clsMosesPlainRuleTable::loadTableData()
         if (ReorderingCostsFields.size() != this->ReorderingFeatureCount)
             throw exMosesPhraseTable(QString("Inconsistent reordering scores in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
 
-        PhraseCostsFields.append(ReorderingCostsFields);
+        if(this->ReorderingFeatureCount == 6)
+            PhraseCostsFields.append(ReorderingCostsFields.mid(3, 3));
+        PhraseCostsFields.append(ReorderingCostsFields.mid(0, 3));
 
         this->addRule(PhraseTableFields[mosesFormatSourcePhrase], PhraseTableFields[mosesFormatTargetPhrase], PhraseCostsFields, RulesRead);
     }
+
+}
+
+inline Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule)
+{
+    PhraseTable& PhraseScorerFeature = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
+    LanguageModel& LanguageModelFeature = *static_cast<LanguageModel*>(LanguageModel::moduleInstance());
+    WordPenalty& WordPenaltyFeature = *static_cast<WordPenalty*>(WordPenalty::moduleInstance());
+    return  PhraseScorerFeature.getPhraseCost(_targetRule) +
+            LanguageModelFeature.getLanguageModelCost(_targetRule) +
+            WordPenaltyFeature.getWordPenaltyCost(_targetRule);
 
 }
 
@@ -188,16 +205,16 @@ void clsMosesPlainRuleTable::addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTarg
 {
     QList<clsTargetRule>& TargetRuleList = _ruleNode.targetRules();
 
-    PhraseTable& Evaluator = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
 
-    Cost_t CurrentTargetRuleCost = Evaluator.getPhraseCost(_targetRule);
+    Cost_t CurrentTargetRuleCost = getPrematureTargetRuleCost(_targetRule);
+    _targetRule.setPrecomputedValue(this->PrecomputedValueIndex, CurrentTargetRuleCost);
 
     int InsertionPos = TargetRuleList.size();
 
     int StartPos = 0, EndPos = TargetRuleList.size();
     while(EndPos > StartPos) {
         int MidPos = (StartPos + EndPos) / 2;
-        Cost_t TargetRuleCost = Evaluator.getPhraseCost(TargetRuleList.at(MidPos));
+        Cost_t TargetRuleCost = TargetRuleList.at(MidPos).precomputedValue(this->PrecomputedValueIndex);
         if(TargetRuleCost > CurrentTargetRuleCost)
             EndPos = MidPos;
         else if (TargetRuleCost < CurrentTargetRuleCost)

@@ -26,6 +26,63 @@ namespace SMT {
 namespace Private{
 namespace SearchGraph {
 
+class clsPhraseCandidateCollectionData : public QSharedData {
+public:
+    clsPhraseCandidateCollectionData()
+    {
+        this->UsableTargetRuleCount = 0;
+        this->BestApproximateCost = INFINITY;
+    }
+
+    clsPhraseCandidateCollectionData(const clsPhraseCandidateCollectionData& _other) :
+        QSharedData(_other),
+        UsableTargetRuleCount(_other.UsableTargetRuleCount),
+        TargetRules(_other.TargetRules),
+        BestApproximateCost(_other.BestApproximateCost)
+    {}
+
+    clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const RuleTable::clsRuleNode& _ruleNode);
+
+public:
+    int UsableTargetRuleCount;
+    QList<RuleTable::clsTargetRule> TargetRules;
+    Common::Cost_t BestApproximateCost;
+
+private:
+    static Common::Configuration::tmplConfigurable<quint8> ObservationHistogramSize;
+};
+
+class clsPhraseCandidateCollection {
+public:
+    clsPhraseCandidateCollection() :
+        Data(new clsPhraseCandidateCollectionData)
+    {}
+    clsPhraseCandidateCollection(const clsPhraseCandidateCollection& _other) :
+        Data(_other.Data)
+    {}
+    clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos,  const RuleTable::clsRuleNode& _ruleNode) :
+        Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, _ruleNode))
+    {}
+
+    const QList<RuleTable::clsTargetRule>& targetRules() const {
+        return this->Data->TargetRules;
+    }
+    Common::Cost_t bestApproximateCost() const {
+        return this->Data->BestApproximateCost;
+    }
+
+    bool isInvalid() const {
+        return this->Data->TargetRules.size() == 0;
+    }
+
+    inline int usableTargetRuleCount() const {
+        return this->Data->UsableTargetRuleCount;
+    }
+
+private:
+    QExplicitlySharedDataPointer<clsPhraseCandidateCollectionData> Data;
+};
+
 class clsSearchGraphBuilderData : public QSharedData
 {
 public:
@@ -35,7 +92,7 @@ public:
     {}
     clsSearchGraphBuilderData(const clsSearchGraphBuilderData& _other):
         QSharedData(_other),
-        PhraseMatchTable(_other.PhraseMatchTable),
+        PhraseCandidateCollections(_other.PhraseCandidateCollections),
         GoalNode(_other.GoalNode),
         MaxMatchingSourcePhraseCardinality(_other.MaxMatchingSourcePhraseCardinality),
         HypothesisHolder(_other.HypothesisHolder),
@@ -45,7 +102,7 @@ public:
     ~clsSearchGraphBuilderData(){}
 
 public:
-    QList<QVector<RuleTable::clsRuleNode>>      PhraseMatchTable;
+    QList<QVector<clsPhraseCandidateCollection>>      PhraseCandidateCollections;
     const clsSearchGraphNode*                   GoalNode;
     int                                         MaxMatchingSourcePhraseCardinality;
     clsHypothesisHolder                         HypothesisHolder;
@@ -59,11 +116,13 @@ class clsSearchGraphBuilder
 public:
     clsSearchGraphBuilder(const InputDecomposer::Sentence_t& _sentence);
     clsSearchGraphBuilder(){}
-
+    clsSearchGraphBuilder(const clsSearchGraphBuilder& _other) :
+        Data(_other.Data)
+    {}
 
     static void init(const QString &_configFilePath);
-    void matchPhrase();
-    bool parseSentence();
+    void collectPhraseCandidates();
+    bool decode();
 
     inline const clsSearchGraphNode& goalNode() const{
         return *this->Data->GoalNode;
@@ -98,8 +157,6 @@ private:
     static Common::Configuration::tmplConfigurable<bool>   PruneAtStage2;
     static Common::Configuration::tmplConfigurable<bool>   PruneAtStage3;
     static Common::Configuration::tmplConfigurable<bool>   PruneAtStage4;
-
-    static Common::Configuration::tmplConfigurable<quint8> ObservationHistogramSize;
 };
 
 }

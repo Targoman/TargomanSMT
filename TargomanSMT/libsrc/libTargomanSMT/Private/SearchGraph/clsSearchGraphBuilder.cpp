@@ -52,7 +52,7 @@ tmplConfigurable<bool>   clsSearchGraphBuilder::PruneAtStage4(
         clsSearchGraphBuilder::moduleBaseconfig() + "/PruneAtStage4",
         "TODO Desc",
         true);
-tmplConfigurable<quint8> clsSearchGraphBuilder::ObservationHistogramSize(
+tmplConfigurable<quint8> clsPhraseCandidateCollectionData::ObservationHistogramSize(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ObservationHistogramSize",
         "TODO Desc",
         100);
@@ -88,8 +88,8 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
     //InvalidTargetRuleData has been marshalled here because it depends on loading RuleTable
     RuleTable::InvalidTargetRuleData = new RuleTable::clsTargetRuleData;
 
-    //InvalidTargetRule has been marshalled here because it depends on instantiation of InvalidTargetRuleData
-    RuleTable::InvalidTargetRule = new RuleTable::clsTargetRule;
+    //pInvalidTargetRule has been marshalled here because it depends on instantiation of InvalidTargetRuleData
+    RuleTable::pInvalidTargetRule = new RuleTable::clsTargetRule;
 
     //InvalidSearchGraphNodeData has been marshalled here because it depends on initialization of gConfigs
     InvalidSearchGraphNodeData = new clsSearchGraphNodeData;
@@ -97,28 +97,28 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
     pInvalidSearchGraphNode = new clsSearchGraphNode;
 }
 
-void clsSearchGraphBuilder::matchPhrase()
+void clsSearchGraphBuilder::collectPhraseCandidates()
 {
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
-        this->Data->PhraseMatchTable.append(QVector<clsRuleNode>(this->Data->Sentence.size() - FirstPosition));
+        this->Data->PhraseCandidateCollections.append(QVector<clsPhraseCandidateCollection>(this->Data->Sentence.size() - FirstPosition));
         RulesPrefixTree_t::Node* PrevNode = this->pRuleTable->getPrefixTree().rootNode();
 
-        { //On Uni-Grams
+        if(true /* On 1-grams */)
+        {
             PrevNode = PrevNode->follow(this->Data->Sentence.at(FirstPosition).wordIndex());
-
             if (PrevNode == NULL){
                 clsRuleNode OOVRuleNode =
                         OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
                 if (OOVRuleNode.isInvalid())
-                    this->Data->PhraseMatchTable[FirstPosition][0] = *clsSearchGraphBuilder::UnknownWordRuleNode;
+                    this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, *clsSearchGraphBuilder::UnknownWordRuleNode);
                 else
-                    this->Data->PhraseMatchTable[FirstPosition][0] = OOVRuleNode;
+                    this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, OOVRuleNode);
             }else
-                this->Data->PhraseMatchTable[FirstPosition][0] = PrevNode->getData();
+                this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, PrevNode->getData());
 
-            if (this->Data->PhraseMatchTable[FirstPosition][0].isInvalid() == false)
-                this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,1);
+            if (this->Data->PhraseCandidateCollections[FirstPosition][0].isInvalid() == false)
+                this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality, 1);
 
             if (PrevNode == NULL)
                 continue;
@@ -131,8 +131,8 @@ void clsSearchGraphBuilder::matchPhrase()
             if (PrevNode == NULL)
                 break; // appending next word breaks phrase lookup
 
-            this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition] = PrevNode->getData();
-            if (this->Data->PhraseMatchTable[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
+            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, PrevNode->getData());
+            if (this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                       (int)(LastPosition - FirstPosition + 1));
         }
@@ -150,7 +150,7 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
     return true;
 }
 
-bool clsSearchGraphBuilder::parseSentence()
+bool clsSearchGraphBuilder::decode()
 {
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
@@ -193,10 +193,9 @@ bool clsSearchGraphBuilder::parseSentence()
                 // TODO: this can be removed if pruning works properly
                 if (PrevLexHypoContainer.nodes().isEmpty()){
                     //TODO convert to log
-                    TargomanDebug(1,"Warning: prevLexHypContainer empty. PrevCard: " <<PrevCardinality
+                    TargomanLogWarn(1, "PrevLexHypoContainer is empty. PrevCard: " << PrevCardinality
                                   << "PrevCov: " << bitArray2Str(PrevCoverage)
                                   <<" Addr:" <<(void*)PrevLexHypoContainer.Data.data());
-
 
                     continue;
                 }
@@ -230,8 +229,8 @@ bool clsSearchGraphBuilder::parseSentence()
                         continue;
                     }
 
-                    clsRuleNode& PhraseCandidates =
-                            this->Data->PhraseMatchTable[NewPhraseBeginPos][NewPhraseCardinality - 1];
+                    clsPhraseCandidateCollection& PhraseCandidates =
+                            this->Data->PhraseCandidateCollections[NewPhraseBeginPos][NewPhraseCardinality - 1];
 
                     //There is no rule defined in rule table for current phrase
                     if (PhraseCandidates.isInvalid())
@@ -244,7 +243,7 @@ bool clsSearchGraphBuilder::parseSentence()
 
                     foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
 
-                        size_t MaxCandidates = qMin((int)this->ObservationHistogramSize.value(),
+                        size_t MaxCandidates = qMin((int)PhraseCandidates.usableTargetRuleCount(),
                                                     PhraseCandidates.targetRules().size());
                         bool MustBreak = false;
 
@@ -330,28 +329,7 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
         size_t MaxLength = qMin(this->Data->Sentence.size() - FirstPosition,
                                 (size_t)this->Data->MaxMatchingSourcePhraseCardinality);
         for(size_t Length = 1; Length <= MaxLength; ++Length){
-            clsRuleNode& PhraseCandidates = this->Data->PhraseMatchTable[FirstPosition][Length-1];
-            if (PhraseCandidates.isInvalid() || PhraseCandidates.targetRules().isEmpty())
-                continue;
-
-            Cost_t BestCost = PBT_MAXIMUM_COST;
-
-            for (size_t PhraseCandidateNumber= 0;
-                 PhraseCandidateNumber < (size_t)PhraseCandidates.targetRules().size() &&
-                 PhraseCandidateNumber < clsSearchGraphBuilder::ObservationHistogramSize.value();
-                 ++PhraseCandidateNumber ){
-
-                Cost_t Cost = 0;
-                foreach (FeatureFunction::intfFeatureFunction* FF , gConfigs.ActiveFeatureFunctions)
-                    if(FF->canComputePositionSpecificRestCost() == false)
-                        Cost += FF->getApproximateCost(
-                                    FirstPosition,
-                                    FirstPosition + Length,
-                                    PhraseCandidates.targetRules().at(PhraseCandidateNumber));
-
-                BestCost = qMin(BestCost, Cost);
-            }
-            this->Data->RestCostMatrix[FirstPosition][Length - 1]  = BestCost;
+            this->Data->RestCostMatrix[FirstPosition][Length - 1]  = this->Data->PhraseCandidateCollections[FirstPosition][Length-1].bestApproximateCost();
         }
     }
 
@@ -392,6 +370,26 @@ Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t& _coverage, siz
         }
     }
     return RestCosts;
+}
+
+clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const clsRuleNode &_ruleNode)
+{
+    this->TargetRules = _ruleNode.targetRules();
+    this->UsableTargetRuleCount = qMin(
+                (int)clsPhraseCandidateCollectionData::ObservationHistogramSize.value(),
+                this->TargetRules.size()
+                );
+    this->BestApproximateCost = INFINITY;
+    // _observationHistogramSize must be taken care of to not exceed this->TargetRules.size()
+    for(int Count = 0; Count < this->UsableTargetRuleCount; ++Count) {
+        clsTargetRule& TargetRule = this->TargetRules[Count];
+        // Compute the approximate cost for current target rule
+        Cost_t ApproximateCost = random() / (double)RAND_MAX;
+        foreach (FeatureFunction::intfFeatureFunction* FF , gConfigs.ActiveFeatureFunctions)
+            if(FF->canComputePositionSpecificRestCost() == false)
+                ApproximateCost += FF->getApproximateCost(_beginPos, _endPos, TargetRule);
+        this->BestApproximateCost = qMin(this->BestApproximateCost, ApproximateCost);
+    }
 }
 
 }

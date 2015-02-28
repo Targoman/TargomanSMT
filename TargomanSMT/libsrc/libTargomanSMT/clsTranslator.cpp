@@ -62,8 +62,8 @@ stuTranslationOutput clsTranslator::translate(bool _justTranslationString)
         throw exTargomanCore("Translator is not initialized");
 
     //Input was decomposed in constructor
-    this->pPrivate->SearchGraphBuilder->matchPhrase();
-    this->pPrivate->SearchGraphBuilder->parseSentence();
+    this->pPrivate->SearchGraphBuilder->collectPhraseCandidates();
+    this->pPrivate->SearchGraphBuilder->decode();
 
     if (_justTranslationString){
         stuTranslationOutput Output;

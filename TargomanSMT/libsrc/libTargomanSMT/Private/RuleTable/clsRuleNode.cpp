@@ -16,7 +16,6 @@
 namespace Targoman {
 namespace SMT {
 namespace Private {
-namespace Private {
 /**
  * @brief Namespace surrounding all classes related to manage, read and write RuleTable.
  */

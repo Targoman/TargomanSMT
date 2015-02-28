@@ -101,7 +101,7 @@ public:
         IsFinal(false),
         Cost(0),
         RestCost(0),
-        TargetRule(*RuleTable::InvalidTargetRule),
+        TargetRule(*RuleTable::pInvalidTargetRule),
         IsRecombined(false),
         Coverage(Coverage_t()),
         SourceRangeBegin(0),
