@@ -49,18 +49,11 @@ public:
     clsLexicalHypothesisContainer();
     ~clsLexicalHypothesisContainer(){}
 
-    const clsSearchGraphNode& bestNode() const{
-        return this->Data->Nodes.first();
-    }
-
-
     inline static clsLexicalHypothesisContainer rootLexicalHypothesis(){
         clsLexicalHypothesisContainer LexicalHypothesis;
         LexicalHypothesis.Data->Nodes.append(*pInvalidSearchGraphNode);
         return LexicalHypothesis;
     }
-
-    bool mustBePruned(Common::Cost_t _totalCost);
 
     Common::Cost_t getBestCost() const;
 
@@ -77,7 +70,6 @@ public:
 public:
     QExplicitlySharedDataPointer<clsLexicalHypothesisContainerData> Data;           /**< A pointer of clsLexicalHypothesisContainerData class that stores a list of nodes.*/
 
-    static Common::Configuration::tmplConfigurable<quint8> LexicalMaxHistogramSize; /**< Max size of hypothesis that can be expanded in each step.*/
     static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;  /**< Store recombined node or node.*/
 };
 

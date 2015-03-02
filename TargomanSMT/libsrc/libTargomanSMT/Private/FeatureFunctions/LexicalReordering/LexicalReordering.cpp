@@ -144,6 +144,7 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
     Q_UNUSED(_sourceStart)
     Q_UNUSED(_sourceEnd)
 
+    /*
     Cost_t Cost = 0;
     for (int i = enuLexicalReorderingFields::ForwardMonotone; i<= enuLexicalReorderingFields::ForwardDiscontinous; ++i){
         Cost += _targetRule.field(this->FieldIndexes.at(i)) * this->ScalingFactors[i].value();
@@ -157,6 +158,9 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
         }
     }
     return Cost;
+    */
+    Q_UNUSED(_targetRule)
+    return 0;
 }
 
 /**

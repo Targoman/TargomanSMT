@@ -37,20 +37,32 @@ class clsCardinalityHypothesisContainerData : public QSharedData
 public:
     clsCardinalityHypothesisContainerData(){
         this->WorstLexicalHypothesis = NULL;
+        this->BestLexicalHypothesis = NULL;
         this->TotalSearchGraphNodeCount = 0;
+        this->WorstCostLimit = INFINITY;
     }
 
     clsCardinalityHypothesisContainerData(const clsCardinalityHypothesisContainerData& _other) :
         QSharedData(_other),
-        LexicalHypothesisContainer(_other.LexicalHypothesisContainer)
+        LexicalHypothesisContainer(_other.LexicalHypothesisContainer),
+        TotalSearchGraphNodeCount(_other.TotalSearchGraphNodeCount),
+        BestCoverage(_other.BestCoverage),
+        BestLexicalHypothesis(_other.BestLexicalHypothesis),
+        WorstCoverage(_other.WorstCoverage),
+        WorstLexicalHypothesis(_other.WorstLexicalHypothesis),
+        WorstCostLimit(_other.WorstCostLimit)
     {}
+
     ~clsCardinalityHypothesisContainerData(){}
 
 public:
-    CoverageLexicalHypothesisMap_t LexicalHypothesisContainer;
-    size_t                       TotalSearchGraphNodeCount;
-    clsLexicalHypothesisContainer*        WorstLexicalHypothesis;
-    Coverage_t                   WorstCoverage;
+    CoverageLexicalHypothesisMap_t  LexicalHypothesisContainer;
+    size_t                          TotalSearchGraphNodeCount;
+    Coverage_t                      BestCoverage;
+    clsLexicalHypothesisContainer*  BestLexicalHypothesis;
+    Coverage_t                      WorstCoverage;
+    clsLexicalHypothesisContainer*  WorstLexicalHypothesis;
+    Common::Cost_t                  WorstCostLimit;
 };
 
 /**
@@ -73,14 +85,6 @@ public:
         }*/
         return this->Data->LexicalHypothesisContainer[_coverage];
     }
-
-#ifdef TARGOMAN_SHOW_DEBUG
-    /**
-     * @brief dump      dumps the content of the cardinality hypothesis container, for debug purposes
-     * @param _prefix   prefix string to show before any output line, usefull for retrieving these specific debug lines with grep later
-     */
-    void dump(const QString &_prefix);
-#endif
 
     /**
      * @brief isEmpty   returns whether this cardinality contains any hypothesis
@@ -123,12 +127,22 @@ public:
 
     /**
      * @brief insertNewHypothesis   inserts the new hypothesis into its corresponding lexical hypothesis container and updates its internal parameters (worst node, total number of hypothesis and etc)
-     * @param _coverage             new translation hypothesis' coverage (this is input due to optimization purposes, it could be retrieved from the translation hypothesis)
-     * @param _container            new translation hypothesis' lexical container (this is input due to optimization purposes, it could be retrieved from the map using given coverage)
      * @param _node                 the new translation hypothesis to be inserted
      * @return
      */
-    bool insertNewHypothesis(const Coverage_t& _coverage, clsLexicalHypothesisContainer& _container, clsSearchGraphNode& _node);
+    bool insertNewHypothesis(clsSearchGraphNode& _node);
+
+    /**
+     * @brief isPruningNecessary
+     * @return  returns true if expanding this container makes pruning necessary
+     */
+    inline bool isPruningNecessary() const {
+        if (clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value() == 0 ||
+            this->Data->TotalSearchGraphNodeCount <
+                clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value())
+            return false;
+        return true;
+    }
 
     /**
      * @brief mustBePruned  preinsertion pruning facilitator.
@@ -143,12 +157,26 @@ public:
     bool mustBePruned(Common::Cost_t _cost) const;
 
     /**
+     * @brief finlizePruningAndcleanUp  finalize the pruning for this cardinality container
+     */
+    inline void finlizePruningAndcleanUp() {
+        this->prune();
+        auto LexHypoContainerIter = this->Data->LexicalHypothesisContainer.begin();
+        while(LexHypoContainerIter != this->Data->LexicalHypothesisContainer.end()) {
+            if(LexHypoContainerIter->nodes().isEmpty())
+                LexHypoContainerIter = this->Data->LexicalHypothesisContainer.erase(LexHypoContainerIter);
+            else
+                ++LexHypoContainerIter;
+        }
+    }
+
+    /**
      * @brief totalSearchGraphNodeCount getter function for the total translation hypothesis nodes count
      * @return                          total number of hypotheses contained in this container
      */
     size_t totalSearchGraphNodeCount() const{return this->Data->TotalSearchGraphNodeCount;}
 
-public:
+private:
     /**
      * @brief updateWorstNode   updates the worst node cache for this cardinality
      */
@@ -160,11 +188,29 @@ public:
      * @param _lexicalHypo              the lexcial hypothesis corresponding to the translation hypothesis node (input just for speed and memory optimization purposes)
      * @param _node                     the translation hypothesis node that is inserted just before calling this helper function
      */
-    void pruneAndUpdateWorstNode(const Coverage_t& _coverage, clsLexicalHypothesisContainer& _lexicalHypo, const clsSearchGraphNode &_node);
+    void pruneAndUpdateBestAndWorstNode(const Coverage_t& _coverage, clsLexicalHypothesisContainer& _container, const clsSearchGraphNode &_node);
+
+    /**
+     * @brief prune performs pruning (called in a lazy manner)
+     */
+    void prune();
+
+private:
+    static size_t MaxCardinalitySizeLazyPruning;
+
+public:
+    static void setHardReorderingJumpLimit(int _hardReorderingJumpLimit) {
+        clsCardinalityHypothesisContainer::MaxCardinalitySizeLazyPruning = 2 * clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value() - 1;
+        if(clsCardinalityHypothesisContainer::PrimaryCoverageShare.value() != 0)
+            clsCardinalityHypothesisContainer::MaxCardinalitySizeLazyPruning +=
+                clsCardinalityHypothesisContainer::PrimaryCoverageShare.value() << _hardReorderingJumpLimit;
+    }
 
 private:
     QExplicitlySharedDataPointer<clsCardinalityHypothesisContainerData> Data;
-    static Common::Configuration::tmplConfigurable<quint8> ReorderingHistogramSize;
+    static Common::Configuration::tmplConfigurable<quint8>  MaxCardinalityContainerSize; /**< Maximum number of nodes contained in a cardinality hypothesis container*/
+    static Common::Configuration::tmplConfigurable<quint8>  PrimaryCoverageShare; /**< Primary share of each coverage from the cardinality nodes.*/
+    static Common::Configuration::tmplConfigurable<double>  SearchBeamWidth; /**< Beam width for the beam search */
 };
 
 }

@@ -44,13 +44,9 @@ public:
      * @brief Computes approximate cost to the future cost heuristic
      * @note Either getRestCostForPosition or this function must return 0
      */
-    inline Common::Cost_t getApproximateCost(unsigned _sourceStart,
+    Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                       unsigned _sourceEnd,
-                                      const RuleTable::clsTargetRule& _targetRule) const {
-        Q_UNUSED(_sourceStart)
-        Q_UNUSED(_sourceEnd)
-        return this->getLanguageModelCost(_targetRule);
-    }
+                                      const RuleTable::clsTargetRule& _targetRule) const;
 
     bool nodesHaveSameState(const SearchGraph::clsSearchGraphNode &_first,
                             const SearchGraph::clsSearchGraphNode &_second) const;

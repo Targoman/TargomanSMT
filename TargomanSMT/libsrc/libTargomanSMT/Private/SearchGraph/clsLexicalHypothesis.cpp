@@ -22,12 +22,7 @@ namespace SearchGraph {
 using namespace Common;
 using namespace Common::Configuration;
 
-const Cost_t PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST = 1e10;
-tmplConfigurable<quint8> clsLexicalHypothesisContainer::LexicalMaxHistogramSize(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/LexicalMaxHistogramSize",
-        "TODO Desc",
-        100
-        );
+const Cost_t PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST = INFINITY;
 
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesisContainer::KeepRecombined(
         clsSearchGraphBuilder::moduleBaseconfig() + "/KeepRecombined",
@@ -40,28 +35,6 @@ clsLexicalHypothesisContainer::clsLexicalHypothesisContainer() :
 {}
 
 /**
- * @brief Checks whether new hypothesis with cost of _totalCost should be pruned or not.
- *
- * If list is not empty and max size of list (#LexicalMaxHistogramSize) is not zero and If size of list of nodes is greater than #LexicalMaxHistogramSize and cost of new hypothesis
- * (input cost) is greater than worse node it should pruned.
- * @param _totalCost
- * @return
- */
-bool clsLexicalHypothesisContainer::mustBePruned(Cost_t _totalCost)
-{
-    if (this->Data->Nodes.isEmpty())
-        return false;
-    if(this->LexicalMaxHistogramSize.value() == 0)
-        return false;
-    if(this->Data->Nodes.size() < this->LexicalMaxHistogramSize.value())
-        return false;
-    if (_totalCost < this->Data->Nodes.last().getTotalCost())
-        return false;
-
-    return true;
-}
-
-/**
  * @brief returns cost of best node.
  */
 Cost_t clsLexicalHypothesisContainer::getBestCost() const
@@ -69,7 +42,7 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
     if (this->Data->Nodes.isEmpty())
         return PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST;
 
-    return this->bestNode().getCost();
+    return this->nodes().first().getCost();
 }
 
 
@@ -79,7 +52,7 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
  * So our list is always sorted by node costs from less cost to highest cost.
  *
  * @param _node
- * @return
+ * @return  returns true if the new node occupies a new place in this lexical hypothesis container and false otherwise
  */
 bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
@@ -89,7 +62,7 @@ bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
         if (HypoNode.haveSameFuture(_node)){
             if (clsLexicalHypothesisContainer::KeepRecombined.value()){
                 HypoNode.recombine(_node);
-                return true;
+                return false;
             }else{
                 if(HypoNode.getTotalCost() > _node.getTotalCost()){
                     this->Data->Nodes.removeAt(i);
@@ -102,14 +75,6 @@ bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
             InsertionPos = i;
             break;
         }
-    }
-
-    if (this->LexicalMaxHistogramSize.value() > 0 &&
-            this->Data->Nodes.size() > this->LexicalMaxHistogramSize.value()){
-        if (InsertionPos >= (size_t)this->Data->Nodes.size())
-            return false;
-
-        this->Data->Nodes.takeLast();
     }
 
     this->Data->Nodes.insert(InsertionPos,_node);

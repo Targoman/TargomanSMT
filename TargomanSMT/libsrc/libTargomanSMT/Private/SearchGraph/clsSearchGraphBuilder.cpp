@@ -32,16 +32,27 @@ using namespace Proxies;
 using namespace InputDecomposer;
 using namespace OOV;
 
+tmplConfigurable<quint8> clsSearchGraphBuilder::HardReorderingJumpLimit(
+        clsSearchGraphBuilder::moduleBaseconfig() + "/HardReorderingJumpLimit",
+        "TODO Desc",
+        6,
+        [] (const intfConfigurable& _item, QString&) {
+    clsCardinalityHypothesisContainer::setHardReorderingJumpLimit(
+            _item.toVariant().Int
+            );
+    return true;
+});
+
 tmplConfigurable<quint8> clsSearchGraphBuilder::ReorderingConstraintMaximumRuns(
         clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingConstraintMaximumRuns",
         "IBM1 reordering constraint",
         2);
 tmplConfigurable<bool>   clsSearchGraphBuilder::DoComputePositionSpecificRestCosts(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/DoComputeReorderingRestCosts",
+        clsSearchGraphBuilder::moduleBaseconfig() + "/DoComputePositionSpecificRestCosts",
         "TODO Desc",
         true);
-tmplConfigurable<quint8> clsPhraseCandidateCollectionData::ObservationHistogramSize(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/ObservationHistogramSize",
+tmplConfigurable<quint8> clsPhraseCandidateCollectionData::MaxTargetPhraseCount(
+        clsSearchGraphBuilder::moduleBaseconfig() + "/MaxTargetPhraseCount",
         "TODO Desc",
         100);
 
@@ -159,6 +170,21 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
     return true;
 }
 
+bool clsSearchGraphBuilder::conformsHardReorderingJumpLimit(const Coverage_t &_coverage,
+                                                            size_t _endPos)
+{
+    int FirstEmptyPosition = _coverage.size();
+    for(int i = 0; i < _coverage.size(); ++i)
+        if(_coverage.testBit(i) == false) {
+            FirstEmptyPosition = i;
+            break;
+        }
+    if(FirstEmptyPosition == _coverage.size())
+        return true;
+    size_t JumpWidth = qAbs((int)_endPos - FirstEmptyPosition);
+    return JumpWidth <= clsSearchGraphBuilder::HardReorderingJumpLimit.value();
+}
+
 
 /**
  * @brief This is the main function that performs the decoding process.
@@ -183,8 +209,9 @@ bool clsSearchGraphBuilder::decode()
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
 
-        int PrunedByIBMConstraint;
-        int PrunedByLexicalHypothesis;
+        int PrunedByIBMConstraint = 0;
+        int PrunedByHardReorderingJumpLimit = 0;
+        int PrunedPreInsertion = 0;
 
         bool IsFinal = (NewCardinality == this->Data->Sentence.size());
         int MinPrevCardinality = qMax(NewCardinality - this->Data->MaxMatchingSourcePhraseCardinality, 0);
@@ -196,8 +223,7 @@ bool clsSearchGraphBuilder::decode()
 
             //This happens when we have for ex. 2 bi-grams and a quad-gram but no similar 3-gram. due to bad training
             if(this->Data->HypothesisHolder[PrevCardinality].isEmpty()) {
-
-                //std::cout<<__LINE__<< ": ERROR: cardinality Container for previous cardinality empty.\n";
+                TargomanLogWarn(1, "Previous cardinality is empty. (PrevCard: " << PrevCardinality << ", CurrentCard: " << NewCardinality << ")");
                 continue;
             }
 
@@ -213,9 +239,8 @@ bool clsSearchGraphBuilder::decode()
                 Q_ASSERT(PrevLexHypoContainer.nodes().size());
 
 
-                // TODO: this can be removed if pruning works properly
+                // This can be removed if training has been done properly and we have a sane phrase table
                 if (PrevLexHypoContainer.nodes().isEmpty()){
-                    //TODO convert to log
                     TargomanLogWarn(1, "PrevLexHypoContainer is empty. PrevCard: " << PrevCardinality
                                   << "PrevCov: " << bitArray2Str(PrevCoverage)
                                   <<" Addr:" <<(void*)PrevLexHypoContainer.Data.data());
@@ -223,17 +248,12 @@ bool clsSearchGraphBuilder::decode()
                     continue;
                 }
 
-                /*
-                 * TODO at this point pbt performs cardinality pruning (cf. discardedAtA / cardhist, cardthres pruning)
-                 * this is not implemented here.
-                 */
                 for (size_t NewPhraseBeginPos = 0;
                      NewPhraseBeginPos <= (size_t)this->Data->Sentence.size() - NewPhraseCardinality;
                      ++NewPhraseBeginPos){
                     size_t NewPhraseEndPos = NewPhraseBeginPos + NewPhraseCardinality;
-                    //TargomanDebug(1, "start position: "<< StartPos);
 
-                    // skip if phrase coverage is not compatible with previous sentence coverage
+                    // Skip if phrase coverage is not compatible with previous sentence coverage
                     bool SkipStep = false;
                     for (size_t i= NewPhraseBeginPos; i<NewPhraseEndPos; ++i)
                         if (PrevCoverage.testBit(i)){
@@ -241,14 +261,21 @@ bool clsSearchGraphBuilder::decode()
                             break;
                         }
                     if (SkipStep)
-                        continue;//TODO if NewPhraseCardinality has not continous place breaK
+                        continue;//TODO if NewPhraseCardinality has not contigeous place breaK
 
                     Coverage_t NewCoverage(PrevCoverage);
                     for (size_t i=NewPhraseBeginPos; i<NewPhraseEndPos; ++i)
                         NewCoverage.setBit(i);
 
+                    /*
                     if (this->conformsIBM1Constraint(NewCoverage) == false){
                         ++PrunedByIBMConstraint;
+                        continue;
+                    }
+                    */
+
+                    if (this->conformsHardReorderingJumpLimit(NewCoverage, NewPhraseEndPos) == false){
+                        ++PrunedByHardReorderingJumpLimit;
                         continue;
                     }
 
@@ -259,17 +286,12 @@ bool clsSearchGraphBuilder::decode()
                     if (PhraseCandidates.isInvalid())
                         continue; //TODO If there are no more places to fill after this startpos break
 
-                    clsLexicalHypothesisContainer& NewLexHypoContainer =
-                            this->Data->HypothesisHolder[NewCardinality][NewCoverage];
-
                     Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseBeginPos, NewPhraseEndPos);
 
                     foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
 
                         size_t MaxCandidates = qMin((int)PhraseCandidates.usableTargetRuleCount(),
                                                     PhraseCandidates.targetRules().size());
-                        bool MustBreak = false;
-
                         for(size_t i = 0; i<MaxCandidates; ++i){
 
                             const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
@@ -281,48 +303,35 @@ bool clsSearchGraphBuilder::decode()
                                                            CurrentPhraseCandidate,
                                                            IsFinal,
                                                            RestCost);
-
-                            TargomanDebug(7,
-                                          "\nNewHypoNode: " <<
-                                          "Cardinality: [" << NewCardinality << "] " <<
-                                          "Coverage[" << NewCoverage << "] " <<
-                                          "Cost: [" << NewHypoNode.getCost() << "] " <<
-                                          "RestCost: [" << RestCost << "] " <<
-                                          "TargetPhrase: [" << CurrentPhraseCandidate.toStr() << "]\n" <<
-                                          "\t\t\tScores: " << NewHypoNode.costElements()
-                                          );
-
+                            //TargomanDebug(7, "\nNewHypo:\tTotalCost: " << NewHypoNode.getTotalCost() << ", Str: " << NewHypoNode.targetRule().toStr());
 
                             // If current NewHypoNode is worse than worst stored node ignore it
                             if (clsSearchGraphBuilder::PrunePreInsertion.value() &&
-                                NewLexHypoContainer.mustBePruned(NewHypoNode.getTotalCost())){
-                                ++PrunedByLexicalHypothesis;
-                                MustBreak = true;
-                                break;
+                                this->Data->HypothesisHolder[NewCardinality].mustBePruned(NewHypoNode.getTotalCost())){
+                                ++PrunedPreInsertion;
+                                // TODO Maybe it can be converted to break
+                                continue;
                             }
 
-                            if(this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewCoverage,
-                                                                                                NewLexHypoContainer,
-                                                                                                NewHypoNode)) {
-                                TargomanDebug(7, "\nNew Hypothesis Inserted.");
+                            if(this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewHypoNode)) {
+                                // Log insertion of hypothesis here if it is needed
                             }
                         }
 
-                        // In case the currently created node is not worth putting in the stack,
-                        // its inferiors are definitely are not worth also
-                        if(MustBreak)
-                                break;
-
                     }//foreach PrevLexHypoNode
-                    if (NewLexHypoContainer.nodes().isEmpty())
-                        this->Data->HypothesisHolder[NewCardinality].remove(NewCoverage);
-
                 }//for NewPhraseBeginPos
             }//for PrevCoverageIter
         }//for PrevCardinality
+        this->Data->HypothesisHolder[NewCardinality].finlizePruningAndcleanUp();
         // Vedadian
-        if(NewCardinality == 1)
-            exit(0);
+        TargomanDebug(7, "\nCardinality: " << NewCardinality);
+        for(auto Iterator = this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses().begin();
+            Iterator != this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses().end();
+            ++Iterator) {
+            TargomanDebug(7, "\n\tCoverage: " << Iterator.key());
+            const clsSearchGraphNode& Node = Iterator->nodes().first();
+            TargomanDebug(7, "\n\t\tCost: " << Node.getCost() << ", RestCost: " << Node.getTotalCost() - Node.getCost() << ", Str: " << Node.targetRule().toStr());
+        }
     }//for NewCardinality
 
     Coverage_t FullCoverage;
@@ -331,7 +340,7 @@ bool clsSearchGraphBuilder::decode()
     if(this->Data->HypothesisHolder[this->Data->Sentence.size()].lexicalHypotheses().size() > 0 &&
             this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().isEmpty() == false)
     {
-        this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].bestNode();
+        this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().first();
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
         return true;
     } else {
@@ -415,18 +424,29 @@ clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _begin
 {
     this->TargetRules = _ruleNode.targetRules();
     this->UsableTargetRuleCount = qMin(
-                (int)clsPhraseCandidateCollectionData::ObservationHistogramSize.value(),
+                (int)clsPhraseCandidateCollectionData::MaxTargetPhraseCount.value(),
                 this->TargetRules.size()
                 );
+    // Vedadian
+    /*
+    qStableSort(this->TargetRules.begin(),
+                this->TargetRules.begin() + this->UsableTargetRuleCount,
+                [] () {
+
+                }
+                );
+                */
     this->BestApproximateCost = INFINITY;
     // _observationHistogramSize must be taken care of to not exceed this->TargetRules.size()
     for(int Count = 0; Count < this->UsableTargetRuleCount; ++Count) {
         clsTargetRule& TargetRule = this->TargetRules[Count];
         // Compute the approximate cost for current target rule
-        Cost_t ApproximateCost = random() / (double)RAND_MAX;
+        Cost_t ApproximateCost = 0;
         foreach (FeatureFunction::intfFeatureFunction* FF , gConfigs.ActiveFeatureFunctions)
-            if(FF->canComputePositionSpecificRestCost() == false)
-                ApproximateCost += FF->getApproximateCost(_beginPos, _endPos, TargetRule);
+            if(FF->canComputePositionSpecificRestCost() == false) {
+                Cost_t Cost = FF->getApproximateCost(_beginPos, _endPos, TargetRule);
+                ApproximateCost += Cost;
+            }
         this->BestApproximateCost = qMin(this->BestApproximateCost, ApproximateCost);
     }
 }

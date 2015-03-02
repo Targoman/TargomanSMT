@@ -56,6 +56,13 @@ tmplConfigurable<QString> clsMosesPlainRuleTable::ReorderingTableFileName(
         Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
         );
 
+tmplConfigurable<int> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(
+        clsMosesPlainRuleTable::baseConfigPath() + "/MaxRuleNodeTargetRuleCount",
+        "Maximum number of target rules kept for each rule node.",
+        20,
+        Validators::tmplNumericValidator<int, 65536, 0>
+        );
+
 clsMosesPlainRuleTable::clsMosesPlainRuleTable(quint64 _instanceID)  :
     intfRuleTable(this->moduleName(), _instanceID)
 {
@@ -141,7 +148,9 @@ void clsMosesPlainRuleTable::loadTableData()
 
     clsCmdProgressBar ProgressBar("Loading MosesRuleTable");
 
-    addUnkToUnkRule();
+    QList<clsRuleNode> TotalRuleNodes;
+
+    addUnkToUnkRule(TotalRuleNodes);
 
     clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFileName.value().toStdString());
     clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFileName.value().toStdString());
@@ -191,13 +200,37 @@ void clsMosesPlainRuleTable::loadTableData()
             PhraseCostsFields.append(ReorderingCostsFields.mid(3, 3));
         PhraseCostsFields.append(ReorderingCostsFields.mid(0, 3));
 
-        this->addRule(PhraseTableFields[mosesFormatSourcePhrase], PhraseTableFields[mosesFormatTargetPhrase], PhraseCostsFields, RulesRead);
+        this->addRule(TotalRuleNodes, PhraseTableFields[mosesFormatSourcePhrase], PhraseTableFields[mosesFormatTargetPhrase], PhraseCostsFields, RulesRead);
     }
 
+    TargomanLogInfo(5, "Sorting rule nodes ...");
+
+    for(int i = 0; i < TotalRuleNodes.size(); ++i) {
+        QList<clsTargetRule>& TargetRuleList = TotalRuleNodes[i].targetRules();
+        int NumberOfRulesToKeep = qMin(
+                    clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount.value(),
+                    TargetRuleList.size()
+                    );
+        std::nth_element(
+                    TargetRuleList.begin(),
+                    TargetRuleList.begin() + NumberOfRulesToKeep,
+                    TargetRuleList.end(),
+                    [&] (const clsTargetRule& _first, const clsTargetRule& _second) {
+                        return _first.precomputedValue(this->PrecomputedValueIndex) <
+                                _second.precomputedValue(this->PrecomputedValueIndex);
+                    }
+        );
+        // Prune the unnecessary rules
+        if(NumberOfRulesToKeep < TargetRuleList.size())
+            TargetRuleList.erase(
+                    TargetRuleList.begin() + NumberOfRulesToKeep,
+                    TargetRuleList.end()
+                    );
+    }
 }
 
 /**
- * @brief getPrematureTargetRuleCost    helper function for clsMosesPlainRuleTable::addToRuleNodeSorted() that computes a score for target rules forgetting about where they are to be placed
+ * @brief getPrematureTargetRuleCost    helper function for clsMosesPlainRuleTable::addRule() that computes a score for target rules forgetting about where they are to be placed
  * @param _targetRule                   input target rule for which the cost is computed
  * @return                              the computed cost
  */
@@ -213,53 +246,29 @@ inline Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule)
 }
 
 /**
- * @brief clsMosesPlainRuleTable::addToRuleNodeSorted   gets a rule node and a target rule and inserts the new target rule into the node while keeping the target rules list sorted
- * @param _ruleNode                                     rule node into which the target rule will be inserted
- * @param _targetRule                                   target rule to be inserted
- */
-void clsMosesPlainRuleTable::addToRuleNodeSorted(clsRuleNode &_ruleNode, clsTargetRule &_targetRule)
-{
-    QList<clsTargetRule>& TargetRuleList = _ruleNode.targetRules();
-
-
-    Cost_t CurrentTargetRuleCost = getPrematureTargetRuleCost(_targetRule);
-    _targetRule.setPrecomputedValue(this->PrecomputedValueIndex, CurrentTargetRuleCost);
-
-    int InsertionPos = TargetRuleList.size();
-
-    int StartPos = 0, EndPos = TargetRuleList.size();
-    while(EndPos > StartPos) {
-        int MidPos = (StartPos + EndPos) / 2;
-        Cost_t TargetRuleCost = TargetRuleList.at(MidPos).precomputedValue(this->PrecomputedValueIndex);
-        if(TargetRuleCost > CurrentTargetRuleCost)
-            EndPos = MidPos;
-        else if (TargetRuleCost < CurrentTargetRuleCost)
-            StartPos = MidPos + 1;
-        else {
-            InsertionPos = MidPos;
-            break;
-        }
-    }
-    if(StartPos == EndPos)
-        InsertionPos = StartPos;
-    TargetRuleList.insert(InsertionPos, _targetRule);
-}
-
-/**
  * @brief clsMosesPlainRuleTable::addRule   adds a new rule to the rule prefix tree
  * @param _sourcePhrase                     source phrase, pointing to the specific prefix tree node
  * @param _targetPhrase                     target phrase for which a target rule will be created
  * @param _costs                            list of cost fields read from the files
  * @note                                    the prefix tree node will be created if it does not exist already
  */
-void clsMosesPlainRuleTable::addRule(const QVector<WordIndex_t> _sourcePhrase, const QList<WordIndex_t> _targetPhrase, const QList<Cost_t> _costs)
+void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
+                                     const QVector<WordIndex_t> _sourcePhrase,
+                                     const QList<WordIndex_t> _targetPhrase,
+                                     const QList<Cost_t> _costs)
 {
     RuleTable::clsTargetRule TargetRule(_targetPhrase, _costs);
 
     clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(_sourcePhrase.toStdVector())->getData();
-    if (RuleNode.isInvalid())
+    if (RuleNode.isInvalid()) {
         RuleNode.detachInvalidData();
-    addToRuleNodeSorted(RuleNode, TargetRule);
+        _ruleNodeList.append(RuleNode);
+    }
+    TargetRule.setPrecomputedValue(
+                this->PrecomputedValueIndex,
+                getPrematureTargetRuleCost(TargetRule)
+                );
+    RuleNode.targetRules().append(TargetRule);
 }
 
 /**
@@ -269,12 +278,18 @@ void clsMosesPlainRuleTable::addRule(const QVector<WordIndex_t> _sourcePhrase, c
  * @param _costs                            the list containing string representations of the cost field values
  * @param _ruleNumber                       index of the line read from the input file
  */
-void clsMosesPlainRuleTable::addRule(const QString& _sourcePhrase,
+void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
+                                     const QString& _sourcePhrase,
                                      const QString& _targetPhrase,
                                      const QStringList &_costs,
                                      size_t _ruleNumber)
 {
     Q_UNUSED(_ruleNumber)
+
+    if(_targetPhrase.trimmed() == "King" && _sourcePhrase.trimmed() == QString::fromUtf8("ملک")) {
+        int a=2;
+        ++a;
+    }
 
     QList<Cost_t>       Costs;
     foreach(const QString& Cost, _costs)
@@ -295,13 +310,13 @@ void clsMosesPlainRuleTable::addRule(const QString& _sourcePhrase,
     foreach(const QString& Word, _targetPhrase.split(" ", QString::SkipEmptyParts))
         TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(Word));
 
-    this->addRule(SourcePhrase, TargetPhrase, Costs);
+    this->addRule(_ruleNodeList, SourcePhrase, TargetPhrase, Costs);
 }
 
 /**
  * @brief clsMosesPlainRuleTable::addUnkToUnkRule   adds the unknown to unkown word translation rule to avoid stucking at unknown words
  */
-void clsMosesPlainRuleTable::addUnkToUnkRule()
+void clsMosesPlainRuleTable::addUnkToUnkRule(QList<clsRuleNode>& _ruleNodeList)
 {
     QList<Cost_t> Costs;
     for(int i = 0; i < this->PhraseFeatureCount + this->ReorderingFeatureCount; ++i)
@@ -310,7 +325,7 @@ void clsMosesPlainRuleTable::addUnkToUnkRule()
     SrcUnk.append(0);
     QList<WordIndex_t> TgtUnk;
     TgtUnk.append(0);
-    addRule(SrcUnk, TgtUnk, Costs);
+    addRule(_ruleNodeList, SrcUnk, TgtUnk, Costs);
 }
 
 }

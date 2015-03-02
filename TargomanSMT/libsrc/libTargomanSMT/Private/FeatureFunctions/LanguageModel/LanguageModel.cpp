@@ -81,6 +81,13 @@ Common::Cost_t LanguageModel::scoreSearchGraphNode(clsSearchGraphNode &_newHypot
     return Cost * log(10) * LanguageModel::ScalingFactor.value();
 }
 
+Cost_t LanguageModel::getApproximateCost(unsigned _sourceStart, unsigned _sourceEnd, const clsTargetRule &_targetRule) const
+{
+    Q_UNUSED(_sourceStart)
+    Q_UNUSED(_sourceEnd)
+    return this->getLanguageModelCost(_targetRule);
+}
+
 /**
  * @brief Computes language model score for the given target rule
  */

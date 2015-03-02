@@ -16,11 +16,9 @@
 #include "libTargomanSMT/clsTranslator.h"
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 
-
-
-
 #include <QDebug>
 
+#include <iostream>
 
 using namespace Targoman::Common;
 using namespace Targoman::Common::Configuration;
@@ -88,7 +86,8 @@ int main(int argc, char *argv[])
         while(Stream.atEnd() == false)
         {
             clsTranslator MyTranslator(Stream.readLine());
-            MyTranslator.translate();
+            stuTranslationOutput output = MyTranslator.translate();
+            std::cout << output.Translation.toStdString() << std::endl;
             printMemoryUsage("after translate");
         }
 

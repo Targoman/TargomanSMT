@@ -65,7 +65,7 @@ public:
     Common::Cost_t BestApproximateCost;
 
 private:
-    static Common::Configuration::tmplConfigurable<quint8> ObservationHistogramSize;
+    static Common::Configuration::tmplConfigurable<quint8> MaxTargetPhraseCount;
 };
 
 /**
@@ -217,17 +217,19 @@ private:
     Common::Cost_t computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const;
     void initializeRestCostsMatrix();
     bool conformsIBM1Constraint(const Coverage_t& _newCoverage);
+    bool conformsHardReorderingJumpLimit(const Coverage_t &_coverage, size_t _endPos);
     Common::Cost_t calculateRestCost(const Coverage_t &_coverage, size_t _beginPos, size_t _endPos) const;
 
 private:
     QExplicitlySharedDataPointer<clsSearchGraphBuilderData> Data;                               /**< A pointer to clsSearchGraphBuilderData class which manages data member of this class*/
 
-    static RuleTable::intfRuleTable*                       pRuleTable;                          /**< Rule table loader e.g. Jane phrase Table loader */
-    static FeatureFunction::intfFeatureFunction*           pPhraseTable;
-    static RuleTable::clsRuleNode*                         UnknownWordRuleNode;                 /**< An instance of rule node for unknown word.*/
-    static Common::Configuration::tmplConfigurable<quint8> ReorderingConstraintMaximumRuns;     /**< A threshold that will be used in IBM1 constrains.*/
-    static Common::Configuration::tmplConfigurable<bool>   DoComputePositionSpecificRestCosts;
-    static Common::Configuration::tmplConfigurable<bool>   PrunePreInsertion;
+    static RuleTable::intfRuleTable*                        pRuleTable;                          /**< Rule table loader e.g. Jane phrase Table loader */
+    static FeatureFunction::intfFeatureFunction*            pPhraseTable;
+    static RuleTable::clsRuleNode*                          UnknownWordRuleNode;                 /**< An instance of rule node for unknown word.*/
+    static Common::Configuration::tmplConfigurable<quint8>  HardReorderingJumpLimit;
+    static Common::Configuration::tmplConfigurable<quint8>  ReorderingConstraintMaximumRuns;     /**< A threshold that will be used in IBM1 constrains.*/
+    static Common::Configuration::tmplConfigurable<bool>    DoComputePositionSpecificRestCosts;
+    static Common::Configuration::tmplConfigurable<bool>    PrunePreInsertion;
 };
 
 }
