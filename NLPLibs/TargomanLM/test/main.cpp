@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
         bool UseIdexBasedModel = true;
 
         stuLMConfigs languageModelConfig( UnkProb, UnkBackoff, UseIdexBasedModel);
+        languageModelConfig.VerifyBinaryCheckSum = true;
 
 
 //        Word = "این";
@@ -49,10 +50,9 @@ int main(int argc, char *argv[])
 //        Word = "استخوان‌ها";
 //        Prob = SS.wordProb(Word, Gram);
 
-//        qDebug()<<"Order = "<<LM.init(argc > 1 ? argv[1] : "/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en", languageModelConfig);
-//        LM.convertBinary("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en.bin");
-        LM.init("/home/user/SVN/Targoman/targoman/Trunk/Example/Model-fa2en.full//lm.4g.en.bin", languageModelConfig);
-
+//        qDebug()<<"Order = "<<LM.init(argc > 2 ? argv[1] : "/Share/local/vedadian/Experiments/Targoman/lm/Fa-En_BaseLine_2014-Mar-5_v0.1.4g.arpa", languageModelConfig);
+//        LM.convertBinary("/Share/local/vedadian/Experiments/Targoman/lm/Fa-En_BaseLine_2014-Mar-5_v0.1.4g.bin");
+        LM.init("/Share/local/vedadian/Experiments/Targoman/lm/Fa-En_BaseLine_2014-Mar-5_v0.1.4g.bin", languageModelConfig);
 
         QString Sentence = QStringLiteral("the reactor required for it produces atom plutonium bomb .");
         clsLMSentenceScorer SS1(LM);

@@ -1,5 +1,6 @@
 #!/bin/sh
 
+QMAKE_COMMAND=qmake-qt5
 Projects="TargomanCommon NLPLibs/TargomanLM/ NLPLibs/TargomanTextProcessor/ TargomanSMT"
 BasePath=`pwd`
 if [ "$1" == "full" ]; then
@@ -9,9 +10,9 @@ if [ "$1" == "full" ]; then
 		cd  $BasePath/$Proj
 		make distclean
 		if [ "$2" != "release" ] ; then
- 			qmake-qt5 CONFIG+=debug
+ 			$QMAKE_COMMAND CONFIG+=debug
 		else
-			qmake-qt5
+			$QMAKE_COMMAND
 		fi
 		make
 		if [ $? -ne 0 ];then

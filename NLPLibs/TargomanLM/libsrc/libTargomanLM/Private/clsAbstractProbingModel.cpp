@@ -46,11 +46,8 @@ clsAbstractProbingModel::~clsAbstractProbingModel()
  */
 void clsAbstractProbingModel::setUnknownWordDefaults(LogP_t _prob, LogP_t _backoff)
 {
-    Q_ASSERT(this->NGramHashTable != NULL);
     this->UnknownWeights.Backoff = _backoff;
     this->UnknownWeights.Prob = _prob;
-    this->NGramHashTable[LM_UNKNOWN_WINDEX].Prob = _prob;
-    this->NGramHashTable[LM_UNKNOWN_WINDEX].Backoff = _backoff;
 }
 
 /**
@@ -81,6 +78,8 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
     size_t NGramLen = strlen(_ngram);
     if (_order == 1 && !strcmp(_ngram, LM_UNKNOWN_WORD)){
         this->setUnknownWordDefaults(_prob, _backoff);
+        this->NGramHashTable[LM_UNKNOWN_WINDEX].Prob      = _prob;
+        this->NGramHashTable[LM_UNKNOWN_WINDEX].Backoff   = _backoff;
         return;
     }
     //Our first guess.
@@ -142,6 +141,11 @@ void clsAbstractProbingModel::init(quint32 _maxNGramCount)
         this->NgramCount = _maxNGramCount;
     }else
         throw exLanguageModel("Count of NGrams("+QString::number(_maxNGramCount)+") exeeds valid Table Sizes");
+
+    this->NGramHashTable[LM_UNKNOWN_WINDEX].Prob      = this->UnknownWeights.Prob;
+    this->NGramHashTable[LM_UNKNOWN_WINDEX].Backoff   = this->UnknownWeights.Backoff;
+    this->NGramHashTable[LM_UNKNOWN_WINDEX].HashValueLevel = 1; // Just to inform save binary that there is a data stored
+    ++this->StoredInHashTable;
 }
 
 void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _order)
@@ -164,8 +168,9 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     OutputStream << this->StoredInHashTable;
     OutputStream << this->NgramCount;
 
+    /*
     quint64 Inserted = 0;
-    for(Hash_t HashLoc=1; HashLoc<=this->HashTableSize; ++HashLoc){
+    for(Hash_t HashLoc=0; HashLoc<=this->HashTableSize; ++HashLoc){
         if (this->NGramHashTable[HashLoc].HashValueLevel != 0){
             ProgressBar.setValue(HashLoc);
             OutputStream << HashLoc;
@@ -178,7 +183,16 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
 
     if (Inserted != this->StoredInHashTable)
         throw exLanguageModel(QString("Count of HashTable Items differs. %1 must be %2").arg(Inserted).arg(this->StoredInHashTable));
+    */
 
+    int BulkSize = Constants::MaxFileIOBytes / sizeof(stuNGramHash);
+    size_t i = 0;
+    for(; i < this->HashTableSize - BulkSize + 1; i += BulkSize) {
+        BinFile.write((char*)&this->NGramHashTable[i], BulkSize * sizeof(stuNGramHash));
+        ProgressBar.setValue(i);
+    }
+    if(i < this->HashTableSize)
+        BinFile.write((char*)&this->NGramHashTable[i], (this->HashTableSize - i) * sizeof(stuNGramHash));
     ProgressBar.finalize(true);
 
     OutputStream << this->RemainingHashes;
@@ -194,7 +208,7 @@ void clsAbstractProbingModel::saveBinFile(const QString &_binFilePath, quint8 _o
     QCryptographicHash Crypto(QCryptographicHash::Md5);
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
-    int i=0;
+    i=0;
     while(!BinFile.atEnd()){
         ProgressBar.setValue(++i);
         Crypto.addData(BinFile.read(Constants::MaxFileIOBytes));
@@ -297,6 +311,7 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath, bool _c
     if (BinFile.open(QFile::ReadOnly) == false)
         throw exLanguageModel("Unable to open <" + _binFilePath + "> For reading");
 
+
     QDataStream InputStream(&BinFile);
     /** Dummy Reads **/
     BinFile.read(BIN_FILE_HEADER.size());
@@ -309,6 +324,7 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath, bool _c
 
     ProgressBar.reset("Loading BinaryLM (Phase 1)", this->StoredInHashTable);
 
+    /*
     for (Hash_t i = 1; i<=this->StoredInHashTable; ++i){
         Hash_t HashLoc;
         InputStream >> HashLoc;
@@ -318,7 +334,19 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath, bool _c
 
         ProgressBar.setValue(i);
     }
+    */
 
+    int BulkSize = Constants::MaxFileIOBytes / sizeof(stuNGramHash);
+    size_t i = 0;
+    for(; i < this->HashTableSize - BulkSize + 1; i += BulkSize) {
+        BinFile.read((char*)&this->NGramHashTable[i], BulkSize * sizeof(stuNGramHash));
+        ProgressBar.setValue(i);
+    }
+    if(i < this->HashTableSize)
+        BinFile.read((char*)&this->NGramHashTable[i], (this->HashTableSize - i) * sizeof(stuNGramHash));
+
+    clsAbstractProbingModel::setUnknownWordDefaults(this->NGramHashTable[LM_UNKNOWN_WINDEX].Prob,
+                                                    this->NGramHashTable[LM_UNKNOWN_WINDEX].Backoff);
 
     ProgressBar.reset("Loading BinaryLM (Phase 2)", 1);
     InputStream >> this->RemainingHashes;
