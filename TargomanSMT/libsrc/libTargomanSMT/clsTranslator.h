@@ -31,6 +31,7 @@ public:
     ~clsTranslator();
 
     static void init(const QString _configFilePath);
+    static void saveBinaryRuleTable(const QString& _filePath);
 
     //Input language is predefined
     stuTranslationOutput translate(bool _justTranslationString = false);

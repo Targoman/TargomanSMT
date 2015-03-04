@@ -12,6 +12,7 @@
  */
 
 #include "clsRuleNode.h"
+#include "FStreamExtended.h"
 
 namespace Targoman {
 namespace SMT {
@@ -57,8 +58,10 @@ void clsRuleNode::readBinary(std::istream &_input)
 
 void clsRuleNode::writeBinary(std::ostream &_output) const
 {
-    Q_UNUSED(_output)
-//TODO
+    clsOFStreamExtended& OutStream = (clsOFStreamExtended&)(_output);
+    OutStream.write(this->Data->TargetRules.size());
+    foreach(const clsTargetRule& TargetRule, this->Data->TargetRules)
+        TargetRule.writeBinary(OutStream);
 }
 
 }

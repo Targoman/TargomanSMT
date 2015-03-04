@@ -27,6 +27,7 @@ namespace SMT {
 using namespace Private;
 using namespace NLPLibs;
 using namespace Private::OOV;
+using namespace SearchGraph;
 
 bool clsTranslatorPrivate::Initialized = false;
 
@@ -74,5 +75,11 @@ stuTranslationOutput clsTranslator::translate(bool _justTranslationString)
     }else
         return this->pPrivate->Output->translationOutput();
 }
+
+void clsTranslator::saveBinaryRuleTable(const QString &_filePath)
+{
+    clsSearchGraphBuilder::saveBinaryRuleTable(_filePath);
+}
+
 }
 }

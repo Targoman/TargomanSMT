@@ -205,6 +205,11 @@ public:
         return this->Data->HypothesisHolder[_coverage.count(true)].lexicalHypotheses().value(_coverage).nodes();
     }
 
+    static inline void saveBinaryRuleTable(const QString& _filePath){
+        Q_ASSERT(clsSearchGraphBuilder::pRuleTable != NULL);
+        clsSearchGraphBuilder::pRuleTable->saveBinaryRuleTable(_filePath);
+    }
+
 public:
     static inline QString moduleName(){return "SearchGraphBuilder";}
     static inline QString moduleBaseconfig(){return "/" + clsSearchGraphBuilder::moduleName();}

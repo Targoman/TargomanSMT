@@ -17,6 +17,8 @@
 #include "libTargomanCommon/Macros.h"
 #include "Private/InputDecomposer/clsInput.h"
 #include "Private/RuleTable/clsRuleNode.h"
+#include "FStreamExtended.h"
+#include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
 
 namespace Targoman {
 namespace SMT {
@@ -24,6 +26,7 @@ namespace Private {
 namespace RuleTable{
 
 typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;
+static const char* TARGOMAN_BINARY_RULETABLE_HEADER = "TargomanBinaryRuleTable-v0.1";
 
 /**
  * @brief The intfRuleTable class is used to store source and target phrases in #prefixTree.
@@ -47,6 +50,28 @@ public:
 
     virtual void initializeSchema() = 0;
     virtual void loadTableData() = 0;
+    void saveBinaryRuleTable(const QString& _filePath){
+        try{
+            clsOFStreamExtended OutStream(_filePath);
+            OutStream.write<const char*>(TARGOMAN_BINARY_RULETABLE_HEADER);
+            OutStream.write(clsTargetRule::columnNames().size());
+            foreach (const QString& ColumnName, clsTargetRule::columnNames())
+                OutStream.write(ColumnName);
+
+            const QStringList PhraseTableColumnNames =
+                    static_cast<FeatureFunction::intfFeatureFunction*>
+                    (FeatureFunction::PhraseTable::moduleInstance())->columnNames();
+
+            OutStream.write(PhraseTableColumnNames.size());
+            foreach (const QString& ColumnName,PhraseTableColumnNames)
+                OutStream.write(ColumnName);
+
+
+            PrefixTree->writeBinary(OutStream);
+        }catch(std::exception &e){
+            throw exRuleTable(QString::fromUtf8(e.what()));
+        }
+    }
 
     virtual RuleTable::RulesPrefixTree_t& getPrefixTree(){
         return *this->PrefixTree;

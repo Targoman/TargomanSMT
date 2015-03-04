@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
         clsTranslator::init(ConfigManager::instance().configFilePath());
         printMemoryUsage("after load all");
 
+
         QFile File(argv[1]);
         QTextStream Stream(&File);
         Stream.setCodec("UTF-8");

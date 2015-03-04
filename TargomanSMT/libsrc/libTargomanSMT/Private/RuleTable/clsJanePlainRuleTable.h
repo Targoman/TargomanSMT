@@ -34,8 +34,8 @@ public:
     clsJanePlainRuleTable(quint64 _instanceID);
     ~clsJanePlainRuleTable();
 
-    virtual void initializeSchema();
-    virtual void loadTableData();
+    void initializeSchema();
+    void loadTableData();
 
 private:
     void addRule(const QStringList &_phraseFieldValue,

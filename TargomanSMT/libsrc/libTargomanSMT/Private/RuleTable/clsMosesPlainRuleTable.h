@@ -35,8 +35,8 @@ public:
     clsMosesPlainRuleTable(quint64 _instanceID);
     ~clsMosesPlainRuleTable();
 
-    virtual void initializeSchema();
-    virtual void loadTableData();
+    void initializeSchema();
+    void loadTableData();
 
 private:
     void addRule(QList<clsRuleNode>& _ruleNodeList,

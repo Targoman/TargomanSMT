@@ -39,7 +39,9 @@ HEADERS += \
     libTargomanSMT/Private/FeatureFunctions/ReorderingJump/ReorderingJump.h \
     libTargomanSMT/Types.h \
     libTargomanSMT/Private/PrivateTypes.h \
-    libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.h
+    libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.h \
+    libTargomanSMT/Private/RuleTable/clsBinaryRuleTable.h \
+    libTargomanSMT/Private/RuleTable/FStreamExtended.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -63,7 +65,9 @@ SOURCES += libID.cpp \
     libTargomanSMT/Private/RuleTable/clsMosesPlainRuleTable.cpp \
     libTargomanSMT/Private/FeatureFunctions/LanguageModel/LanguageModel.cpp \
     libTargomanSMT/Private/FeatureFunctions/ReorderingJump/ReorderingJump.cpp \
-    libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.cpp
+    libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.cpp \
+    libTargomanSMT/Private/RuleTable/clsBinaryRuleTable.cpp \
+    libTargomanSMT/Private/RuleTable/FStreamExtended.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

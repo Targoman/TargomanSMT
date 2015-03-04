@@ -17,6 +17,8 @@
 #include <QList>
 #include "libTargomanCommon/Types.h"
 #include "libTargomanSMT/Types.h"
+#include "FStreamExtended.h"
+
 #ifdef TARGOMAN_SHOW_DEBUG
 #include <QTextStream>
 #endif
@@ -58,6 +60,11 @@ public:
     {}
 
     ~clsTargetRule(){}
+
+    // Following functions are needed for the binary input/output
+    void readBinary(clsIFStreamExtended &_input);
+    void writeBinary(clsOFStreamExtended &_output) const;
+
 
     inline clsTargetRule& operator = (const clsTargetRule& _other) {
         this->Data = _other.Data;
@@ -103,6 +110,8 @@ public:
         clsTargetRule::ColumnNames = _names;
     }
 
+    static inline const QStringList& columnNames(){return clsTargetRule::ColumnNames;}
+
     /**
      * @return returns #PrecomputedValuesSize and increases its size.
      */
@@ -123,8 +132,7 @@ public:
     QString toStr() const;
 #endif
 
-//private:
-public:
+private:
     QExplicitlySharedDataPointer<clsTargetRuleData>     Data;                   /**< Data member of this class is stored in a seperate class. A shared pointer of this seperate class is stored here */
     static  QStringList                                 ColumnNames;            /** A List of Names of Fields of feature values */
     static  size_t                                      PrecomputedValuesSize;

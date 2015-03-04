@@ -44,6 +44,21 @@ clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QLis
 
 }
 
+void clsTargetRule::readBinary(clsIFStreamExtended &_input)
+{
+
+}
+
+void clsTargetRule::writeBinary(clsOFStreamExtended &_output) const
+{
+    _output.write(this->Data->TargetPhrase.size());
+    foreach(WordIndex_t WordIndex, this->Data->TargetPhrase)
+        _output.write(WordIndex);
+
+    foreach(Cost_t Cost, this->Data->Fields)
+        _output.write(Cost);
+}
+
 #ifdef TARGOMAN_SHOW_DEBUG
 
 QString clsTargetRule::toStr() const

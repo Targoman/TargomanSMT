@@ -49,7 +49,7 @@ public:
         return 0;
     }
 
-    inline QStringList columnNames() const{return PhraseTable::ColumnNames;}
+    inline QStringList columnNames() const { return PhraseTable::ColumnNames; }
     static inline void setColumnNames(const QStringList _columnNames){
         PhraseTable::ColumnNames = _columnNames;}
 
