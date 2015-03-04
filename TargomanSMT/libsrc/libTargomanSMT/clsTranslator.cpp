@@ -51,13 +51,9 @@ void clsTranslator::init(const QString _configFilePath)
     OOVHandler::instance().initialize();
     InputDecomposer::clsInputDecomposer::init(_configFilePath);
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());
-    //Load vocab by LM
-    gConfigs.EmptyLMScorer->init(true);
+    gConfigs.EmptyLMScorer->init(false);
 
     SearchGraph::clsSearchGraphBuilder::init(_configFilePath);
-
-    //continue to load rest of LM
-    gConfigs.EmptyLMScorer->init(false);
 
     clsTranslatorPrivate::Initialized = true;
 }

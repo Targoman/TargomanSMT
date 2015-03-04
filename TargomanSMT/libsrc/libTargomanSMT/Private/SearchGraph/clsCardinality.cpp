@@ -62,13 +62,14 @@ bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &
 
     bool InsertionDone = Container.insertHypothesis(_node);
     if (InsertionDone){
-        if (this->Data->BestLexicalHypothesis == NULL || this->Data->WorstLexicalHypothesis == NULL){
+        if (this->Data->BestLexicalHypothesis == NULL){
+            Q_ASSERT(this->Data->WorstLexicalHypothesis == NULL);
             this->Data->BestLexicalHypothesis = &Container;
             this->Data->BestCoverage = Coverage;
             this->Data->WorstLexicalHypothesis = &Container;
             this->Data->WorstCoverage = Coverage;
         } else
-            this->pruneAndUpdateBestAndWorstNode(Coverage, Container, _node);
+            this->pruneAndUpdateBestAndWorstNodes(Coverage, Container, _node);
     }
 
     this->Data->TotalSearchGraphNodeCount += ((qint64)Container.nodes().size() - (qint64)OldContainerSize);
@@ -82,10 +83,8 @@ bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &
 
 bool clsCardinalityHypothesisContainer::mustBePruned(Cost_t _cost) const
 {
-    if (this->Data->BestLexicalHypothesis != NULL) {
-        if(_cost > this->Data->WorstCostLimit)
-            return true;
-    }
+    if(_cost > this->Data->WorstCostLimit)
+        return true;
     return false;
 }
 
@@ -154,7 +153,7 @@ void clsCardinalityHypothesisContainer::updateBestAndWorstNodes()
     }
 }
 
-void clsCardinalityHypothesisContainer::pruneAndUpdateBestAndWorstNode(const Coverage_t& _coverage, clsLexicalHypothesisContainer &_container, const clsSearchGraphNode &_node)
+void clsCardinalityHypothesisContainer::pruneAndUpdateBestAndWorstNodes(const Coverage_t& _coverage, clsLexicalHypothesisContainer &_container, const clsSearchGraphNode &_node)
 {
     if (/* this->Data->BestLexicalHypothesis != NULL && */
             _node.getTotalCost() <
@@ -242,6 +241,12 @@ void clsCardinalityHypothesisContainer::prune()
     for(auto CoverageIter = PickedHypothesisCount.begin();
         CoverageIter != PickedHypothesisCount.end();
         ++CoverageIter) {
+        if(*CoverageIter == 0)
+            this->Data->LexicalHypothesisContainer.remove(CoverageIter.key());
+        else if (*CoverageIter < this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes().size()){
+            QList<clsSearchGraphNode>& Nodes =  this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes();
+            Nodes.erase(Nodes.begin() + *CoverageIter, Nodes.end());
+        }
     }
     // Update best and worst placeholders and the total node count
     this->Data->TotalSearchGraphNodeCount = TotalSearchGraphNodeCount;

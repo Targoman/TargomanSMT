@@ -161,13 +161,12 @@ public:
      */
     inline void finlizePruningAndcleanUp() {
         this->prune();
+#ifdef TARGOMAN_SHOW_DEBUG
         auto LexHypoContainerIter = this->Data->LexicalHypothesisContainer.begin();
         while(LexHypoContainerIter != this->Data->LexicalHypothesisContainer.end()) {
-            if(LexHypoContainerIter->nodes().isEmpty())
-                LexHypoContainerIter = this->Data->LexicalHypothesisContainer.erase(LexHypoContainerIter);
-            else
-                ++LexHypoContainerIter;
+            Q_ASSERT(LexHypoContainerIter->nodes().size());
         }
+#endif
     }
 
     /**
@@ -193,7 +192,7 @@ private:
      * @param _lexicalHypo              the lexcial hypothesis corresponding to the translation hypothesis node (input just for speed and memory optimization purposes)
      * @param _node                     the translation hypothesis node that is inserted just before calling this helper function
      */
-    void pruneAndUpdateBestAndWorstNode(const Coverage_t& _coverage, clsLexicalHypothesisContainer& _container, const clsSearchGraphNode &_node);
+    void pruneAndUpdateBestAndWorstNodes(const Coverage_t& _coverage, clsLexicalHypothesisContainer& _container, const clsSearchGraphNode &_node);
 
     /**
      * @brief prune performs pruning (called in a lazy manner)

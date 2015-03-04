@@ -46,8 +46,11 @@ clsAbstractProbingModel::~clsAbstractProbingModel()
  */
 void clsAbstractProbingModel::setUnknownWordDefaults(LogP_t _prob, LogP_t _backoff)
 {
+    Q_ASSERT(this->NGramHashTable != NULL);
     this->UnknownWeights.Backoff = _backoff;
     this->UnknownWeights.Prob = _prob;
+    this->NGramHashTable[LM_UNKNOWN_WINDEX].Prob = _prob;
+    this->NGramHashTable[LM_UNKNOWN_WINDEX].Backoff = _backoff;
 }
 
 /**
@@ -77,8 +80,7 @@ void clsAbstractProbingModel::insert(const char* _ngram, quint8 _order, LogP_t _
     Hash_t HashLoc, HashValue;
     size_t NGramLen = strlen(_ngram);
     if (_order == 1 && !strcmp(_ngram, LM_UNKNOWN_WORD)){
-        this->UnknownWeights.Backoff = _backoff;
-        this->UnknownWeights.Prob = _prob;
+        this->setUnknownWordDefaults(_prob, _backoff);
         return;
     }
     //Our first guess.
@@ -234,6 +236,7 @@ quint8 clsAbstractProbingModel::loadBinFile(const QString &_binFilePath, bool _c
         if (Model != this->modelHeaderSuffix())
             throw exLanguageModel(QString("Incompatible Bin File. %1 vs %2").arg(this->modelHeaderSuffix()).arg(Model.append('\0').constData()));
         InputStream.setVersion(QDataStream::Qt_5_0);
+        //TODO load bulk from file
         InputStream >> Order;
         InputStream >> this->HashTableSize;
         InputStream >> this->StoredInHashTable;

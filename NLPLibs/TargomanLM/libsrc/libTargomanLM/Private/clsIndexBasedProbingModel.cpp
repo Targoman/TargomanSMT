@@ -206,13 +206,6 @@ void clsIndexBasedProbingModel::insert(QList<WordIndex_t> _ngram, LogP_t _prob, 
 stuProbAndBackoffWeights clsIndexBasedProbingModel::getNGramWeights(QList<WordIndex_t> _ngram) const
 {
     if (_ngram.size() == 1){
-        if(_ngram.first() == LM_UNKNOWN_WINDEX)
-            return stuProbAndBackoffWeights(
-                        _ngram.first(),
-                        this->UnknownWeights.Prob,
-                        this->UnknownWeights.Backoff
-                        );
-
         Q_ASSERT_X(_ngram.first() < (WordIndex_t)this->HashTableSize ||
                    this->NGramHashTable[_ngram.first()].isMultiIndex() == false,
                 "getNGramWeights",

@@ -229,7 +229,7 @@ private:
     static Common::Configuration::tmplConfigurable<quint8>  HardReorderingJumpLimit;
     static Common::Configuration::tmplConfigurable<quint8>  ReorderingConstraintMaximumRuns;     /**< A threshold that will be used in IBM1 constrains.*/
     static Common::Configuration::tmplConfigurable<bool>    DoComputePositionSpecificRestCosts;
-    static Common::Configuration::tmplConfigurable<bool>    PrunePreInsertion;
+    static Common::Configuration::tmplConfigurable<bool>    DoPrunePreInsertion;
 };
 
 }

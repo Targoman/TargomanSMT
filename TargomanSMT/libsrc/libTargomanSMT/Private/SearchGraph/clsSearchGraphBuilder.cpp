@@ -56,7 +56,7 @@ tmplConfigurable<quint8> clsPhraseCandidateCollectionData::MaxTargetPhraseCount(
         "TODO Desc",
         100);
 
-tmplConfigurable<bool>   clsSearchGraphBuilder::PrunePreInsertion(
+tmplConfigurable<bool>   clsSearchGraphBuilder::DoPrunePreInsertion(
         clsSearchGraphBuilder::moduleBaseconfig() + "/PrunePreInsertion",
         "TODO Desc",
         true);
@@ -215,19 +215,25 @@ bool clsSearchGraphBuilder::decode()
         bool IsFinal = (NewCardinality == this->Data->Sentence.size());
         int MinPrevCardinality = qMax(NewCardinality - this->Data->MaxMatchingSourcePhraseCardinality, 0);
 
+        clsCardinalityHypothesisContainer& CurrCardHypoContainer =
+                this->Data->HypothesisHolder[NewCardinality];
+
         for (int PrevCardinality = MinPrevCardinality;
              PrevCardinality < NewCardinality; ++PrevCardinality) {
 
             unsigned short NewPhraseCardinality = NewCardinality - PrevCardinality;
 
             //This happens when we have for ex. 2 bi-grams and a quad-gram but no similar 3-gram. due to bad training
-            if(this->Data->HypothesisHolder[PrevCardinality].isEmpty()) {
+            if(CurrCardHypoContainer.isEmpty()) {
                 TargomanLogWarn(1, "Previous cardinality is empty. (PrevCard: " << PrevCardinality << ", CurrentCard: " << NewCardinality << ")");
                 continue;
             }
 
-            for(CoverageLexicalHypothesisMap_t::Iterator PrevCoverageIter = this->Data->HypothesisHolder[PrevCardinality].lexicalHypotheses().begin();
-                PrevCoverageIter != this->Data->HypothesisHolder[PrevCardinality].lexicalHypotheses().end();
+            clsCardinalityHypothesisContainer& PrevCardHypoContainer =
+                    this->Data->HypothesisHolder[PrevCardinality];
+
+            for(CoverageLexicalHypothesisMap_t::Iterator PrevCoverageIter = PrevCardHypoContainer.lexicalHypotheses().begin();
+                PrevCoverageIter != PrevCardHypoContainer.lexicalHypotheses().end();
                 ++PrevCoverageIter){
 
 
@@ -294,7 +300,7 @@ bool clsSearchGraphBuilder::decode()
                         for(size_t i = 0; i<MaxCandidates; ++i){
 
                             const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
-
+//TODO check for hardjump limit if in future will be happen
                             clsSearchGraphNode NewHypoNode(PrevLexHypoNode,
                                                            NewPhraseBeginPos,
                                                            NewPhraseEndPos,
@@ -304,13 +310,13 @@ bool clsSearchGraphBuilder::decode()
                                                            RestCost);
 
                             // If current NewHypoNode is worse than worst stored node ignore it
-                            if (clsSearchGraphBuilder::PrunePreInsertion.value() &&
-                                this->Data->HypothesisHolder[NewCardinality].mustBePruned(NewHypoNode.getTotalCost())){
+                            if (clsSearchGraphBuilder::DoPrunePreInsertion.value() &&
+                                CurrCardHypoContainer.mustBePruned(NewHypoNode.getTotalCost())){
                                 ++PrunedPreInsertion;
                                 continue;
                             }
 
-                            if(this->Data->HypothesisHolder[NewCardinality].insertNewHypothesis(NewHypoNode)) {
+                            if(CurrCardHypoContainer.insertNewHypothesis(NewHypoNode)) {
                                 // Log insertion of hypothesis here if it is needed
                             }
                         }
@@ -319,11 +325,11 @@ bool clsSearchGraphBuilder::decode()
                 }//for NewPhraseBeginPos
             }//for PrevCoverageIter
         }//for PrevCardinality
-        this->Data->HypothesisHolder[NewCardinality].finlizePruningAndcleanUp();
+        CurrCardHypoContainer.finlizePruningAndcleanUp();
         // Vedadian
         qDebug() << "Cardinality: " << NewCardinality;
-        for(auto Iterator = this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses().begin();
-            Iterator != this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses().end();
+        for(auto Iterator = CurrCardHypoContainer.lexicalHypotheses().begin();
+            Iterator != CurrCardHypoContainer.lexicalHypotheses().end();
             ++Iterator) {
             qDebug() << "\tCoverage: " << Iterator.key();
             const clsSearchGraphNode& Node = Iterator->nodes().first();
