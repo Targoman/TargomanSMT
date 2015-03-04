@@ -286,11 +286,6 @@ void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
 {
     Q_UNUSED(_ruleNumber)
 
-    if(_targetPhrase.trimmed() == "King" && _sourcePhrase.trimmed() == QString::fromUtf8("ملک")) {
-        int a=2;
-        ++a;
-    }
-
     QList<Cost_t>       Costs;
     foreach(const QString& Cost, _costs)
         Costs.append(-log(Cost.toDouble()));

@@ -35,6 +35,7 @@ typedef quint64 Hash_t;
 
 class clsAbstractProbingModel : public intfBaseModel
 {
+protected:
     /**
      * @struct Our hash table is from this type.
      */

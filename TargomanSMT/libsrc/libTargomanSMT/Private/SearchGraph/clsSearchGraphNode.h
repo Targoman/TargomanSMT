@@ -138,7 +138,7 @@ public:
                            bool _isFinal,
                            Common::Cost_t _restCost):
         IsFinal(_isFinal),
-        Cost(_prevNode.getTotalCost()),
+        Cost(_prevNode.getCost()),
         RestCost(_restCost),
         TargetRule(_targetRule),
         IsRecombined(false),

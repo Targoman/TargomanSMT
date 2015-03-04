@@ -198,7 +198,6 @@ bool clsSearchGraphBuilder::conformsHardReorderingJumpLimit(const Coverage_t &_c
  *
  * @return Returns whether it was able to find a translation or not.
  */
-
 bool clsSearchGraphBuilder::decode()
 {
     this->Data->HypothesisHolder.clear();
@@ -209,7 +208,7 @@ bool clsSearchGraphBuilder::decode()
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
 
-        int PrunedByIBMConstraint = 0;
+        //int PrunedByIBMConstraint = 0;
         int PrunedByHardReorderingJumpLimit = 0;
         int PrunedPreInsertion = 0;
 
@@ -303,13 +302,11 @@ bool clsSearchGraphBuilder::decode()
                                                            CurrentPhraseCandidate,
                                                            IsFinal,
                                                            RestCost);
-                            //TargomanDebug(7, "\nNewHypo:\tTotalCost: " << NewHypoNode.getTotalCost() << ", Str: " << NewHypoNode.targetRule().toStr());
 
                             // If current NewHypoNode is worse than worst stored node ignore it
                             if (clsSearchGraphBuilder::PrunePreInsertion.value() &&
                                 this->Data->HypothesisHolder[NewCardinality].mustBePruned(NewHypoNode.getTotalCost())){
                                 ++PrunedPreInsertion;
-                                // TODO Maybe it can be converted to break
                                 continue;
                             }
 
@@ -324,14 +321,15 @@ bool clsSearchGraphBuilder::decode()
         }//for PrevCardinality
         this->Data->HypothesisHolder[NewCardinality].finlizePruningAndcleanUp();
         // Vedadian
-        TargomanDebug(7, "\nCardinality: " << NewCardinality);
+        qDebug() << "Cardinality: " << NewCardinality;
         for(auto Iterator = this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses().begin();
             Iterator != this->Data->HypothesisHolder[NewCardinality].lexicalHypotheses().end();
             ++Iterator) {
-            TargomanDebug(7, "\n\tCoverage: " << Iterator.key());
+            qDebug() << "\tCoverage: " << Iterator.key();
             const clsSearchGraphNode& Node = Iterator->nodes().first();
-            TargomanDebug(7, "\n\t\tCost: " << Node.getCost() << ", RestCost: " << Node.getTotalCost() - Node.getCost() << ", Str: " << Node.targetRule().toStr());
+            qDebug() << "\t\tCost: " << Node.getCost() << ", RestCost: " << Node.getTotalCost() - Node.getCost() << ", Str: " << Node.targetRule().toStr();
         }
+        //*/
     }//for NewCardinality
 
     Coverage_t FullCoverage;

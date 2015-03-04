@@ -95,7 +95,7 @@ LogP_t clsIndexBasedProbingModel::lookupNGram(const QList<WordIndex_t> &_ngram, 
 
     while (true){
         PB = this->getNGramWeights(NGram);
-        if (PB.ID > 0){
+        if (PB.ID > 0 || NGram.first() == LM_UNKNOWN_WINDEX){
             Prob = PB.Prob;
             Backoff = Constants::LogP_One; // backoff weight of higher order NGram is needed, so previously calculated backoffs should be reset to zero.
             _foundedGram = CurrGram+1;
@@ -206,15 +206,24 @@ void clsIndexBasedProbingModel::insert(QList<WordIndex_t> _ngram, LogP_t _prob, 
 stuProbAndBackoffWeights clsIndexBasedProbingModel::getNGramWeights(QList<WordIndex_t> _ngram) const
 {
     if (_ngram.size() == 1){
+        if(_ngram.first() == LM_UNKNOWN_WINDEX)
+            return stuProbAndBackoffWeights(
+                        _ngram.first(),
+                        this->UnknownWeights.Prob,
+                        this->UnknownWeights.Backoff
+                        );
+
         Q_ASSERT_X(_ngram.first() < (WordIndex_t)this->HashTableSize ||
                    this->NGramHashTable[_ngram.first()].isMultiIndex() == false,
                 "getNGramWeights",
                 "Invalid Wordindex provided");
 
+        const stuNGramHash& FoundItem = this->NGramHashTable[_ngram.first()];
+
         return stuProbAndBackoffWeights(
                     _ngram.first(),
-                    this->NGramHashTable[_ngram.first()].Prob,
-                this->NGramHashTable[_ngram.first()].Backoff);
+                    FoundItem.Prob,
+                    FoundItem.Backoff);
     }
 
 

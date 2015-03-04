@@ -14,6 +14,9 @@
 #include "clsSearchGraphNode.h"
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
 
+// Vedadian
+//#include <QDebug>
+
 namespace Targoman{
 namespace SMT {
 namespace Private{
@@ -40,7 +43,15 @@ clsSearchGraphNode::clsSearchGraphNode():
         FF->initRootNode(*this);
 }
 
-
+// Vedadian
+/*
+QString getPartialTranslation(const clsSearchGraphNode& _node)
+{
+    if(_node.isInvalid())
+        return QString();
+    return getPartialTranslation(_node.prevNode()) + " " + _node.targetRule().toStr();
+}
+//*/
 /**
  * @brief This constructor of this class set values of #Data and calculates cost of this translation up to now using all feature functions.
  * @param _prevNode         Previous node of this search graph node.
@@ -51,7 +62,6 @@ clsSearchGraphNode::clsSearchGraphNode():
  * @param _isFinal          Has this node covered translation for all word of input sentence.
  * @param _restCost         Approximated cost of rest of translation.
  */
-
 clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
                                        quint16 _startPos,
                                        quint16 _endPos,
@@ -68,8 +78,18 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
              _isFinal,
              _restCost))
 {
-    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
-        this->Data->Cost += FF->scoreSearchGraphNode(*this);
+    // Vedadian
+    /*
+    qDebug() << "PrevNode: " << getPartialTranslation(this->prevNode());
+    qDebug() << "NewNode: " << getPartialTranslation(*this);
+    int a = 2;
+    ++a;
+    //*/
+    foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions) {
+        Cost_t Cost = FF->scoreSearchGraphNode(*this);
+        //qDebug() << "Cost: " << Cost;
+        this->Data->Cost += Cost;
+    }
 }
 
 template<class Class_t, class Container_t, typename Functor_t>

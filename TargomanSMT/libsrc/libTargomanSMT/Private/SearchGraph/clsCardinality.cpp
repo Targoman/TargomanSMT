@@ -93,24 +93,65 @@ void clsCardinalityHypothesisContainer::updateWorstNode()
 {
     Cost_t  WorstCost = -INFINITY;
     CoverageLexicalHypothesisMap_t::Iterator WorstLexIter = this->Data->LexicalHypothesisContainer.end();
-    Coverage_t WorstLexCoverage;
     for(CoverageLexicalHypothesisMap_t::Iterator LexIter = this->Data->LexicalHypothesisContainer.begin();
         LexIter != this->Data->LexicalHypothesisContainer.end();
         ++LexIter){
-        //TODO Why we have empty container
+        //TODO Why may we have empty container
         Q_ASSERT(LexIter->nodes().size());
 
         if (LexIter->nodes().size()  && WorstCost < LexIter->nodes().last().getTotalCost()){
             WorstCost = LexIter->nodes().last().getTotalCost();
             WorstLexIter = LexIter;
-            WorstLexCoverage = LexIter.key();
         }
     }
 
-    Q_ASSERT(WorstLexIter != this->Data->LexicalHypothesisContainer.end());
+    if(WorstLexIter != this->Data->LexicalHypothesisContainer.end()) {
+        this->Data->WorstLexicalHypothesis = &(*WorstLexIter);
+        this->Data->WorstCoverage = WorstLexIter.key();
+    } else {
+        this->Data->WorstLexicalHypothesis = NULL;
+        this->Data->WorstCoverage = Coverage_t();
+    }
+}
 
-    this->Data->WorstLexicalHypothesis = &(*WorstLexIter);
-    this->Data->WorstCoverage = WorstLexCoverage;
+void clsCardinalityHypothesisContainer::updateBestAndWorstNodes()
+{
+    Cost_t  BestCost = INFINITY;
+    CoverageLexicalHypothesisMap_t::Iterator BestLexIter = this->Data->LexicalHypothesisContainer.end();
+    Cost_t  WorstCost = -INFINITY;
+    CoverageLexicalHypothesisMap_t::Iterator WorstLexIter = this->Data->LexicalHypothesisContainer.end();
+    for(CoverageLexicalHypothesisMap_t::Iterator LexIter = this->Data->LexicalHypothesisContainer.begin();
+        LexIter != this->Data->LexicalHypothesisContainer.end();
+        ++LexIter){
+        //TODO Why may we have empty container
+        Q_ASSERT(LexIter->nodes().size());
+
+        if (LexIter->nodes().size()) {
+            if(BestCost > LexIter->nodes().first().getTotalCost()){
+                BestCost = LexIter->nodes().first().getTotalCost();
+                BestLexIter = LexIter;
+            }
+            if(WorstCost < LexIter->nodes().last().getTotalCost()){
+                WorstCost = LexIter->nodes().last().getTotalCost();
+                WorstLexIter = LexIter;
+            }
+        }
+    }
+
+    if(BestLexIter != this->Data->LexicalHypothesisContainer.end()) {
+        this->Data->BestLexicalHypothesis = &(*BestLexIter);
+        this->Data->BestCoverage = BestLexIter.key();
+    } else {
+        this->Data->BestLexicalHypothesis = NULL;
+        this->Data->BestCoverage = Coverage_t();
+    }
+    if(WorstLexIter != this->Data->LexicalHypothesisContainer.end()) {
+        this->Data->WorstLexicalHypothesis = &(*WorstLexIter);
+        this->Data->WorstCoverage = WorstLexIter.key();
+    } else {
+        this->Data->WorstLexicalHypothesis = NULL;
+        this->Data->WorstCoverage = Coverage_t();
+    }
 }
 
 void clsCardinalityHypothesisContainer::pruneAndUpdateBestAndWorstNode(const Coverage_t& _coverage, clsLexicalHypothesisContainer &_container, const clsSearchGraphNode &_node)
@@ -197,30 +238,14 @@ void clsCardinalityHypothesisContainer::prune()
                 clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value())
             this->Data->WorstCostLimit = ChosenNodeTotalCost;
     }
-    // Now apply the actual pruning
-    for(auto LexHypoContainerIter = this->Data->LexicalHypothesisContainer.begin();
-        LexHypoContainerIter != this->Data->LexicalHypothesisContainer.end();
-        ++LexHypoContainerIter) {
-        int PickedFromThisCoverage = PickedHypothesisCount[LexHypoContainerIter.key()];
-        QList<clsSearchGraphNode>& Nodes = LexHypoContainerIter->nodes();
-        Nodes.erase(Nodes.begin() + PickedFromThisCoverage, Nodes.end());
+    // Remove empty containers
+    for(auto CoverageIter = PickedHypothesisCount.begin();
+        CoverageIter != PickedHypothesisCount.end();
+        ++CoverageIter) {
     }
     // Update best and worst placeholders and the total node count
     this->Data->TotalSearchGraphNodeCount = TotalSearchGraphNodeCount;
-    for(auto LexHypoContainerIter = this->Data->LexicalHypothesisContainer.begin();
-        LexHypoContainerIter != this->Data->LexicalHypothesisContainer.end();
-        ++LexHypoContainerIter) {
-        if(LexHypoContainerIter->nodes().first().getTotalCost() <
-                this->Data->BestLexicalHypothesis->nodes().first().getTotalCost()) {
-            this->Data->BestCoverage = LexHypoContainerIter.key();
-            this->Data->BestLexicalHypothesis = &(*LexHypoContainerIter);
-        }
-        if(LexHypoContainerIter->nodes().last().getTotalCost() >
-                this->Data->WorstLexicalHypothesis->nodes().last().getTotalCost()) {
-            this->Data->WorstCoverage = LexHypoContainerIter.key();
-            this->Data->WorstLexicalHypothesis = &(*LexHypoContainerIter);
-        }
-    }
+    updateBestAndWorstNodes();
 }
 
 }

@@ -183,6 +183,11 @@ private:
     void updateWorstNode();
 
     /**
+     * @brief updateWorstNode   updates the best node cache for this cardinality
+     */
+    void updateBestAndWorstNodes();
+
+    /**
      * @brief pruneAndUpdateWorstNode   helper function that performs pruning of the whole cardinality hypothesis container and updates the worst node cache
      * @param _coverage                 the coverage corresponding to the lexical hypothesis (input just for speed and memory optimization purposes)
      * @param _lexicalHypo              the lexcial hypothesis corresponding to the translation hypothesis node (input just for speed and memory optimization purposes)
