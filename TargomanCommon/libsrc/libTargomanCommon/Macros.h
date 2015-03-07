@@ -219,7 +219,7 @@ inline constexpr _name::Type operator & (const _name::Type _first, const _name::
         return Unknown; \
       int EnumSize = getCount(); \
       for(int i=0; i< EnumSize; i++) { \
-        if (!strcmp(_name.toLower(), QString(Strings[i]).toLower())) \
+        if (_name.toLower() == QString(Strings[i]).toLower()) \
           return (Type) i; \
       } \
       return Unknown; \
