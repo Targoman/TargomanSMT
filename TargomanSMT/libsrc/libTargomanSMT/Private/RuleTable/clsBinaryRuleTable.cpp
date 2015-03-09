@@ -33,6 +33,12 @@ tmplConfigurable<QString> clsBinaryRuleTable::FilePath(
         Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
         );
 
+tmplConfigurable<bool> clsBinaryRuleTable::LoadOnDemand(
+        clsBinaryRuleTable::baseConfigPath() + "/LoadOnDemand",
+        "TODO Desc",
+        true
+        );
+
 TARGOMAN_REGISTER_MODULE(clsBinaryRuleTable);
 
 clsBinaryRuleTable::clsBinaryRuleTable(quint64 _instanceID) :
@@ -47,15 +53,17 @@ clsBinaryRuleTable::~clsBinaryRuleTable()
 
 void clsBinaryRuleTable::initializeSchema()
 {
-     this->InputStream.reset(new clsIFStreamExtended(clsBinaryRuleTable::FilePath.value()));
-     if (this->InputStream->is_open() == false)
-         throw exRuleTable("Unable to open " + clsBinaryRuleTable::FilePath.value());
-     try{
+    this->InputStream.reset(new clsIFStreamExtended(clsBinaryRuleTable::FilePath.value()));
+    if (this->InputStream->is_open() == false)
+        throw exRuleTable("Unable to open " + clsBinaryRuleTable::FilePath.value());
+    try{
         QByteArray BinFileHeader(TARGOMAN_BINARY_RULETABLE_HEADER.size(), Qt::Uninitialized);
         this->InputStream->read(BinFileHeader.data(), BinFileHeader.size());
 
         if (BinFileHeader != TARGOMAN_BINARY_RULETABLE_HEADER)
             throw exRuleTable("Invalid Binary file");
+
+        TargomanLogInfo(5, "Loading binary rule table from " + clsBinaryRuleTable::FilePath.value() + "...");
 
         //Load Vocab
         int VocabCount = this->InputStream->read<int>();
@@ -85,7 +93,7 @@ void clsBinaryRuleTable::initializeSchema()
 void clsBinaryRuleTable::loadTableData()
 {
     this->PrefixTree.reset(new RulesPrefixTree_t());
-    this->PrefixTree->readBinary(*this->InputStream);
+    this->PrefixTree->readBinary(*this->InputStream, clsBinaryRuleTable::LoadOnDemand.value() == false);
 }
 
 

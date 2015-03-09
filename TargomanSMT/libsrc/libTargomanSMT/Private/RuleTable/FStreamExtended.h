@@ -16,6 +16,7 @@
 
 #include <fstream>
 #include <QString>
+#include <QMutex>
 
 namespace Targoman {
 namespace SMT {
@@ -59,6 +60,14 @@ public:
         std::fstream::read(_data, _size);
         return *this;
     }
+    inline void lock() {
+        this->ReadLock.lock();
+    }
+    inline void unlock() {
+        this->ReadLock.unlock();
+    }
+private:
+    QMutex ReadLock;
 };
 
 template <> QString clsIFStreamExtended::read();

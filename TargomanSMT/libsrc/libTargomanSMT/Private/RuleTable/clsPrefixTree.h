@@ -18,11 +18,16 @@
 #include <QMap>
 #include "libTargomanCommon/Types.h"
 #include "Private/RuleTable/clsRuleNode.h"
+#include "libTargomanCommon/tmplExpirableCache.hpp"
 
 namespace Targoman {
 namespace SMT {
 namespace Private {
 namespace RuleTable {
+
+// TODO Create two types for prefix tree node, one for on disk and one for memory
+// TODO Make prefix tree caching expirable for on disk nodes
+// TODO Binary rule table that loads completely instantly!
 
 typedef long PosType_t;
 
@@ -48,6 +53,13 @@ public:
 public:
     clsIFStreamExtended* InputStream;
     clsRuleNode RuleNode;
+    /*
+    Common::tmplExpirableCache<
+        Common::WordIndex_t,
+        clsPrefixTreeNode,
+        100000, // maximum number of cached items
+        3600000 // One hour time limit before releasing a cached item
+        > Children;*/
     QMap<Common::WordIndex_t, clsPrefixTreeNode> Children;
     QMap<Common::WordIndex_t, PosType_t> ChildPositionInStream;
 };
@@ -58,7 +70,7 @@ public:
         Data(new clsPrefixTreeNodeData())
     { }
 
-    clsPrefixTreeNode(clsIFStreamExtended* _inputStream);
+    clsPrefixTreeNode(clsIFStreamExtended* _inputStream, bool _loadChildren = false);
 
     clsPrefixTreeNode(const clsPrefixTreeNode& _other) :
         Data(_other.Data)
@@ -66,13 +78,11 @@ public:
 
     void writeBinary(std::ostream& _stream) const;
 
-    clsPrefixTreeNode& getChildByKey(const Common::WordIndex_t _key)
-    {
+    clsPrefixTreeNode& getChildByKey(const Common::WordIndex_t _key) {
         return this->Data->Children[_key];
     }
 
-    clsRuleNode& getData()
-    {
+    clsRuleNode& getData() {
         return this->Data->RuleNode;
     }
 
@@ -80,18 +90,24 @@ public:
     {
         auto Iterator = this->Data->Children.find(_key);
         if(Iterator == this->Data->Children.end()) {
-            if(this->Data->InputStream != NULL) {
-                auto PositonIterator = this->Data->ChildPositionInStream.find(_key);
-                if(PositonIterator == this->Data->ChildPositionInStream.end())
-                    return NULL;
-                this->Data->InputStream->seekg(*PositonIterator);
-                Iterator = this->Data->Children.insert(
-                            _key,
-                            clsPrefixTreeNode(this->Data->InputStream)
-                            );
-            } else
-                return NULL;
+            if(this->Data->InputStream != NULL)
+                return loadChildFromDisk(_key);
+            return NULL;
         }
+        return &(*Iterator);
+    }
+
+    clsPrefixTreeNode* loadChildFromDisk(Common::WordIndex_t _key, bool _loadChildren = false) {
+        auto PositonIterator = this->Data->ChildPositionInStream.find(_key);
+        if(PositonIterator == this->Data->ChildPositionInStream.end())
+            return NULL;
+        this->Data->InputStream->lock();
+        this->Data->InputStream->seekg(*PositonIterator, std::ios_base::beg);
+        auto Iterator = this->Data->Children.insert(
+                    _key,
+                    clsPrefixTreeNode(this->Data->InputStream, _loadChildren)
+                    );
+        this->Data->InputStream->unlock();
         return &(*Iterator);
     }
 
@@ -103,7 +119,7 @@ class clsPrefixTree {
 public:
     typedef clsPrefixTreeNode Node;
 
-    void readBinary(std::istream&_stream);
+    void readBinary(std::istream&_stream, bool _loadAll = false);
     void writeBinary(std::ostream& _stream) const {
         this->RootNode.writeBinary(_stream);
     }

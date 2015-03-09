@@ -17,6 +17,8 @@
 #include "../GlobalConfigs.h"
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "Private/OOVHandler/OOVHandler.h"
+#include <iostream>
+
 
 #define PBT_MAXIMUM_COST 1e200
 
@@ -342,8 +344,8 @@ bool clsSearchGraphBuilder::decode()
         }//for PrevCardinality
         CurrCardHypoContainer.finlizePruningAndcleanUp();
         // Vedadian
-        /*
-        if(NewCardinality == 2) {
+        //*
+        if(true/*NewCardinality == 2*/) {
             auto car2str = [] (int _cardinality) {
                 QString result;
                 for(int i = 0; i < 5; ++i) {
@@ -364,18 +366,19 @@ bool clsSearchGraphBuilder::decode()
                 --Iterator) {
                 const QList<clsSearchGraphNode>& Nodes = Iterator->nodes();
                 foreach(const clsSearchGraphNode& SelectedNode, Nodes) {
-                    std::cout << SelectedNode.getTotalCost() << "\t";
+                    std::cout << (float)SelectedNode.getTotalCost() << "\t";
                     std::cout << "Cardinality:  ";
                     std::cout << car2str(NewCardinality).toUtf8().constData();
                     std::cout << "  Coverage:  " << cov2str(SelectedNode.coverage()).toUtf8().constData();
-                    std::cout << "  Cost:  " << SelectedNode.getCost()
-                              << " , RestCost: " << SelectedNode.getTotalCost() - SelectedNode.getCost()
+                    std::cout << "  Cost:  " << (float)(SelectedNode.getCost())
+                              << " , RestCost: " << (float)(SelectedNode.getTotalCost() - SelectedNode.getCost())
                               << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
                               << ")" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
                 }
                 if(Iterator == CurrCardHypoContainer.lexicalHypotheses().begin())
                     break;
             }
+            std::cout << std::endl << std::endl << std::endl;
         }
         //*/
     }//for NewCardinality

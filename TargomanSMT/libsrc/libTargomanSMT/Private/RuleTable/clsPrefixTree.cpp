@@ -21,7 +21,7 @@ namespace RuleTable {
 
 using namespace Common;
 
-clsPrefixTreeNode::clsPrefixTreeNode(clsIFStreamExtended *_inputStream) :
+clsPrefixTreeNode::clsPrefixTreeNode(clsIFStreamExtended *_inputStream, bool _loadChildren) :
     Data(new clsPrefixTreeNodeData(_inputStream))
 {
     int ChildCount = _inputStream->read<int>();
@@ -31,6 +31,13 @@ clsPrefixTreeNode::clsPrefixTreeNode(clsIFStreamExtended *_inputStream) :
         this->Data->ChildPositionInStream[Key] = Position;
     }
     this->Data->RuleNode.readBinary(*static_cast<std::istream*>(this->Data->InputStream));
+    if(_loadChildren) {
+        for(auto Iterator = this->Data->ChildPositionInStream.begin();
+            Iterator != this->Data->ChildPositionInStream.end();
+            ++Iterator) {
+            this->loadChildFromDisk(Iterator.key(), true);
+        }
+    }
 }
 
 void clsPrefixTreeNode::writeBinary(std::ostream& _stream) const
@@ -58,10 +65,10 @@ void clsPrefixTreeNode::writeBinary(std::ostream& _stream) const
     Stream.seekp(EndPosition, std::ios_base::beg);
 }
 
-void clsPrefixTree::readBinary(std::istream& _stream)
+void clsPrefixTree::readBinary(std::istream& _stream, bool _loadAll)
 {
     clsIFStreamExtended* pStream = static_cast<clsIFStreamExtended*>(&_stream);
-    this->RootNode = clsPrefixTreeNode(pStream);
+    this->RootNode = clsPrefixTreeNode(pStream, _loadAll);
 }
 
 }
