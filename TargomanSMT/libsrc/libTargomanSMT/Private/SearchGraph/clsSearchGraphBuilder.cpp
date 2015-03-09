@@ -344,8 +344,8 @@ bool clsSearchGraphBuilder::decode()
         }//for PrevCardinality
         CurrCardHypoContainer.finlizePruningAndcleanUp();
         // Vedadian
-        //*
-        if(true/*NewCardinality == 2*/) {
+        /*
+        if(true) {
             auto car2str = [] (int _cardinality) {
                 QString result;
                 for(int i = 0; i < 5; ++i) {

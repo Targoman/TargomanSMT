@@ -118,8 +118,36 @@ void clsLMSentenceScorer::initHistory(const clsLMSentenceScorer &_oldScorer)
 
 bool clsLMSentenceScorer::haveSameHistoryAs(const clsLMSentenceScorer &_oldScorer)
 {
-    return this->pPrivate->IndexBasedHistory == _oldScorer.pPrivate->IndexBasedHistory &&
-            this->pPrivate->StringBasedHistory == _oldScorer.pPrivate->StringBasedHistory;
+    int ThisElementIndex = this->pPrivate->IndexBasedHistory.size() - 1;
+    int OlderElementIndex = _oldScorer.pPrivate->IndexBasedHistory.size() - 1;
+    int i = 1;
+    while(i < this->pPrivate->LM.order() && ThisElementIndex >= 0 && OlderElementIndex >= 0) {
+        if(this->pPrivate->IndexBasedHistory.at(ThisElementIndex) !=
+                _oldScorer.pPrivate->IndexBasedHistory.at(OlderElementIndex))
+            return false;
+        ++i;
+        --ThisElementIndex;
+        --OlderElementIndex;
+    }
+    if(i < this->pPrivate->LM.order() &&
+            this->pPrivate->IndexBasedHistory.size() != _oldScorer.pPrivate->IndexBasedHistory.size())
+        return false;
+
+    ThisElementIndex = this->pPrivate->StringBasedHistory.size() - 1;
+    OlderElementIndex = _oldScorer.pPrivate->StringBasedHistory.size() - 1;
+    i = 1;
+    while(i < this->pPrivate->LM.order() && ThisElementIndex >= 0 && OlderElementIndex >= 0) {
+        if(this->pPrivate->StringBasedHistory.at(ThisElementIndex) !=
+                _oldScorer.pPrivate->StringBasedHistory.at(OlderElementIndex))
+            return false;
+        ++i;
+        --ThisElementIndex;
+        --OlderElementIndex;
+    }
+    if(i < this->pPrivate->LM.order() &&
+            this->pPrivate->StringBasedHistory.size() != _oldScorer.pPrivate->StringBasedHistory.size())
+        return false;
+    return true;
 }
 
 /**
