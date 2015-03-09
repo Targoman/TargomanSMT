@@ -1,7 +1,7 @@
 #!/bin/sh
 
 QMAKE_COMMAND=qmake-qt5
-Projects="TargomanCommon NLPLibs/TargomanLM/ NLPLibs/TargomanTextProcessor/ TargomanSMT"
+Projects="TargomanCommon NLPLibs/TargomanLM/ NLPLibs/TargomanTextProcessor/ TargomanSMT Apps/TargomanSMTConsole"
 BasePath=`pwd`
 if [ "$1" == "full" ]; then
 	rm -rf out

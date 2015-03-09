@@ -16,7 +16,6 @@
 
 #include <QMap>
 #include <QStringList>
-#include <QRunnable>
 #include "libTargomanSMT/Types.h"
 
 namespace Targoman{
@@ -26,17 +25,16 @@ namespace Private {
 class clsTranslatorPrivate;
 }
 
-class clsTranslator : public QRunnable
+class clsTranslator
 {
 public:
-    clsTranslator(const QString &_inputStr, bool _justTranslationString = false);
+    clsTranslator(const QString &_inputStr);
     ~clsTranslator();
 
     static void init(const QString _configFilePath);
     static void saveBinaryRuleTable(const QString& _filePath);
 
-    void run();
-    stuTranslationOutput output();
+    stuTranslationOutput translate(bool _justTranslationString = false);
 
 private:
     QScopedPointer<Private::clsTranslatorPrivate> pPrivate;

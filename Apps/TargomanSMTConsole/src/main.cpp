@@ -10,6 +10,7 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
+#include <QCoreApplication>
 #include <QTimer>
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
@@ -30,15 +31,14 @@ int main(int _argc, char *_argv[])
 {
     try{
         Targoman::Common::printLoadedLibs();
-
-        appTargomanSMTConsole App(_argc, _argv);
+        QCoreApplication App(_argc, _argv);
 
         Configuration::ConfigManager::instance().init(
                     QString(LicenseStr).arg(TARGOMAN_M2STR(PROJ_VERSION)).arg(__DATE__),
-                    App.arguments()
+                    App.arguments().mid(1)
                     );
 
-        QTimer::singleShot(10, &App, SLOT(slotExecute()));
+        QTimer::singleShot(10, new appTargomanSMTConsole, SLOT(slotExecute()));
 
         return App.exec();
     }catch(exTargomanBase& e){

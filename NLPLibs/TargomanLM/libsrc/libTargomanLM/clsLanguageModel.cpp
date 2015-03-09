@@ -33,24 +33,29 @@ const QString BIN_FILE_HEADER = "TargomanLMBin";
 using namespace Private;
 using namespace Targoman::Common::Configuration;
 
-tmplConfigurable<QString> clsLanguageModel::FilePath("/TargomanLM/FilePath",
-                                                     "File path of ARPA or binary models",
-                                                     "",
-                                                     Validators::tmplPathAccessValidator<
-                                                     (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>);
+tmplConfigurable<QString> clsLanguageModel::FilePath(
+        "/TargomanLM/FilePath",
+        "File path of ARPA or binary models",
+        "",
+        Validators::tmplPathAccessValidator<
+        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>);
 
-tmplConfigurable<double>  clsLanguageModel::DeafultUnknownProb("/TargomanLM/DeafultUnknownProb",
-                                                               "Default value for unknown words probability when not defined in model file",
-                                                               -100);
-tmplConfigurable<double>  clsLanguageModel::DeafultUnknownBackoff("/TargomanLM/DeafultUnknownBackoff",
-                                                                  "Default value for unknown words backoff when not defined in model file",
-                                                                  0);
-Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::UseIndexBasedModel("/TargomanLM/UseIndexBasedModel",
-                                                                                             "Whether to use Index-Based or String-Based model",
-                                                                                             true);
-Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::VerifyBinaryChecksum("/TargomanLM/VerifyBinaryChecksum",
-                                                                                             "Whether to verify checksum on binary files or not",
-                                                                                             true);
+tmplConfigurable<double>  clsLanguageModel::DeafultUnknownProb(
+        "/TargomanLM/DeafultUnknownProb",
+        "Default value for unknown words probability when not defined in model file",
+        -100);
+tmplConfigurable<double>  clsLanguageModel::DeafultUnknownBackoff(
+        "/TargomanLM/DeafultUnknownBackoff",
+        "Default value for unknown words backoff when not defined in model file",
+        0);
+Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::UseIndexBasedModel(
+        "/TargomanLM/UseIndexBasedModel",
+        "Whether to use Index-Based or String-Based model",
+        true);
+Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::VerifyBinaryChecksum(
+        "/TargomanLM/VerifyBinaryChecksum",
+        "Whether to verify checksum on binary files or not",
+        true);
 
 clsLanguageModel::clsLanguageModel() :
     pPrivate(new clsLanguageModelPrivate)

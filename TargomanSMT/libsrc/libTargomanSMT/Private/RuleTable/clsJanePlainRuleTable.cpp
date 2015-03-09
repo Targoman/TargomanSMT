@@ -48,7 +48,9 @@ tmplConfigurable<QString> clsJanePlainRuleTable::FilePath(
         clsJanePlainRuleTable::baseConfigPath() + "/FilePath",
         "FilePath where phrase table is stored",
         "",
-        Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
+        ConditionalPathValidator(
+            gConfigs.RuleTable.toVariant().toString() == clsJanePlainRuleTable::moduleName(),
+            enuPathAccess::File | enuPathAccess::Readable)
         );
 
 tmplConfigurable<QString> clsJanePlainRuleTable::PhraseCostNames(

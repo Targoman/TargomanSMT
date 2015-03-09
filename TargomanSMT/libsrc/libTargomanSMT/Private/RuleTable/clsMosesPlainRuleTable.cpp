@@ -46,14 +46,18 @@ tmplConfigurable<QString> clsMosesPlainRuleTable::PhraseTableFilePath(
         clsMosesPlainRuleTable::baseConfigPath() + "/PhraseTableFilePath",
         "Filepath where phrase table is stored",
         "",
-        Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
+        ConditionalPathValidator(
+            gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName(),
+            enuPathAccess::File | enuPathAccess::Readable)
         );
 
 tmplConfigurable<QString> clsMosesPlainRuleTable::ReorderingTableFilePath(
         clsMosesPlainRuleTable::baseConfigPath() + "/ReorderingTableFilePath",
         "Filepath where reordering table is stored",
         "",
-        Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
+        ConditionalPathValidator(
+            gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName(),
+            enuPathAccess::File | enuPathAccess::Readable)
         );
 
 tmplConfigurable<int> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(

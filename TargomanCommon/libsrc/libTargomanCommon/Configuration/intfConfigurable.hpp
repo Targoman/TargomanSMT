@@ -107,6 +107,8 @@ private:
     QScopedPointer<Private::intfConfigurablePrivate> pPrivate;
 };
 
+typedef std::function<bool(const intfConfigurable& _item, QString& _errorMessage)> Validator_t;
+
 }
 }
 }

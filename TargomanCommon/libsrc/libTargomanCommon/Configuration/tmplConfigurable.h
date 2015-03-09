@@ -119,7 +119,6 @@ private:
 
 };
 
-
 /***************************************************************************************/
 /**
  * @def SPECIAL_CONFIGURABLE type specific validate and setFromVariant functions signiture.
@@ -127,6 +126,11 @@ private:
 #define SPECIAL_CONFIGURABLE(_type) \
     template <> bool Targoman::Common::Configuration::tmplConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
     template <> void Targoman::Common::Configuration::tmplConfigurable<_type>::setFromVariant(const QVariant& _value)
+
+#define ENUM_CONFIGURABLE(_enum) \
+    template <> bool Targoman::Common::Configuration::tmplConfigurable<_enum::Type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
+    template <> void Targoman::Common::Configuration::tmplConfigurable<_enum::Type>::setFromVariant(const QVariant& _value);\
+    template <> QVariant Targoman::Common::Configuration::tmplConfigurable<_enum::Type>::toVariant() const
 
 #define ENUM_CONFIGURABLE_IMPL(_enum) \
 template <>\
@@ -141,6 +145,10 @@ void tmplConfigurable<_enum::Type>::setFromVariant(const QVariant& _value){ \
     if (this->validate(_value, ErrorMessage)) this->Value = \
             _enum::toEnum(_value.toString().toLatin1().constData()); \
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage); \
+} \
+template <>\
+QVariant tmplConfigurable<_enum::Type>::toVariant() const{ \
+    return _enum::toStr(this->Value); \
 }
 
 /***************************************************************************************/
@@ -160,6 +168,7 @@ SPECIAL_CONFIGURABLE(bool);
 SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA false); /* Used on normal regex matching */
 SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA true); /* Used on wildcard matching */
 
+//TODO add Special QFile and QDir
 }
 }
 }

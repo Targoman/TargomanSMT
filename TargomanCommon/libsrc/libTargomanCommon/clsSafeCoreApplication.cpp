@@ -17,7 +17,7 @@
 namespace Targoman{
 namespace Common{
 
-clsSafeCoreApplication::clsSafeCoreApplication(int& _argc, char ** _argv) :
+clsSafeCoreApplication::clsSafeCoreApplication(int _argc, char ** _argv) :
     QCoreApplication(_argc, _argv)
 {}
 
@@ -39,7 +39,6 @@ bool clsSafeCoreApplication::notify(QObject * _object, QEvent * _ev)
 
 /**
 check assertion file from http://www.dev.voxforge.org/projects/Main/browser/Tags/AudioSegmentation/AudioBook/input_files/g2p/source/Assertions.hh
-
  */
 
 }

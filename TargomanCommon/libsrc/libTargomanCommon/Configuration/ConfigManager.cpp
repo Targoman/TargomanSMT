@@ -377,7 +377,7 @@ void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
                 std::cout<<Item->longSwitch().toUtf8().constData();
             }
             if (Item->shortHelp().size())
-                std::cout<<Item->shortHelp().toUtf8().constData()<<std::endl;
+                std::cout<<"\t"<<Item->shortHelp().toUtf8().constData()<<std::endl;
             std::cout<<"\t\t\t"<<Item->description().toUtf8().constData()<<std::endl;
         }
     }

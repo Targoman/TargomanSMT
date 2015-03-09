@@ -64,7 +64,7 @@ extern stuGlobalConfigs gConfigs;
 
 namespace Common {
 namespace Configuration {
-SPECIAL_CONFIGURABLE(SMT::Private::enuWorkingModes::Type);
+ENUM_CONFIGURABLE(SMT::Private::enuWorkingModes);
 }
 }
 

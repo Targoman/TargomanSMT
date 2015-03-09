@@ -42,7 +42,7 @@ template <typename Type_t, int _max, int _min>
 * @brief The tmplPathAccessValidator template function can be used for path(string) configurables
 */
 template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required = true>
-    bool tmplPathAccessValidator (const intfConfigurable& _item,
+   bool tmplPathAccessValidator (const intfConfigurable& _item,
                                   QString& _errorMessage){
         if (_required == false &&
             _item.toVariant().toString().isEmpty() &&
@@ -78,8 +78,22 @@ template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required 
             return false;
         }
         _errorMessage.clear();
+
         return true;
     }
+
+#define ConditionalPathValidator(_condition, _requiredAccess)\
+   [] (const intfConfigurable& _item, QString& _errorMessage) { \
+       if(_condition) \
+           return Validators::tmplPathAccessValidator< \
+                   (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), true>( \
+                       _item, _errorMessage); \
+       else \
+           return Validators::tmplPathAccessValidator< \
+                   (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), false>( \
+                       _item, _errorMessage); \
+   }
+
 }
 }
 }

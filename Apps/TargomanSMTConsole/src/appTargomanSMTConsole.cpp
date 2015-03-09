@@ -19,17 +19,13 @@
 #include "libTargomanSMT/clsTranslator.h"
 #include "Configs.h"
 #include "TranslationWriter.h"
+#include "clsTranslationJob.h"
 
 namespace Targoman {
 namespace Apps {
 
 using namespace SMT;
 using namespace Common;
-
-appTargomanSMTConsole::appTargomanSMTConsole(int _argc, char** _argv) :
-    clsSafeCoreApplication(_argc, _argv)
-{
-}
 
 void appTargomanSMTConsole::slotExecute()
 {
@@ -46,12 +42,14 @@ void appTargomanSMTConsole::slotExecute()
 
             QTextStream InStream(&InFile);
             InStream.setCodec("UTF-8");
+            QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
+            int Index = 0;
             while(InStream.atEnd() == false){
-
+                QThreadPool::globalInstance()->start(new clsTranslationJob(++Index, InStream.readLine()));
             }
         }
 
-        this->exit(0);
+        QCoreApplication::exit(0);
     }catch(exTargomanBase& e){
         TargomanError(e.what());
     }catch (std::exception &e){
@@ -60,7 +58,7 @@ void appTargomanSMTConsole::slotExecute()
         TargomanError("FATAL Unrecognized exception");
     }
 
-    this->exit(-1);
+    QCoreApplication::exit(-1);
 }
 
 }

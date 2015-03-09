@@ -30,7 +30,9 @@ tmplConfigurable<QString> clsBinaryRuleTable::FilePath(
         clsBinaryRuleTable::baseConfigPath() + "/FilePath",
         "FilePath where rule table is stored",
         "",
-        Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
+        ConditionalPathValidator(
+            gConfigs.RuleTable.toVariant().toString() == clsBinaryRuleTable::moduleName(),
+            enuPathAccess::File | enuPathAccess::Readable)
         );
 
 tmplConfigurable<bool> clsBinaryRuleTable::LoadOnDemand(

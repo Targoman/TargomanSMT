@@ -40,8 +40,7 @@ public:
     QScopedPointer<SearchGraph::clsSearchGraphBuilder> SearchGraphBuilder;
     QScopedPointer<NBestFinder::clsNBestFinder> NBest;
     QScopedPointer<OutputComposer::clsOutputComposer> Output;
-    bool    JustOutputTranslationString;
-    stuTranslationOutput TranslationOutput;
+
 public:
     static bool Initialized;
 };

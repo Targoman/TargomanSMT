@@ -27,9 +27,10 @@
 using namespace Targoman::Common;
 
 static Configuration::tmplConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
-static Configuration::tmplConfigurable<QString> B("/s","fjkdfjkdsfjk","123",
-                                                  Configuration::Validators::tmplPathAccessValidator<
-                                                  (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Readable)>);
+static Configuration::tmplConfigurable<QString> B(
+        "/s","fjkdfjkdsfjk","123",
+        Configuration::Validators::tmplPathAccessValidator<
+        (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Readable)>);
 
 //static Configuration::tmplConfigurable<double> C("/s2","fjkdfjkdsfjk",123,
 //                                                  Configuration::Validators::tmplNumericValidator<double, -12, 5>);
@@ -122,6 +123,8 @@ public:
 
 int main(int argc, char *argv[])
 {
+    Targoman::Common::printLoadedLibs();
+
     clsCmdProgressBar PB("Marquee");
     for (int i=0;i<1000000;i++){
         PB.setValue(i);

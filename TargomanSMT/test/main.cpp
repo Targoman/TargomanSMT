@@ -101,9 +101,8 @@ int main(int argc, char *argv[])
 
         while(Stream.atEnd() == false)
         {
-            clsTranslator MyTranslator(Stream.readLine(), true);
-            MyTranslator.run();
-            std::cout << MyTranslator.output().Translation.toStdString() << std::endl;
+            clsTranslator MyTranslator(Stream.readLine());
+            std::cout << MyTranslator.translate(true).Translation.toStdString() << std::endl;
             printMemoryUsage("after translate");
         }
 

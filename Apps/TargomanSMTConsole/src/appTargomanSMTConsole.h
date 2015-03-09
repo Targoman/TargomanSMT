@@ -14,15 +14,13 @@
 #ifndef TARGOMAN_APPS_APPTARGOMANSMTCONSOLE_H
 #define TARGOMAN_APPS_APPTARGOMANSMTCONSOLE_H
 
-#include "libTargomanCommon/clsSafeCoreApplication.h"
-
 namespace Targoman {
 namespace Apps{
 
-class appTargomanSMTConsole : public Common::clsSafeCoreApplication
+class appTargomanSMTConsole : public QObject
 {
 public:
-    appTargomanSMTConsole(int _argc, char **_argv);
+    appTargomanSMTConsole(){};
 
 public slots:
     void slotExecute();

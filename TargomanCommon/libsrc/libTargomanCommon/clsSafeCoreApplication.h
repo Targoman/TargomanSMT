@@ -22,7 +22,7 @@ class clsSafeCoreApplication : public QCoreApplication
 {
     Q_OBJECT
 public:
-    explicit clsSafeCoreApplication(int& _argc, char ** _argv);
+    explicit clsSafeCoreApplication(int _argc, char ** _argv);
     bool notify(QObject * _object, QEvent * _ev);
 };
 

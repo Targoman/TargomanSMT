@@ -154,18 +154,18 @@
  ********************************************************************************************/
 #ifdef TARGOMAN_SHOW_DEBUG
     #define TARGOMAN_LIBRARY_VERSION \
-    extern "C" QString getTargomanLibVersion() { \
-      return QString("Version: ") + \
-             QString(TARGOMAN_M2STR(PROJ_VERSION)) + \
-             QString(" [DEBUG] Last Build: ") + \
-             QString(__DATE__);}
+    extern "C" std::string getTargomanLibVersion() { \
+      return std::string("Version: ") + \
+             std::string(TARGOMAN_M2STR(PROJ_VERSION)) + \
+             std::string(" [DEBUG] Last Build: ") + \
+             std::string(__DATE__);}
 #else
     #define TARGOMAN_LIBRARY_VERSION \
-    extern "C" QString getTargomanLibVersion() { \
-      return QString("Version: ") + \
-             QString(TARGOMAN_M2STR(PROJ_VERSION)) + \
-             QString(" [RELEASE] Last Build: ") + \
-             QString(__DATE__);}
+    extern "C" std::string getTargomanLibVersion() { \
+      return std::string("Version: ") + \
+             std::string(TARGOMAN_M2STR(PROJ_VERSION)) + \
+             std::string(" [RELEASE] Last Build: ") + \
+             std::string(__DATE__);}
 #endif
 
 /********************************************************************************************
