@@ -89,9 +89,7 @@ template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required 
                    (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), true>( \
                        _item, _errorMessage); \
        else \
-           return Validators::tmplPathAccessValidator< \
-                   (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), false>( \
-                       _item, _errorMessage); \
+            return true;
    }
 
 }
