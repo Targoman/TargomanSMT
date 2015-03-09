@@ -51,7 +51,7 @@ struct stuGlobalConfigs{
     static Common::Configuration::clsModuleConfig                           LM;
     static Common::Configuration::clsModuleConfig                           RuleTable;
 
-    static QScopedPointer<SMT::Private::Proxies::intfLMSentenceScorer>     EmptyLMScorer;
+    static QScopedPointer<SMT::Private::Proxies::intfLMSentenceScorer>      EmptyLMScorer;
     static QHash<QString, Common::WordIndex_t>                              SourceVocab;
 
     static QMap<QString, FeatureFunction::intfFeatureFunction*>             ActiveFeatureFunctions;

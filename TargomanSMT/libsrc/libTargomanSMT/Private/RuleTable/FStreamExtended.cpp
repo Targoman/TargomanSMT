@@ -18,7 +18,7 @@ namespace SMT {
 namespace Private {
 namespace RuleTable{
 
-template <> void clsOFStreamExtended::write(const QString& _value){
+template <> void clsOFStreamExtended::write(QString _value){
     QByteArray StringData = _value.toUtf8();
     this->write(StringData.size());
     this->write(StringData.constData(), StringData.size());

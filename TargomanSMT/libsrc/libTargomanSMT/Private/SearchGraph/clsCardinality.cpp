@@ -24,7 +24,7 @@ using namespace Common;
 using namespace Common::Configuration;
 
 
-tmplConfigurable<quint8> clsCardinalityHypothesisContainer::MaxCardinalityContainerSize(
+tmplConfigurable<quint16> clsCardinalityHypothesisContainer::MaxCardinalityContainerSize(
         clsSearchGraphBuilder::moduleBaseconfig() + "/MaxCardinalityContainerSize",
         "TODO Desc",
         100);
@@ -50,7 +50,8 @@ bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &
 {
     if(_node.getTotalCost() +
             clsCardinalityHypothesisContainer::SearchBeamWidth.value() <
-            this->Data->WorstCostLimit) {
+            this->Data->WorstCostLimit)
+    {
         this->Data->WorstCostLimit = _node.getTotalCost() +
                 clsCardinalityHypothesisContainer::SearchBeamWidth.value();
     }
@@ -69,7 +70,7 @@ bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &
             this->Data->WorstLexicalHypothesis = &Container;
             this->Data->WorstCoverage = Coverage;
         } else
-            this->pruneAndUpdateBestAndWorstNodes(Coverage, Container, _node);
+            this->localUpdateBestAndWorstNodes(Coverage, Container, _node);
     }
 
     this->Data->TotalSearchGraphNodeCount += ((qint64)Container.nodes().size() - (qint64)OldContainerSize);
@@ -153,30 +154,16 @@ void clsCardinalityHypothesisContainer::updateBestAndWorstNodes()
     }
 }
 
-void clsCardinalityHypothesisContainer::pruneAndUpdateBestAndWorstNodes(const Coverage_t& _coverage, clsLexicalHypothesisContainer &_container, const clsSearchGraphNode &_node)
+void clsCardinalityHypothesisContainer::localUpdateBestAndWorstNodes(const Coverage_t& _coverage, clsLexicalHypothesisContainer &_container, const clsSearchGraphNode &_node)
 {
+    if (_node.isRecombined())
+        return;
+
     if (/* this->Data->BestLexicalHypothesis != NULL && */
             _node.getTotalCost() <
                 this->Data->BestLexicalHypothesis->nodes().first().getTotalCost()) {
         this->Data->BestLexicalHypothesis = &_container;
         this->Data->BestCoverage = _coverage;
-    }
-
-    if (_node.isRecombined())
-        return;
-
-    if (this->isPruningNecessary()){
-        Q_ASSERT(this->Data->WorstLexicalHypothesis->nodes().size());
-        this->Data->WorstLexicalHypothesis->nodes().removeLast();
-
-        //If these are equal then this will be accounted for in insertNewHypothesis
-        if (&_container != this->Data->WorstLexicalHypothesis)
-            --this->Data->TotalSearchGraphNodeCount;
-
-        if (this->Data->WorstLexicalHypothesis->nodes().isEmpty())
-            this->Data->LexicalHypothesisContainer.remove(this->Data->WorstCoverage);
-
-        this->updateWorstNode();
     }
 
     if (_node.getTotalCost() > this->Data->WorstLexicalHypothesis->nodes().last().getTotalCost()){
@@ -187,6 +174,10 @@ void clsCardinalityHypothesisContainer::pruneAndUpdateBestAndWorstNodes(const Co
 
 void clsCardinalityHypothesisContainer::prune()
 {
+    if(this->Data->TotalSearchGraphNodeCount <= this->MaxCardinalityContainerSize.value()) {
+        updateBestAndWorstNodes();
+        return;
+    }
     QHash<Coverage_t, int> PickedHypothesisCount;
     int TotalSearchGraphNodeCount = 0;
     // First perform pruning respecting the primal share of each coverage if needed
@@ -233,9 +224,6 @@ void clsCardinalityHypothesisContainer::prune()
             break;
         PickedHypothesisCount[ChosenCoverage]++;
         TotalSearchGraphNodeCount++;
-        if(TotalSearchGraphNodeCount ==
-                clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value())
-            this->Data->WorstCostLimit = ChosenNodeTotalCost;
     }
     // Remove empty containers
     for(auto CoverageIter = PickedHypothesisCount.begin();
@@ -251,6 +239,8 @@ void clsCardinalityHypothesisContainer::prune()
     // Update best and worst placeholders and the total node count
     this->Data->TotalSearchGraphNodeCount = TotalSearchGraphNodeCount;
     updateBestAndWorstNodes();
+    if(this->Data->TotalSearchGraphNodeCount > 0)
+        this->Data->WorstCostLimit = this->Data->WorstLexicalHypothesis->nodes().last().getTotalCost();
 }
 
 }

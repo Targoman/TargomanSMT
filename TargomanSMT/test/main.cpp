@@ -16,6 +16,14 @@
 #include "libTargomanSMT/clsTranslator.h"
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 
+
+//JUST FOR DEBUG
+#include "Private/RuleTable/clsBinaryRuleTable.h"
+
+
+
+
+
 #include <QDebug>
 
 #include <iostream>
@@ -69,16 +77,22 @@ int main(int argc, char *argv[])
     TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
     //TARGOMAN_IO_SETTINGS.setSilent();
 
+
     try{
         clsSafeCoreApplication App(argc, argv);
 
         printMemoryUsage("@first");
         ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf");
 
+        Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
+
         printMemoryUsage("after init");
         clsTranslator::init(ConfigManager::instance().configFilePath());
         printMemoryUsage("after load all");
 
+//        clsTranslator::saveBinaryRuleTable("../pt/phrase-table.bin");
+
+//        return 0;
 
         QFile File(argv[1]);
         QTextStream Stream(&File);

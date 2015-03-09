@@ -161,7 +161,8 @@ public:
      * @exception                Throws exception if size of columnNames list is zero ( which it means clsTargetRule is not initialized).
      */
 
-    clsTargetRuleData(){
+    clsTargetRuleData()
+    {
         if (clsTargetRule::ColumnNames.size() == 0)
             throw exRuleTable("Invalid TargetRule must be created after initialization");
         for(int i=0; i< clsTargetRule::ColumnNames.size(); ++i)

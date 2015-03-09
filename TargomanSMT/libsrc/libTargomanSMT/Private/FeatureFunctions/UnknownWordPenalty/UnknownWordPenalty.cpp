@@ -11,7 +11,7 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#include "WordPenalty.h"
+#include "UnknownWordPenalty.h"
 
 namespace Targoman {
 namespace SMT {
@@ -23,27 +23,27 @@ using namespace SearchGraph;
 using namespace Proxies;
 using namespace RuleTable;
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(WordPenalty);
+TARGOMAN_REGISTER_SINGLETON_MODULE(UnknownWordPenalty);
 
-Common::Configuration::tmplConfigurable<double>  WordPenalty::ScalingFactor(
-        WordPenalty::baseConfigPath() + "/ScalingFactor",
-        "Scaling factor for word penalty feature.",
+Common::Configuration::tmplConfigurable<double>  UnknownWordPenalty::ScalingFactor(
+        UnknownWordPenalty::baseConfigPath() + "/ScalingFactor",
+        "Scaling factor for unknown word penalty feature.",
         1.0);
 
 /**
  * @brief The clsReorderingJumpFeatureData class is a derviation of intfFeatureFunctionData class.
  */
-class clsWordPenaltyFeatureData : public intfFeatureFunctionData{
+class clsUnknownWordPenaltyFeatureData : public intfFeatureFunctionData{
 public:
     /**
      * @brief constructor of this class sets CostElements to 1 because we have cost for reordering jump feature.
      */
-    clsWordPenaltyFeatureData():
+    clsUnknownWordPenaltyFeatureData():
         intfFeatureFunctionData(1)
     {}
 
     intfFeatureFunctionData* copy() const {
-        clsWordPenaltyFeatureData* Copy = new clsWordPenaltyFeatureData();
+        clsUnknownWordPenaltyFeatureData* Copy = new clsUnknownWordPenaltyFeatureData();
         Copy->CostElements[0] = this->CostElements[0];
         return Copy;
     }
@@ -51,32 +51,35 @@ public:
 
 
 /**
- * @brief WordPenalty::scoreSearchGraphNode   Sets CostElement value and computes WordPenalty based on
+ * @brief UnknownWordPenalty::scoreSearchGraphNode   Sets CostElement value and computes UnknownWordPenalty based on
  * length of target phrase.
  * @return Returns score of ReorderingJumpfor this search graph node.
  */
-Common::Cost_t WordPenalty::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
+Common::Cost_t UnknownWordPenalty::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
-    clsWordPenaltyFeatureData* Data = new clsWordPenaltyFeatureData;
+    clsUnknownWordPenaltyFeatureData* Data = new clsUnknownWordPenaltyFeatureData;
     _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
 
-    Cost_t Cost = (Cost_t)_newHypothesisNode.targetRule().size();
+    Cost_t Cost = 0;
+    for(size_t i = 0; i < _newHypothesisNode.targetRule().size(); ++i)
+        if(_newHypothesisNode.targetRule().at(i) == 0)
+            Cost += 100;
 
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode)
         Data->CostElements[0] = Cost;
 
-    return Cost * WordPenalty::ScalingFactor.value();
+    return Cost * UnknownWordPenalty::ScalingFactor.value();
 }
 
 
 /**
- * @brief WordPenalty::initRootNode This function will be called in the constructor of searchGraphNode
+ * @brief UnknownWordPenalty::initRootNode This function will be called in the constructor of searchGraphNode
  * in order to always have a valid previous node data for feature functions in scoreSearchGraphNode function.
  * @param _rootNode
  */
-void WordPenalty::initRootNode(clsSearchGraphNode &_rootNode)
+void UnknownWordPenalty::initRootNode(clsSearchGraphNode &_rootNode)
 {
-    _rootNode.setFeatureFunctionData(this->DataIndex, new clsWordPenaltyFeatureData);
+    _rootNode.setFeatureFunctionData(this->DataIndex, new clsUnknownWordPenaltyFeatureData);
 }
 
 }

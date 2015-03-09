@@ -76,7 +76,17 @@ clsSearchGraphBuilder::clsSearchGraphBuilder(const Sentence_t& _sentence):
 void clsSearchGraphBuilder::init(const QString& _configFilePath)
 {
     clsSearchGraphBuilder::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
+
     clsSearchGraphBuilder::pRuleTable->initializeSchema();
+
+    //InvalidTargetRuleData has been marshalled here because it depends on loading RuleTable
+    RuleTable::InvalidTargetRuleData = new RuleTable::clsTargetRuleData;
+    //pInvalidTargetRule has been marshalled here because it depends on instantiation of InvalidTargetRuleData
+    RuleTable::pInvalidTargetRule = new RuleTable::clsTargetRule;
+    //InvalidSearchGraphNodeData has been marshalled here because it depends on initialization of gConfigs
+    InvalidSearchGraphNodeData = new clsSearchGraphNodeData;
+    pInvalidSearchGraphNode = new clsSearchGraphNode;
+
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
         FF->initialize(_configFilePath);
     clsSearchGraphBuilder::pRuleTable->loadTableData();
@@ -91,17 +101,6 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
         throw exSearchGraph("No Rule defined for UNKNOWN word");
 
     clsSearchGraphBuilder::UnknownWordRuleNode = new clsRuleNode(Node->getData());
-
-    //InvalidTargetRuleData has been marshalled here because it depends on loading RuleTable
-    RuleTable::InvalidTargetRuleData = new RuleTable::clsTargetRuleData;
-
-    //pInvalidTargetRule has been marshalled here because it depends on instantiation of InvalidTargetRuleData
-    RuleTable::pInvalidTargetRule = new RuleTable::clsTargetRule;
-
-    //InvalidSearchGraphNodeData has been marshalled here because it depends on initialization of gConfigs
-    InvalidSearchGraphNodeData = new clsSearchGraphNodeData;
-
-    pInvalidSearchGraphNode = new clsSearchGraphNode;
 }
 
 /**
@@ -223,14 +222,14 @@ bool clsSearchGraphBuilder::decode()
 
             unsigned short NewPhraseCardinality = NewCardinality - PrevCardinality;
 
+            clsCardinalityHypothesisContainer& PrevCardHypoContainer =
+                    this->Data->HypothesisHolder[PrevCardinality];
+
             //This happens when we have for ex. 2 bi-grams and a quad-gram but no similar 3-gram. due to bad training
-            if(CurrCardHypoContainer.isEmpty()) {
+            if(PrevCardHypoContainer.isEmpty()) {
                 TargomanLogWarn(1, "Previous cardinality is empty. (PrevCard: " << PrevCardinality << ", CurrentCard: " << NewCardinality << ")");
                 continue;
             }
-
-            clsCardinalityHypothesisContainer& PrevCardHypoContainer =
-                    this->Data->HypothesisHolder[PrevCardinality];
 
             for(CoverageLexicalHypothesisMap_t::Iterator PrevCoverageIter = PrevCardHypoContainer.lexicalHypotheses().begin();
                 PrevCoverageIter != PrevCardHypoContainer.lexicalHypotheses().end();
@@ -247,9 +246,7 @@ bool clsSearchGraphBuilder::decode()
                 // This can be removed if training has been done properly and we have a sane phrase table
                 if (PrevLexHypoContainer.nodes().isEmpty()){
                     TargomanLogWarn(1, "PrevLexHypoContainer is empty. PrevCard: " << PrevCardinality
-                                  << "PrevCov: " << bitArray2Str(PrevCoverage)
-                                  <<" Addr:" <<(void*)PrevLexHypoContainer.Data.data());
-
+                                  << "PrevCov: " << bitArray2Str(PrevCoverage));
                     continue;
                 }
 
@@ -267,6 +264,22 @@ bool clsSearchGraphBuilder::decode()
                         }
                     if (SkipStep)
                         continue;//TODO if NewPhraseCardinality has not contigeous place breaK
+
+
+
+                    // Skip these candidates if they will cause reordering jump violation in future
+                    int firstUncoveredPosition = PrevCoverage.size();
+                    for(int i = 0; i < PrevCoverage.size(); ++i) {
+                        if(PrevCoverage.testBit(i) == false) {
+                            firstUncoveredPosition = i;
+                            break;
+                        }
+                    }
+                    if(firstUncoveredPosition < PrevCoverage.size()) {
+                        if(qAbs((int)NewPhraseEndPos - firstUncoveredPosition) >
+                                HardReorderingJumpLimit.value())
+                            continue;
+                    }
 
                     Coverage_t NewCoverage(PrevCoverage);
                     for (size_t i=NewPhraseBeginPos; i<NewPhraseEndPos; ++i)
@@ -300,7 +313,7 @@ bool clsSearchGraphBuilder::decode()
                         for(size_t i = 0; i<MaxCandidates; ++i){
 
                             const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
-//TODO check for hardjump limit if in future will be happen
+
                             clsSearchGraphNode NewHypoNode(PrevLexHypoNode,
                                                            NewPhraseBeginPos,
                                                            NewPhraseEndPos,
@@ -308,6 +321,8 @@ bool clsSearchGraphBuilder::decode()
                                                            CurrentPhraseCandidate,
                                                            IsFinal,
                                                            RestCost);
+
+
 
                             // If current NewHypoNode is worse than worst stored node ignore it
                             if (clsSearchGraphBuilder::DoPrunePreInsertion.value() &&
@@ -327,13 +342,40 @@ bool clsSearchGraphBuilder::decode()
         }//for PrevCardinality
         CurrCardHypoContainer.finlizePruningAndcleanUp();
         // Vedadian
-        qDebug() << "Cardinality: " << NewCardinality;
-        for(auto Iterator = CurrCardHypoContainer.lexicalHypotheses().begin();
-            Iterator != CurrCardHypoContainer.lexicalHypotheses().end();
-            ++Iterator) {
-            qDebug() << "\tCoverage: " << Iterator.key();
-            const clsSearchGraphNode& Node = Iterator->nodes().first();
-            qDebug() << "\t\tCost: " << Node.getCost() << ", RestCost: " << Node.getTotalCost() - Node.getCost() << ", Str: " << Node.targetRule().toStr();
+        /*
+        if(NewCardinality == 2) {
+            auto car2str = [] (int _cardinality) {
+                QString result;
+                for(int i = 0; i < 5; ++i) {
+                    result = ('0' + _cardinality % 10) + result;
+                    _cardinality /= 10;
+                }
+                return result;
+            };
+            auto cov2str = [] (const Coverage_t _coverage) {
+                QString result;
+                QTextStream stream;
+                stream.setString(&result);
+                stream << _coverage;
+                return result;
+            };
+            for(auto Iterator = CurrCardHypoContainer.lexicalHypotheses().end() - 1;
+                true;
+                --Iterator) {
+                const QList<clsSearchGraphNode>& Nodes = Iterator->nodes();
+                foreach(const clsSearchGraphNode& SelectedNode, Nodes) {
+                    std::cout << SelectedNode.getTotalCost() << "\t";
+                    std::cout << "Cardinality:  ";
+                    std::cout << car2str(NewCardinality).toUtf8().constData();
+                    std::cout << "  Coverage:  " << cov2str(SelectedNode.coverage()).toUtf8().constData();
+                    std::cout << "  Cost:  " << SelectedNode.getCost()
+                              << " , RestCost: " << SelectedNode.getTotalCost() - SelectedNode.getCost()
+                              << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
+                              << ")" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
+                }
+                if(Iterator == CurrCardHypoContainer.lexicalHypotheses().begin())
+                    break;
+            }
         }
         //*/
     }//for NewCardinality

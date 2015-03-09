@@ -35,7 +35,8 @@ clsRuleNodeData* InvalidRuleNodeData = new clsRuleNodeData;
  */
 clsRuleNode::clsRuleNode() :
     Data(InvalidRuleNodeData)
-{}
+{
+}
 
 /**
  * @brief #Data member of class is inititialized to InvalidRuleNodeData which is a static instance of clsRuleNodeData.
@@ -52,8 +53,16 @@ bool clsRuleNode::isInvalid() const
 
 void clsRuleNode::readBinary(std::istream &_input)
 {
-    Q_UNUSED(_input)
-//TODO
+    if(this->isInvalid())
+        this->detachInvalidData();
+    clsIFStreamExtended& InStream = (clsIFStreamExtended&)(_input);
+    int TargetRuleCount = InStream.read<int>();
+    this->Data->TargetRules.reserve(TargetRuleCount);
+    for(int i = 0; i < TargetRuleCount; ++i) {
+        clsTargetRule TargetRule;
+        TargetRule.readBinary(InStream);
+        this->Data->TargetRules.append(TargetRule);
+    }
 }
 
 void clsRuleNode::writeBinary(std::ostream &_output) const

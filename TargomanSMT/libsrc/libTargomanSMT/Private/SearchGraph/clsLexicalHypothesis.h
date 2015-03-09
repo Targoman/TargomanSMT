@@ -47,6 +47,9 @@ class clsLexicalHypothesisContainer
 {
 public:
     clsLexicalHypothesisContainer();
+    clsLexicalHypothesisContainer(const clsLexicalHypothesisContainer& _other) :
+        Data(_other.Data)
+    {}
     ~clsLexicalHypothesisContainer(){}
 
     inline static clsLexicalHypothesisContainer rootLexicalHypothesis(){

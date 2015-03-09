@@ -26,12 +26,27 @@ namespace Private {
 typedef QBitArray Coverage_t;
 
 #ifdef TARGOMAN_SHOW_DEBUG
+inline bool operator == (const Coverage_t& _coverage, const char* value)
+{
+    if(strlen(value) != (size_t)_coverage.size())
+        return false;
+    for(int i = 0; i < _coverage.size(); ++i)
+        if((value[i] == '1') ^ _coverage.testBit(i))
+            return false;
+    return true;
+}
+
+inline bool operator == (const char* value, const Coverage_t& _coverage)
+{
+    return _coverage == value;
+}
+
 inline QTextStream& operator << (QTextStream& _outputStream, const Coverage_t& _coverage)
 {
     if(_coverage.size() == 0)
         return _outputStream;
     for(int i = 0; i < _coverage.size(); ++i)
-        _outputStream << (_coverage.at(i) ? "1" : "0");
+        _outputStream << (_coverage.testBit(i) ? "1" : "0");
     return _outputStream;
 }
 

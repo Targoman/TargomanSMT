@@ -20,13 +20,19 @@
 #include "FStreamExtended.h"
 #include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
 
+//#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
+#include "Private/RuleTable/clsPrefixTree.h"
+
 namespace Targoman {
 namespace SMT {
 namespace Private {
 namespace RuleTable{
 
-typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;
-static const char* TARGOMAN_BINARY_RULETABLE_HEADER = "TargomanBinaryRuleTable-v0.1";
+
+//typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;
+typedef clsPrefixTree RulesPrefixTree_t;
+
+static const QString TARGOMAN_BINARY_RULETABLE_HEADER = "TargomanBinaryRuleTable-v0.1";
 
 /**
  * @brief The intfRuleTable class is used to store source and target phrases in #prefixTree.
@@ -53,20 +59,32 @@ public:
     void saveBinaryRuleTable(const QString& _filePath){
         try{
             clsOFStreamExtended OutStream(_filePath);
-            OutStream.write<const char*>(TARGOMAN_BINARY_RULETABLE_HEADER);
+            //Write Bnary file header
+            OutStream.write(TARGOMAN_BINARY_RULETABLE_HEADER.toLatin1().constData(),
+                            TARGOMAN_BINARY_RULETABLE_HEADER.toLatin1().size());
+            //write Vocab
+            OutStream.write(gConfigs.SourceVocab.size());
+            for(auto VocabIter = gConfigs.SourceVocab.begin();
+                VocabIter != gConfigs.SourceVocab.end();
+                ++VocabIter){
+                OutStream.write(VocabIter.key());
+                OutStream.write(VocabIter.value());
+            }
+
+            //Write TargetRuleColumnNames
             OutStream.write(clsTargetRule::columnNames().size());
             foreach (const QString& ColumnName, clsTargetRule::columnNames())
                 OutStream.write(ColumnName);
 
+            //Write Phrase table specific column names
             const QStringList PhraseTableColumnNames =
                     static_cast<FeatureFunction::intfFeatureFunction*>
                     (FeatureFunction::PhraseTable::moduleInstance())->columnNames();
-
             OutStream.write(PhraseTableColumnNames.size());
             foreach (const QString& ColumnName,PhraseTableColumnNames)
                 OutStream.write(ColumnName);
 
-
+            //Call prefix tree to store nodes
             PrefixTree->writeBinary(OutStream);
         }catch(std::exception &e){
             throw exRuleTable(QString::fromUtf8(e.what()));

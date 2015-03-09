@@ -50,6 +50,13 @@ public:
 
     ~clsLanguageModelFeatureData(){}
 
+    intfFeatureFunctionData* copy() const {
+        clsLanguageModelFeatureData* Copy = new clsLanguageModelFeatureData;
+        Copy->CostElements[0] = this->CostElements[0];
+        Copy->SentenceScorer->initHistory(*this->SentenceScorer);
+        return Copy;
+    }
+
     QScopedPointer<intfLMSentenceScorer> SentenceScorer;        /**< An instance of intfLMSentenceScorer to track previous seen words */
 };
 

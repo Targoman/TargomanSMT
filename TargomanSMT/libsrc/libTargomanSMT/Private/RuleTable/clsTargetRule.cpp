@@ -46,7 +46,17 @@ clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QLis
 
 void clsTargetRule::readBinary(clsIFStreamExtended &_input)
 {
-
+    if(this->isInvalid())
+        this->detachInvalidData();
+    int Count = _input.read<int>();
+    this->Data->TargetPhrase.reserve(Count);
+    for(int i = 0; i < Count; ++i) {
+        WordIndex_t WordIndex = _input.read<WordIndex_t>();
+        this->Data->TargetPhrase.append(WordIndex);
+    }
+    for(Cost_t& Cost : this->Data->Fields)
+        Cost = _input.read<Cost_t>();
+    this->Data->PrecomputedValues.fill(-INFINITY, clsTargetRule::PrecomputedValuesSize);
 }
 
 void clsTargetRule::writeBinary(clsOFStreamExtended &_output) const
@@ -63,6 +73,8 @@ void clsTargetRule::writeBinary(clsOFStreamExtended &_output) const
 
 QString clsTargetRule::toStr() const
 {
+    if(this->isInvalid())
+        return QString();
     QString result = gConfigs.EmptyLMScorer->getWordByIndex(this->Data->TargetPhrase.at(0));
     for(int i = 1; i < this->Data->TargetPhrase.size(); ++i)
         result += " " + gConfigs.EmptyLMScorer->getWordByIndex(this->Data->TargetPhrase.at(i));

@@ -67,6 +67,13 @@ public:
     clsLexicalReorderingFeatureData(size_t _costElementsSize):
         intfFeatureFunctionData(_costElementsSize)
     {}
+
+    intfFeatureFunctionData* copy() const {
+        clsLexicalReorderingFeatureData* Copy = new clsLexicalReorderingFeatureData(this->CostElements.size());
+        for(int i = 0; i < this->CostElements.size(); ++i)
+            Copy->CostElements[i] = this->CostElements[i];
+        return Copy;
+    }
 };
 
 /**

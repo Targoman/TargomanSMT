@@ -16,8 +16,6 @@
 #include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/clsCmdProgressBar.h"
 
-
-
 namespace Targoman {
 namespace SMT {
 namespace Private {
@@ -30,7 +28,7 @@ using namespace FeatureFunction;
 
 tmplConfigurable<QString> clsBinaryRuleTable::FilePath(
         clsBinaryRuleTable::baseConfigPath() + "/FilePath",
-        "Filename where rule table is stored",
+        "FilePath where rule table is stored",
         "",
         Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
         );
@@ -49,13 +47,23 @@ clsBinaryRuleTable::~clsBinaryRuleTable()
 
 void clsBinaryRuleTable::initializeSchema()
 {
-    try{
-        this->InputStream.reset(new clsIFStreamExtended(clsBinaryRuleTable::FilePath.value()));
-        QByteArray BinFileHeader(sizeof(TARGOMAN_BINARY_RULETABLE_HEADER), Qt::Uninitialized);
+     this->InputStream.reset(new clsIFStreamExtended(clsBinaryRuleTable::FilePath.value()));
+     if (this->InputStream->is_open() == false)
+         throw exRuleTable("Unable to open " + clsBinaryRuleTable::FilePath.value());
+     try{
+        QByteArray BinFileHeader(TARGOMAN_BINARY_RULETABLE_HEADER.size(), Qt::Uninitialized);
         this->InputStream->read(BinFileHeader.data(), BinFileHeader.size());
 
         if (BinFileHeader != TARGOMAN_BINARY_RULETABLE_HEADER)
             throw exRuleTable("Invalid Binary file");
+
+        //Load Vocab
+        int VocabCount = this->InputStream->read<int>();
+        gConfigs.SourceVocab.reserve(VocabCount);
+        for(int i=0; i< VocabCount; ++i)
+            gConfigs.SourceVocab[this->InputStream->read<QString>()] = this->InputStream->read<WordIndex_t>();
+
+        //Load TargetRule column names
         int ColumnCount = this->InputStream->read<int>();
         QStringList Columns;
         for(int i=0; i< ColumnCount; ++i)
@@ -76,8 +84,8 @@ void clsBinaryRuleTable::initializeSchema()
 
 void clsBinaryRuleTable::loadTableData()
 {
-    this->PrefixTree->readBinary((std::istream&)this->InputStream);
-    delete this->InputStream.take();
+    this->PrefixTree.reset(new RulesPrefixTree_t());
+    this->PrefixTree->readBinary(*this->InputStream);
 }
 
 

@@ -39,6 +39,13 @@ public:
     clsPhraseTableFeatureData(size_t _costElementsSize):
         intfFeatureFunctionData(_costElementsSize)
     {}
+
+    intfFeatureFunctionData* copy() const {
+        clsPhraseTableFeatureData* Copy = new clsPhraseTableFeatureData(this->CostElements.size());
+        for(int i = 0; i < this->CostElements.size(); ++i)
+            Copy->CostElements[i] = this->CostElements[i];
+        return Copy;
+    }
 };
 
 /**

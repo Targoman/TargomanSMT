@@ -46,7 +46,7 @@ private:
     QList<size_t> AcceptedAdditionalFieldsIndexes;
 
 private:
-    static Targoman::Common::Configuration::tmplConfigurable<QString> FileName;                 /**< File name of phrase table. */
+    static Targoman::Common::Configuration::tmplConfigurable<QString> FilePath;                 /**< File name of phrase table. */
     static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseCostNames;          /**< Name of field(features) of target rule. */
     static QList<Targoman::Common::Configuration::tmplConfigurable<QString>> FeatureFunctions;  /**< Name of aditional featurs like lrm*/
 

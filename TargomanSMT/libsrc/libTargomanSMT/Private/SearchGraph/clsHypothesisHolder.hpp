@@ -49,6 +49,9 @@ public:
         Data(new clsHypothesisHolderData(_sentenceSize))
     {}
     clsHypothesisHolder(){}
+    clsHypothesisHolder(const clsHypothesisHolder& _other) :
+        Data(_other.Data)
+    {}
 
     void clear() {
         this->Data->CardinalityHypotheses.clear();

@@ -47,6 +47,12 @@ public:
     clsReorderingJumpFeatureData():
         intfFeatureFunctionData(1)
     {}
+
+    intfFeatureFunctionData* copy() const {
+        clsReorderingJumpFeatureData* Copy = new clsReorderingJumpFeatureData();
+        Copy->CostElements[0] = this->CostElements[0];
+        return Copy;
+    }
 };
 
 /**

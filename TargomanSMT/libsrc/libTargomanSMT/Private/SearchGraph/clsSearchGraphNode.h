@@ -41,6 +41,10 @@ public:
         CostElements(_costElementsSize,0)
     {}
 
+    virtual ~intfFeatureFunctionData() {}
+
+    virtual intfFeatureFunctionData* copy() const = 0;
+
     inline const QVector<Common::Cost_t>&     costElements(){return this->CostElements;}
 
 public:
@@ -60,6 +64,7 @@ public:
                        const RuleTable::clsTargetRule& _targetRule,
                        bool _isFinal,
                        Common::Cost_t _restCost);
+    clsSearchGraphNode(const clsSearchGraphNode& _other) : Data(_other.Data) {}
 
     ~clsSearchGraphNode(){}
 
@@ -115,7 +120,7 @@ public:
         SourceRangeBegin(0),
         SourceRangeEnd(0),
         PrevNode(NULL),
-        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount)
+        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL)
     {
     }
 
@@ -146,9 +151,8 @@ public:
         SourceRangeBegin(_startPos),
         SourceRangeEnd(_endPos),
         PrevNode(&_prevNode),
-        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount)
-    {
-    }
+        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL)
+    {}
 
     /**
      * @brief Copy constructor of this class.
@@ -164,8 +168,19 @@ public:
         SourceRangeBegin(_other.SourceRangeBegin),
         SourceRangeEnd(_other.SourceRangeEnd),
         PrevNode(_other.PrevNode),
-        CombinedNodes(_other.CombinedNodes)
-    {}
+        CombinedNodes(_other.CombinedNodes),
+        FeatureFunctionsData(_other.FeatureFunctionsData.size())
+    {
+        for(int i = 0; i < this->FeatureFunctionsData.size(); ++i)
+            this->FeatureFunctionsData[i] = _other.FeatureFunctionsData.at(i)->copy();
+    }
+
+    ~clsSearchGraphNodeData() {
+        for(int i = 0; i < this->FeatureFunctionsData.size(); ++i) {
+            if(this->FeatureFunctionsData.at(i) != NULL)
+                delete FeatureFunctionsData[i];
+        }
+    }
 
 public:
     bool                                IsFinal;                        /**< Has this node covered translation for all word of input sentence.*/

@@ -42,16 +42,16 @@ TARGOMAN_REGISTER_MODULE(clsMosesPlainRuleTable);
 
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 
-tmplConfigurable<QString> clsMosesPlainRuleTable::PhraseTableFileName(
-        clsMosesPlainRuleTable::baseConfigPath() + "/PhraseTableFileName",
-        "Filename where phrase table is stored",
+tmplConfigurable<QString> clsMosesPlainRuleTable::PhraseTableFilePath(
+        clsMosesPlainRuleTable::baseConfigPath() + "/PhraseTableFilePath",
+        "Filepath where phrase table is stored",
         "",
         Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
         );
 
-tmplConfigurable<QString> clsMosesPlainRuleTable::ReorderingTableFileName(
-        clsMosesPlainRuleTable::baseConfigPath() + "/ReorderingTableFileName",
-        "Filename where reordering table is stored",
+tmplConfigurable<QString> clsMosesPlainRuleTable::ReorderingTableFilePath(
+        clsMosesPlainRuleTable::baseConfigPath() + "/ReorderingTableFilePath",
+        "Filepath where reordering table is stored",
         "",
         Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
         );
@@ -81,11 +81,11 @@ void clsMosesPlainRuleTable::initializeSchema()
 {
     TargomanLogInfo(5,
                     "Initializing clsMosesPlainRuleTable schema from " +
-                    this->PhraseTableFileName.value() +
-                    " and " + this->ReorderingTableFileName.value());
+                    this->PhraseTableFilePath.value() +
+                    " and " + this->ReorderingTableFilePath.value());
 
-    clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFileName.value().toStdString());
-    clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFileName.value().toStdString());
+    clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFilePath.value().toStdString());
+    clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFilePath.value().toStdString());
 
 
     if(PhraseTableInputStream.peek() < 0 && ReorderingTableInputStream.peek() < 0)
@@ -140,8 +140,8 @@ void clsMosesPlainRuleTable::loadTableData()
 {
     TargomanLogInfo(5,
                     "Loading Moses plain text rule set from " +
-                    this->PhraseTableFileName.value() +
-                    " and " + this->ReorderingTableFileName.value());
+                    this->PhraseTableFilePath.value() +
+                    " and " + this->ReorderingTableFilePath.value());
 
 
     this->PrefixTree.reset(new RulesPrefixTree_t());
@@ -152,8 +152,8 @@ void clsMosesPlainRuleTable::loadTableData()
 
     addUnkToUnkRule(TotalRuleNodes);
 
-    clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFileName.value().toStdString());
-    clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFileName.value().toStdString());
+    clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFilePath.value().toStdString());
+    clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFilePath.value().toStdString());
     size_t RulesRead = 0;
 
     while (PhraseTableInputStream.peek() >= 0 && ReorderingTableInputStream.peek() >= 0){
@@ -299,7 +299,6 @@ void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
         }
         SourcePhrase.append(WordIndex);
     }
-
 
     QList<WordIndex_t> TargetPhrase;
     foreach(const QString& Word, _targetPhrase.split(" ", QString::SkipEmptyParts))

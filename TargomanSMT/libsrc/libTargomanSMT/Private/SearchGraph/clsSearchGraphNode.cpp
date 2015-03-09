@@ -78,13 +78,6 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
              _isFinal,
              _restCost))
 {
-    // Vedadian
-    /*
-    qDebug() << "PrevNode: " << getPartialTranslation(this->prevNode());
-    qDebug() << "NewNode: " << getPartialTranslation(*this);
-    int a = 2;
-    ++a;
-    //*/
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions) {
         Cost_t Cost = FF->scoreSearchGraphNode(*this);
         //qDebug() << "Cost: " << Cost;

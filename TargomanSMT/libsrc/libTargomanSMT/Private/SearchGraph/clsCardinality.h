@@ -72,6 +72,9 @@ class clsCardinalityHypothesisContainer
 {
 public:
     clsCardinalityHypothesisContainer();
+    clsCardinalityHypothesisContainer(const clsCardinalityHypothesisContainer& _other) :
+        Data(_other.Data)
+    {}
     ~clsCardinalityHypothesisContainer(){}
 
     /**
@@ -133,18 +136,6 @@ public:
     bool insertNewHypothesis(clsSearchGraphNode& _node);
 
     /**
-     * @brief isPruningNecessary
-     * @return  returns true if expanding this container makes pruning necessary
-     */
-    inline bool isPruningNecessary() const {
-        if (clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value() == 0 ||
-            this->Data->TotalSearchGraphNodeCount <
-                clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value())
-            return false;
-        return true;
-    }
-
-    /**
      * @brief mustBePruned  preinsertion pruning facilitator.
      *
      * this function indicates whether any node with the given cost can be inserted or is
@@ -165,6 +156,7 @@ public:
         auto LexHypoContainerIter = this->Data->LexicalHypothesisContainer.begin();
         while(LexHypoContainerIter != this->Data->LexicalHypothesisContainer.end()) {
             Q_ASSERT(LexHypoContainerIter->nodes().size());
+            ++LexHypoContainerIter;
         }
 #endif
     }
@@ -192,7 +184,7 @@ private:
      * @param _lexicalHypo              the lexcial hypothesis corresponding to the translation hypothesis node (input just for speed and memory optimization purposes)
      * @param _node                     the translation hypothesis node that is inserted just before calling this helper function
      */
-    void pruneAndUpdateBestAndWorstNodes(const Coverage_t& _coverage, clsLexicalHypothesisContainer& _container, const clsSearchGraphNode &_node);
+    void localUpdateBestAndWorstNodes(const Coverage_t& _coverage, clsLexicalHypothesisContainer& _container, const clsSearchGraphNode &_node);
 
     /**
      * @brief prune performs pruning (called in a lazy manner)
@@ -212,7 +204,7 @@ public:
 
 private:
     QExplicitlySharedDataPointer<clsCardinalityHypothesisContainerData> Data;
-    static Common::Configuration::tmplConfigurable<quint8>  MaxCardinalityContainerSize; /**< Maximum number of nodes contained in a cardinality hypothesis container*/
+    static Common::Configuration::tmplConfigurable<quint16>  MaxCardinalityContainerSize; /**< Maximum number of nodes contained in a cardinality hypothesis container*/
     static Common::Configuration::tmplConfigurable<quint8>  PrimaryCoverageShare; /**< Primary share of each coverage from the cardinality nodes.*/
     static Common::Configuration::tmplConfigurable<double>  SearchBeamWidth; /**< Beam width for the beam search */
 };

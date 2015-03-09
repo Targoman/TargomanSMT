@@ -38,10 +38,13 @@ public:
     }
 };
 
-template <> void clsOFStreamExtended::write(const QString& _value);
+template <> void clsOFStreamExtended::write(QString _value);
 
 class clsIFStreamExtended : public std::fstream{
 public:
+    clsIFStreamExtended()
+    { }
+
     clsIFStreamExtended(const QString& _filePath) :
         std::fstream(_filePath.toUtf8().constData(), std::ios_base::in)
     {}

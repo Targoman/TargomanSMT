@@ -44,9 +44,9 @@ TARGOMAN_REGISTER_MODULE(clsJanePlainRuleTable);
 
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 
-tmplConfigurable<QString> clsJanePlainRuleTable::FileName(
-        clsJanePlainRuleTable::baseConfigPath() + "/FileName",
-        "Filename where phrase table is stored",
+tmplConfigurable<QString> clsJanePlainRuleTable::FilePath(
+        clsJanePlainRuleTable::baseConfigPath() + "/FilePath",
+        "FilePath where phrase table is stored",
         "",
         Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
         );
@@ -78,12 +78,12 @@ clsJanePlainRuleTable::~clsJanePlainRuleTable()
  */
 void clsJanePlainRuleTable::initializeSchema()
 {
-    TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FileName.value());
+    TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FilePath.value());
 
     this->PrefixTree.reset(new RulesPrefixTree_t());
     QStringList ColumnNames = clsJanePlainRuleTable::PhraseCostNames.value().split(",");
 
-    clsCompressedInputStream InputStream(clsJanePlainRuleTable::FileName.value().toStdString());
+    clsCompressedInputStream InputStream(clsJanePlainRuleTable::FilePath.value().toStdString());
 
     if(InputStream.peek() < 0)
         throw exJanePhraseTable("Empty phrase table.");
@@ -134,7 +134,7 @@ void clsJanePlainRuleTable::initializeSchema()
  */
 void clsJanePlainRuleTable::loadTableData()
 {
-    TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FileName.value());
+    TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FilePath.value());
 
     this->PrefixTree.reset(new RulesPrefixTree_t());
     QStringList ColumnNames = clsJanePlainRuleTable::PhraseCostNames.value().split(",");
@@ -142,7 +142,7 @@ void clsJanePlainRuleTable::loadTableData()
 
     clsCmdProgressBar ProgressBar("Loading RuleTable");
 
-    clsCompressedInputStream InputStream(clsJanePlainRuleTable::FileName.value().toStdString());
+    clsCompressedInputStream InputStream(clsJanePlainRuleTable::FilePath.value().toStdString());
     size_t RulesRead = 0;
 
     while (InputStream.peek() >= 0){

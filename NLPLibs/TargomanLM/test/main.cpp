@@ -54,7 +54,8 @@ int main(int argc, char *argv[])
 //        LM.convertBinary("/Share/local/vedadian/Experiments/Targoman/lm/Fa-En_BaseLine_2014-Mar-5_v0.1.4g.bin");
         LM.init("/Share/local/vedadian/Experiments/Targoman/lm/Fa-En_BaseLine_2014-Mar-5_v0.1.4g.bin", languageModelConfig);
 
-        QString Sentence = QStringLiteral("the reactor required for it produces atom plutonium bomb .");
+//        QString Sentence = QStringLiteral("the reactor required for it produces atom plutonium bomb .");
+        QString Sentence = QStringLiteral("iiiiiiiiiiiiiiiiiiii King");
         clsLMSentenceScorer SS1(LM);
         qDebug()<<Sentence;
         quint8 Gram;
@@ -67,6 +68,8 @@ int main(int argc, char *argv[])
         qDebug()<<"Sum:"<<SumLM;
         qDebug()<<"Sum after finalize:"<<SumLM - SS1.endOfSentenceProb(Gram);
         qDebug()<<"Sum after finalizeScaled:"<<(SumLM - SS1.endOfSentenceProb(Gram)) *0.15442631832099 ;
+
+        exit(0);
 
         Sentence = QStringLiteral("the reactor required for it produces . atom plutonium bomb");
         clsLMSentenceScorer SS2(LM);

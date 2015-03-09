@@ -16,7 +16,6 @@
 
 #include <QList>
 #include "clsTargetRule.h"
-#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
 
 namespace Targoman {
 namespace SMT {
@@ -52,8 +51,15 @@ class clsRuleNode
 {
 public:
     clsRuleNode();
-    clsRuleNode(const clsRuleNode & _other) : Data(_other.Data){}
-    ~clsRuleNode(){}
+    clsRuleNode(const clsRuleNode & _other) : Data(_other.Data) {}
+    ~clsRuleNode(){
+        // InvalidRuleNodeData needs to be alive during the whole run
+        // otherwise we will encounter invalid rule nodes with
+        // invalid invalid data!
+        if(this->isInvalid()) {
+            this->Data->ref.ref();
+        }
+    }
 
     bool isInvalid() const;
     inline TargetRulesContainer_t& targetRules() {
