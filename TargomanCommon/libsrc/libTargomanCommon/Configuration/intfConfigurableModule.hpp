@@ -77,7 +77,7 @@ public: \
 private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
     static QAtomicInt Instances; \
-    static QAtomicInt ActiveInstances;
+    static QAtomicInt ActiveInstances
 
 
 /**
@@ -94,7 +94,7 @@ public: \
 private: \
     Q_DISABLE_COPY(_class) \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
-    static _class* Instance;
+    static _class* Instance
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for non singleton classes.
@@ -103,7 +103,7 @@ private: \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
                       Targoman::Common::Configuration::stuInstantiator(_class::instantiator,false)); \
     QAtomicInt _class::Instances; \
-    QAtomicInt _class::ActiveInstances;
+    QAtomicInt _class::ActiveInstances
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for singleton classes. Also makes a null instance of class.
@@ -112,7 +112,7 @@ private: \
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
                       Targoman::Common::Configuration::stuInstantiator(_class::moduleInstance,true)); \
-    _class* _class::Instance = NULL;
+    _class* _class::Instance = NULL
 }
 }
 }

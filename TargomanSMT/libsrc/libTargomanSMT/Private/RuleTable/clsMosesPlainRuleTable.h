@@ -60,7 +60,7 @@ private:
     static Targoman::Common::Configuration::tmplConfigurable<QString>   ReorderingTableFilePath;        /**< File name of reordering table. */
     static Targoman::Common::Configuration::tmplConfigurable<int>       MaxRuleNodeTargetRuleCount;     /**< Maximum number of target rules kept for each rule node. */
 
-    TARGOMAN_DEFINE_MODULE("MosesPTPlain", clsMosesPlainRuleTable)
+    TARGOMAN_DEFINE_MODULE("MosesPTPlain", clsMosesPlainRuleTable);
 };
 
 }

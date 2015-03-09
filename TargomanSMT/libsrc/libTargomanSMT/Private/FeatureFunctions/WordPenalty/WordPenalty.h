@@ -57,7 +57,7 @@ private:
         intfFeatureFunction(this->moduleName(), false)
     {}
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/WordPenalty", WordPenalty)
+    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/WordPenalty", WordPenalty);
 
 public:
     inline Common::Cost_t getWordPenaltyCost(const RuleTable::clsTargetRule& _targetRule) const {

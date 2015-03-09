@@ -61,7 +61,7 @@ private:
     PhraseTable():
         intfFeatureFunction(this->moduleName(), false)
     {}
-    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/PhraseTable", PhraseTable)
+    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/PhraseTable", PhraseTable);
 
 
     QList<double> ScalingFactors;

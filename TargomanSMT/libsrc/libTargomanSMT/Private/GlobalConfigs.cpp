@@ -35,16 +35,29 @@ tmplConfigurable<QString> stuGlobalConfigs::Separator(
 tmplConfigurable<QString> stuGlobalConfigs::SourceLanguage(
         "/Common/Language/Source",
         "Source language from which translating",
-        "en");
+        "en",
+        ReturnTrueCrossValidator,
+        "sl",
+        "SOURCE_LANG",
+        "source-lang");
 tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage(
         "/Common/Language/Destination",
         "Destination Language to which translating",
-        "fa");
+        "fa",
+        ReturnTrueCrossValidator,
+        "sl",
+        "SOURCE_LANG",
+        "target-lang");
 
 tmplConfigurable<enuWorkingModes::Type> stuGlobalConfigs::WorkingMode(
         "/Common/WorkingMode",
         "WorkingModes can be (" + enuWorkingModes::options().join("|") + ")",
-        enuWorkingModes::toStr(enuWorkingModes::Decode));
+        enuWorkingModes::toStr(enuWorkingModes::Decode),
+        ReturnTrueCrossValidator,
+        "wm",
+        "WORKING_MODE",
+        "working-mode"
+        );
 
 QMap<QString, FeatureFunction::intfFeatureFunction*>       stuGlobalConfigs::ActiveFeatureFunctions;
 
@@ -66,22 +79,7 @@ namespace Configuration {
 
 using namespace SMT::Private;
 
-template <>
-bool tmplConfigurable<enuWorkingModes::Type>::validate(const QVariant& _value, QString& _errorMessage) const{
-
-    if(enuWorkingModes::toEnum(_value.toString().toLatin1().constData()) != enuWorkingModes::Unknown)
-        return true;
-    _errorMessage = "Unrecognized option: " + _value.toString() + " for: " + this->configPath();
-    return false;
-}
-
-template <>
-void tmplConfigurable<enuWorkingModes::Type>::setFromVariant(const QVariant& _value){
-    QString ErrorMessage;
-    if (this->validate(_value, ErrorMessage)) this->Value =
-            enuWorkingModes::toEnum(_value.toString().toLatin1().constData());
-    else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
-}
+ENUM_CONFIGURABLE_IMPL(enuWorkingModes)
 
 }
 }

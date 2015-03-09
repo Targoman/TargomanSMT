@@ -31,9 +31,10 @@ using namespace SearchGraph;
 
 bool clsTranslatorPrivate::Initialized = false;
 
-clsTranslator::clsTranslator(const QString &_inputStr) :
+clsTranslator::clsTranslator(const QString &_inputStr, bool _justTranslationString) :
     pPrivate(new Private::clsTranslatorPrivate(_inputStr))
 {
+    this->pPrivate->JustOutputTranslationString = _justTranslationString;
     TargomanDebug(5,_inputStr);
 }
 
@@ -59,7 +60,7 @@ void clsTranslator::init(const QString _configFilePath)
     clsTranslatorPrivate::Initialized = true;
 }
 
-stuTranslationOutput clsTranslator::translate(bool _justTranslationString)
+void clsTranslator::run()
 {
     if (clsTranslatorPrivate::Initialized == false)
         throw exTargomanCore("Translator is not initialized");
@@ -68,12 +69,15 @@ stuTranslationOutput clsTranslator::translate(bool _justTranslationString)
     this->pPrivate->SearchGraphBuilder->collectPhraseCandidates();
     this->pPrivate->SearchGraphBuilder->decode();
 
-    if (_justTranslationString){
-        stuTranslationOutput Output;
-        Output.Translation = this->pPrivate->Output->translationString();
-        return Output;
-    }else
-        return this->pPrivate->Output->translationOutput();
+    if (this->pPrivate->JustOutputTranslationString)
+        this->pPrivate->TranslationOutput.Translation = this->pPrivate->Output->translationString();
+    else
+        this->pPrivate->TranslationOutput = this->pPrivate->Output->translationOutput();
+}
+
+stuTranslationOutput clsTranslator::output()
+{
+    return this->pPrivate->TranslationOutput;
 }
 
 void clsTranslator::saveBinaryRuleTable(const QString &_filePath)

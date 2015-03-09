@@ -41,9 +41,14 @@ template <typename Type_t, int _max, int _min>
 /**
 * @brief The tmplPathAccessValidator template function can be used for path(string) configurables
 */
-template <Targoman::Common::enuPathAccess::Type _requiredAccess>
+template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required = true>
     bool tmplPathAccessValidator (const intfConfigurable& _item,
-                             QString& _errorMessage){
+                                  QString& _errorMessage){
+        if (_required == false &&
+            _item.toVariant().toString().isEmpty() &&
+            _item.wasConfigured() == false)
+            return true;
+
         QString Path = _item.toVariant().toString();
         QFileInfo PathInfo(Path);
 

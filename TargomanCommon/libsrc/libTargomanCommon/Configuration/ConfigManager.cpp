@@ -144,8 +144,10 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             QVariant Value = ConfigFile.value(Key);
             if (ConfigItem->validate(Value, ErrorMessage) == false)
                 throw exConfiguration(ErrorMessage);
-            else
+            else{
                 ConfigItem->setFromVariant(Value);
+                ConfigItem->setIsConfigured();
+            }
         }
     }
 
@@ -179,8 +181,10 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                     }
                     if (ConfigItemIter.value()->validate(Value.trimmed(), ErrorMessage) == false)
                         throw exConfiguration(ErrorMessage);
-                    else
+                    else{
                         ConfigItemIter.value()->setFromVariant(Value.trimmed());
+                        ConfigItemIter.value()->setIsConfigured();
+                    }
                     ArgumentIsConfigItem = true;
                     break;
                 }
@@ -323,8 +327,10 @@ void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
         throw exConfiguration("Configuration is not initialized yet.");
 
     intfConfigurable* Item= this->pPrivate->Configs.value(_path);
-    if (Item)
-        return Item->setFromVariant(_value);
+    if (Item){
+        Item->setFromVariant(_value);
+        Item->setIsConfigured();
+    }
 }
 
 /**
@@ -414,7 +420,7 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
         else
             this->ConfigPath = _configPath;
         this->ArgCount = this->ShortHelp.split(" ").size();
-        //this->ValidConfigSource = _validConfigSource;
+        this->WasConfigured = false;
 
         ConfigManager::instance().addConfig(this->ConfigPath, this);
     }catch(exTargomanBase &e){
@@ -441,6 +447,7 @@ intfConfigurable::intfConfigurable(const intfConfigurable &_other):
     this->LongSwitch = _other.LongSwitch;
     this->ShortHelp = _other.ShortHelp;
     this->ConfigPath = _other.ConfigPath;
+    this->WasConfigured  = _other.WasConfigured;
 
     //To replace pointer of old registered config with the new copied config
     this->pPrivate->updateConfig(&_other, this);

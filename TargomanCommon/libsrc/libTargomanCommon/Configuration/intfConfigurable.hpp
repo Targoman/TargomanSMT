@@ -91,6 +91,8 @@ public:
     inline bool  canBemanaged() {return this->ArgCount >= 0;}
     inline qint8 argCount()const{return this->ArgCount;}
     inline const QString& configPath()const{return this->ConfigPath;}
+    inline void  setIsConfigured() { this->WasConfigured = true; }
+    inline bool  wasConfigured() const {return this->WasConfigured; }
 
 protected:
     QString ConfigPath;     /**< Config path of the configurable item. Path is used to access Item by name or via configuration file */
@@ -99,6 +101,7 @@ protected:
     QString ShortHelp;      /**< (Optional) Argument structure to be shown when printing help*/
     QString LongSwitch;     /**< (Optional) Long switch to be used to configure item via program arguments*/
     qint8   ArgCount;       /**< Number of arguments for this configurable */
+    bool    WasConfigured;      /**< Indicates that value has been set by Config sources not default */
 
 private:
     QScopedPointer<Private::intfConfigurablePrivate> pPrivate;

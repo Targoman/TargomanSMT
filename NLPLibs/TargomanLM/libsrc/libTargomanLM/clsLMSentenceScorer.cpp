@@ -56,9 +56,6 @@ void clsLMSentenceScorer::reset(bool _withStartOfSentence)
 
 LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
 {
-    if (Q_LIKELY(this->pPrivate->StringBasedHistory.size() >= this->pPrivate->LM.order()))
-        this->pPrivate->StringBasedHistory.removeFirst();
-
     if (this->pPrivate->LM.getID(_word) == 0 ||
         _word == LM_BEGIN_SENTENCE ||
         _word == LM_END_SENTENCE)
@@ -66,7 +63,10 @@ LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
     else
         this->pPrivate->StringBasedHistory.append(_word);
 
-    return this->pPrivate->LM.lookupNGram(this->pPrivate->StringBasedHistory, _foundedGram);
+    LogP_t Prob = this->pPrivate->LM.lookupNGram(this->pPrivate->StringBasedHistory, _foundedGram);
+    if (Q_LIKELY(this->pPrivate->StringBasedHistory.size() >= this->pPrivate->LM.order()))
+        this->pPrivate->StringBasedHistory.removeFirst();
+    return Prob;
 }
 
 /**
@@ -77,16 +77,16 @@ LogP_t clsLMSentenceScorer::wordProb(const QString& _word, quint8& _foundedGram)
  */
 LogP_t clsLMSentenceScorer::wordProb(const WordIndex_t &_wordIndex, quint8& _foundedGram)
 {
-    if (Q_LIKELY(this->pPrivate->IndexBasedHistory.size() >= this->pPrivate->LM.order()))
-        this->pPrivate->IndexBasedHistory.removeFirst();
-
     if (_wordIndex == LM_BEGIN_SENTENCE_WINDEX ||
         _wordIndex == LM_END_SENTENCE_WINDEX)
         this->pPrivate->IndexBasedHistory.append(LM_UNKNOWN_WINDEX);
     else
         this->pPrivate->IndexBasedHistory.append(_wordIndex);
 
-    return this->pPrivate->LM.lookupNGram(this->pPrivate->IndexBasedHistory, _foundedGram);
+    LogP_t Prob = this->pPrivate->LM.lookupNGram(this->pPrivate->IndexBasedHistory, _foundedGram);
+    if (Q_LIKELY(this->pPrivate->IndexBasedHistory.size() >= this->pPrivate->LM.order()))
+        this->pPrivate->IndexBasedHistory.removeFirst();
+    return Prob;
 }
 
 LogP_t clsLMSentenceScorer::endOfSentenceProb(quint8& _foundedGram)
@@ -118,36 +118,8 @@ void clsLMSentenceScorer::initHistory(const clsLMSentenceScorer &_oldScorer)
 
 bool clsLMSentenceScorer::haveSameHistoryAs(const clsLMSentenceScorer &_oldScorer)
 {
-    int ThisElementIndex = this->pPrivate->IndexBasedHistory.size() - 1;
-    int OlderElementIndex = _oldScorer.pPrivate->IndexBasedHistory.size() - 1;
-    int i = 1;
-    while(i < this->pPrivate->LM.order() && ThisElementIndex >= 0 && OlderElementIndex >= 0) {
-        if(this->pPrivate->IndexBasedHistory.at(ThisElementIndex) !=
-                _oldScorer.pPrivate->IndexBasedHistory.at(OlderElementIndex))
-            return false;
-        ++i;
-        --ThisElementIndex;
-        --OlderElementIndex;
-    }
-    if(i < this->pPrivate->LM.order() &&
-            this->pPrivate->IndexBasedHistory.size() != _oldScorer.pPrivate->IndexBasedHistory.size())
-        return false;
-
-    ThisElementIndex = this->pPrivate->StringBasedHistory.size() - 1;
-    OlderElementIndex = _oldScorer.pPrivate->StringBasedHistory.size() - 1;
-    i = 1;
-    while(i < this->pPrivate->LM.order() && ThisElementIndex >= 0 && OlderElementIndex >= 0) {
-        if(this->pPrivate->StringBasedHistory.at(ThisElementIndex) !=
-                _oldScorer.pPrivate->StringBasedHistory.at(OlderElementIndex))
-            return false;
-        ++i;
-        --ThisElementIndex;
-        --OlderElementIndex;
-    }
-    if(i < this->pPrivate->LM.order() &&
-            this->pPrivate->StringBasedHistory.size() != _oldScorer.pPrivate->StringBasedHistory.size())
-        return false;
-    return true;
+    return (this->pPrivate->IndexBasedHistory  == _oldScorer.pPrivate->IndexBasedHistory &&
+            this->pPrivate->StringBasedHistory == _oldScorer.pPrivate->StringBasedHistory);
 }
 
 /**

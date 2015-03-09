@@ -49,7 +49,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_MODULE("OOVRemoveOnTarget", clsOOVRemoveOnTarget)
+    TARGOMAN_DEFINE_MODULE("OOVRemoveOnTarget", clsOOVRemoveOnTarget);
 };
 
 /**
@@ -77,7 +77,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_MODULE("OOVRemoveDecoding", clsOOVRemoveDecoding)
+    TARGOMAN_DEFINE_MODULE("OOVRemoveDecoding", clsOOVRemoveDecoding);
 };
 
 /**
@@ -105,7 +105,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_MODULE("OOVKeepSource", clsOOVKeepSource)
+    TARGOMAN_DEFINE_MODULE("OOVKeepSource", clsOOVKeepSource);
 };
 
 }

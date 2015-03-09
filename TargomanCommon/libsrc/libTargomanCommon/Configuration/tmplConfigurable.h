@@ -122,28 +122,43 @@ private:
 
 /***************************************************************************************/
 /**
- * @def _SPECIAL_CONFIGURABLE type specific validate and setFromVariant functions signiture.
+ * @def SPECIAL_CONFIGURABLE type specific validate and setFromVariant functions signiture.
  */
-#define _SPECIAL_CONFIGURABLE(_type) \
+#define SPECIAL_CONFIGURABLE(_type) \
     template <> bool Targoman::Common::Configuration::tmplConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
-    template <> void Targoman::Common::Configuration::tmplConfigurable<_type>::setFromVariant(const QVariant& _value);
+    template <> void Targoman::Common::Configuration::tmplConfigurable<_type>::setFromVariant(const QVariant& _value)
+
+#define ENUM_CONFIGURABLE_IMPL(_enum) \
+template <>\
+bool tmplConfigurable<_enum::Type>::validate(const QVariant& _value, QString& _errorMessage) const{\
+    if(_enum::toEnum(_value.toString().toLatin1().constData()) != _enum::Unknown)  return true; \
+    _errorMessage = "Unrecognized option: " + _value.toString() + " for: " + this->configPath(); \
+    return false; \
+} \
+template <> \
+void tmplConfigurable<_enum::Type>::setFromVariant(const QVariant& _value){ \
+    QString ErrorMessage; \
+    if (this->validate(_value, ErrorMessage)) this->Value = \
+            _enum::toEnum(_value.toString().toLatin1().constData()); \
+    else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage); \
+}
 
 /***************************************************************************************/
-_SPECIAL_CONFIGURABLE(qint8)
-_SPECIAL_CONFIGURABLE(qint16)
-_SPECIAL_CONFIGURABLE(qint32)
-_SPECIAL_CONFIGURABLE(qint64)
-_SPECIAL_CONFIGURABLE(quint8)
-_SPECIAL_CONFIGURABLE(quint16)
-_SPECIAL_CONFIGURABLE(quint32)
-_SPECIAL_CONFIGURABLE(quint64)
-_SPECIAL_CONFIGURABLE(double)
-_SPECIAL_CONFIGURABLE(float)
-_SPECIAL_CONFIGURABLE(QString)
-_SPECIAL_CONFIGURABLE(QStringList)
-_SPECIAL_CONFIGURABLE(bool)
-_SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA false) /* Used on normal regex matching */
-_SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA true) /* Used on wildcard matching */
+SPECIAL_CONFIGURABLE(qint8);
+SPECIAL_CONFIGURABLE(qint16);
+SPECIAL_CONFIGURABLE(qint32);
+SPECIAL_CONFIGURABLE(qint64);
+SPECIAL_CONFIGURABLE(quint8);
+SPECIAL_CONFIGURABLE(quint16);
+SPECIAL_CONFIGURABLE(quint32);
+SPECIAL_CONFIGURABLE(quint64);
+SPECIAL_CONFIGURABLE(double);
+SPECIAL_CONFIGURABLE(float);
+SPECIAL_CONFIGURABLE(QString);
+SPECIAL_CONFIGURABLE(QStringList);
+SPECIAL_CONFIGURABLE(bool);
+SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA false); /* Used on normal regex matching */
+SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA true); /* Used on wildcard matching */
 
 }
 }

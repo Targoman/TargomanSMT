@@ -53,7 +53,7 @@ private:
         intfFeatureFunction(this->moduleName(), true)
     {}
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/ReorderingJump", ReorderingJump)
+    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/ReorderingJump", ReorderingJump);
 
 private:
     static Common::Cost_t getJumpCost(size_t _jumpWidth) {

@@ -76,7 +76,7 @@ private:
     {}
 
     void removeWordIndex(Common::WordIndex_t _wordIndex);
-    TARGOMAN_DEFINE_SINGLETONMODULE("OOVHandler", OOVHandler)
+    TARGOMAN_DEFINE_SINGLETONMODULE("OOVHandler", OOVHandler);
 
 private:
     QHash<Common::WordIndex_t, RuleTable::clsRuleNode>            HandledOOVs;              /**< This hash, caches calculated rule nodes for each word index*/
