@@ -14,9 +14,7 @@
 #include "FStreamExtended.h"
 
 namespace Targoman {
-namespace SMT {
-namespace Private {
-namespace RuleTable{
+namespace Common {
 
 template <> void clsOFStreamExtended::write(QString _value){
     QByteArray StringData = _value.toUtf8();
@@ -30,7 +28,5 @@ template <>  QString clsIFStreamExtended::read(){
     return QString::fromUtf8(Data);
 }
 
-}
-}
 }
 }

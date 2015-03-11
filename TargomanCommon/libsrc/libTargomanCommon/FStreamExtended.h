@@ -11,17 +11,15 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_RULETABLE_FSTREAMEXTENDED_HPP
-#define TARGOMAN_CORE_PRIVATE_RULETABLE_FSTREAMEXTENDED_HPP
+#ifndef TARGOMAN_COMMON_FSTREAMEXTENDED_HPP
+#define TARGOMAN_COMMON_FSTREAMEXTENDED_HPP
 
 #include <fstream>
 #include <QString>
 #include <QMutex>
 
 namespace Targoman {
-namespace SMT {
-namespace Private {
-namespace RuleTable{
+namespace Common {
 
 class clsOFStreamExtended : public std::fstream {
 public:
@@ -74,7 +72,5 @@ template <> QString clsIFStreamExtended::read();
 
 }
 }
-}
-}
 
-#endif // TARGOMAN_CORE_PRIVATE_RULETABLE_FSTREAMEXTENDED_HPP
+#endif // TARGOMAN_COMMON_FSTREAMEXTENDED_HPP

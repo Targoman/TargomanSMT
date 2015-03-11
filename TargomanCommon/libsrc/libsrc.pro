@@ -19,14 +19,6 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Constants.h \
     libTargomanCommon/Types.h \
     libTargomanCommon/clsCmdProgressBar.h \
-    libTargomanCommon/PrefixTree/tmplAbstractFilePrefixTree.hpp \
-    libTargomanCommon/PrefixTree/tmplAbstractPrefixTree.hpp \
-    libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp \
-    libTargomanCommon/PrefixTree/tmplFullVectorPrefixTree.hpp \
-    libTargomanCommon/PrefixTree/tmplMapFilePrefixTree.hpp \
-    libTargomanCommon/PrefixTree/tmplMapPrefixTree.hpp \
-    libTargomanCommon/PrefixTree/tmplVectorFilePrefixTree.hpp \
-    libTargomanCommon/PrefixTree/tmplVectorPrefixTree.hpp \
     libTargomanCommon/HashFunctions.hpp \
     libTargomanCommon/tmplExpirableCache.hpp \
     libTargomanCommon/Configuration/intfConfigurable.hpp \
@@ -39,7 +31,9 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/CompressedStream/clsCompressedInputStream.h \
     libTargomanCommon/CompressedStream/clsCompressedOutputStream.h \
     libTargomanCommon/CompressedStream/clsCompressedStreamBuff.h \
-    libTargomanCommon/Configuration/Validators.hpp
+    libTargomanCommon/Configuration/Validators.hpp \
+    libTargomanCommon/FStreamExtended.h \
+    libTargomanCommon/tmplPrefixTree.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -54,7 +48,9 @@ SOURCES += \
     libTargomanCommon/Configuration/ConfigManager.cpp \
     libTargomanCommon/CompressedStream/clsCompressedInputStream.cpp \
     libTargomanCommon/CompressedStream/clsCompressedOutputStream.cpp \
-    libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp
+    libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp \
+    libTargomanCommon/FStreamExtended.cpp \
+    libTargomanCommon/tmplPrefixTree.cpp
 
 OTHER_FILES +=
 
