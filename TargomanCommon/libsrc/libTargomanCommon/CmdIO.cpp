@@ -13,6 +13,7 @@
 #include <QtGlobal>
 #include <QString>
 #include <link.h>
+#include "Configuration/tmplConfigurable.h"
 
 #include "Macros.h"
 #include "CmdIO.h"
@@ -22,6 +23,226 @@ typedef std::string (*delGetTargomanLibVersion)();
 namespace Targoman {
 namespace Common {
 
+using namespace Configuration;
+
+tmplConfigurable<bool> Silent(
+        "IO/Silent",
+        "Set output off",
+        false,
+        [] (const intfConfigurable&, QString&){
+            TARGOMAN_IO_SETTINGS.setSilent();
+            Logger::instance().setActive(false);
+            return true;
+        },
+        "",
+        "",
+        "io-silent",
+        enuConfigSource::Arg
+        );
+
+tmplConfigurable<bool> Full(
+        "IO/Full",
+        "Set output to full mode",
+        false,
+        [] (const intfConfigurable&, QString&){TARGOMAN_IO_SETTINGS.setFull(); return true;},
+        "",
+        "",
+        "io-full",
+        enuConfigSource::Arg
+        );
+
+tmplConfigurable<QStringList> DebugDetail(
+        "IO/DebugDetail",
+        "Set Details to be shown for debug",
+        QStringList()<<"true"<<"true"<<"true"<<"false",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toStringList();
+            if (Params.size() < 4){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            TARGOMAN_IO_SETTINGS.Debug.setDetails(QVariant(Params.at(0)).toBool(),
+                                                  QVariant(Params.at(1)).toBool(),
+                                                  QVariant(Params.at(2)).toBool(),
+                                                  QVariant(Params.at(3)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
+        "debug-details"
+        );
+
+tmplConfigurable<quint8> DebugLevel(
+        "IO/DebugLevel",
+        "Set Debug level",
+        0,
+        [] (const intfConfigurable& _item, QString&){
+            TARGOMAN_IO_SETTINGS.Debug.setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "debug-level"
+        );
+
+tmplConfigurable<QStringList> InfoDetail(
+        "IO/InfoDetail",
+        "Set Details to be shown for Info",
+        QStringList()<<"true"<<"true"<<"true"<<"false",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(" ");
+            if (Params.size() < 4){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            TARGOMAN_IO_SETTINGS.Info.setDetails(QVariant(Params.at(0)).toBool(),
+                                                 QVariant(Params.at(1)).toBool(),
+                                                 QVariant(Params.at(2)).toBool(),
+                                                 QVariant(Params.at(3)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
+        "info-details"
+        );
+
+tmplConfigurable<quint8> InfoLevel(
+        "IO/InfoLevel",
+        "Set Info level",
+        5,
+        [] (const intfConfigurable& _item, QString&){
+            TARGOMAN_IO_SETTINGS.Info.setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "info-level"
+        );
+
+tmplConfigurable<QStringList> WarningDetail(
+        "IO/WarningDetail",
+        "Set Details to be shown for Warning",
+        QStringList()<<"true"<<"true"<<"true"<<"false",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(" ");
+            if (Params.size() < 4){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            TARGOMAN_IO_SETTINGS.Warning.setDetails(QVariant(Params.at(0)).toBool(),
+                                                    QVariant(Params.at(1)).toBool(),
+                                                    QVariant(Params.at(2)).toBool(),
+                                                    QVariant(Params.at(3)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
+        "warning-details"
+        );
+
+tmplConfigurable<quint8> WarningLevel(
+        "IO/WarningLevel",
+        "Set Warning level",
+        5,
+        [] (const intfConfigurable& _item, QString&){
+            TARGOMAN_IO_SETTINGS.Warning.setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "warning-level"
+        );
+
+tmplConfigurable<QStringList> ErrorDetail(
+        "IO/ErrorDetail",
+        "Set Details to be shown for Error",
+        QStringList()<<"true"<<"true"<<"true"<<"false",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(" ");
+            if (Params.size() < 4){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            TARGOMAN_IO_SETTINGS.Error.setDetails(QVariant(Params.at(0)).toBool(),
+                                                  QVariant(Params.at(1)).toBool(),
+                                                  QVariant(Params.at(2)).toBool(),
+                                                  QVariant(Params.at(3)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
+        "error-details"
+        );
+
+tmplConfigurable<QStringList> HappyDetail(
+        "IO/HappyDetail",
+        "Set Details to be shown for Happy",
+        QStringList()<<"true"<<"true"<<"true"<<"false",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(" ");
+            if (Params.size() < 4){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            TARGOMAN_IO_SETTINGS.Happy.setDetails(QVariant(Params.at(0)).toBool(),
+                                                  QVariant(Params.at(1)).toBool(),
+                                                  QVariant(Params.at(2)).toBool(),
+                                                  QVariant(Params.at(3)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
+        "happy-details"
+        );
+
+tmplConfigurable<quint8> HappyLevel(
+        "IO/HappyLevel",
+        "Set Happy level",
+        5,
+        [] (const intfConfigurable& _item, QString&){
+            TARGOMAN_IO_SETTINGS.Happy.setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "happy-level"
+        );
+
+tmplConfigurable<QStringList> NormalDetail(
+        "IO/NormalDetail",
+        "Set Details to be shown for Normal",
+        QStringList()<<"true"<<"true"<<"true"<<"false",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(" ");
+            if (Params.size() < 4){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            TARGOMAN_IO_SETTINGS.Normal.setDetails(QVariant(Params.at(0)).toBool(),
+                                                   QVariant(Params.at(1)).toBool(),
+                                                   QVariant(Params.at(2)).toBool(),
+                                                   QVariant(Params.at(3)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
+        "normal-details"
+        );
+
+tmplConfigurable<quint8> NormalLevel(
+        "IO/NormalLevel",
+        "Set Normal level",
+        5,
+        [] (const intfConfigurable& _item, QString&){
+            TARGOMAN_IO_SETTINGS.Normal.setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "normal-level"
+        );
+
+/******************************************************************************************/
 int targomanLinkedLibrariesCallback(struct dl_phdr_info *_info, size_t _size, void *_data)
 {
     Q_UNUSED(_size)

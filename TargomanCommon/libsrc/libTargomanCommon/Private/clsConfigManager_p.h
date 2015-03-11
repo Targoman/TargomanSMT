@@ -51,6 +51,8 @@ public:
      * @brief This variable will be true if init() function of Configuration class works without any exceptions.
      */
     bool Initialized;
+
+    bool SetPathsRelativeToConfigPath;
 };
 
 }

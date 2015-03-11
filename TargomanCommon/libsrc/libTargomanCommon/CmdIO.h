@@ -203,14 +203,6 @@ public:
 
 void printLoadedLibs();
 
-/*static Configuration::tmplConfigurable<bool>    Silent;
-static Configuration::tmplConfigurable<clsOutputSettings>    OutDebugSettings;
-static Configuration::tmplConfigurable<clsOutputSettings>    OutInfoSettings;
-static Configuration::tmplConfigurable<clsOutputSettings>    outWarningSettings;
-static Configuration::tmplConfigurable<clsOutputSettings>    OutHappySettings;
-static Configuration::tmplConfigurable<clsOutputSettings>    OutErrorSettings;
-static Configuration::tmplConfigurable<clsOutputSettings>    OutNormalSettings;*/
-
 }
 }
 /********************************************************************************************

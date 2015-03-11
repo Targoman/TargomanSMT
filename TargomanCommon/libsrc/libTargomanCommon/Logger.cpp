@@ -21,16 +21,62 @@
 #include "Logger.h"
 #include "Private/Logger_p.h"
 #include "exTargomanBase.h"
+#include "Configuration/tmplConfigurable.h"
 
 namespace Targoman {
 namespace Common {
 
+using namespace Configuration;
+
+tmplConfigurable<QString> LogFile(
+        "Log/File",
+        "Log File to store logs. If not set then no log file will be generated",
+        "",
+        [] (const intfConfigurable& _item, QString&){
+            if (_item.toVariant().toString().size())
+                Logger::instance().init(_item.toVariant().toString());
+            return true;
+        },
+        "",
+        "FILE_PATH",
+        "log-file",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
+        );
+
+
+tmplConfigurable<bool> DontShow(
+        "Log/DontShow",
+        "Disable showing logs while saving",
+        false,
+        [] (const intfConfigurable&, QString&){
+            Logger::instance().setVisible(false);
+            return true;
+        },
+        "",
+        "",
+        "log-dont-show",
+        enuConfigSource::Arg
+        );
+
+tmplConfigurable<bool> Disable(
+        "Log/Disable",
+        "Disable logs",
+        false,
+        [] (const intfConfigurable&, QString&){
+            Logger::instance().setActive(false);
+            return true;
+        },
+        "",
+        "",
+        "log-disable",
+        enuConfigSource::Arg
+        );
+
+/******************************************************************************************/
 Logger* Logger::Instance = NULL;
 
-
-
 Logger::Logger(QObject *parent) :
-    QObject(parent),pPrivate(new Private::LoggerPrivate)
+    QObject(parent),pPrivate(new Targoman::Common::Private::LoggerPrivate)
 {
     this->pPrivate->LogSettings[enuLogType::Debug].setLevel(9);
     this->pPrivate->LogSettings[enuLogType::Error].setLevel(9);
@@ -65,7 +111,7 @@ void Logger::write(const QString &_actorID,
                    const QString &_message,
                    bool _newLine)
 {
-    if (this->pPrivate->LogSettings[_type].canBeShown(_level) == false)
+    if (this->isActive() == false || this->pPrivate->LogSettings[_type].canBeShown(_level) == false)
         return;
 
     QString Actor = this->pPrivate->Actors.value(_actorID);
@@ -78,7 +124,7 @@ void Logger::write(const QString &_actorID,
     LogMessage+= QString("[%1]").arg(enuLogType::toStr(_type));
     LogMessage += "[" + QString::number(_level) + "]";
 
-    LogMessage += QString("[%1] ").arg(Actor.isEmpty() ? "LOG" : Actor);
+    LogMessage += QString("[%1] ").arg(Actor.isEmpty() ? "UNREG" : Actor);
 
     if (_newLine)
         LogMessage += _message+"\n";
@@ -90,26 +136,30 @@ void Logger::write(const QString &_actorID,
                 !this->pPrivate->LogFile.isWritable())
             this->pPrivate->open();
 
-        this->pPrivate->LogFile.write(LogMessage);
+        if (this->pPrivate->LogFile.isWritable())
+            this->pPrivate->LogFile.write(LogMessage);
     }
-    switch(_type){
-    case enuLogType::Debug:
-        fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_DEBUG, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
-        break;
-    case enuLogType::Info:
-        fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_INFO, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
-        break;
-    case enuLogType::Warning:
-        fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_WARNING, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
-        break;
-    case enuLogType::Happy:
-        fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_HAPPY, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
-        break;
-    case enuLogType::Error:
-        fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_ERROR, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
-        break;
-    default:
-        break;
+
+    if (this->isVisible()){
+        switch(_type){
+        case enuLogType::Debug:
+            fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_DEBUG, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
+            break;
+        case enuLogType::Info:
+            fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_INFO, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
+            break;
+        case enuLogType::Warning:
+            fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_WARNING, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
+            break;
+        case enuLogType::Happy:
+            fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_HAPPY, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
+            break;
+        case enuLogType::Error:
+            fprintf(stderr,"%s%s%s", TARGOMAN_COLOR_ERROR, LogMessage.constData(), TARGOMAN_COLOR_NORMAL);
+            break;
+        default:
+            break;
+        }
     }
 
     if (this->pPrivate->LogFile.fileName().size()){
@@ -189,12 +239,12 @@ bool Logger::isVisible()
 
 /***************************************************************************/
 
-Private::LoggerPrivate::LoggerPrivate()
+Targoman::Common::Private::LoggerPrivate::LoggerPrivate()
 {
     this->LogSettings = new clsLogSettings[enuLogType::getCount()];
 }
 
-bool Private::LoggerPrivate::open()
+bool Targoman::Common::Private::LoggerPrivate::open()
 {
     if (this->LogFile.isOpen())
         this->LogFile.close();
@@ -208,7 +258,7 @@ bool Private::LoggerPrivate::open()
     return true;
 }
 
-void Private::LoggerPrivate::rotateLog()
+void Targoman::Common::Private::LoggerPrivate::rotateLog()
 {
     if (((quint64)this->LogFile.size() > this->MaxFileSize) ) {
         TargomanDebug(7, "Rotating Logs");

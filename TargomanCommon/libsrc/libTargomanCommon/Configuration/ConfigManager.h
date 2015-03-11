@@ -52,6 +52,7 @@ public:
     void setValue(const QString& _path, const QVariant &_value) const;
     fpModuleInstantiator_t getInstantiator(const QString& _name) const;
     QString configFilePath();
+    void updateRelativePaths(QString &_path);
 
 private:
     ConfigManager();

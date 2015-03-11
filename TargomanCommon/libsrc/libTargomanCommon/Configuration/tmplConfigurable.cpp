@@ -87,6 +87,11 @@ void tmplConfigurable<QStringList>::setFromVariant(const QVariant& _value){
     else
         throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
+template <>
+QVariant tmplConfigurable<QStringList>::toVariant() const{
+    return this->Value.join(",");
+}
+
 
 //////bool
 template <>

@@ -17,6 +17,8 @@
 #include <QString>
 #include <QVariant>
 
+#include "libTargomanCommon/Macros.h"
+
 namespace Targoman {
 namespace Common {
 namespace Configuration {
@@ -27,6 +29,12 @@ namespace Private {
 class intfConfigurablePrivate;
 }
 
+TARGOMAN_DEFINE_ENUM(enuConfigSource,
+                     Arg      = 0x01,
+                     File     = 0x02,
+                     ReadOnly = 0x04,
+                     Net      = 0x08,
+                     Virtual  = 0x10)
 /**
  * @brief This class is an interface for all kinds of configurables. Configurables are options and configurations of programs.
  *
@@ -48,7 +56,12 @@ public:
                      const QString&  _description,
                      const QString&  _shortSwitch = "",
                      const QString&  _shortHelp = "",
-                     const QString&  _longSwitch = "");
+                     const QString&  _longSwitch = "",
+                     enuConfigSource::Type _configSources =
+                        (enuConfigSource::Type)(
+                            enuConfigSource::Arg  |
+                            enuConfigSource::File |
+                            enuConfigSource::Net ));
 
     intfConfigurable(const intfConfigurable& _other);
 
@@ -88,11 +101,12 @@ public:
     inline const QString& shortSwitch()const{return this->ShortSwitch;}
     inline const QString& shortHelp()const{return this->ShortHelp;}
     inline const QString& longSwitch()const{return this->LongSwitch;}
-    inline bool  canBemanaged() {return this->ArgCount >= 0;}
+    inline bool  canBemanaged() { return testFlag(this->ConfigSources, enuConfigSource::Virtual) == false; }
     inline qint8 argCount()const{return this->ArgCount;}
     inline const QString& configPath()const{return this->ConfigPath;}
     inline void  setIsConfigured() { this->WasConfigured = true; }
     inline bool  wasConfigured() const {return this->WasConfigured; }
+    inline enuConfigSource::Type configSources() { return this->ConfigSources; }
 
 protected:
     QString ConfigPath;     /**< Config path of the configurable item. Path is used to access Item by name or via configuration file */
@@ -102,7 +116,7 @@ protected:
     QString LongSwitch;     /**< (Optional) Long switch to be used to configure item via program arguments*/
     qint8   ArgCount;       /**< Number of arguments for this configurable */
     bool    WasConfigured;      /**< Indicates that value has been set by Config sources not default */
-
+    enuConfigSource::Type  ConfigSources; /**< Indicates that from which source this item can be configured */
 private:
     QScopedPointer<Private::intfConfigurablePrivate> pPrivate;
 };

@@ -15,6 +15,7 @@
 #include <QSettings>
 #include <QFileInfo>
 #include <QSet>
+#include <QDir>
 #include <iostream>
 #include "ConfigManager.h"
 #include "Private/clsConfigManager_p.h"
@@ -24,15 +25,12 @@ namespace Common {
 namespace Configuration {
 
 ConfigManager* ConfigManager::Instance = NULL;
-
-/******************************************************************************************/
-//tmplConfigurable<QStringList>
-
 /******************************************************************************************/
 ConfigManager::ConfigManager() :
     pPrivate(new Private::clsConfigManagerPrivate)
 {
     this->pPrivate->Initialized = false;
+    this->pPrivate->SetPathsRelativeToConfigPath = true;
 }
 
 ConfigManager::~ConfigManager()
@@ -141,6 +139,9 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             }
 
             intfConfigurable* ConfigItem  = this->pPrivate->Configs[Key];
+            if (testFlag(ConfigItem->configSources(), enuConfigSource::File) == false)
+                throw exConfiguration("Configuration path <"+Key+"> can not be configured by file");
+
             QVariant Value = ConfigFile.value(Key);
             if (ConfigItem->validate(Value, ErrorMessage) == false)
                 throw exConfiguration(ErrorMessage);
@@ -169,6 +170,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             for (auto ConfigItemIter = this->pPrivate->Configs.begin();
                  ConfigItemIter != this->pPrivate->Configs.end();
                  ConfigItemIter++){
+                if (testFlag(ConfigItemIter.value()->configSources(), enuConfigSource::Arg) == false)
+                    continue;
                 if ((KeyIter->startsWith("--") && *KeyIter == "--" + ConfigItemIter.value()->longSwitch()) ||
                        *KeyIter  == "-" + ConfigItemIter.value()->shortSwitch()){
                     QString Value;
@@ -255,7 +258,7 @@ void ConfigManager::save2File(const QString &_fileName, bool _backup)
     QSettings ConfigFile(_fileName, QSettings::IniFormat);
 
     foreach (Configuration::intfConfigurable* Config, this->pPrivate->Configs.values())
-        if (Config->canBemanaged())
+        if (Config->canBemanaged() && testFlag(Config->configSources(), enuConfigSource::File))
             ConfigFile.setValue(Config->configPath(),Config->toVariant());
     ConfigFile.sync();
 }
@@ -357,6 +360,12 @@ QString ConfigManager::configFilePath()
     return this->pPrivate->ConfigFilePath;
 }
 
+void ConfigManager::updateRelativePaths(QString &_path)
+{
+    if (this->pPrivate->SetPathsRelativeToConfigPath && _path.startsWith("/"))
+        _path.insert(0, QDir().filePath(this->configFilePath()));
+}
+
 /***********************************************************************************************/
 void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
 {
@@ -365,20 +374,26 @@ void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
     std::cout<<"\t-h|--help:\t Print this help"<<std::endl;
     QStringList Keys = this->Configs.keys();
     Keys.sort();
+    QString LastModule = "";
     foreach(const QString& Key, Keys){
+        QString Module= Key.mid(0, Key.indexOf("/"));
         intfConfigurable* Item = this->Configs.value(Key);
         if (Item && (Item->shortSwitch().size() || Item->longSwitch().size())){
-            std::cout<<"\t";
+            if (Module != LastModule){
+                std::cout<<"\n**** "<<Module.toLatin1().constData()<<" ****";
+                LastModule = Module;
+            }
+            std::cout<<"\n\t";
             if(Item->shortSwitch().size())
                 std::cout<<("-" + Item->shortSwitch()).toUtf8().constData();
             if (Item->longSwitch().size()){
                 if (Item->shortSwitch().size())
                     std::cout<<"|";
-                std::cout<<Item->longSwitch().toUtf8().constData();
+                std::cout<<"--"<<Item->longSwitch().toUtf8().constData();
             }
             if (Item->shortHelp().size())
-                std::cout<<"\t"<<Item->shortHelp().toUtf8().constData()<<std::endl;
-            std::cout<<"\t\t\t"<<Item->description().toUtf8().constData()<<std::endl;
+                std::cout<<"\t"<<Item->shortHelp().toUtf8().constData();
+            std::cout<<"\n\t\t"<<Item->description().toUtf8().constData()<<std::endl;
         }
     }
 }
@@ -407,7 +422,8 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
                                    const QString &_description,
                                    const QString &_shortSwitch,
                                    const QString &_shortHelp,
-                                   const QString &_longSwitch) :
+                                   const QString &_longSwitch,
+                                   enuConfigSource::Type _configSources) :
     pPrivate(new Private::intfConfigurablePrivate)
 {
     try{
@@ -421,6 +437,7 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
             this->ConfigPath = _configPath;
         this->ArgCount = this->ShortHelp.split(" ").size();
         this->WasConfigured = false;
+        this->ConfigSources = _configSources;
 
         ConfigManager::instance().addConfig(this->ConfigPath, this);
     }catch(exTargomanBase &e){

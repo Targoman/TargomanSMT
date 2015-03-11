@@ -264,7 +264,7 @@ private:
     QScopedPointer<Targoman::Common::Private::LoggerPrivate> pPrivate;
 
     friend class Targoman::Common::Private::LoggerPrivate;
-    
+
     /*
     static Configuration::tmplConfigurable<clsLogSettings>    LogDebugSettings;
     static Configuration::tmplConfigurable<clsLogSettings>    LogInfoSettings;

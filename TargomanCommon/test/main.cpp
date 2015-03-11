@@ -36,7 +36,7 @@ static Configuration::tmplConfigurable<QString> B(
 //                                                  Configuration::Validators::tmplNumericValidator<double, -12, 5>);
 
 static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
-                                                  [](const Targoman::Common::Configuration::intfConfigurable& _item,QString& _errorMessage){
+                                                  [](const Targoman::Common::Configuration::intfConfigurable& ,QString& ){
                                                       return true;
                                                   });
 
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     Targoman::Common::printLoadedLibs();
 
     clsCmdProgressBar PB("Marquee");
-    for (int i=0;i<1000000;i++){
+    for (int i=0;i<10;i++){
         PB.setValue(i);
         usleep(10000);
     }
@@ -134,8 +134,6 @@ int main(int argc, char *argv[])
 
   //  std::function<bool(int)> Lambda = ;
     SampleLamda AAA([] (int x) {
-        const quint16 Max = 12;
-        const quint16 Min = 10;
         return x > 0; }
     );
 

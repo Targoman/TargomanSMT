@@ -52,7 +52,7 @@ public:
     QFile   LogFile;
     clsLogSettings* LogSettings;    /**< a pointer to clsLogSettings class, which specifies level of details of log files  */
     quint64 MaxFileSize;
-    bool GlobalSettings;            /**< first bit of this boolian defines whether it is active or not and second bit defines whether it is visible or not*/
+    bool GlobalSettings;            /**< first bit of this boolean defines whether it is active or not and second bit defines whether it is visible or not*/
     QMutex  mxLog;                  /**< a mutex for insuring unique access for logging outputs for safty */
     QString ActorUUID;
     QHash<QString, QString> Actors; /**< a map for registring actors. Key: actor_name, Value: actor_UUID */

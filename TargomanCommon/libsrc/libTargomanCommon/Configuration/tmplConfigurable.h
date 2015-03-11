@@ -40,12 +40,18 @@ public:
                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator,
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
-                    const QString&  _LongSwitch = "") :
+                    const QString&  _LongSwitch = "",
+                     enuConfigSource::Type _configSources =
+                        (enuConfigSource::Type)(
+                            enuConfigSource::Arg  |
+                            enuConfigSource::File |
+                            enuConfigSource::Net ) ) :
         intfConfigurable(_configPath,
                         _description,
                         _shortSwitch,
                         _shortHelp,
-                        _LongSwitch)
+                        _LongSwitch,
+                        _configSources)
     {
         try{
             QString ErrorMessage;
@@ -53,6 +59,9 @@ public:
                 throw exTargomanInitialization("Invalid default value for: " + _configPath + ": " + ErrorMessage);
             }
             this->setFromVariant(_default);
+            if (this->ShortHelp.size()){
+                this->Description.append(" (default= " + this->toVariant().toString() + " )");
+            }
             this->CrossValidator = _crossValidator;
         }catch(exTargomanBase &e){
             TargomanError(e.what());
@@ -164,6 +173,8 @@ SPECIAL_CONFIGURABLE(double);
 SPECIAL_CONFIGURABLE(float);
 SPECIAL_CONFIGURABLE(QString);
 SPECIAL_CONFIGURABLE(QStringList);
+template <> QVariant Targoman::Common::Configuration::tmplConfigurable<QStringList>::toVariant() const;
+
 SPECIAL_CONFIGURABLE(bool);
 SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA false); /* Used on normal regex matching */
 SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA true); /* Used on wildcard matching */

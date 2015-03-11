@@ -26,7 +26,7 @@ namespace Configuration {
 class clsFileBasedConfig : public intfConfigurable{
 public:
     clsFileBasedConfig(const QString&  _configPath) :
-        intfConfigurable(_configPath, "OPTIONAL_CONFIGS_IN_FILE"){
+        intfConfigurable(_configPath, "OPTIONAL_CONFIGS_IN_FILE","","","",enuConfigSource::Virtual){
         this->ArgCount = -1;
     }
 
