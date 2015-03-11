@@ -20,17 +20,17 @@
 namespace Targoman {
 namespace Common {
 
-template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 itmplTTL = 10000>
+template <template <class itmplKey, class itmplVal> class BaseContainer_t, class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 itmplTTL = 10000>
     /**
      * @brief The tmplExpirableCache class has two Maps, one for Cache and one for AccessDate.
      *
      * This class removes old items of Cache and updates access date of recently used items .
      */
-    class tmplExpirableCache
+    class tmplExpirableCache : public BaseContainer_t <itmplKey, itmplVal>
     {
     public:
-        class const_iterator:public QHash<itmplKey,itmplVal>::const_iterator
-        {};
+      /*  class const_iterator:public QHash<itmplKey,itmplVal>::const_iterator
+        {};*/
 
         tmplExpirableCache(){
             if (itmplMaxItems == 0)
@@ -40,66 +40,60 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
         }
 
         inline void insert(itmplKey _key, itmplVal _val){
-            while(this->Cache.size() >= this->MaxItems){
+            while(this->size() >= this->MaxItems){
                 QList<QTime> Values = this->KeyAccessDateTime.values();
                 qStableSort(Values);
                 QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Values.first());
 
                 foreach(itmplKey Key, ExpiredKeys){
-                    this->Cache.remove(Key);
-                    this->KeyAccessDateTime.remove(Key);
+                    this->remove(Key);
                 }
             }
 
             this->KeyAccessDateTime.insert(_key, QTime::currentTime());
-            this->Cache.insert(_key, _val);
+            this->insert(_key, _val);
         }
 
         inline void clear(){
-            this->Cache.clear();
-            this->KeysFIFO.clear();
+            BaseContainer_t<itmplKey, itmplVal>::clear();
+            this->KeyAccessDateTime.clear();
         }
 
-        inline itmplVal value(const itmplKey& _key, bool _updateAccessTime = true, const itmplVal& _defaultValue = itmplVal()){
-            if (this->Cache.contains(_key) == false)
+        inline itmplVal value(const itmplKey& _key,
+                              bool _updateAccessTime = true,
+                              const itmplVal& _defaultValue = itmplVal()){
+            if (this->contains(_key) == false)
                 return _defaultValue;
 
             if (this->TTL > 0 && QTime::currentTime().msecsTo(this->KeyAccessDateTime.value(_key)) > this->TTL){
-                this->KeyAccessDateTime.remove(_key);
-                this->Cache.remove(_key);
+                this->remove(_key);
                 return _defaultValue;
             }
             if (_updateAccessTime)
                 this->KeyAccessDateTime.insert(_key, QTime::currentTime());
-            return this->Cache.value(_key, _defaultValue);
+            return this->value(_key, _defaultValue);
         }
 
         inline itmplVal& operator[] ( const itmplKey & _key){
-            if (this->Cache.contains(_key) == false)
-                return this->Cache[_key];
+            if (this->contains(_key) == false)
+                return  BaseContainer_t<itmplKey, itmplVal>::operator [] (_key);
 
             if (this->TTL > 0 &&
                 this->KeyAccessDateTime.value(_key).elapsed() > this->TTL){
                 this->KeyAccessDateTime.remove(_key);
-                return this->Cache.take(_key);
+                return this->take(_key);
             }
 
             QTime AccessTime = QTime::currentTime();
             this->KeyAccessDateTime.insert(_key, AccessTime);
 
-            return this->Cache[_key];
+            return BaseContainer_t<itmplKey, itmplVal>::operator [] (_key);
         }
 
         inline int remove(const itmplKey& _key){
             this->KeyAccessDateTime.remove(_key);
-            return this->Cache.remove(_key);
+            return BaseContainer_t<itmplKey, itmplVal>::remove(_key);
         }
-
-        inline QList<itmplKey> keys() {  return this->Cache.keys(); }
-        inline bool contains ( const itmplKey & _key ) const { return this->Cache.contains(_key); }
-        inline const_iterator begin () const {return this->Cache.begin();}
-        inline const_iterator	end () const {return this->Cache.end();}
-        inline size_t  size(){ return this->Cache.size(); }
 
         void setMaxItems(quint32 _maxItems){ this->MaxItems = _maxItems; }
         void setTTL(quint32 _ttl){ this->TTL = _ttl; }
@@ -108,7 +102,6 @@ template <class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 
         quint32 ttl(){ return this->TTL; }
 
     private:
-        QHash<itmplKey, itmplVal >   Cache;
         QHash<itmplKey, QTime >      KeyAccessDateTime;
 
         quint32 MaxItems;

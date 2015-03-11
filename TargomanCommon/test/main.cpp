@@ -20,6 +20,7 @@
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
+#include "libTargomanCommon/tmplExpirableCache.hpp"
 
 #include <iostream>
 #include <unistd.h>
@@ -125,6 +126,9 @@ int main(int argc, char *argv[])
 {
     Targoman::Common::printLoadedLibs();
 
+    Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
+    A.clear();
+
     clsCmdProgressBar PB("Marquee");
     for (int i=0;i<10;i++){
         PB.setValue(i);
@@ -162,7 +166,7 @@ int main(int argc, char *argv[])
 
       checkOutput();
 
-      A.toVariant();
+      //A.toVariant();
 
       clsSample Sample;
 

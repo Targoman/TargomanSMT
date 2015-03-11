@@ -33,7 +33,10 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/CompressedStream/clsCompressedStreamBuff.h \
     libTargomanCommon/Configuration/Validators.hpp \
     libTargomanCommon/FStreamExtended.h \
-    libTargomanCommon/tmplPrefixTree.h
+    libTargomanCommon/PrefixTree/tmplPrefixTree.h \
+    libTargomanCommon/PrefixTree/tmplOnMemoryPrefixTreeNode.hpp \
+    libTargomanCommon/PrefixTree/tmplAbstractPrefixTreeNode.hpp \
+    libTargomanCommon/PrefixTree/tmplOnDemandPrefixTreeNode.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -50,7 +53,7 @@ SOURCES += \
     libTargomanCommon/CompressedStream/clsCompressedOutputStream.cpp \
     libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp \
     libTargomanCommon/FStreamExtended.cpp \
-    libTargomanCommon/tmplPrefixTree.cpp
+    libTargomanCommon/PrefixTree/tmplPrefixTree.cpp
 
 OTHER_FILES +=
 
