@@ -15,10 +15,9 @@
 #define TARGOMAN_CORE_PRIVATE_RULETABLE_CLSBINARYRULETABLE_H
 
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
+#include "libTargomanCommon/FStreamExtended.h"
 #include "intfRuleTable.hpp"
 #include "clsRuleNode.h"
-#include "FStreamExtended.h"
 
 namespace Targoman {
 namespace SMT {
@@ -40,7 +39,7 @@ public:
     void loadTableData();
 
 private:
-    QScopedPointer<clsIFStreamExtended> InputStream;
+    QScopedPointer<Common::clsIFStreamExtended> InputStream;
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<QString>   FilePath;            /**< File name of phrase table. */

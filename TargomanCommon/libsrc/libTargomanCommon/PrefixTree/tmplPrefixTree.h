@@ -24,39 +24,39 @@ namespace PrefixTree {
 
 template <class Key_t, class Data_t> class tmplPrefixTree {
 public:
+    typedef tmplAbstractPrefixTreeNode<Key_t, Data_t> Node_t;
+public:
     tmplPrefixTree() :
         RootNode(new tmplOnMemoryPrefixTreeNode<Key_t, Data_t>)
-    {}
-    ~tmplPrefixTree();
-
-    void readBinary(const QString& _filePath, bool _loadAll = false){
-        clsIFStreamExtended File(_filePath);
-        if (File.is_open() == false)
-            throw exPrefixTree("Unable to open "+ _filePath);
-
-        if (_loadAll)
-            this->RootNode.reset(tmplOnMemoryPrefixTreeNode<Key_t, Data_t>(File));
-        else
-            this->RootNode.reset(tmplOnDemandPrefixTreeNode<Key_t, Data_t>(File));
+    { }
+    ~tmplPrefixTree(){
+        //Just to suppress compiler Error on QScoppedPointer
     }
 
-    void writeBinary(std::ostream& _stream) const {
+    void readBinary(clsIFStreamExtended& _file, bool _loadAll = false){
+        if (_loadAll)
+            this->RootNode.reset(new tmplOnMemoryPrefixTreeNode<Key_t, Data_t>(_file));
+        else
+            this->RootNode.reset(new tmplOnDemandPrefixTreeNode<Key_t, Data_t>(_file));
+    }
+
+    inline void writeBinary(Common::clsOFStreamExtended& _stream) const {
         this->RootNode->writeBinary(_stream);
     }
 
-    tmplAbstractPrefixTreeNode<Key_t, Data_t>& getOrCreateNode(std::vector<Key_t> _path) {
+    inline tmplAbstractPrefixTreeNode<Key_t, Data_t>& getOrCreateNode(const QList<Key_t>& _path) {
         tmplAbstractPrefixTreeNode<Key_t, Data_t>& Result = *this->RootNode;
-        for(size_t i = 0; i < _path.size(); ++i)
-            Result = Result.getChildByKey(_path.at(i));
-        return *Result;
+        foreach(Key_t Key, _path)
+            Result = Result.getChildByKey(Key, true);
+        return Result;
     }
 
-    tmplAbstractPrefixTreeNode<Key_t, Data_t>& rootNode() {
+    inline tmplAbstractPrefixTreeNode<Key_t, Data_t>& rootNode() {
         return *this->RootNode;
     }
 
 private:
-    QScopedPointer<tmplAbstractPrefixTreeNode<key_t, Data_t>> RootNode;
+    QScopedPointer<tmplAbstractPrefixTreeNode<Key_t, Data_t>> RootNode;
 };
 
 }

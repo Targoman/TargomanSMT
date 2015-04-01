@@ -21,6 +21,8 @@
 #include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
 #include "libTargomanCommon/tmplExpirableCache.hpp"
+#include "libTargomanCommon/FStreamExtended.h"
+#include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
 
 #include <iostream>
 #include <unistd.h>
@@ -125,6 +127,8 @@ public:
 int main(int argc, char *argv[])
 {
     Targoman::Common::printLoadedLibs();
+
+    PrefixTree::tmplPrefixTree<WordIndex_t, QString> SamplePrefixTree;
 
     Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
     A.clear();

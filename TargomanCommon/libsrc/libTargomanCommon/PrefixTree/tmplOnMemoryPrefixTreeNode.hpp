@@ -20,14 +20,14 @@ namespace Targoman {
 namespace Common {
 namespace PrefixTree {
 
-template <class Key_t, class Data_t> class tmplOnMemoryPrefixTreeData :
+template <class Key_t, class Data_t> class tmplOnMemoryPrefixTreeNodeData :
         public tmplAbstractPrefixTreeNodeData<Key_t, Data_t> {
 public:
-    tmplOnMemoryPrefixTreeData():
+    tmplOnMemoryPrefixTreeNodeData():
         tmplAbstractPrefixTreeNodeData<Key_t, Data_t>(new QMap<Key_t, tmplAbstractPrefixTreeNode<Key_t,Data_t>>())
     {}
 
-    tmplOnMemoryPrefixTreeData(const tmplOnMemoryPrefixTreeData& _other) :
+    tmplOnMemoryPrefixTreeNodeData(const tmplOnMemoryPrefixTreeNodeData& _other) :
         tmplAbstractPrefixTreeNodeData<Key_t, Data_t>(_other)
     {}
 };
@@ -35,12 +35,13 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////
 template <class Key_t, class Data_t> class tmplOnMemoryPrefixTreeNode :
         public tmplAbstractPrefixTreeNode<Key_t, Data_t>{
+public:
     tmplOnMemoryPrefixTreeNode() :
-        tmplAbstractPrefixTreeNode<Key_t, Data_t>(new tmplOnMemoryPrefixTreeData<Key_t, Data_t>)
+        tmplAbstractPrefixTreeNode<Key_t, Data_t>(new tmplOnMemoryPrefixTreeNodeData<Key_t, Data_t>)
     { }
 
     tmplOnMemoryPrefixTreeNode(clsIFStreamExtended& _inputStream):
-        tmplAbstractPrefixTreeNode<Key_t, Data_t>(new tmplOnMemoryPrefixTreeData<Key_t, Data_t>)
+        tmplAbstractPrefixTreeNode<Key_t, Data_t>(new tmplOnMemoryPrefixTreeNodeData<Key_t, Data_t>)
     {
         //TODO LoadAll from Binary
 /*        int ChildCount = _inputStream.read<int>();

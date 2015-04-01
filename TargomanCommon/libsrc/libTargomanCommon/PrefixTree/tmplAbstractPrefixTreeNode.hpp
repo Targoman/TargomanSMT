@@ -20,6 +20,8 @@
 #include "libTargomanCommon/Types.h"
 #include "libTargomanCommon/exTargomanBase.h"
 
+typedef quint32 PosType_t;
+
 namespace Targoman {
 namespace Common {
 namespace PrefixTree {
@@ -37,10 +39,20 @@ public:
     tmplAbstractPrefixTreeNodeData(const tmplAbstractPrefixTreeNodeData& _other) :
         QSharedData(_other),
         DataNode(_other.DataNode),
-        Children(_other.Children)
+        Children(_other.Children.data())
     { }
 
-    ~tmplAbstractPrefixTreeNodeData();
+    ~tmplAbstractPrefixTreeNodeData(){
+        //Just to suppressCompiler Error on QScoppedPointer
+    }
+
+    static tmplAbstractPrefixTreeNodeData<Key_t, Data_t>*  invalidInstance() {
+        static tmplAbstractPrefixTreeNodeData<Key_t, Data_t>* Instance = NULL;
+        return (Q_LIKELY(Instance) ?
+                    Instance :
+                    (Instance = new tmplAbstractPrefixTreeNodeData<Key_t,Data_t>(
+                         new QMap<Key_t, tmplAbstractPrefixTreeNode<Key_t,Data_t>>)));
+    }
 
 public:
     Data_t DataNode;
@@ -51,27 +63,70 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////
 template <class Key_t, class Data_t> class tmplAbstractPrefixTreeNode {
 public:
+    tmplAbstractPrefixTreeNode(tmplAbstractPrefixTreeNodeData<Key_t,Data_t>* _data =
+            tmplAbstractPrefixTreeNodeData<Key_t,Data_t>::invalidInstance()) :
+        Data(_data)
+    { }
 
     tmplAbstractPrefixTreeNode(const tmplAbstractPrefixTreeNode& _other) :
         Data(_other.Data)
     { }
 
-    void writeBinary(clsOFStreamExtended& _outStream) const;
-
-    tmplAbstractPrefixTreeNode& getChildByKey(const Key_t _key) {
-        return this->Data->Children[_key];
+    void writeBinary(clsOFStreamExtended& _outStream) const{
+        PosType_t StartPosition = _outStream.tellp();
+        PosType_t NullPosition = 0;
+        _outStream.write(this->Data->Children->size());
+        for(auto Iterator = this->Data->Children->begin();
+            Iterator != this->Data->Children->end();
+            ++Iterator) {
+            _outStream.write(Iterator.key());
+            _outStream.write(NullPosition);
+        }
+        QMap<WordIndex_t, PosType_t> ChildPositions;
+        this->Data->DataNode.writeBinary(_outStream);
+        for(auto Iterator = this->Data->Children->begin();
+            Iterator != this->Data->Children->end();
+            ++Iterator) {
+            ChildPositions[Iterator.key()] = _outStream.tellp();
+            Iterator->writeBinary(_outStream);
+        }
+        PosType_t EndPosition = _outStream.tellp();
+        _outStream.seekp(StartPosition + sizeof(int), std::ios_base::beg);
+        for(auto Iterator = this->Data->Children->begin();
+            Iterator != this->Data->Children->end();
+            ++Iterator) {
+            _outStream.seekp(sizeof(WordIndex_t), std::ios_base::cur);
+            _outStream.write(ChildPositions[Iterator.key()]);
+        }
+        _outStream.seekp(EndPosition, std::ios_base::beg);
     }
 
-    Data_t& getData() {
-        return this->Data->DataNode;
+    tmplAbstractPrefixTreeNode<Key_t,Data_t>& getChildByKey(const Key_t _key, bool _detachInvalid) {
+        tmplAbstractPrefixTreeNode<Key_t,Data_t>& Node = this->Data->Children->operator [](_key);
+        if(Q_LIKELY(_detachInvalid) && Node.isInvalid())
+            Node.Data.detach();
+        return Node;
     }
 
-    virtual tmplAbstractPrefixTreeNode& follow(Key_t _key) {
-        return this->Data->Children.find(_key);
+    inline bool isInvalid() const {
+        return this->Data.data() == tmplAbstractPrefixTreeNodeData<Key_t,Data_t>::invalidInstance();
+    }
+
+    inline Data_t& getData() { return this->Data->DataNode; }
+
+    virtual tmplAbstractPrefixTreeNode<Key_t, Data_t>& follow(Key_t _key) {
+        return *this->Data->Children->find(_key);
+    }
+
+    static tmplAbstractPrefixTreeNode<Key_t, Data_t>*  invalidInstance() {
+        static tmplAbstractPrefixTreeNode<Key_t, Data_t>* Instance = NULL;
+        return (Q_LIKELY(Instance) ?
+                    Instance :
+                    (Instance = new tmplAbstractPrefixTreeNode<Key_t,Data_t>()));
     }
 
 protected:
-    QExplicitlySharedDataPointer<tmplAbstractPrefixTreeNodeData<key_t, Data_t>> Data;
+    QExplicitlySharedDataPointer<tmplAbstractPrefixTreeNodeData<Key_t, Data_t>> Data;
 };
 
 }

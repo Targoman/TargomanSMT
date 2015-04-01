@@ -17,11 +17,11 @@
 #include "libTargomanCommon/Macros.h"
 #include "Private/InputDecomposer/clsInput.h"
 #include "Private/RuleTable/clsRuleNode.h"
-#include "FStreamExtended.h"
+#include "libTargomanCommon/FStreamExtended.h"
 #include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
 
 //#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
-#include "Private/RuleTable/clsPrefixTree.h"
+#include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
 
 namespace Targoman {
 namespace SMT {
@@ -30,7 +30,7 @@ namespace RuleTable{
 
 
 //typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;
-typedef clsPrefixTree RulesPrefixTree_t;
+typedef Common::PrefixTree::tmplPrefixTree<Common::WordIndex_t, RuleTable::clsRuleNode> RulesPrefixTree_t;
 
 static const QString TARGOMAN_BINARY_RULETABLE_HEADER = "TargomanBinaryRuleTable-v0.1";
 
@@ -58,7 +58,7 @@ public:
     virtual void loadTableData() = 0;
     void saveBinaryRuleTable(const QString& _filePath){
         try{
-            clsOFStreamExtended OutStream(_filePath);
+            Common::clsOFStreamExtended OutStream(_filePath);
             //Write Bnary file header
             OutStream.write(TARGOMAN_BINARY_RULETABLE_HEADER.toLatin1().constData(),
                             TARGOMAN_BINARY_RULETABLE_HEADER.toLatin1().size());

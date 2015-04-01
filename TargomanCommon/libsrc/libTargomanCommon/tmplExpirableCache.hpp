@@ -71,7 +71,7 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
             }
             if (_updateAccessTime)
                 this->KeyAccessDateTime.insert(_key, QTime::currentTime());
-            return this->value(_key, _defaultValue);
+            return this->value(_key,false, _defaultValue);
         }
 
         inline itmplVal& operator[] ( const itmplKey & _key){

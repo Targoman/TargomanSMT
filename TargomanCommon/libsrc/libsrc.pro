@@ -52,8 +52,7 @@ SOURCES += \
     libTargomanCommon/CompressedStream/clsCompressedInputStream.cpp \
     libTargomanCommon/CompressedStream/clsCompressedOutputStream.cpp \
     libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp \
-    libTargomanCommon/FStreamExtended.cpp \
-    libTargomanCommon/PrefixTree/tmplPrefixTree.cpp
+    libTargomanCommon/FStreamExtended.cpp
 
 OTHER_FILES +=
 

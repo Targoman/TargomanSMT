@@ -15,7 +15,6 @@
 #define TARGOMAN_CORE_PRIVATE_RULETABLE_CLSJANERULETABLE_H
 
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
 #include "intfRuleTable.hpp"
 #include "clsRuleNode.h"
 

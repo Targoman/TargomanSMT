@@ -257,13 +257,13 @@ inline Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule)
  * @note                                    the prefix tree node will be created if it does not exist already
  */
 void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
-                                     const QVector<WordIndex_t> _sourcePhrase,
+                                     const QList<WordIndex_t> _sourcePhrase,
                                      const QList<WordIndex_t> _targetPhrase,
                                      const QList<Cost_t> _costs)
 {
     RuleTable::clsTargetRule TargetRule(_targetPhrase, _costs);
 
-    clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(_sourcePhrase.toStdVector())->getData();
+    clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(_sourcePhrase).getData();
     if (RuleNode.isInvalid()) {
         RuleNode.detachInvalidData();
         _ruleNodeList.append(RuleNode);
@@ -294,7 +294,7 @@ void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
     foreach(const QString& Cost, _costs)
         Costs.append(-log(Cost.toDouble()));
 
-    QVector<WordIndex_t> SourcePhrase;
+    QList<WordIndex_t> SourcePhrase;
     foreach(const QString& Word, _sourcePhrase.split(" ", QString::SkipEmptyParts)){
         WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word);
         if (WordIndex == 0 && Word != "<unk>"){
@@ -319,7 +319,7 @@ void clsMosesPlainRuleTable::addUnkToUnkRule(QList<clsRuleNode>& _ruleNodeList)
     QList<Cost_t> Costs;
     for(int i = 0; i < this->PhraseFeatureCount + this->ReorderingFeatureCount; ++i)
         Costs.append(0.0);
-    QVector<WordIndex_t> SrcUnk;
+    QList<WordIndex_t> SrcUnk;
     SrcUnk.append(0);
     QList<WordIndex_t> TgtUnk;
     TgtUnk.append(0);

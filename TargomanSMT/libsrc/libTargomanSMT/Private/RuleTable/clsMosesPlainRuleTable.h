@@ -15,7 +15,6 @@
 #define TARGOMAN_CORE_PRIVATE_RULETABLE_CLSMOSESRULETABLE_H
 
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
 #include "intfRuleTable.hpp"
 #include "clsRuleNode.h"
 
@@ -40,7 +39,7 @@ public:
 
 private:
     void addRule(QList<clsRuleNode>& _ruleNodeList,
-                 const QVector<Targoman::Common::WordIndex_t> _sourcePhrase,
+                 const QList<Common::WordIndex_t> _sourcePhrase,
                  const QList<Common::WordIndex_t> _targetPhrase,
                  const QList<Targoman::Common::Cost_t> _costs);
     void addRule(QList<clsRuleNode>& _ruleNodeList,

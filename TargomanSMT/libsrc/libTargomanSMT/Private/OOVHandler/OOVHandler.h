@@ -80,7 +80,7 @@ private:
 
 private:
     QHash<Common::WordIndex_t, RuleTable::clsRuleNode>            HandledOOVs;              /**< This hash, caches calculated rule nodes for each word index*/
-    Common::tmplExpirableCache<QString, clsExpirableOOVWord>      OOVWords;                 /**< This expirable map, cashes calculated word indices and attributes for OOV words.*/
+    Common::tmplExpirableCache<QHash, QString, clsExpirableOOVWord>      OOVWords;                 /**< This expirable map, cashes calculated word indices and attributes for OOV words.*/
     Common::WordIndex_t                                           WordIndexOffset;          /**< OOV word indices should be start from this number which is size of source vocab */
     QList<Common::WordIndex_t>                                    AvailableWordIndexes;     /**< #OOVWords removes not recently seen chashed OOVs, indices of those deleted OOVs will be stored in this variable to reuse them.*/
     QList<intfOOVHandlerModule*>                                  ActiveOOVHandlers;        /**< List of active special OOV handlers.*/

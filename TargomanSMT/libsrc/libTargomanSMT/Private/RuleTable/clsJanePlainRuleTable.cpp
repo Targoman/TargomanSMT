@@ -197,7 +197,7 @@ void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
     foreach(const QString& Cost, _phraseCosts)
         Costs.append(Cost.toDouble());
 
-    QVector<WordIndex_t> SourcePhrase;
+    QList<WordIndex_t> SourcePhrase;
     foreach(const QString& Word, _allFields[janeFormatSourcePosition].split(" ", QString::SkipEmptyParts)){
         WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word);
         if (WordIndex == 0 && Word != "<unknown-word>"){
@@ -220,7 +220,7 @@ void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
 
     clsTargetRule TargetRule(TargetPhrase, Costs);
 
-    clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(SourcePhrase.toStdVector())->getData();
+    clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(SourcePhrase).getData();
     if(RuleNode.isInvalid())
         RuleNode.detachInvalidData();
     RuleNode.targetRules().append(TargetRule);

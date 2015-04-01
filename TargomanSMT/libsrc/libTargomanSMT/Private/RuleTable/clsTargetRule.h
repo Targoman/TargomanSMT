@@ -17,7 +17,7 @@
 #include <QList>
 #include "libTargomanCommon/Types.h"
 #include "libTargomanSMT/Types.h"
-#include "FStreamExtended.h"
+#include "libTargomanCommon/FStreamExtended.h"
 
 #ifdef TARGOMAN_SHOW_DEBUG
 #include <QTextStream>
@@ -62,8 +62,8 @@ public:
     ~clsTargetRule(){}
 
     // Following functions are needed for the binary input/output
-    void readBinary(clsIFStreamExtended &_input);
-    void writeBinary(clsOFStreamExtended &_output) const;
+    void readBinary(Common::clsIFStreamExtended &_input);
+    void writeBinary(Common::clsOFStreamExtended &_output) const;
 
 
     inline clsTargetRule& operator = (const clsTargetRule& _other) {
