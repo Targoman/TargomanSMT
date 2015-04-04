@@ -55,12 +55,16 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
                                                *(QTextStream(&Buffer)<<_message).string());\
 }
 
-#define TargomanLogDebug(_level, _message) {\
-    QString Buffer; \
-    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, \
-                                               _level,\
-                                               *(QTextStream(&Buffer)<<_message).string());\
-}
+#if TARGOMAN_SHOW_DEBUG
+    #define TargomanLogDebug(_level, _message) {\
+        QString Buffer; \
+        Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, \
+                                                   _level,\
+                                                   *(QTextStream(&Buffer)<<_message).string());\
+    }
+#else
+    #define TargomanLogDebug(_level, _message) {}
+#endif //TARGOMAN_SHOW_DEBUG
 
 #define TargomanLogHappy(_level, _message) {\
     QString Buffer; \

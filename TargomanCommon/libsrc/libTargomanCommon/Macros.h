@@ -39,7 +39,6 @@
  * Helper Macros (Macro in Macro) These macros must be used jusrt in other macros
  ********************************************************************************************/
 
-#define TARGOMAN_MINCLUDE #include
 #define TARGOMAN_M2CONCAT(_Arg1, _Arg2) _Arg1##_Arg2
 #define TARGOMAN_M3CONCAT(_Arg1, _Arg2, _Arg3) _Arg1##_Arg2##_Arg3
 #define TARGOMAN_M4CONCAT(_Arg1, _Arg2, _Arg3, _Arg4) _Arg1##_Arg2##_Arg3##_Arg4
@@ -75,8 +74,6 @@
     _fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,  \
     _fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Multi,_fn##Single, None)
 
-#define TARGOMAN_MACRO_ARG_FIRST(_arg, ...) _arg
-#define TARGOMAN_MACRO_ARG_REST(_arg, ...) __VA_ARGS__
 // Following definition is used in complex templates where a template is instantiating other templates which needs comma
 #define TARGOMAN_VIRTUAL_COMMA() ,
 
@@ -182,9 +179,7 @@
     namespace _name{ enum Type { \
         __VA_ARGS__ \
       }; \
-      inline static int getCount(){ return -1; } \
-      inline static const char* toStr(Type) { return "Unknown"; } \
-      inline static Type toEnum(const char*) { return (Type)-1; toEnum(""); }\
+      inline static int getCount(){ return TARGOMAN_MACRO_ARG_COUNT(__VA_ARGS__); } \
     }\
     inline bool testFlag(_name::Type _key, _name::Type _check)  {return (_key & _check) == _check;}
 

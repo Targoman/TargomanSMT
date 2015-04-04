@@ -79,7 +79,7 @@ public:
     }
 
     //Modified version of MurmurHash3 to work on list of integers
-    static quint64 murmurHash64(QList<Common::WordIndex_t> _data, int _level = 0){
+    static quint64 murmurHash64(const QList<Common::WordIndex_t>& _data, int _level = 0){
         const quint64 Constant1 = 0xc6a4a7935bd1e995LLU;
         const int Remain1 = 47;
 
