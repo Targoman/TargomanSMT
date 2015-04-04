@@ -138,8 +138,13 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
         return false;
 
     foreach(FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions.values())
-        if (FF->nodesHaveSameState(*this, _node) == false)
+        if (FF->nodesHaveSameState(*this, _node) == false){
+            // Torabzadeh
+            int a = 2;
+            a++;
             return false;
+        }
+
 
     if (Q_UNLIKELY(_node.coverage() != this->coverage()))
         return false;

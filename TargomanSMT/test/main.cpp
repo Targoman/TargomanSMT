@@ -99,11 +99,13 @@ int main(int argc, char *argv[])
         Stream.setCodec("UTF-8");
         File.open(QFile::ReadOnly);
 
+        int LineNumber = 0;
+
         while(Stream.atEnd() == false)
         {
             clsTranslator MyTranslator(Stream.readLine());
             std::cout << MyTranslator.translate(true).Translation.toStdString() << std::endl;
-            printMemoryUsage("after translate");
+            printMemoryUsage(QString::number(++LineNumber) + ": after translate");
         }
 
     }catch(exTargomanBase& e){

@@ -170,6 +170,20 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
     return 0;
 }
 
+bool LexicalReordering::nodesHaveSameState(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
+{
+    if(_first.prevNode().isInvalid() && _second.prevNode().isInvalid())
+        return true;
+    for(int Orientation = enuLexicalReorderingFields::ForwardMonotone;
+        Orientation <= enuLexicalReorderingFields::ForwardDiscontinous;
+        ++Orientation) {
+        if(_first.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation)) !=
+                _second.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation)))
+            return false;
+    }
+    return true;
+}
+
 /**
  * @brief LexicalReordering::getBackwardOreientation Checks whether orientation of input search graph node is "Backward Monotone", "Backward Swap" or "Backward Discontinous"
  * @param _newHypothesisNode input search graph node.

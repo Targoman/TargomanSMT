@@ -56,9 +56,23 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
  */
 bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
+
+
+
+
     size_t InsertionPos = this->Data->Nodes.size();
     for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
         clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
+        // Torabzadeh
+        if(HypoNode.targetRule().toStr() == "communication" &&
+            HypoNode.prevNode().targetRule().toStr() == "A fax" &&
+            _node.targetRule().toStr() == "communication" &&
+            _node.prevNode().targetRule().toStr() == "fax" &&
+            _node.coverage() == "00001100000000000")
+        {
+            int a =90;
+            a++;
+        }
         if (HypoNode.haveSameFuture(_node)){
             if (clsLexicalHypothesisContainer::KeepRecombined.value()){
                 HypoNode.recombine(_node);

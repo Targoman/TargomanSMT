@@ -56,6 +56,8 @@ public:
                                       unsigned _sourceEnd,
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
+    bool nodesHaveSameState(const SearchGraph::clsSearchGraphNode &_first, const SearchGraph::clsSearchGraphNode &_second) const;
+
 private:
     LexicalReordering():
         intfFeatureFunction(this->moduleName(), false)

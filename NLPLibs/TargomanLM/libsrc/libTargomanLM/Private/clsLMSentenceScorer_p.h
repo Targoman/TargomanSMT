@@ -38,7 +38,7 @@ public:
     const clsLanguageModel&    LM;     				/**< An instance of  clsLanguageModel class */
     QStringList                StringBasedHistory;  /**< History of seen words */
     QList<Common::WordIndex_t> IndexBasedHistory;	/**< History of seen indices */
-    int                        FoundedGram;
+    quint8                     FoundedGram;
 };
 
 }
