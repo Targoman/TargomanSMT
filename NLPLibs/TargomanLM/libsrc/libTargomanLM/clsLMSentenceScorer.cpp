@@ -133,11 +133,11 @@ bool clsLMSentenceScorer::haveSameHistoryAs(const clsLMSentenceScorer &_oldScore
         return false;
 
     if(this->pPrivate->IndexBasedHistory.size()){
-        for(int i=0; i< MyEffectiveLenght; ++i)
+        for(size_t i=0; i< MyEffectiveLenght; ++i)
             if(this->pPrivate->IndexBasedHistory.at(i) != _oldScorer.pPrivate->IndexBasedHistory.at(i))
                 return false;
     }else{
-        for(int i=0; i< MyEffectiveLenght; ++i)
+        for(size_t i=0; i< MyEffectiveLenght; ++i)
             if(this->pPrivate->StringBasedHistory.at(i) != _oldScorer.pPrivate->StringBasedHistory.at(i))
                 return false;
     }

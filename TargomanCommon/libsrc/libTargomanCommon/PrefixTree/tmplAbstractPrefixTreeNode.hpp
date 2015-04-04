@@ -20,7 +20,7 @@
 #include "libTargomanCommon/Types.h"
 #include "libTargomanCommon/exTargomanBase.h"
 
-typedef quint32 PosType_t;
+typedef quint64 PosType_t;
 
 namespace Targoman {
 namespace Common {
@@ -32,6 +32,12 @@ template<class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode;
 
 template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNodeData : public QSharedData {
 public:
+    tmplAbstractPrefixTreeNodeData():
+        Children(
+            new QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>
+            )
+    { }
+
     tmplAbstractPrefixTreeNodeData(QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>* _children):
         Children(_children)
     { }
@@ -42,26 +48,39 @@ public:
         Children(_other.Children.data())
     { }
 
-    ~tmplAbstractPrefixTreeNodeData(){
-        //Just to suppressCompiler Error on QScoppedPointer
+    virtual ~tmplAbstractPrefixTreeNodeData(){
+    }
+
+    static tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>* invalidInstance() {
+        static tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>* Instance = NULL;
+        return (Q_LIKELY(Instance) ?
+                    Instance :
+                    (Instance = new tmplAbstractPrefixTreeNodeData<itmplKey_t,itmplData_t>));
     }
 
 public:
     itmplData_t DataNode;
-    QScopedPointer<QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>> Children;
     //Defined as pointer to be overridable
+    QScopedPointer<QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>> Children;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
 template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode {
 public:
-    tmplAbstractPrefixTreeNode(tmplAbstractPrefixTreeNodeData<itmplKey_t,itmplData_t>* _data = NULL) :
+    tmplAbstractPrefixTreeNode() :
+        Data(tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>::invalidInstance())
+    { }
+
+    tmplAbstractPrefixTreeNode(tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>* _data) :
         Data(_data)
     { }
 
     tmplAbstractPrefixTreeNode(const tmplAbstractPrefixTreeNode& _other) :
         Data(_other.Data)
     { }
+
+    virtual ~tmplAbstractPrefixTreeNode()
+    {}
 
     void writeBinary(clsOFStreamExtended& _outStream) const{
         PosType_t StartPosition = _outStream.tellp();
@@ -95,25 +114,34 @@ public:
     tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getChildByKey(const itmplKey_t _key, bool _detachInvalid) {
         tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& Node = this->Data->Children->operator [](_key);
         if(Q_LIKELY(_detachInvalid) && Node.isInvalid())
-            Node.Data.detach();
+            Node.detachInvalidData();
         return Node;
     }
 
     inline bool isInvalid() const {
-        return this->Data.constData() == NULL;
+        return (this->Data.constData() == tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>::invalidInstance());
     }
 
     inline itmplData_t& getData() { return this->Data->DataNode; }
 
+
     virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
-        return *this->Data->Children->find(_key);
+        auto Iter = this->Data->Children->find(_key);
+        if(Iter == this->Data->Children->end())
+            return tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
+        else
+            return *Iter;
     }
 
-    static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>*  invalidInstance() {
+    static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& invalidInstance() {
         static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>* Instance = NULL;
-        return (Q_LIKELY(Instance) ?
+        return *(Q_LIKELY(Instance) ?
                     Instance :
                     (Instance = new tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>()));
+    }
+
+    virtual void detachInvalidData(){
+        this->Data.detach();
     }
 
 protected:

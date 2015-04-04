@@ -40,9 +40,9 @@ public:
         tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>)
     { }
 
-    tmplOnMemoryPrefixTreeNode(clsIFStreamExtended& _inputStream):
-        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>)
+    void loadBinary(clsIFStreamExtended& _inputStream)
     {
+        Q_UNUSED(_inputStream);
         //TODO LoadAll from Binary
 /*        int ChildCount = _inputStream.read<int>();
         for(int i = 0; i < ChildCount; ++i) {
@@ -60,6 +60,22 @@ public:
         }*/
 
     }
+
+    inline static tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* createRootNode(clsIFStreamExtended& _inputStream) {
+        tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* Root = createRootNode();
+        Root->loadBinary(_inputStream);
+        return Root;
+    }
+
+    inline static tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* createRootNode() {
+        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
+        tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* Root = new
+                tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>;
+        Root->Data->ref.ref();
+        Root->detachInvalidData();
+        return Root;
+    }
+
 };
 
 }

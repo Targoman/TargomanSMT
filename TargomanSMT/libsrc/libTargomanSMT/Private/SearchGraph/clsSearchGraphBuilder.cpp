@@ -94,15 +94,15 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
     clsSearchGraphBuilder::pRuleTable->loadTableData();
     clsSearchGraphBuilder::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 
-    RulesPrefixTree_t::Node_t& Node = clsSearchGraphBuilder::pRuleTable->getPrefixTree().rootNode();
-    if(Node.isInvalid())
+    RulesPrefixTree_t::Node_t* Node = &clsSearchGraphBuilder::pRuleTable->getPrefixTree().rootNode();
+    if(Node->isInvalid())
         throw exSearchGraph("Invalid empty Rule Table");
 
-    Node = Node.follow(0); //Search for UNKNOWN word Index
-    if (Node.isInvalid())
+    Node = &Node->follow(0); //Search for UNKNOWN word Index
+    if (Node->isInvalid())
         throw exSearchGraph("No Rule defined for UNKNOWN word");
 
-    clsSearchGraphBuilder::UnknownWordRuleNode = new clsRuleNode(Node.getData());
+    clsSearchGraphBuilder::UnknownWordRuleNode = new clsRuleNode(Node->getData());
 }
 
 /**
@@ -115,12 +115,12 @@ void clsSearchGraphBuilder::collectPhraseCandidates()
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseCandidateCollections.append(QVector<clsPhraseCandidateCollection>(this->Data->Sentence.size() - FirstPosition));
-        RulesPrefixTree_t::Node_t& PrevNode = this->pRuleTable->getPrefixTree().rootNode();
+        RulesPrefixTree_t::Node_t* PrevNode = &this->pRuleTable->getPrefixTree().rootNode();
 
         if(true /* On 1-grams */)
         {
-            PrevNode = PrevNode.follow(this->Data->Sentence.at(FirstPosition).wordIndex());
-            if (PrevNode.isInvalid()){
+            PrevNode = &PrevNode->follow(this->Data->Sentence.at(FirstPosition).wordIndex());
+            if (PrevNode->isInvalid()){
                 clsRuleNode OOVRuleNode =
                         OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
                 if (OOVRuleNode.isInvalid())
@@ -128,23 +128,23 @@ void clsSearchGraphBuilder::collectPhraseCandidates()
                 else
                     this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, OOVRuleNode);
             }else
-                this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, PrevNode.getData());
+                this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, PrevNode->getData());
 
             if (this->Data->PhraseCandidateCollections[FirstPosition][0].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality, 1);
 
-            if (PrevNode.isInvalid())
+            if (PrevNode->isInvalid())
                 continue;
         }
 
         //Max PhraseTable order will be implicitly checked by follow
         for (size_t LastPosition = FirstPosition + 1; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
-            PrevNode = PrevNode.follow(this->Data->Sentence.at(LastPosition).wordIndex());
+            PrevNode = &PrevNode->follow(this->Data->Sentence.at(LastPosition).wordIndex());
 
-            if (PrevNode.isInvalid())
+            if (PrevNode->isInvalid())
                 break; // appending next word breaks phrase lookup
 
-            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, PrevNode.getData());
+            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, PrevNode->getData());
             if (this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
                 this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                       (int)(LastPosition - FirstPosition + 1));

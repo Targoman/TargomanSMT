@@ -40,7 +40,7 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         }
 
         inline void insert(itmplKey _key, itmplVal _val){
-            while(this->size() >= this->MaxItems){
+            while(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
                 QList<QTime> Values = this->KeyAccessDateTime.values();
                 qStableSort(Values);
                 QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Values.first());
@@ -51,7 +51,7 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
             }
 
             this->KeyAccessDateTime.insert(_key, QTime::currentTime());
-            this->insert(_key, _val);
+            BaseContainer_t<itmplKey, itmplVal>::insert(_key, _val);
         }
 
         inline void clear(){
@@ -62,7 +62,7 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         inline itmplVal value(const itmplKey& _key,
                               bool _updateAccessTime = true,
                               const itmplVal& _defaultValue = itmplVal()){
-            if (this->contains(_key) == false)
+            if (BaseContainer_t<itmplKey, itmplVal>::contains(_key) == false)
                 return _defaultValue;
 
             if (this->TTL > 0 && QTime::currentTime().msecsTo(this->KeyAccessDateTime.value(_key)) > this->TTL){
@@ -71,17 +71,17 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
             }
             if (_updateAccessTime)
                 this->KeyAccessDateTime.insert(_key, QTime::currentTime());
-            return this->value(_key,false, _defaultValue);
+            return BaseContainer_t<itmplKey, itmplVal>::value(_key);
         }
 
         inline itmplVal& operator[] ( const itmplKey & _key){
-            if (this->contains(_key) == false)
+            if (BaseContainer_t<itmplKey, itmplVal>::contains(_key) == false)
                 return  BaseContainer_t<itmplKey, itmplVal>::operator [] (_key);
 
             if (this->TTL > 0 &&
                 this->KeyAccessDateTime.value(_key).elapsed() > this->TTL){
                 this->KeyAccessDateTime.remove(_key);
-                return this->take(_key);
+                return BaseContainer_t<itmplKey, itmplVal>::take(_key);
             }
 
             QTime AccessTime = QTime::currentTime();

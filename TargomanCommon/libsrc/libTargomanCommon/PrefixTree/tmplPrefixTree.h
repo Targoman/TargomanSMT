@@ -27,17 +27,18 @@ public:
     typedef tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> Node_t;
 public:
     tmplPrefixTree() :
-        RootNode(new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>)
+        RootNode(tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>::createRootNode())
     { }
+
     ~tmplPrefixTree(){
         //Just to suppress compiler Error on QScoppedPointer
     }
 
     void readBinary(clsIFStreamExtended& _file, bool _loadAll = false){
         if (_loadAll)
-            this->RootNode.reset(new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_file));
+            this->RootNode.reset(tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>::createRootNode(_file));
         else
-            this->RootNode.reset(new tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>(_file));
+            this->RootNode.reset(tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>::createRootNode(_file));
     }
 
     inline void writeBinary(Common::clsOFStreamExtended& _stream) const {
@@ -45,10 +46,10 @@ public:
     }
 
     inline tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& getOrCreateNode(const QList<itmplKey_t>& _path) {
-        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& Result = *this->RootNode;
+        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>* Result = this->RootNode.data();
         foreach(itmplKey_t Key, _path)
-            Result = Result.getChildByKey(Key, true);
-        return Result;
+            Result = &Result->getChildByKey(Key, true);
+        return *Result;
     }
 
     inline tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& rootNode() {
