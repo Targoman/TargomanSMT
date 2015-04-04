@@ -25,6 +25,8 @@ typedef quint32 PosType_t;
 
 //TODO configure cache
 
+template<class Key_t, class Data_t> class tmplOnDemandPrefixTreeNode;
+
 template <class Key_t, class Data_t> class tmplOnDemandPrefixTreeNodeData :
         public tmplAbstractPrefixTreeNodeData<Key_t, Data_t> {
 public:
@@ -49,15 +51,16 @@ public:
 };
 /////////////////////////////////////////////////////////////////////////////////////
 
-template <class Key_t, class Data_t> class tmplOnDemandPrefixTreeNode :
-        public tmplAbstractPrefixTreeNode<Key_t, Data_t>{
+template <class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNode :
+        public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>{
 public:
     tmplOnDemandPrefixTreeNode(clsIFStreamExtended& _inputStream):
-        tmplAbstractPrefixTreeNode<Key_t, Data_t>(
-            tmplOnDemandPrefixTreeNodeData<Key_t,Data_t>::invalidInstance())
+        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>(
+            tmplOnDemandPrefixTreeNodeData<itmplKey_t,itmplData_t>::invalidInstance())
     {
-        tmplOnDemandPrefixTreeNodeData<Key_t, Data_t>* PrivData =
-                ((tmplOnDemandPrefixTreeNodeData<Key_t, Data_t>*)this->Data.data());
+
+        tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>* PrivData =
+                ((tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>*)this->Data.data());
 
         int ChildCount = _inputStream.read<int>();
         for(int i = 0; i < ChildCount; ++i) {
@@ -68,7 +71,7 @@ public:
         this->Data->DataNode.readBinary(PrivData->InputStream);
     }
 
-    virtual tmplAbstractPrefixTreeNode<Key_t, Data_t>& follow(Key_t _key) {
+    virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
         auto Iterator = this->Data->Children->find(_key);
         if(Iterator == this->Data->Children->end())
             return loadChildFromDisk(_key);
@@ -76,18 +79,18 @@ public:
             return *Iterator;
     }
 
-    tmplAbstractPrefixTreeNode<Key_t, Data_t>& loadChildFromDisk(Key_t _key){
-        tmplOnDemandPrefixTreeNodeData<Key_t, Data_t>* PrivData =
-                ((tmplOnDemandPrefixTreeNodeData<Key_t, Data_t>*)this->Data.data());
+    tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& loadChildFromDisk(itmplKey_t _key){
+        tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>* PrivData =
+                ((tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>*)this->Data.data());
 
         auto PositonIterator = PrivData->ChildPositionInStream.find(_key);
         if(PositonIterator == PrivData->ChildPositionInStream.end())
-            return *tmplAbstractPrefixTreeNode<Key_t, Data_t>::invalidInstance();
+            return *tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
         PrivData->InputStream.lock();
         PrivData->InputStream.seekg(*PositonIterator, std::ios_base::beg);
         auto Iterator = PrivData->Children->insert(
                     _key,
-                    tmplOnDemandPrefixTreeNode<Key_t, Data_t>(PrivData->InputStream)
+                    tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>(PrivData->InputStream)
                     );
         PrivData->InputStream.unlock();
         return *Iterator;

@@ -56,7 +56,7 @@ tmplConfigurable<QStringList> DebugDetail(
         "Set Details to be shown for debug",
         QStringList()<<"true"<<"true"<<"true"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            QStringList Params = _item.toVariant().toStringList();
+            QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
                 _errorMessage = "Invalid count of arguments for " + _item.configPath();
                 return false;
@@ -90,7 +90,7 @@ tmplConfigurable<QStringList> InfoDetail(
         "Set Details to be shown for Info",
         QStringList()<<"true"<<"true"<<"true"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            QStringList Params = _item.toVariant().toString().split(" ");
+            QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
                 _errorMessage = "Invalid count of arguments for " + _item.configPath();
                 return false;
@@ -124,7 +124,7 @@ tmplConfigurable<QStringList> WarningDetail(
         "Set Details to be shown for Warning",
         QStringList()<<"true"<<"true"<<"true"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            QStringList Params = _item.toVariant().toString().split(" ");
+            QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
                 _errorMessage = "Invalid count of arguments for " + _item.configPath();
                 return false;
@@ -158,7 +158,7 @@ tmplConfigurable<QStringList> ErrorDetail(
         "Set Details to be shown for Error",
         QStringList()<<"true"<<"true"<<"true"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            QStringList Params = _item.toVariant().toString().split(" ");
+            QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
                 _errorMessage = "Invalid count of arguments for " + _item.configPath();
                 return false;
@@ -179,7 +179,7 @@ tmplConfigurable<QStringList> HappyDetail(
         "Set Details to be shown for Happy",
         QStringList()<<"true"<<"true"<<"true"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            QStringList Params = _item.toVariant().toString().split(" ");
+            QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
                 _errorMessage = "Invalid count of arguments for " + _item.configPath();
                 return false;
@@ -213,7 +213,7 @@ tmplConfigurable<QStringList> NormalDetail(
         "Set Details to be shown for Normal",
         QStringList()<<"true"<<"true"<<"true"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            QStringList Params = _item.toVariant().toString().split(" ");
+            QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
                 _errorMessage = "Invalid count of arguments for " + _item.configPath();
                 return false;

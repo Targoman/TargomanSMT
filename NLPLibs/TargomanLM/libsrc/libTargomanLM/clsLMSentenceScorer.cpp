@@ -126,8 +126,8 @@ bool clsLMSentenceScorer::haveSameHistoryAs(const clsLMSentenceScorer &_oldScore
         this->pPrivate->StringBasedHistory == _oldScorer.pPrivate->StringBasedHistory)
         return true;
 
-    size_t MyEffectiveLenght = qMin(this->pPrivate->FoundedGram, this->pPrivate->LM.order() - 1);
-    size_t OtherEffectiveLenght = qMin(_oldScorer.pPrivate->FoundedGram, _oldScorer.pPrivate->LM.order() - 1);
+    size_t MyEffectiveLenght = qMin(this->pPrivate->FoundedGram, (quint8)(this->pPrivate->LM.order() - 1));
+    size_t OtherEffectiveLenght = qMin(_oldScorer.pPrivate->FoundedGram, (quint8)(_oldScorer.pPrivate->LM.order() - 1));
 
     if (MyEffectiveLenght != OtherEffectiveLenght)
         return false;

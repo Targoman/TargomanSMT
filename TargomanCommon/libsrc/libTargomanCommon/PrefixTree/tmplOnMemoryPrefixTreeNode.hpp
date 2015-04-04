@@ -20,28 +20,28 @@ namespace Targoman {
 namespace Common {
 namespace PrefixTree {
 
-template <class Key_t, class Data_t> class tmplOnMemoryPrefixTreeNodeData :
-        public tmplAbstractPrefixTreeNodeData<Key_t, Data_t> {
+template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNodeData :
+        public tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t> {
 public:
     tmplOnMemoryPrefixTreeNodeData():
-        tmplAbstractPrefixTreeNodeData<Key_t, Data_t>(new QMap<Key_t, tmplAbstractPrefixTreeNode<Key_t,Data_t>>())
+        tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>(new QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>())
     {}
 
     tmplOnMemoryPrefixTreeNodeData(const tmplOnMemoryPrefixTreeNodeData& _other) :
-        tmplAbstractPrefixTreeNodeData<Key_t, Data_t>(_other)
+        tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>(_other)
     {}
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
-template <class Key_t, class Data_t> class tmplOnMemoryPrefixTreeNode :
-        public tmplAbstractPrefixTreeNode<Key_t, Data_t>{
+template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNode :
+        public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>{
 public:
     tmplOnMemoryPrefixTreeNode() :
-        tmplAbstractPrefixTreeNode<Key_t, Data_t>(new tmplOnMemoryPrefixTreeNodeData<Key_t, Data_t>)
+        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>)
     { }
 
     tmplOnMemoryPrefixTreeNode(clsIFStreamExtended& _inputStream):
-        tmplAbstractPrefixTreeNode<Key_t, Data_t>(new tmplOnMemoryPrefixTreeNodeData<Key_t, Data_t>)
+        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>)
     {
         //TODO LoadAll from Binary
 /*        int ChildCount = _inputStream.read<int>();

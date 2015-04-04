@@ -28,11 +28,11 @@ namespace PrefixTree {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exPrefixTree, exTargomanBase);
 
-template<class Key_t, class Data_t> class tmplAbstractPrefixTreeNode;
+template<class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode;
 
-template <class Key_t, class Data_t> class tmplAbstractPrefixTreeNodeData : public QSharedData {
+template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNodeData : public QSharedData {
 public:
-    tmplAbstractPrefixTreeNodeData(QMap<Key_t, tmplAbstractPrefixTreeNode<Key_t,Data_t>>* _children):
+    tmplAbstractPrefixTreeNodeData(QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>* _children):
         Children(_children)
     { }
 
@@ -46,25 +46,16 @@ public:
         //Just to suppressCompiler Error on QScoppedPointer
     }
 
-    static tmplAbstractPrefixTreeNodeData<Key_t, Data_t>*  invalidInstance() {
-        static tmplAbstractPrefixTreeNodeData<Key_t, Data_t>* Instance = NULL;
-        return (Q_LIKELY(Instance) ?
-                    Instance :
-                    (Instance = new tmplAbstractPrefixTreeNodeData<Key_t,Data_t>(
-                         new QMap<Key_t, tmplAbstractPrefixTreeNode<Key_t,Data_t>>)));
-    }
-
 public:
-    Data_t DataNode;
-    QScopedPointer<QMap<Key_t, tmplAbstractPrefixTreeNode<Key_t,Data_t>>> Children;
+    itmplData_t DataNode;
+    QScopedPointer<QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>> Children;
     //Defined as pointer to be overridable
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
-template <class Key_t, class Data_t> class tmplAbstractPrefixTreeNode {
+template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode {
 public:
-    tmplAbstractPrefixTreeNode(tmplAbstractPrefixTreeNodeData<Key_t,Data_t>* _data =
-            tmplAbstractPrefixTreeNodeData<Key_t,Data_t>::invalidInstance()) :
+    tmplAbstractPrefixTreeNode(tmplAbstractPrefixTreeNodeData<itmplKey_t,itmplData_t>* _data = NULL) :
         Data(_data)
     { }
 
@@ -101,32 +92,32 @@ public:
         _outStream.seekp(EndPosition, std::ios_base::beg);
     }
 
-    tmplAbstractPrefixTreeNode<Key_t,Data_t>& getChildByKey(const Key_t _key, bool _detachInvalid) {
-        tmplAbstractPrefixTreeNode<Key_t,Data_t>& Node = this->Data->Children->operator [](_key);
+    tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getChildByKey(const itmplKey_t _key, bool _detachInvalid) {
+        tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& Node = this->Data->Children->operator [](_key);
         if(Q_LIKELY(_detachInvalid) && Node.isInvalid())
             Node.Data.detach();
         return Node;
     }
 
     inline bool isInvalid() const {
-        return this->Data.data() == tmplAbstractPrefixTreeNodeData<Key_t,Data_t>::invalidInstance();
+        return this->Data.constData() == NULL;
     }
 
-    inline Data_t& getData() { return this->Data->DataNode; }
+    inline itmplData_t& getData() { return this->Data->DataNode; }
 
-    virtual tmplAbstractPrefixTreeNode<Key_t, Data_t>& follow(Key_t _key) {
+    virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
         return *this->Data->Children->find(_key);
     }
 
-    static tmplAbstractPrefixTreeNode<Key_t, Data_t>*  invalidInstance() {
-        static tmplAbstractPrefixTreeNode<Key_t, Data_t>* Instance = NULL;
+    static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>*  invalidInstance() {
+        static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>* Instance = NULL;
         return (Q_LIKELY(Instance) ?
                     Instance :
-                    (Instance = new tmplAbstractPrefixTreeNode<Key_t,Data_t>()));
+                    (Instance = new tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>()));
     }
 
 protected:
-    QExplicitlySharedDataPointer<tmplAbstractPrefixTreeNodeData<Key_t, Data_t>> Data;
+    QExplicitlySharedDataPointer<tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>> Data;
 };
 
 }
