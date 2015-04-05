@@ -20,23 +20,46 @@ using namespace std;
 namespace Targoman {
 namespace Common {
 
+/**
+ * @brief Default constructor of this class makes #WasShown false and sets #Message to
+ * "NOT-INITIALIZED" and set #Maximum to -1.
+ */
 Targoman::Common::clsCmdProgressBar::clsCmdProgressBar()
 {
     this->WasShown = false;
     this->reset("NOT-INITIALIZED", -1);
 }
 
+/**
+ * @brief This constructor of class sets #Message and #Maximum from input argument and makes #WasShown
+ *  true.
+ * @param _message Message string.
+ * @param _maximum Maximum value.
+ */
 clsCmdProgressBar::clsCmdProgressBar(const QString &_message, quint64 _maximum)
 {
     this->WasShown = false;
     this->reset(_message, _maximum);
 }
 
+/**
+ * @brief destructor of this class calls finalize() function of this class.
+ */
 clsCmdProgressBar::~clsCmdProgressBar()
 {
     this->finalize(false);
 }
 
+/**
+ * @brief This function sets value of progress bar.
+ *
+ * If the #Maximum value of progress bar is zero, it should show marquee. in marquee mode it shows
+ * an orbiting line.
+ * If the #Maximum value of progress bar is greater than zero it shows a progress bar which have some
+ * number of "#" proportional to input _value and command window size.
+ *
+ * @param _value
+ */
 void clsCmdProgressBar::setValue(quint32 _value)
 {
     if (TARGOMAN_IO_SETTINGS.Info.canBeShown(6) == false)
@@ -99,6 +122,12 @@ void clsCmdProgressBar::setValue(quint32 _value)
     }
 }
 
+
+/**
+ * @brief Resets #Message value and #Maximum value of class.
+ * @param _message  message string.
+ * @param _maximum  maximum value.
+ */
 void clsCmdProgressBar::reset(const QString &_message, qint64 _maximum)
 {
     this->Reseted = true;
@@ -109,6 +138,12 @@ void clsCmdProgressBar::reset(const QString &_message, qint64 _maximum)
     this->setValue(0);
 }
 
+
+/**
+ * @brief finalizes progress bar and show _finalValue% progress.
+ * @param _change2full whether show _finalValue% progress or not
+ * @param _finalValue final value of progress bar.
+ */
 void clsCmdProgressBar::finalize(bool _change2full, qint64 _finalValue)
 {
     if (this->WasShown == false)

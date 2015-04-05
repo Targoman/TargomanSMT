@@ -22,7 +22,7 @@ namespace Common {
 
 template <template <class itmplKey, class itmplVal> class BaseContainer_t, class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 itmplTTL = 10000>
     /**
-     * @brief The tmplExpirableCache class has two Maps, one for Cache and one for AccessDate.
+     * @brief The tmplExpirableCache class is a derivation of Map class and it is augmented with QHash for AccessDate.
      *
      * This class removes old items of Cache and updates access date of recently used items .
      */

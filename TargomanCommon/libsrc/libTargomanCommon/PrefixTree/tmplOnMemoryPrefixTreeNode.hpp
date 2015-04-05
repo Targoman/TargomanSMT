@@ -20,6 +20,11 @@ namespace Targoman {
 namespace Common {
 namespace PrefixTree {
 
+
+/**
+ * @brief  This class is a derivation of tmplAbstractPrefixTreeNodeData class which just adds two
+ * constructor to base class specific for tmplOnMemoryPrefixTreeNode class.
+ */
 template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNodeData :
         public tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t> {
 public:
@@ -33,6 +38,11 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief This class is a derivation of abstract prefix tree node, which is specific for on memory
+ * working with prefix tree.
+ */
 template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNode :
         public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>{
 public:
@@ -40,6 +50,9 @@ public:
         tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>)
     { }
 
+    /**
+     * @brief loadBinary    Loads all prefix tree from input stream
+     */
     void loadBinary(clsIFStreamExtended& _inputStream)
     {
         Q_UNUSED(_inputStream);
@@ -61,12 +74,22 @@ public:
 
     }
 
+    /**
+     * @brief createRootNode    Creates and returns root node of tmplOnMemoryPrefixTreeNode type
+     *                          and loads all prefix tree from input stream.
+     * @param _inputStream      Input stream.
+     * @return                  Returns root node.
+     */
     inline static tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* createRootNode(clsIFStreamExtended& _inputStream) {
         tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* Root = createRootNode();
         Root->loadBinary(_inputStream);
         return Root;
     }
 
+    /**
+     * @brief createRootNode    Creates and returns root node of tmplOnMemoryPrefixTreeNode type.
+     * @return                  Returns root node.
+     */
     inline static tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* createRootNode() {
         tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
         tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* Root = new

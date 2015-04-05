@@ -26,29 +26,44 @@ typedef quint64 PosType_t;
 
 //TODO configure cache
 
-template<class Key_t, class Data_t> class tmplOnDemandPrefixTreeNode;
+template <class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNode;
 
-template <class Key_t, class Data_t> class tmplOnDemandPrefixTreeNodeData :
-        public tmplAbstractPrefixTreeNodeData<Key_t, Data_t> {
+/**
+ * @brief  This class is a derivation of tmplAbstractPrefixTreeNodeData class which just adds two
+ * constructors and two data members to base class specific for tmplOnDemandPrefixTreeNode class.
+ */
+template <class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNodeData :
+        public tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t> {
 public:
+    /**
+     * @brief This constructor of class sets InputStream and instantiates
+     * parrent's tmplAbstractPrefixTreeNodeData with tmplAbstractPrefixTreeNodeData.
+     */
     tmplOnDemandPrefixTreeNodeData(clsIFStreamExtended& _inputStream):
-        tmplAbstractPrefixTreeNodeData<Key_t, Data_t>(
-            new tmplExpirableCache<QMap,Key_t, tmplAbstractPrefixTreeNode<Key_t,Data_t>>()),
+        tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>(
+            new tmplExpirableCache<QMap,itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>()),
         InputStream(_inputStream)
     { }
 
+    /**
+     * @brief This is copy constructor for this class.
+     */
     tmplOnDemandPrefixTreeNodeData(const tmplOnDemandPrefixTreeNodeData& _other) :
-        tmplAbstractPrefixTreeNodeData<Key_t, Data_t>(_other),
+        tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>(_other),
         InputStream(_other.InputStream),
         ChildPositionInStream(_other.ChildPositionInStream)
     { }
 
 public:
-    clsIFStreamExtended& InputStream;
-    QMap<Key_t, PosType_t> ChildPositionInStream;
+    clsIFStreamExtended& InputStream;                   /** Input stream */
+    QMap<itmplKey_t, PosType_t> ChildPositionInStream;  /** This variable stores position of storing each child in the file in QMap.*/
 };
 /////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ *  @brief This class is a derivation of abstract prefix tree node, which is specific for on demand
+ *  working with prefix tree.
+ */
 template <class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNode :
         public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>{
 public:
@@ -58,6 +73,11 @@ public:
             )
     { }
 
+    /**
+     * @brief follow  Goes directly from this node to child node.
+     * @param _key    key of child
+     * @return        returns node of child if it is already loaded else loads it  from file .
+     */
     virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
         auto Iterator = this->Data->Children->find(_key);
         if(Iterator == this->Data->Children->end())
@@ -66,6 +86,16 @@ public:
             return *Iterator;
     }
 
+    /**
+     * @brief loadChildFromDisk Loads a child data from disk.
+     *
+     * This function gets position of this child from #ChildPositionInStream map. If it is not existed
+     * returns the "invalid node". If existed, seeks input stream to the begining of that node and
+     * inserts that children to #Children Map. then data of that child will be read from binary file.
+     *
+     * @param _key child key.
+     * @return returns child node if founded else returns the "invalid node".
+     */
     tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& loadChildFromDisk(itmplKey_t _key){
         tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>* PrivData =
                 dynamic_cast<tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>*>(this->Data.data());
@@ -83,6 +113,10 @@ public:
         PrivData->InputStream.unlock();
         return *Iterator;
     }
+    /**
+     * @brief loadBinary Loads child position of this node in the file to #ChildPositionInStream data
+     * member and then reads the main data of this node.
+     */
 
     void loadBinary(){
         tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>* PrivData =
@@ -99,6 +133,10 @@ public:
         this->Data->DataNode.readBinary(PrivData->InputStream);
     }
 
+    /**
+     * @brief Casts #Data pointer of Abstract class to
+     * QExplicitlySharedDataPointer<tmplOnDemandPrefixTreeNodeData>* and then detaches that.
+     */
     virtual void detachInvalidData(){
         void* Dummy = &this->Data;
         QExplicitlySharedDataPointer<tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>>* PrivData =
@@ -106,6 +144,12 @@ public:
         PrivData->detach();
     }
 
+    /**
+     * @brief createRootNode    Creates and returns root node of tmplOnMemoryPrefixTreeNode type
+     *                          and loads root node data from input stream.
+     * @param _inputStream      Input stream.
+     * @return                  Returns root node.
+     */
     inline static tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>* createRootNode(clsIFStreamExtended& _inputStream) {
         tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
         tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>* Root = new

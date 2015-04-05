@@ -29,7 +29,10 @@ namespace PrefixTree {
 TARGOMAN_ADD_EXCEPTION_HANDLER(exPrefixTree, exTargomanBase);
 
 template<class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode;
-
+/**
+ *  this class holds and manages data members of tmplAbstractPrefixTreeNode.
+ *
+ */
 template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNodeData : public QSharedData {
 public:
     tmplAbstractPrefixTreeNodeData():
@@ -59,17 +62,29 @@ public:
     }
 
 public:
-    itmplData_t DataNode;
-    //Defined as pointer to be overridable
-    QScopedPointer<QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>> Children;
+    itmplData_t DataNode;                       /** Data of this node. */
+    QScopedPointer<QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>> Children;  /** This variable holds childrens prefix nodes in a QMap
+                                                                                                        which can be accessed by each child key. This QMap is
+                                                                                                        stored as pointer to be overridable by other inherited
+                                                                                                        classes of QMap.*/
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief tmplAbstractPrefixTreeNode class is the base class of for other types prefix tree nodes
+ * like tmplOnDemandPrefixTreeNode and tmplOnMemoryPrefixTreeNode.
+ */
 template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode {
 public:
+    /**
+     * @brief default constructor of this class instantiates data member of this class with
+     * a unique instance, which will be called "invalid node".
+     */
     tmplAbstractPrefixTreeNode() :
         Data(tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>::invalidInstance())
     { }
+
 
     tmplAbstractPrefixTreeNode(tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>* _data) :
         Data(_data)
@@ -82,6 +97,17 @@ public:
     virtual ~tmplAbstractPrefixTreeNode()
     {}
 
+    /**
+     * @brief writeBinary This function writes size and data of every child of this nodes to
+     * output file stream.
+     *
+     * This node first writes number of his children. Then for each child, first writes its
+     * data (which is of type itmplKey_t) and then fills a temporary zero for position of this
+     * child. Then each child will be write it self recursively. End position of each child will
+     * be stored in a QMap and those temporary zeros will be filled agained with their correct
+     * values.
+     * @param _outStream output stream.
+     */
     void writeBinary(clsOFStreamExtended& _outStream) const{
         PosType_t StartPosition = _outStream.tellp();
         PosType_t NullPosition = 0;
@@ -92,7 +118,7 @@ public:
             _outStream.write(Iterator.key());
             _outStream.write(NullPosition);
         }
-        QMap<WordIndex_t, PosType_t> ChildPositions;
+        QMap<itmplKey_t, PosType_t> ChildPositions;
         this->Data->DataNode.writeBinary(_outStream);
         for(auto Iterator = this->Data->Children->begin();
             Iterator != this->Data->Children->end();
@@ -105,12 +131,18 @@ public:
         for(auto Iterator = this->Data->Children->begin();
             Iterator != this->Data->Children->end();
             ++Iterator) {
-            _outStream.seekp(sizeof(WordIndex_t), std::ios_base::cur);
+            _outStream.seekp(sizeof(itmplKey_t), std::ios_base::cur);
             _outStream.write(ChildPositions[Iterator.key()]);
         }
         _outStream.seekp(EndPosition, std::ios_base::beg);
     }
 
+    /**
+     * @brief getChildByKey     Finds or creates a child and returns that child.
+     * @param _key              key of the requested child
+     * @param _detachInvalid    Specifies whether detach child node or not.
+     * @return                  Returns founded or created child.
+     */
     tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getChildByKey(const itmplKey_t _key, bool _detachInvalid) {
         tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& Node = this->Data->Children->operator [](_key);
         if(Q_LIKELY(_detachInvalid) && Node.isInvalid())
@@ -118,13 +150,23 @@ public:
         return Node;
     }
 
+    /**
+     * @return returns true if this node is the "invalid node" else returns false.
+     */
     inline bool isInvalid() const {
         return (this->Data.constData() == tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>::invalidInstance());
     }
 
+    /**
+     * @return returns data member of this node.
+     */
     inline itmplData_t& getData() { return this->Data->DataNode; }
 
-
+    /**
+     * @brief follow  Goes directly from this node to child node.
+     * @param _key    key (data) of child
+     * @return        returns node of child if existed else returns "invalid node".
+     */
     virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
         auto Iter = this->Data->Children->find(_key);
         if(Iter == this->Data->Children->end())
@@ -133,6 +175,10 @@ public:
             return *Iter;
     }
 
+
+    /**
+     * @brief invalidInstance returns the static "invalid node"
+     */
     static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& invalidInstance() {
         static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>* Instance = NULL;
         return *(Q_LIKELY(Instance) ?
@@ -140,12 +186,15 @@ public:
                     (Instance = new tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>()));
     }
 
+    /**
+     * @brief detaches Invalid Data
+     */
     virtual void detachInvalidData(){
         this->Data.detach();
     }
 
 protected:
-    QExplicitlySharedDataPointer<tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>> Data;
+    QExplicitlySharedDataPointer<tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>> Data; /** A pointer to data member of this class */
 };
 
 }

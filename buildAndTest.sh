@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 QMAKE_COMMAND=qmake-qt5
 Projects="TargomanCommon NLPLibs/TargomanLM/ NLPLibs/TargomanTextProcessor/ TargomanSMT Apps/TargomanSMTConsole"

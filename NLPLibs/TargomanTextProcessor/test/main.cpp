@@ -98,12 +98,12 @@ int main(int _argc, char *_argv[])
 ////                    QStringLiteral("من با دم خود می گفتم که با معرفت ترین ها یشان هم نا رفیق بوده اند"), false, "fa");
 
 
-////        qDebug()<<Targoman::NLPLibs::TargomanTP::instance().normalizeText(
-////                    QStringLiteral("آذربایجان‌شرقی"), false, "fa");
+        qDebug()<<Targoman::NLPLibs::TargomanTP::Private::Normalizer::instance().normalize(
+                    QStringLiteral("آذربایجان‌  شرقی"), false, "fa");
 ////        qDebug()<<Targoman::NLPLibs::TargomanTP::instance().normalizeText(
 ////                    QStringLiteral("ﺍﺟـﺘـﻤﺎﻋـﯽ ـ ﺳﻴﺎﺳـﯽ"), false, "fa");
-////        qDebug()<<Targoman::NLPLibs::TargomanTP::instance().normalizeText(
-////                    QStringLiteral("بیمعرفتها"), false, "fa");
+        qDebug()<<Targoman::NLPLibs::TargomanTP::Private::Normalizer::instance().normalize(
+                    QStringLiteral("بیمعرفتها"), false, "fa");
 ////        qDebug()<<Targoman::NLPLibs::TargomanTP::instance().normalizeText(
 ////                    QStringLiteral("میرفته‌‌ام"), false, "fa");
 ////        qDebug()<<Targoman::NLPLibs::TargomanTP::instance().normalizeText(
@@ -121,12 +121,12 @@ int main(int _argc, char *_argv[])
 ////                    QStringLiteral("غیبگو ترین ها یشان"), false, "fa");
 
 
-//        qDebug()<<Targoman::NLPLibs::TargomanTP::instance().normalizeText(
-//                    QStringLiteral("آیا اصلاح یا تغییر خط کاری است که صرفا\" دولت می تواند انجام دهد؟"), false, "fa");
+        qDebug()<<Targoman::NLPLibs::TargomanTextProcessor::instance().normalizeText(
+                    QStringLiteral("آیا اصلاح یا تغییر خط کاری است که صرفا\" دولت می تواند انجام دهد؟"), false, "fa");
 
 //        qDebug() << "می گفت \"پاتک\"";
-        qDebug()<<Targoman::NLPLibs::TargomanTextProcessor::instance().normalizeText(
-                    QStringLiteral("می ‌برد و"), false, "fa");
+//        qDebug()<<Targoman::NLPLibs::TargomanTextProcessor::instance().normalizeText(
+//                    QStringLiteral("می ‌برد و"), false, "fa");
 
 //        qDebug() << Targoman::NLPLibs::TargomanTP::instance().text2IXML(QStringLiteral("ماههای"), "fa", 0, false, true);
 ////        qDebug() << Targoman::NLPLibs::TargomanTP::instance().text2IXML(QStringLiteral("Resources and Irrigation Dr.MMahmoud Abu-Zaid."), "en");

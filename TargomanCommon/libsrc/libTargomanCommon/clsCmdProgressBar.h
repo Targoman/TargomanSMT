@@ -32,12 +32,12 @@ public:
     void finalize(bool _change2full, qint64 _value = -1);
 
 private:
-    qint64  Maximum;
-    QString Message;
-    quint8   LastProgressValue;
-    bool    Reseted;
-    bool    WasShown;
-    QTime   LastShowTime;
+    qint64  Maximum;                /** Maximum length of progress bar */
+    QString Message;                /** Message to show beside progress bar */
+    quint8   LastProgressValue;     /** Last value of progress bar */
+    bool    Reseted;                /** whether progress bar has been reseted or not. */
+    bool    WasShown;               /** whether progress bar has been shown or not. */
+    QTime   LastShowTime;           /** The time of last show of progress bar. */
 };
 
 }

@@ -31,13 +31,22 @@ size_t clsTargetRule::PrecomputedValuesSize = 0;
 clsTargetRule* pInvalidTargetRule = NULL;
 clsTargetRuleData* InvalidTargetRuleData = NULL;
 
+/**
+ * @brief constructor of this class initializes #Data with InvalidRargetRuleData which is instantiated before.
+ */
 clsTargetRule::clsTargetRule():
     Data(InvalidTargetRuleData)
 {
-    if(RuleTable::InvalidTargetRuleData == NULL)
-        throw exRuleTable("Invalid target rule instantiated before InvalidTargetRuleData initialization.");
+    Q_ASSERT_X(RuleTable::InvalidTargetRuleData == NULL, "clsTargetRule",
+        "Invalid target rule instantiated before InvalidTargetRuleData initialization.");
+
 }
 
+/**
+ * @brief This Constructor of class initializes #Data with valid data.
+ * @param _targetPhrase target language translation phrase.
+ * @param _fields   fields of different feature functions for this translation phrase.
+ */
 clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields):
     Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize))
 {
