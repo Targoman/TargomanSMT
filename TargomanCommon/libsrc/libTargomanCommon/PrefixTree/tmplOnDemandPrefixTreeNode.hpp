@@ -26,22 +26,11 @@ typedef quint64 PosType_t;
 
 //TODO configure cache
 
-template <class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNode;
+template<class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNode;
 
-/**
- * @brief  This class is a derivation of tmplAbstractPrefixTreeNodeData class which just adds two
- * constructors and two data members to base class specific for tmplOnDemandPrefixTreeNode class.
- */
-template <class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNodeData :
-        public tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t> {
+template <class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNodeData : public QSharedData {
 public:
-    /**
-     * @brief This constructor of class sets InputStream and instantiates
-     * parrent's tmplAbstractPrefixTreeNodeData with tmplAbstractPrefixTreeNodeData.
-     */
-    tmplOnDemandPrefixTreeNodeData(clsIFStreamExtended& _inputStream):
-        tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>(
-            new tmplExpirableCache<QMap,itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>()),
+    tmplOnDemandPrefixTreeNodeData(clsIFStreamExtended& _inputStream) :
         InputStream(_inputStream)
     { }
 
@@ -49,29 +38,40 @@ public:
      * @brief This is copy constructor for this class.
      */
     tmplOnDemandPrefixTreeNodeData(const tmplOnDemandPrefixTreeNodeData& _other) :
-        tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>(_other),
+        QSharedData(_other),
+        NodeData(_other.NodeData),
+        Children(_other.Children),
         InputStream(_other.InputStream),
         ChildPositionInStream(_other.ChildPositionInStream)
     { }
 
 public:
-    clsIFStreamExtended& InputStream;                   /** Input stream */
-    QMap<itmplKey_t, PosType_t> ChildPositionInStream;  /** This variable stores position of storing each child in the file in QMap.*/
+    itmplData_t NodeData;
+    tmplExpirableCache<QMap, itmplKey_t, tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>> Children;
+    clsIFStreamExtended& InputStream;
+    QMap<itmplKey_t, PosType_t> ChildPositionInStream;
 };
-/////////////////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////////////////////
 /**
  *  @brief This class is a derivation of abstract prefix tree node, which is specific for on demand
  *  working with prefix tree.
  */
 template <class itmplKey_t, class itmplData_t> class tmplOnDemandPrefixTreeNode :
-        public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>{
+        public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> {
 public:
     tmplOnDemandPrefixTreeNode(clsIFStreamExtended& _inputStream) :
-        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>(
-            new tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>(_inputStream)
-            )
-    { }
+        Data(new tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>(_inputStream))
+    {
+        int ChildCount = _inputStream.read<int>();
+        for(int i = 0; i < ChildCount; ++i) {
+            itmplKey_t Key = _inputStream.read<itmplKey_t>();
+            PosType_t Position = _inputStream.read<PosType_t>();
+            this->Data->ChildPositionInStream[Key] = Position;
+        }
+        this->Data->NodeData.readBinary(_inputStream);
+        this->IsInvalid = false;
+    }
 
     /**
      * @brief follow  Goes directly from this node to child node.
@@ -79,8 +79,8 @@ public:
      * @return        returns node of child if it is already loaded else loads it  from file .
      */
     virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
-        auto Iterator = this->Data->Children->find(_key);
-        if(Iterator == this->Data->Children->end())
+        auto Iterator = this->Data->Children.find(_key);
+        if(Iterator == this->Data->Children.end())
             return loadChildFromDisk(_key);
         else
             return *Iterator;
@@ -97,20 +97,17 @@ public:
      * @return returns child node if founded else returns the "invalid node".
      */
     tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& loadChildFromDisk(itmplKey_t _key){
-        tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>* PrivData =
-                dynamic_cast<tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>*>(this->Data.data());
 
-        auto PositonIterator = PrivData->ChildPositionInStream.find(_key);
-        if(PositonIterator == PrivData->ChildPositionInStream.end())
+        auto PositonIterator = this->Data->ChildPositionInStream.find(_key);
+        if(PositonIterator == this->Data->ChildPositionInStream.end())
             return tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
-        PrivData->InputStream.lock();
-        PrivData->InputStream.seekg(*PositonIterator, std::ios_base::beg);
-        auto Iterator = PrivData->Children->insert(
+        this->Data->InputStream.lock();
+        this->Data->InputStream.seekg(*PositonIterator, std::ios_base::beg);
+        auto Iterator = this->Data->Children.insert(
                     _key,
-                    tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>(PrivData->InputStream)
+                    tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>(this->Data->InputStream)
                     );
-        ((tmplOnDemandPrefixTreeNode&)(*Iterator)).loadBinary();
-        PrivData->InputStream.unlock();
+        this->Data->InputStream.unlock();
         return *Iterator;
     }
     /**
@@ -118,47 +115,43 @@ public:
      * member and then reads the main data of this node.
      */
 
-    void loadBinary(){
-        tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>* PrivData =
-                dynamic_cast<tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>*>(this->Data.data());
+    tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getChildByKey(const itmplKey_t _key, bool _createIfNotFound) {
+        Q_UNUSED(_key);
+        Q_UNUSED(_createIfNotFound);
+        throw exPrefixTree("OnDemandPrefixTreeNode can not be extended.");
+    }
 
-        clsIFStreamExtended& Stream = PrivData->InputStream;
-
-        int ChildCount = Stream.read<int>();
-        for(int i = 0; i < ChildCount; ++i) {
-            WordIndex_t Key = Stream.read<WordIndex_t>();
-            PosType_t Position = Stream.read<PosType_t>();
-            PrivData->ChildPositionInStream[Key] = Position;
+    void writeBinary(clsOFStreamExtended& _outStream) const {
+        PosType_t StartPosition = _outStream.tellp();
+        PosType_t NullPosition = 0;
+        _outStream.write(this->Data->Children.size());
+        for(auto Iterator = this->Data->Children.begin();
+            Iterator != this->Data->Children.end();
+            ++Iterator) {
+            _outStream.write(Iterator.key());
+            _outStream.write(NullPosition);
         }
-        this->Data->DataNode.readBinary(PrivData->InputStream);
+        QMap<WordIndex_t, PosType_t> ChildPositions;
+        this->Data->NodeData.writeBinary(_outStream);
+        for(auto Iterator = this->Data->Children.begin();
+            Iterator != this->Data->Children.end();
+            ++Iterator) {
+            ChildPositions[Iterator.key()] = _outStream.tellp();
+            Iterator->writeBinary(_outStream);
+        }
+        PosType_t EndPosition = _outStream.tellp();
+        _outStream.seekp(StartPosition + sizeof(int), std::ios_base::beg);
+        for(auto Iterator = this->Data->Children.begin();
+            Iterator != this->Data->Children.end();
+            ++Iterator) {
+            _outStream.seekp(sizeof(WordIndex_t), std::ios_base::cur);
+            _outStream.write(ChildPositions[Iterator.key()]);
+        }
+        _outStream.seekp(EndPosition, std::ios_base::beg);
     }
 
-    /**
-     * @brief Casts #Data pointer of Abstract class to
-     * QExplicitlySharedDataPointer<tmplOnDemandPrefixTreeNodeData>* and then detaches that.
-     */
-    virtual void detachInvalidData(){
-        void* Dummy = &this->Data;
-        QExplicitlySharedDataPointer<tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>>* PrivData =
-                (QExplicitlySharedDataPointer<tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>>*)(Dummy);
-        PrivData->detach();
-    }
-
-    /**
-     * @brief createRootNode    Creates and returns root node of tmplOnMemoryPrefixTreeNode type
-     *                          and loads root node data from input stream.
-     * @param _inputStream      Input stream.
-     * @return                  Returns root node.
-     */
-    inline static tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>* createRootNode(clsIFStreamExtended& _inputStream) {
-        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
-        tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>* Root = new
-                tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream);
-        Root->Data->ref.ref();
-        Root->detachInvalidData();
-        Root->loadBinary();
-        return Root;
-    }
+private:
+    QExplicitlySharedDataPointer<tmplOnDemandPrefixTreeNodeData<itmplKey_t, itmplData_t>> Data;
 };
 
 

@@ -69,26 +69,25 @@ void printMemoryUsage(const QString& _stepString){
     qDebug()<<"********************************************************************";
 }
 
-
 int main(int argc, char *argv[])
 {
     //TARGOMAN_IO_SETTINGS.setDefault();
     TARGOMAN_IO_SETTINGS.setDefault(7);
-    TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
-    //TARGOMAN_IO_SETTINGS.setSilent();
-
+    //TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
 
     try{
         clsSafeCoreApplication App(argc, argv);
 
-        printMemoryUsage("@first");
+        //printMemoryUsage("@first");
         ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf");
+\
+        TARGOMAN_IO_SETTINGS.setSilent();
 
         Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
 
-        printMemoryUsage("after init");
+        //printMemoryUsage("after init");
         clsTranslator::init(ConfigManager::instance().configFilePath());
-        printMemoryUsage("after load all");
+        //printMemoryUsage("after load all");
 
 //        clsTranslator::saveBinaryRuleTable("../pt/phrase-table.bin");
 
@@ -99,13 +98,13 @@ int main(int argc, char *argv[])
         Stream.setCodec("UTF-8");
         File.open(QFile::ReadOnly);
 
-        int LineNumber = 0;
+        //int LineNumber = 0;
 
         while(Stream.atEnd() == false)
         {
             clsTranslator MyTranslator(Stream.readLine());
             std::cout << MyTranslator.translate(true).Translation.toStdString() << std::endl;
-            printMemoryUsage(QString::number(++LineNumber) + ": after translate");
+            //printMemoryUsage(QString::number(++LineNumber) + ": after translate");
         }
 
     }catch(exTargomanBase& e){

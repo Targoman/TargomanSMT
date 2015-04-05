@@ -40,6 +40,7 @@ namespace PrefixTree {
 template <class itmplKey_t, class itmplData_t> class tmplPrefixTree {
 public:
     typedef tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> Node_t;
+
 public:
     /**
      * @brief constructor of this class makes the root node of this tree. It assumes that we want
@@ -48,7 +49,7 @@ public:
      * changed to tmplOnDemandPrefixTreeNode.
      */
     tmplPrefixTree() :
-        RootNode(tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>::createRootNode())
+        RootNode(new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>())
     { }
 
     ~tmplPrefixTree(){
@@ -64,9 +65,9 @@ public:
      */
     void readBinary(clsIFStreamExtended& _file, bool _loadAll = false){
         if (_loadAll)
-            this->RootNode.reset(tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>::createRootNode(_file));
+            this->RootNode.reset(new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_file));
         else
-            this->RootNode.reset(tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>::createRootNode(_file));
+            this->RootNode.reset(new tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>(_file));
     }
 
     /**

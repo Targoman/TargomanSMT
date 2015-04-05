@@ -29,8 +29,6 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
     class tmplExpirableCache : public BaseContainer_t <itmplKey, itmplVal>
     {
     public:
-      /*  class const_iterator:public QHash<itmplKey,itmplVal>::const_iterator
-        {};*/
 
         tmplExpirableCache(){
             if (itmplMaxItems == 0)
@@ -39,11 +37,19 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
             this->TTL = itmplTTL;
         }
 
-        inline void insert(itmplKey _key, itmplVal _val){
-            while(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
+        typedef typename BaseContainer_t<itmplKey, itmplVal>::iterator   Iterator_t;
+
+        inline Iterator_t insert(itmplKey _key, itmplVal _val){
+            //while(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
+            if(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
                 QList<QTime> Values = this->KeyAccessDateTime.values();
-                qStableSort(Values);
-                QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Values.first());
+//                qStableSort(Values);
+//                QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Values.first());
+                QTime Oldest = Values.first();
+                for(int i = 0; i < Values.size(); ++i)
+                    if(Values.at(i) < Oldest)
+                        Oldest = Values.at(i);
+                QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Oldest);
 
                 foreach(itmplKey Key, ExpiredKeys){
                     this->remove(Key);
@@ -51,7 +57,7 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
             }
 
             this->KeyAccessDateTime.insert(_key, QTime::currentTime());
-            BaseContainer_t<itmplKey, itmplVal>::insert(_key, _val);
+            return BaseContainer_t<itmplKey, itmplVal>::insert(_key, _val);
         }
 
         inline void clear(){
@@ -64,11 +70,13 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
                               const itmplVal& _defaultValue = itmplVal()){
             if (BaseContainer_t<itmplKey, itmplVal>::contains(_key) == false)
                 return _defaultValue;
-
+            /*
             if (this->TTL > 0 && QTime::currentTime().msecsTo(this->KeyAccessDateTime.value(_key)) > this->TTL){
                 this->remove(_key);
                 return _defaultValue;
             }
+            */
+
             if (_updateAccessTime)
                 this->KeyAccessDateTime.insert(_key, QTime::currentTime());
             return BaseContainer_t<itmplKey, itmplVal>::value(_key);
@@ -78,11 +86,13 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
             if (BaseContainer_t<itmplKey, itmplVal>::contains(_key) == false)
                 return  BaseContainer_t<itmplKey, itmplVal>::operator [] (_key);
 
+            /*
             if (this->TTL > 0 &&
                 this->KeyAccessDateTime.value(_key).elapsed() > this->TTL){
                 this->KeyAccessDateTime.remove(_key);
                 return BaseContainer_t<itmplKey, itmplVal>::take(_key);
             }
+            */
 
             QTime AccessTime = QTime::currentTime();
             this->KeyAccessDateTime.insert(_key, AccessTime);

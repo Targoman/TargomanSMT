@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 {
     Targoman::Common::printLoadedLibs();
 
-    PrefixTree::tmplPrefixTree<WordIndex_t, QString> SamplePrefixTree;
+    //PrefixTree::tmplPrefixTree<WordIndex_t, QString> SamplePrefixTree;
 
     Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
     A.clear();

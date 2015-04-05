@@ -15,26 +15,29 @@
 #define TARGOMAN_COMMON_PREFIXTREE_TMPLONMEMORYPREFIXTREENODE_H
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTreeNode.hpp"
+#include "libTargomanCommon/tmplExpirableCache.hpp"
+
 
 namespace Targoman {
 namespace Common {
 namespace PrefixTree {
 
+template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNode;
 
-/**
- * @brief  This class is a derivation of tmplAbstractPrefixTreeNodeData class which just adds two
- * constructor to base class specific for tmplOnMemoryPrefixTreeNode class.
- */
-template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNodeData :
-        public tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t> {
+template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNodeData : public QSharedData {
 public:
-    tmplOnMemoryPrefixTreeNodeData():
-        tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>(new QMap<itmplKey_t, tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>>())
-    {}
+    tmplOnMemoryPrefixTreeNodeData()
+    { }
 
     tmplOnMemoryPrefixTreeNodeData(const tmplOnMemoryPrefixTreeNodeData& _other) :
-        tmplAbstractPrefixTreeNodeData<itmplKey_t, itmplData_t>(_other)
-    {}
+        QSharedData(_other),
+        NodeData(_other.NodeData),
+        Children(_other.Children)
+    { }
+
+public:
+    itmplData_t NodeData;
+    QMap<itmplKey_t, tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>> Children;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -44,61 +47,82 @@ public:
  * working with prefix tree.
  */
 template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNode :
-        public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>{
+        public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> {
 public:
     tmplOnMemoryPrefixTreeNode() :
-        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>)
-    { }
-
-    /**
-     * @brief loadBinary    Loads all prefix tree from input stream
-     */
-    void loadBinary(clsIFStreamExtended& _inputStream)
+        Data(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>())
     {
-        Q_UNUSED(_inputStream);
-        //TODO LoadAll from Binary
-/*        int ChildCount = _inputStream.read<int>();
+        this->IsInvalid = false;
+    }
+
+    // TODO: This will be super-slow, make it run in a normal duration
+    tmplOnMemoryPrefixTreeNode(clsIFStreamExtended& _inputStream) :
+        Data(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>())
+    {
+        int ChildCount = _inputStream.read<int>();
         for(int i = 0; i < ChildCount; ++i) {
-            WordIndex_t Key = _inputStream.read<WordIndex_t>();
+            itmplKey_t Key = _inputStream.read<itmplKey_t>();
             PosType_t Position = _inputStream.read<PosType_t>();
-            this->Data->ChildPositionInStream[Key] = Position;
+            PosType_t CurrentPosition = _inputStream.tellp();
+            _inputStream.seekp(Position);
+            this->Data->Children[Key] = tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream);
+            _inputStream.seekp(CurrentPosition);
         }
-        this->Data->DataNode.readBinary(this->Data->InputStream);
-        if(_loadChildren) {
-            for(auto Iterator = this->Data->ChildPositionInStream.begin();
-                Iterator != this->Data->ChildPositionInStream.end();
-                ++Iterator) {
-                this->loadChildFromDisk(Iterator.key(), true);
-            }
-        }*/
-
+        this->IsInvalid = false;
     }
 
-    /**
-     * @brief createRootNode    Creates and returns root node of tmplOnMemoryPrefixTreeNode type
-     *                          and loads all prefix tree from input stream.
-     * @param _inputStream      Input stream.
-     * @return                  Returns root node.
-     */
-    inline static tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* createRootNode(clsIFStreamExtended& _inputStream) {
-        tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* Root = createRootNode();
-        Root->loadBinary(_inputStream);
-        return Root;
+    virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
+        auto Iter = this->Data->Children.find(_key);
+        if(Iter == this->Data->Children.end())
+            return tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
+        else
+            return *Iter;
     }
 
-    /**
-     * @brief createRootNode    Creates and returns root node of tmplOnMemoryPrefixTreeNode type.
-     * @return                  Returns root node.
-     */
-    inline static tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* createRootNode() {
-        tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
-        tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>* Root = new
-                tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>;
-        Root->Data->ref.ref();
-        Root->detachInvalidData();
-        return Root;
+    virtual tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getChildByKey(const itmplKey_t _key, bool _createIfNotFound) {
+        auto Iterator = this->Data->Children.find(_key);
+        if(Iterator == this->Data->Children.end()) {
+            if(Q_LIKELY(_createIfNotFound))
+                Iterator = this->Data->Children.insert(_key,
+                                                       tmplOnMemoryPrefixTreeNode<itmplKey_t,itmplData_t>()
+                                                       );
+            else
+                return tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>::invalidInstance();
+        }
+        return *Iterator;
     }
 
+    void writeBinary(clsOFStreamExtended& _outStream) const {
+        PosType_t StartPosition = _outStream.tellp();
+        PosType_t NullPosition = 0;
+        _outStream.write(this->Data->Children.size());
+        for(auto Iterator = this->Data->Children.begin();
+            Iterator != this->Data->Children.end();
+            ++Iterator) {
+            _outStream.write(Iterator.key());
+            _outStream.write(NullPosition);
+        }
+        QMap<WordIndex_t, PosType_t> ChildPositions;
+        this->Data->NodeData.writeBinary(_outStream);
+        for(auto Iterator = this->Data->Children.begin();
+            Iterator != this->Data->Children.end();
+            ++Iterator) {
+            ChildPositions[Iterator.key()] = _outStream.tellp();
+            Iterator->writeBinary(_outStream);
+        }
+        PosType_t EndPosition = _outStream.tellp();
+        _outStream.seekp(StartPosition + sizeof(int), std::ios_base::beg);
+        for(auto Iterator = this->Data->Children.begin();
+            Iterator != this->Data->Children.end();
+            ++Iterator) {
+            _outStream.seekp(sizeof(WordIndex_t), std::ios_base::cur);
+            _outStream.write(ChildPositions[Iterator.key()]);
+        }
+        _outStream.seekp(EndPosition, std::ios_base::beg);
+    }
+
+private:
+    QExplicitlySharedDataPointer<tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>> Data;
 };
 
 }

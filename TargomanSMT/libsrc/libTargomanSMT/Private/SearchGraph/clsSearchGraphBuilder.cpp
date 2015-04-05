@@ -344,7 +344,7 @@ bool clsSearchGraphBuilder::decode()
         }//for PrevCardinality
         CurrCardHypoContainer.finlizePruningAndcleanUp();
         // Vedadian
-        //*
+        /*
         if(true) {
             auto car2str = [] (int _cardinality) {
                 QString result;
@@ -393,6 +393,8 @@ bool clsSearchGraphBuilder::decode()
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
         return true;
     } else {
+        static clsSearchGraphNode InvalidGoalNode;
+        this->Data->GoalNode = &InvalidGoalNode;
         TargomanLogWarn(1, "No translation option for: " << this->Data->Sentence);
         return false;
     }
