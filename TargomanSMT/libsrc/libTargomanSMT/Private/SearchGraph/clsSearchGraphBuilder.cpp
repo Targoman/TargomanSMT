@@ -83,6 +83,7 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
 
     //InvalidTargetRuleData has been marshalled here because it depends on loading RuleTable
     RuleTable::InvalidTargetRuleData = new RuleTable::clsTargetRuleData;
+
     //pInvalidTargetRule has been marshalled here because it depends on instantiation of InvalidTargetRuleData
     RuleTable::pInvalidTargetRule = new RuleTable::clsTargetRule;
     //InvalidSearchGraphNodeData has been marshalled here because it depends on initialization of gConfigs

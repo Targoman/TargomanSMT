@@ -37,7 +37,7 @@ clsTargetRuleData* InvalidTargetRuleData = NULL;
 clsTargetRule::clsTargetRule():
     Data(InvalidTargetRuleData)
 {
-    Q_ASSERT_X(RuleTable::InvalidTargetRuleData == NULL, "clsTargetRule",
+    Q_ASSERT_X(RuleTable::InvalidTargetRuleData != NULL, "clsTargetRule",
         "Invalid target rule instantiated before InvalidTargetRuleData initialization.");
 
 }

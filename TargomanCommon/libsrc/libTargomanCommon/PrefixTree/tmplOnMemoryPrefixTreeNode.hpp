@@ -121,6 +121,10 @@ public:
         _outStream.seekp(EndPosition, std::ios_base::beg);
     }
 
+    itmplData_t& getData() {
+        return this->Data->NodeData;
+    }
+
 private:
     QExplicitlySharedDataPointer<tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>> Data;
 };

@@ -72,8 +72,9 @@ void printMemoryUsage(const QString& _stepString){
 int main(int argc, char *argv[])
 {
     //TARGOMAN_IO_SETTINGS.setDefault();
-    TARGOMAN_IO_SETTINGS.setDefault(7);
+    //TARGOMAN_IO_SETTINGS.setDefault(7);
     //TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
+    //TARGOMAN_IO_SETTINGS.setSilent();
 
     try{
         clsSafeCoreApplication App(argc, argv);
@@ -81,7 +82,6 @@ int main(int argc, char *argv[])
         //printMemoryUsage("@first");
         ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf");
 \
-        TARGOMAN_IO_SETTINGS.setSilent();
 
         Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
 
