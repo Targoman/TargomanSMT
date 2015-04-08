@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#TODO Look for a proper qmake command using search commands
 QMAKE_COMMAND=qmake-qt5
 Projects="TargomanCommon NLPLibs/TargomanLM/ NLPLibs/TargomanTextProcessor/ ExternalLibs/KenLM TargomanSMT Apps/TargomanSMTConsole"
 BasePath=`pwd`
