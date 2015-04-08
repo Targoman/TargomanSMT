@@ -30,8 +30,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exPrefixTree, exTargomanBase);
 
 template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode {
 public:
-    tmplAbstractPrefixTreeNode(const tmplAbstractPrefixTreeNode& _other)
-    {
+    tmplAbstractPrefixTreeNode(const tmplAbstractPrefixTreeNode& _other) {
         this->IsInvalid = _other.IsInvalid;
     }
 
@@ -40,13 +39,12 @@ public:
 
     virtual void writeBinary(clsOFStreamExtended& _outStream) const{
         Q_UNUSED(_outStream);
-        throw exPrefixTree("AbstractPrefixTreeNode can not be written to streams.");
+        throw exTargomanNotImplemented("writeBinary()");
     }
 
-    virtual tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getChildByKey(const itmplKey_t _key, bool _createIfNotFound) {
+    virtual tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getOrCreateChildByKey(const itmplKey_t _key) {
         Q_UNUSED(_key);
-        Q_UNUSED(_createIfNotFound);
-        throw exPrefixTree("AbstractPrefixTreeNode can not be extended.");
+        throw exTargomanNotImplemented("getOrCreateChildByKey()");
     }
 
     /**
@@ -65,6 +63,7 @@ public:
         Q_UNUSED(_key);
         return tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>::invalidInstance();
     }
+
 
 protected:
     tmplAbstractPrefixTreeNode()

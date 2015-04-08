@@ -122,25 +122,54 @@ void clsLMSentenceScorer::initHistory(const clsLMSentenceScorer &_oldScorer)
 
 bool clsLMSentenceScorer::haveSameHistoryAs(const clsLMSentenceScorer &_oldScorer)
 {
-    if (this->pPrivate->IndexBasedHistory  == _oldScorer.pPrivate->IndexBasedHistory &&
-        this->pPrivate->StringBasedHistory == _oldScorer.pPrivate->StringBasedHistory)
-        return true;
+    int ThisEffectiveLength = qMin(this->pPrivate->FoundedGram, (quint8)(this->pPrivate->LM.order() - 1));
+    int OlderEffectiveLength = qMin(_oldScorer.pPrivate->FoundedGram, (quint8)(_oldScorer.pPrivate->LM.order() - 1));
 
-    size_t MyEffectiveLenght = qMin(this->pPrivate->FoundedGram, (quint8)(this->pPrivate->LM.order() - 1));
-    size_t OtherEffectiveLenght = qMin(_oldScorer.pPrivate->FoundedGram, (quint8)(_oldScorer.pPrivate->LM.order() - 1));
+    // Torabzadeh
+    for (auto& item : this->pPrivate->IndexBasedHistory)
+    {
+        QString historyWord = this->pPrivate->LM.getWordByID(item);
+        int a = 10;
+    }
+    for (auto& item : _oldScorer.pPrivate->IndexBasedHistory)
+    {
+        QString historyWord = _oldScorer.pPrivate->LM.getWordByID(item);
+        int a = 10;
+    }
 
-    if (MyEffectiveLenght != OtherEffectiveLenght)
+
+    if (ThisEffectiveLength != OlderEffectiveLength)
         return false;
 
-    if(this->pPrivate->IndexBasedHistory.size()){
-        for(size_t i=0; i< MyEffectiveLenght; ++i)
-            if(this->pPrivate->IndexBasedHistory.at(i) != _oldScorer.pPrivate->IndexBasedHistory.at(i))
+    if(Q_LIKELY(this->pPrivate->IndexBasedHistory.size()))
+    {
+        int ThisElementIndex = this->pPrivate->IndexBasedHistory.size() - 1;
+        int OlderElementIndex = _oldScorer.pPrivate->IndexBasedHistory.size() - 1;
+        int i = 0;
+        while(i < ThisEffectiveLength && ThisElementIndex >= 0 && OlderElementIndex >= 0) {
+            if(this->pPrivate->IndexBasedHistory.at(ThisElementIndex) !=
+                    _oldScorer.pPrivate->IndexBasedHistory.at(OlderElementIndex))
                 return false;
-    }else{
-        for(size_t i=0; i< MyEffectiveLenght; ++i)
-            if(this->pPrivate->StringBasedHistory.at(i) != _oldScorer.pPrivate->StringBasedHistory.at(i))
+            ++i;
+            --ThisElementIndex;
+            --OlderElementIndex;
+        }
+
+    } else {
+
+        int ThisElementIndex = this->pPrivate->StringBasedHistory.size() - 1;
+        int OlderElementIndex = _oldScorer.pPrivate->StringBasedHistory.size() - 1;
+        int i = 0;
+        while(i < ThisEffectiveLength && ThisElementIndex >= 0 && OlderElementIndex >= 0) {
+            if(this->pPrivate->StringBasedHistory.at(ThisElementIndex) !=
+                    _oldScorer.pPrivate->StringBasedHistory.at(OlderElementIndex))
                 return false;
+            ++i;
+            --ThisElementIndex;
+            --OlderElementIndex;
+        }
     }
+
     return true;
 }
 

@@ -110,45 +110,7 @@ public:
         this->Data->InputStream.unlock();
         return *Iterator;
     }
-    /**
-     * @brief loadBinary Loads child position of this node in the file to #ChildPositionInStream data
-     * member and then reads the main data of this node.
-     */
 
-    tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getChildByKey(const itmplKey_t _key, bool _createIfNotFound) {
-        Q_UNUSED(_key);
-        Q_UNUSED(_createIfNotFound);
-        throw exPrefixTree("OnDemandPrefixTreeNode can not be extended.");
-    }
-
-    void writeBinary(clsOFStreamExtended& _outStream) const {
-        PosType_t StartPosition = _outStream.tellp();
-        PosType_t NullPosition = 0;
-        _outStream.write(this->Data->Children.size());
-        for(auto Iterator = this->Data->Children.begin();
-            Iterator != this->Data->Children.end();
-            ++Iterator) {
-            _outStream.write(Iterator.key());
-            _outStream.write(NullPosition);
-        }
-        QMap<WordIndex_t, PosType_t> ChildPositions;
-        this->Data->NodeData.writeBinary(_outStream);
-        for(auto Iterator = this->Data->Children.begin();
-            Iterator != this->Data->Children.end();
-            ++Iterator) {
-            ChildPositions[Iterator.key()] = _outStream.tellp();
-            Iterator->writeBinary(_outStream);
-        }
-        PosType_t EndPosition = _outStream.tellp();
-        _outStream.seekp(StartPosition + sizeof(int), std::ios_base::beg);
-        for(auto Iterator = this->Data->Children.begin();
-            Iterator != this->Data->Children.end();
-            ++Iterator) {
-            _outStream.seekp(sizeof(WordIndex_t), std::ios_base::cur);
-            _outStream.write(ChildPositions[Iterator.key()]);
-        }
-        _outStream.seekp(EndPosition, std::ios_base::beg);
-    }
 
     itmplData_t& getData() {
         return this->Data->NodeData;

@@ -120,8 +120,9 @@ void clsSearchGraphBuilder::collectPhraseCandidates()
 
         if(true /* On 1-grams */)
         {
-            PrevNode = &PrevNode->follow(this->Data->Sentence.at(FirstPosition).wordIndex());
-            if (PrevNode->isInvalid()){
+            WordIndex_t WordIndex = this->Data->Sentence.at(FirstPosition).wordIndex();
+            PrevNode = &PrevNode->follow(WordIndex);
+            if (WordIndex == 0) {
                 clsRuleNode OOVRuleNode =
                         OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
                 if (OOVRuleNode.isInvalid())
@@ -248,8 +249,11 @@ bool clsSearchGraphBuilder::decode()
 
                 // This can be removed if training has been done properly and we have a sane phrase table
                 if (PrevLexHypoContainer.nodes().isEmpty()){
+                    //TODO: We must have this warning log in release mode also
+#ifdef TARGOMAN_SHOW_DEBUG
                     TargomanLogWarn(1, "PrevLexHypoContainer is empty. PrevCard: " << PrevCardinality
-                                  << "PrevCov: " << bitArray2Str(PrevCoverage));
+                                  << "PrevCov: " << PrevCoverage);
+#endif
                     continue;
                 }
 
@@ -325,14 +329,14 @@ bool clsSearchGraphBuilder::decode()
                                                            IsFinal,
                                                            RestCost);
 
-
-
                             // If current NewHypoNode is worse than worst stored node ignore it
                             if (clsSearchGraphBuilder::DoPrunePreInsertion.value() &&
                                 CurrCardHypoContainer.mustBePruned(NewHypoNode.getTotalCost())){
                                 ++PrunedPreInsertion;
                                 continue;
                             }
+
+
 
                             if(CurrCardHypoContainer.insertNewHypothesis(NewHypoNode)) {
                                 // Log insertion of hypothesis here if it is needed
@@ -396,7 +400,10 @@ bool clsSearchGraphBuilder::decode()
     } else {
         static clsSearchGraphNode InvalidGoalNode;
         this->Data->GoalNode = &InvalidGoalNode;
+        // TODO: We need to have this log in release mode also
+#ifdef TARGOMAN_SHOW_DEBUG
         TargomanLogWarn(1, "No translation option for: " << this->Data->Sentence);
+#endif
         return false;
     }
 }
@@ -479,15 +486,7 @@ clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _begin
                 (int)clsPhraseCandidateCollectionData::MaxTargetPhraseCount.value(),
                 this->TargetRules.size()
                 );
-    // Vedadian
-    /*
-    qStableSort(this->TargetRules.begin(),
-                this->TargetRules.begin() + this->UsableTargetRuleCount,
-                [] () {
-
-                }
-                );
-                */
+    // TODO: Maybe sorting can be added here
     this->BestApproximateCost = INFINITY;
     // _observationHistogramSize must be taken care of to not exceed this->TargetRules.size()
     for(int Count = 0; Count < this->UsableTargetRuleCount; ++Count) {

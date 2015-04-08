@@ -81,16 +81,14 @@ int main(int argc, char *argv[])
 
         //printMemoryUsage("@first");
         ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf");
-\
 
-        Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
+        //Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
 
         //printMemoryUsage("after init");
         clsTranslator::init(ConfigManager::instance().configFilePath());
         //printMemoryUsage("after load all");
 
-//        clsTranslator::saveBinaryRuleTable("../pt/phrase-table.bin");
-
+//        clsTranslator::saveBinaryRuleTable("../pt/phrase-table.kenlm.bin");
 //        return 0;
 
         QFile File(argv[1]);

@@ -227,6 +227,7 @@ inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecom
 inline bool clsSearchGraphNode::isInvalid() const {return this->Data == InvalidSearchGraphNodeData;}
 inline bool clsSearchGraphNode::isFinal(){return this->Data->IsFinal;}
 
+#ifdef TARGOMAN_SHOW_DEBUG
 /**
  * @brief Returns a list of cost of all feature funcitons.
  */
@@ -238,6 +239,8 @@ QList<Common::Cost_t> clsSearchGraphNode::costElements() const
             result.append(this->Data->FeatureFunctionsData.at(i)->costElements().toList());
     return result;
 }
+#endif
+
 /**
  * @brief sets data of a feature function in FeatureFunctionsData member of #Data.
  * @param _index    index of feature function.
@@ -253,6 +256,64 @@ inline void clsSearchGraphNode::setFeatureFunctionData(size_t _index, intfFeatur
 const intfFeatureFunctionData *clsSearchGraphNode::featureFunctionDataAt(size_t _index) const {
     return this->Data->FeatureFunctionsData.at(_index);
 }
+
+#ifdef TARGOMAN_SHOW_DEBUG
+inline bool isDesiredNode(const clsSearchGraphNode& n, const char* s1, const char* s2, const char* s3)
+{
+    if(n.targetRule().toStr() == s1 && n.prevNode().targetRule().toStr() == s2 && n.coverage() == s3)
+        return true;
+    return false;
+}
+
+inline bool isDesiredNode(const clsSearchGraphNode& n, const char* s1, const char* s2, const char* s3, const char* s4, const char* s5, const char* s6)
+{
+    if(isDesiredNode(n, s1, s2, s3) ||
+            isDesiredNode(n, s4, s5, s6))
+        return true;
+    return false;
+}
+
+
+inline bool areDesiredNodes(const clsSearchGraphNode& n1, const clsSearchGraphNode& n2,
+                            const char* s1, const char* s2, const char* s3,
+                            const char* s4, const char* s5, const char* s6)
+{
+    if(isDesiredNode(n1, s1, s2, s3) && isDesiredNode(n2, s4, s5, s6))
+        return true;
+    if(isDesiredNode(n2, s1, s2, s3) && isDesiredNode(n1, s4, s5, s6))
+        return true;
+    return false;
+}
+
+inline bool areDesiredNodes(const clsSearchGraphNode& n1,
+                            const char* s1, const char* s2, const char* s3,
+                            const clsSearchGraphNode& n2,
+                            const char* s4, const char* s5, const char* s6)
+{
+    if(isDesiredNode(n1, s1, s2, s3) && isDesiredNode(n2, s4, s5, s6))
+        return true;
+    return false;
+}
+
+inline bool eitherNodesAreDesired(const clsSearchGraphNode& n1, const clsSearchGraphNode& n2,
+                                  const char* s1, const char* s2, const char* s3) {
+    if(isDesiredNode(n1, s1, s2, s3) ||
+       isDesiredNode(n2, s1, s2, s3))
+        return true;
+    return false;
+}
+
+inline bool eitherNodesAreDesired(const clsSearchGraphNode& n1, const clsSearchGraphNode& n2,
+                                  const char* s1, const char* s2, const char* s3,
+                                  const char* s4, const char* s5, const char* s6) {
+    if(isDesiredNode(n1, s1, s2, s3) ||
+       isDesiredNode(n1, s4, s5, s6) ||
+       isDesiredNode(n2, s1, s2, s3) ||
+       isDesiredNode(n2, s4, s5, s6))
+        return true;
+    return false;
+}
+#endif
 
 }
 }

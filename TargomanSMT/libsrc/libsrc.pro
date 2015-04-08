@@ -41,7 +41,8 @@ HEADERS += \
     libTargomanSMT/Private/PrivateTypes.h \
     libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.h \
     libTargomanSMT/Private/RuleTable/clsBinaryRuleTable.h \
-    libTargomanSMT/Private/FeatureFunctions/UnknownWordPenalty/UnknownWordPenalty.h
+    libTargomanSMT/Private/FeatureFunctions/UnknownWordPenalty/UnknownWordPenalty.h \
+    libTargomanSMT/Private/Proxies/LanguageModel/clsKenLMProxy.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -67,7 +68,8 @@ SOURCES += libID.cpp \
     libTargomanSMT/Private/FeatureFunctions/ReorderingJump/ReorderingJump.cpp \
     libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.cpp \
     libTargomanSMT/Private/RuleTable/clsBinaryRuleTable.cpp \
-    libTargomanSMT/Private/FeatureFunctions/UnknownWordPenalty/UnknownWordPenalty.cpp
+    libTargomanSMT/Private/FeatureFunctions/UnknownWordPenalty/UnknownWordPenalty.cpp \
+    libTargomanSMT/Private/Proxies/LanguageModel/clsKenLMProxy.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

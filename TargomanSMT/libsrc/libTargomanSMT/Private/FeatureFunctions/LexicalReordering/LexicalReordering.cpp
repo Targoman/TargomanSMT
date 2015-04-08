@@ -172,8 +172,12 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
 
 bool LexicalReordering::nodesHaveSameState(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
 {
-    if(_first.prevNode().isInvalid() && _second.prevNode().isInvalid())
-        return true;
+    if(this->IsBidirectional.value()) {
+        if(_first.prevNode().isInvalid() == false || _second.prevNode().isInvalid() == false)
+            if(_first.prevNode().coverage() != _second.prevNode().coverage())
+                return false;
+    }
+
     for(int Orientation = enuLexicalReorderingFields::ForwardMonotone;
         Orientation <= enuLexicalReorderingFields::ForwardDiscontinous;
         ++Orientation) {

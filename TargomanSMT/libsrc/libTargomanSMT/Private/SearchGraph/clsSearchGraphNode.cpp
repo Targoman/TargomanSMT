@@ -14,9 +14,6 @@
 #include "clsSearchGraphNode.h"
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
 
-// Vedadian
-//#include <QDebug>
-
 namespace Targoman{
 namespace SMT {
 namespace Private{
@@ -43,15 +40,6 @@ clsSearchGraphNode::clsSearchGraphNode():
         FF->initRootNode(*this);
 }
 
-// Vedadian
-/*
-QString getPartialTranslation(const clsSearchGraphNode& _node)
-{
-    if(_node.isInvalid())
-        return QString();
-    return getPartialTranslation(_node.prevNode()) + " " + _node.targetRule().toStr();
-}
-//*/
 /**
  * @brief This constructor of this class set values of #Data and calculates cost of this translation up to now using all feature functions.
  * @param _prevNode         Previous node of this search graph node.
@@ -138,14 +126,8 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
         return false;
 
     foreach(FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions.values())
-        if (FF->nodesHaveSameState(*this, _node) == false){
-            // Torabzadeh
-            int a = 2;
-            a++;
+        if (FF->nodesHaveSameState(*this, _node) == false)
             return false;
-        }
-
-
     if (Q_UNLIKELY(_node.coverage() != this->coverage()))
         return false;
 

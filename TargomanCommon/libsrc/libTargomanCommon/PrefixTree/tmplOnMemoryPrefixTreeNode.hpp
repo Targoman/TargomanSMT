@@ -16,7 +16,7 @@
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTreeNode.hpp"
 #include "libTargomanCommon/tmplExpirableCache.hpp"
-
+#include <QDataStream>
 
 namespace Targoman {
 namespace Common {
@@ -50,8 +50,7 @@ template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNode 
         public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> {
 public:
     tmplOnMemoryPrefixTreeNode() :
-        Data(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>())
-    {
+        Data(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>()) {
         this->IsInvalid = false;
     }
 
@@ -79,17 +78,8 @@ public:
             return *Iter;
     }
 
-    virtual tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getChildByKey(const itmplKey_t _key, bool _createIfNotFound) {
-        auto Iterator = this->Data->Children.find(_key);
-        if(Iterator == this->Data->Children.end()) {
-            if(Q_LIKELY(_createIfNotFound))
-                Iterator = this->Data->Children.insert(_key,
-                                                       tmplOnMemoryPrefixTreeNode<itmplKey_t,itmplData_t>()
-                                                       );
-            else
-                return tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>::invalidInstance();
-        }
-        return *Iterator;
+    virtual tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getOrCreateChildByKey(const itmplKey_t _key) {
+        return this->Data->Children[_key];
     }
 
     void writeBinary(clsOFStreamExtended& _outStream) const {

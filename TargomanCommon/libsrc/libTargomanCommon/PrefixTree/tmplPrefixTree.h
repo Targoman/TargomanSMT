@@ -92,7 +92,7 @@ public:
     inline Node_t& getOrCreateNode(const QList<itmplKey_t>& _path) {
         Node_t* Result = this->RootNode.data();
         foreach(itmplKey_t Key, _path)
-            Result = &Result->getChildByKey(Key, true);
+            Result = &Result->getOrCreateChildByKey(Key);
         return *Result;
     }
     /**

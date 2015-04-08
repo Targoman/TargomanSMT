@@ -68,9 +68,12 @@ public:
 
     void finalizeRecombination();
 
-//TODO uncomment
-//private:
-public:
+#ifdef TARGOMAN_SHOW_DEBUG
+private:
+    const clsSearchGraphNode& FindNode(const char* _targetRuleStr, const char* _prevTargetRuleStr, const char* _coverage) const;
+#endif
+
+private:
     QExplicitlySharedDataPointer<clsLexicalHypothesisContainerData> Data;           /**< A pointer of clsLexicalHypothesisContainerData class that stores a list of nodes.*/
 
     static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;  /**< Store recombined node or node.*/

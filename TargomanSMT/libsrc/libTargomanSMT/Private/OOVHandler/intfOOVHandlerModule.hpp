@@ -32,10 +32,9 @@ public:
     /**
      * @brief When an instance of any kind special OOV handler instantiates, its name and pointer of itself will be added to AvailableOOVHandlers data member of OOVHandler class.
      */
-    intfOOVHandlerModule(const QString& _moduleName, quint64 _instanceID) :
+    intfOOVHandlerModule(const QString& _moduleName) :
         intfModule(_moduleName)
     {
-        Q_ASSERT_X(_instanceID, "intfOOVHandlerModule", "Multiple instance of OOVHandlerModule seems buggy.");
         OOVHandler::instance().AvailableOOVHandlers.insert(_moduleName, this);
     }
 

@@ -57,37 +57,34 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
 bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
 
-
-
-
     size_t InsertionPos = this->Data->Nodes.size();
     for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
-        clsSearchGraphNode& HypoNode = this->Data->Nodes[i];
-        // Torabzadeh
-        if(HypoNode.targetRule().toStr() == "communication" &&
-            HypoNode.prevNode().targetRule().toStr() == "A fax" &&
-            _node.targetRule().toStr() == "communication" &&
-            _node.prevNode().targetRule().toStr() == "fax" &&
-            _node.coverage() == "00001100000000000")
-        {
-            int a =90;
-            a++;
-        }
+        // NOTE: Do not change this to get by reference, it will break the algorithm
+        clsSearchGraphNode HypoNode = this->Data->Nodes[i];
         if (HypoNode.haveSameFuture(_node)){
             if (clsLexicalHypothesisContainer::KeepRecombined.value()){
                 HypoNode.recombine(_node);
+                // Find the new position for possibly changed HypoNode
+                int NewHypoNodePosition = i;
+                while(NewHypoNodePosition > 0 && HypoNode.getTotalCost() <
+                      this->Data->Nodes.at(NewHypoNodePosition - 1).getTotalCost()) {
+                    this->Data->Nodes[NewHypoNodePosition] = this->Data->Nodes[NewHypoNodePosition - 1];
+                    --NewHypoNodePosition;
+                }
+                this->Data->Nodes[NewHypoNodePosition] = HypoNode;
                 return false;
             }else{
                 if(HypoNode.getTotalCost() > _node.getTotalCost()){
                     this->Data->Nodes.removeAt(i);
                     InsertionPos = i;
+                    while(InsertionPos > 0 && _node.getTotalCost() < this->Data->Nodes.at(InsertionPos - 1).getTotalCost())
+                        InsertionPos--;
                     break;
                 }else
                     return false;
             }
-        }else if(HypoNode.getTotalCost() > _node.getTotalCost()){
+        } else if ((int)InsertionPos == this->Data->Nodes.size() && HypoNode.getTotalCost() > _node.getTotalCost()){
             InsertionPos = i;
-            break;
         }
     }
 
@@ -109,6 +106,18 @@ void clsLexicalHypothesisContainer::finalizeRecombination()
         this->Data->Nodes.removeAt(1);
     }
 }
+
+#ifdef TARGOMAN_SHOW_DEBUG
+const clsSearchGraphNode &clsLexicalHypothesisContainer::FindNode(const char *_targetRuleStr, const char *_prevTargetRuleStr, const char *_coverage) const
+{
+    for(int i = 0; i < this->Data->Nodes.size(); ++i) {
+        if(isDesiredNode(this->Data->Nodes.at(i), _targetRuleStr, _prevTargetRuleStr, _coverage))
+            return this->Data->Nodes.at(i);
+    }
+    static clsSearchGraphNode InvalidSearchGraphNode;
+    return InvalidSearchGraphNode;
+}
+#endif
 
 }
 }
