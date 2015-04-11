@@ -342,7 +342,6 @@ void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
  * @exception throws exception if ConfigManager is not initialized yet.
  * @exception throws exception if input module is singleton (because singleton module can not be reinitialized).
  */
-
 fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) const
 {
     if (this->pPrivate->Initialized == false)

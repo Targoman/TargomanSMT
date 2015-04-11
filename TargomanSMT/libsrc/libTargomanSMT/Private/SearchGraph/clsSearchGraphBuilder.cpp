@@ -349,7 +349,7 @@ bool clsSearchGraphBuilder::decode()
         }//for PrevCardinality
         CurrCardHypoContainer.finlizePruningAndcleanUp();
         // Vedadian
-        /*
+        //*
         if(true) {
             auto car2str = [] (int _cardinality) {
                 QString result;

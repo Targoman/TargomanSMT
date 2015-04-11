@@ -22,11 +22,26 @@ namespace OOV{
 
 using namespace Common;
 using namespace RuleTable;
+using namespace Targoman::Common::Configuration;
 
-
-Targoman::Common::Configuration::tmplConfigurable<QString> OOVHandler::OOVHandlerModules(
+tmplConfigurable<QString> OOVHandler::OOVHandlerModules(
         OOVHandler::moduleName() + "/Handlers",
-        "Name of OOVHandler Modules to be used. Comma Separated");
+        "Name of OOVHandler Modules to be used. Comma Separated",
+        "",
+        [] (const intfConfigurable& _item, QString& _errorMessage) {
+    QSet<QString> ModuleNames = QSet<QString>::fromList(_item.toVariant().toString().split(",", QString::SkipEmptyParts));
+    for(auto Iterator = ModuleNames.begin(); Iterator != ModuleNames.end(); ++Iterator) {
+        const QString& ModuleName = *Iterator;
+        fpModuleInstantiator_t Instantiator = ConfigManager::instance().getInstantiator(ModuleName);
+        if(Instantiator == NULL) {
+            _errorMessage = "Unknown OOVHandlerModule `" + ModuleName + "`";
+            return false;
+        }
+        // Just create the object and leave it alone, this will be handled by OOVHandler itself
+        Instantiator();
+    }
+    return true;
+});
 
 QMap<QString, intfOOVHandlerModule*>                       OOVHandler::AvailableOOVHandlers;
 

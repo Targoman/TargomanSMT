@@ -30,7 +30,7 @@ using namespace RuleTable;
 
 class clsOOVRemoveOnTarget : public intfOOVHandlerModule{
 public:
-    clsOOVRemoveOnTarget(): intfOOVHandlerModule(this->moduleName()){}
+    clsOOVRemoveOnTarget(quint64 _instanceID): intfOOVHandlerModule(this->moduleName(), _instanceID) {}
     ~clsOOVRemoveOnTarget();
 
     /**
@@ -49,7 +49,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("OOVRemoveOnTarget", clsOOVRemoveOnTarget);
+    TARGOMAN_DEFINE_MODULE("OOVRemoveOnTarget", clsOOVRemoveOnTarget);
 };
 
 /**
@@ -58,7 +58,7 @@ private:
 
 class clsOOVRemoveDecoding : public intfOOVHandlerModule{
 public:
-    clsOOVRemoveDecoding(): intfOOVHandlerModule(this->moduleName()) {}
+    clsOOVRemoveDecoding(quint64 _instanceID): intfOOVHandlerModule(this->moduleName(), _instanceID) {}
     ~clsOOVRemoveDecoding();
 
     /**
@@ -77,7 +77,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("OOVRemoveDecoding", clsOOVRemoveDecoding);
+    TARGOMAN_DEFINE_MODULE("OOVRemoveDecoding", clsOOVRemoveDecoding);
 };
 
 /**
@@ -86,7 +86,7 @@ private:
 
 class clsOOVKeepSource : public intfOOVHandlerModule{
 public:
-    clsOOVKeepSource(): intfOOVHandlerModule(this->moduleName()) {}
+    clsOOVKeepSource(quint64 _instanceID): intfOOVHandlerModule(this->moduleName(), _instanceID) {}
     ~clsOOVKeepSource();
 
     /**
@@ -105,7 +105,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("OOVKeepSource", clsOOVKeepSource);
+    TARGOMAN_DEFINE_MODULE("OOVKeepSource", clsOOVKeepSource);
 };
 
 }

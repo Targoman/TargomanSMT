@@ -77,8 +77,10 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
         _target.size() == 1 &&
         _target.at(0) == 0){
         clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePos.start());
-        if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow),false) == true)
+        if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
             return QString();
+        if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::ShowSource), false) == true)
+            return Token.string();
         if (Token.tagStr().size())
             return Token.attrs().value(
                         enuDefaultAttrs::toStr(enuDefaultAttrs::Translation),

@@ -26,13 +26,13 @@ struct stuPhrasePos : public QPair<qint32, qint32>{
     stuPhrasePos(qint32 _start = -1, qint32 _end = -1) :
         QPair<qint32, qint32>(_start, _end)
     {
-        Q_ASSERT(_start <= _end);
+        Q_ASSERT(_start < _end);
     }
 
     size_t start()const         {return this->first;}
     size_t end()const           {return this->second;}
     bool   isValid() const      {return this->first >= 0;}
-    bool   isSingleWord() const {return this->first == this->second; }
+    bool   isSingleWord() const {return this->second - this->first == 1; }
 };
 
 struct stuTranslationOutput{
