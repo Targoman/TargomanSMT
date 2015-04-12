@@ -19,7 +19,6 @@
 #include "Private/OOVHandler/OOVHandler.h"
 #include <iostream>
 
-
 #define PBT_MAXIMUM_COST 1e200
 
 namespace Targoman{
@@ -99,7 +98,7 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
     if(Node->isInvalid())
         throw exSearchGraph("Invalid empty Rule Table");
 
-    Node = &Node->follow(0); //Search for UNKNOWN word Index
+    Node = &Node->follow(gConfigs.EmptyLMScorer->unknownWordIndex()); //Search for UNKNOWN word Index
     if (Node->isInvalid())
         throw exSearchGraph("No Rule defined for UNKNOWN word");
 
@@ -122,7 +121,7 @@ void clsSearchGraphBuilder::collectPhraseCandidates()
         {
             WordIndex_t WordIndex = this->Data->Sentence.at(FirstPosition).wordIndex();
             PrevNode = &PrevNode->follow(WordIndex);
-            if (WordIndex == 0) {
+            if (PrevNode->isInvalid() || WordIndex == gConfigs.EmptyLMScorer->unknownWordIndex()) {
                 clsRuleNode OOVRuleNode =
                         OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
                 if (OOVRuleNode.isInvalid())
@@ -348,8 +347,11 @@ bool clsSearchGraphBuilder::decode()
             }//for PrevCoverageIter
         }//for PrevCardinality
         CurrCardHypoContainer.finlizePruningAndcleanUp();
+
+#ifdef TARGOMAN_SHOW_DEBUG
         // Vedadian
         //*
+
         if(true) {
             auto car2str = [] (int _cardinality) {
                 QString result;
@@ -386,6 +388,7 @@ bool clsSearchGraphBuilder::decode()
             std::cout << std::endl << std::endl << std::endl;
         }
         //*/
+#endif
     }//for NewCardinality
 
     Coverage_t FullCoverage;
@@ -427,8 +430,13 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
                                 (size_t)this->Data->MaxMatchingSourcePhraseCardinality);
         for(size_t Length = 1; Length <= MaxLength; ++Length){
             this->Data->RestCostMatrix[FirstPosition][Length - 1]  = this->Data->PhraseCandidateCollections[FirstPosition][Length-1].bestApproximateCost();
+            // Torabzadeh
+            std::cerr << FirstPosition << ":" << FirstPosition + Length -1 << " "
+                      << ((int(1000 * this->Data->RestCostMatrix[FirstPosition][Length - 1] + 0.5))/1000.0)
+                      << std::endl;
         }
     }
+    exit(0);
 
     for(size_t Length = 2; Length <= (size_t)this->Data->Sentence.size(); ++Length)
         for(size_t FirstPosition = 0; FirstPosition + Length <= (size_t)this->Data->Sentence.size(); ++FirstPosition)

@@ -300,8 +300,8 @@ void clsInputDecomposer::newToken(const QString &_token, const QString &_tagStr,
     if (_tagStr.size())
         WordIndex =  gConfigs.SourceVocab.value(_tagStr);
     else{
-        WordIndex = gConfigs.SourceVocab.value(_token,0);
-        if (WordIndex == 0){
+        WordIndex = gConfigs.SourceVocab.value(_token, gConfigs.EmptyLMScorer->unknownWordIndex());
+        if (WordIndex == gConfigs.EmptyLMScorer->unknownWordIndex()){
             WordIndex = OOVHandler::instance().getWordIndex(_token, Attributes);
             if (Attributes.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid()) //zhnDebug: I think it should be "Attributes.value(..."
                 return; // OOVHandler says that I must ignore this word when decoding

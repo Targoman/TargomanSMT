@@ -13,7 +13,6 @@
 
 #include "OOVHandler.h"
 #include "intfOOVHandlerModule.hpp"
-#include "Private/GlobalConfigs.h"
 
 namespace Targoman{
 namespace SMT {
@@ -76,7 +75,7 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
     QMutexLocker Locker(&this->Lock);
     clsExpirableOOVWord ExpirableOOVWord = this->OOVWords.value(_token);
     Locker.unlock();
-    if (ExpirableOOVWord.NotSet){
+    if (ExpirableOOVWord.Data->NotSet){
         TargetRulesContainer_t TargetRules;
         foreach(intfOOVHandlerModule* pOOVHandler, this->ActiveOOVHandlers){
             const clsTargetRule&  OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
@@ -85,8 +84,8 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
             }
         }
         if (TargetRules.isEmpty()){
-            this->OOVWords.insert(_token,clsExpirableOOVWord(0,_attrs));
-            return 0; // There are no new handlers so keep it as unknown and cache result
+            this->OOVWords.insert(_token,clsExpirableOOVWord(gConfigs.EmptyLMScorer->unknownWordIndex(), _attrs));
+            return gConfigs.EmptyLMScorer->unknownWordIndex(); // There are no new handlers so keep it as unknown and cache result
         }
 
         clsRuleNode RuleNode;
@@ -95,7 +94,7 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
 
         Locker.relock();
         WordIndex_t WordIndex;
-        if (this->AvailableOOVHandlers.size())
+        if (this->AvailableWordIndexes.size())
             WordIndex = this->AvailableWordIndexes.takeFirst();
         else
             WordIndex = this->WordIndexOffset + this->OOVWords.keys().size();
@@ -107,13 +106,13 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
     }
 
     //When ExpiranbleOOVWord has been found
-    for(QVariantMap::ConstIterator Attr = ExpirableOOVWord.Attributes.begin();
-        Attr != ExpirableOOVWord.Attributes.end();
+    for(QVariantMap::ConstIterator Attr = ExpirableOOVWord.Data->Attributes.begin();
+        Attr != ExpirableOOVWord.Data->Attributes.end();
         ++Attr){
         _attrs.insert(Attr.key(), Attr.value());
     }
 
-    return ExpirableOOVWord.WordIndex;
+    return ExpirableOOVWord.Data->WordIndex;
 }
 /**
  * @brief OOVHandler::removeWordIndex When an OOV exipres this function  will be called to removes that word index from #HandledOOVs and add that word index to #AvailableWordIndexes.

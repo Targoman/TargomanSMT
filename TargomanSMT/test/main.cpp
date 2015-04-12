@@ -88,8 +88,8 @@ int main(int argc, char *argv[])
         clsTranslator::init(ConfigManager::instance().configFilePath());
         //printMemoryUsage("after load all");
 
-//        clsTranslator::saveBinaryRuleTable("../pt/phrase-table.kenlm.bin");
-//        return 0;
+        //clsTranslator::saveBinaryRuleTable("../pt/phrase-table.kenlm.bin");
+        //return 0;
 
         QFile File(argv[1]);
         QTextStream Stream(&File);

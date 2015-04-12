@@ -17,6 +17,8 @@
 #include "libTargomanCommon/tmplExpirableCache.hpp"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "Private/RuleTable/clsRuleNode.h"
+#include "Private/GlobalConfigs.h"
+#include "Private/Proxies/intfLMSentenceScorer.hpp"
 
 namespace Targoman{
 namespace SMT {
@@ -33,23 +35,29 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exOOVHandler, exTargomanCore);
 /**
  * @brief The OOVHandler class is responsible for associating word index, string, caching and making rule node for OOV words.
  */
-
 class OOVHandler : public Common::Configuration::intfModule
 {
-    class clsExpirableOOVWord{
+    class clsExpirableOOVWordData : public QSharedData {
     public:
-        clsExpirableOOVWord(){
-            this->WordIndex = 0;
-            this->NotSet = true;
-        }
+        clsExpirableOOVWordData() :
+            NotSet(true),
+            WordIndex(gConfigs.EmptyLMScorer->unknownWordIndex())
+        { }
 
-        clsExpirableOOVWord(Common::WordIndex_t _windex, const QVariantMap& _attrs){
-            this->WordIndex = _windex;
-            this->NotSet = false;
-            this->Attributes = _attrs;
-        }
+        clsExpirableOOVWordData(const clsExpirableOOVWordData& _other) :
+            QSharedData(_other),
+            NotSet(_other.NotSet),
+            WordIndex(_other.WordIndex),
+            Attributes(_other.Attributes)
+        { }
 
-        ~clsExpirableOOVWord(){
+        clsExpirableOOVWordData(bool _notSet, Common::WordIndex_t _wordIndex, QVariantMap _attributes) :
+            NotSet(_notSet),
+            WordIndex(_wordIndex),
+            Attributes(_attributes)
+        { }
+
+        ~clsExpirableOOVWordData() {
             if (this->WordIndex){
                OOVHandler::instance().removeWordIndex(this->WordIndex);
             }
@@ -59,6 +67,26 @@ class OOVHandler : public Common::Configuration::intfModule
         bool                    NotSet;
         Common::WordIndex_t     WordIndex;
         QVariantMap             Attributes;
+    };
+
+    class clsExpirableOOVWord{
+    public:
+        clsExpirableOOVWord() : Data(new clsExpirableOOVWordData())
+        { }
+
+        clsExpirableOOVWord(const clsExpirableOOVWord& _other) :
+            Data(_other.Data)
+        { }
+
+        clsExpirableOOVWord(Common::WordIndex_t _windex, const QVariantMap& _attrs) :
+            Data(new clsExpirableOOVWordData(false, _windex, _attrs))
+        { }
+
+        ~clsExpirableOOVWord(){
+        }
+
+    public:
+        QExplicitlySharedDataPointer<clsExpirableOOVWordData> Data;
     };
 
 

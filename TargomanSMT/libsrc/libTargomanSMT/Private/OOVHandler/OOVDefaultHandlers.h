@@ -14,6 +14,7 @@
 #ifndef OOVDEFAULTHANDLERS_H
 #define OOVDEFAULTHANDLERS_H
 
+#include "Types.h"
 #include "intfOOVHandlerModule.hpp"
 #include "Private/InputDecomposer/clsInput.h"
 
@@ -23,6 +24,7 @@ namespace Private{
 namespace OOV{
 
 using namespace RuleTable;
+using namespace Common;
 
 /**
  * @brief This type of Special OOV handler removes the OOV in the output but it doesn't ignore in decoding process.
@@ -97,10 +99,19 @@ public:
      */
 
     RuleTable::clsTargetRule process(const QString &_token, QVariantMap& _attrs){
-        Q_UNUSED(_token)
-
-        _attrs.insert(InputDecomposer::enuDefaultAttrs::toStr(InputDecomposer::enuDefaultAttrs::ShowSource), true);
-        return clsTargetRule();
+        Q_UNUSED(_attrs)
+        // TODO: Change the following enum, its not useful, the created alternative translation must be
+        // scored by feature functions and as such attributes are no good for this purpose
+//        _attrs.insert(InputDecomposer::enuDefaultAttrs::toStr(InputDecomposer::enuDefaultAttrs::ShowSource), true);
+//        return clsTargetRule();
+        static QList<Cost_t> ZeroCost;
+        if(ZeroCost.size() == 0) {
+            for(int i = 0; i < clsTargetRule::columnNames().size(); ++i)
+                ZeroCost.append(0);
+        }
+        QList<WordIndex_t> TargetPhrase;
+        TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(_token));
+        return clsTargetRule(TargetPhrase, ZeroCost, true);
     }
 
 private:

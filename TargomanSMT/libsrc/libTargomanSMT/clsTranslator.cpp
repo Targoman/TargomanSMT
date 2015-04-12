@@ -49,12 +49,12 @@ void clsTranslator::init(const QString _configFilePath)
         return;
     }
 
-    OOVHandler::instance().initialize();
     InputDecomposer::clsInputDecomposer::init(_configFilePath);
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());
     gConfigs.EmptyLMScorer->init(false);
 
     SearchGraph::clsSearchGraphBuilder::init(_configFilePath);
+    OOVHandler::instance().initialize();
 
     clsTranslatorPrivate::Initialized = true;
 }

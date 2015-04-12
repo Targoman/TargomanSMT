@@ -50,7 +50,7 @@ public:
     clsTargetRule();
 
     clsTargetRule(const QList<Common::WordIndex_t>& _targetPhrase,
-                  const QList<Common::Cost_t>& _fields);
+                  const QList<Common::Cost_t>& _fields, bool _createdByOOVHandler = false);
 
     /**
      * @brief clsTargetRule copy constructor.
@@ -76,9 +76,8 @@ public:
 
     inline Common::WordIndex_t at(int _index) const;
     inline size_t size() const;
-#ifdef TARGOMAN_SHOW_DEBUG
+    inline bool createdByOOVHandler() const;
     inline size_t fieldCount() const;
-#endif
     inline Common::Cost_t  field(size_t _index) const;
     inline Common::Cost_t precomputedValue(size_t _index) const;
     inline void setCosts(const QList<Common::Cost_t>& _costs);
@@ -110,7 +109,7 @@ public:
         clsTargetRule::ColumnNames = _names;
     }
 
-    static inline const QStringList& columnNames(){return clsTargetRule::ColumnNames;}
+    static inline const QStringList& columnNames(){ return clsTargetRule::ColumnNames; }
 
     /**
      * @return returns #PrecomputedValuesSize and increases its size.
@@ -144,16 +143,19 @@ private:
  * This instance of pInvalidTargetRule is static and is used in initilization of clsRuleNode class in constructor of clsSearchGraphNodeData class.
  */
 extern clsTargetRule* pInvalidTargetRule;
+
 /********************************************************************************/
 class clsTargetRuleData : public QSharedData
 {
 public:
     clsTargetRuleData(const QList<Common::WordIndex_t>& _targetPhrase,
                       const QList<Common::Cost_t>& _fields,
-                      size_t _precomputedValueSize):
+                      size_t _precomputedValueSize,
+                      bool _createdByOOVHandler):
         TargetPhrase(_targetPhrase),
         Fields(_fields),
-        PrecomputedValues(_precomputedValueSize,-INFINITY)
+        PrecomputedValues(_precomputedValueSize,-INFINITY),
+        CreatedByOOVHandler(_createdByOOVHandler)
     {}
 
     /**
@@ -165,8 +167,9 @@ public:
     {
         if (clsTargetRule::ColumnNames.size() == 0)
             throw exRuleTable("Invalid TargetRule must be created after initialization");
-        for(int i=0; i< clsTargetRule::ColumnNames.size(); ++i)
+        for(int i = 0; i< clsTargetRule::ColumnNames.size(); ++i)
             this->Fields.append(0);
+        this->CreatedByOOVHandler = false;
     }
 
     /**
@@ -177,7 +180,8 @@ public:
         QSharedData(_other),
         TargetPhrase(_other.TargetPhrase),
         Fields(_other.Fields),
-        PrecomputedValues(_other.PrecomputedValues)
+        PrecomputedValues(_other.PrecomputedValues),
+        CreatedByOOVHandler(_other.CreatedByOOVHandler)
     {}
     ~clsTargetRuleData() {}
 
@@ -185,6 +189,7 @@ public:
     QList<Common::WordIndex_t> TargetPhrase;            /**< Translation (target language phrase) */
     QList<Common::Cost_t>      Fields;                  /**< Feature values */
     QVector<Common::Cost_t>    PrecomputedValues;       /**< It is used for caching */
+    bool                       CreatedByOOVHandler;
 };
 
 /***********************************************************/
@@ -206,13 +211,16 @@ inline size_t clsTargetRule::size() const {
     return this->Data->TargetPhrase.size();
 }
 
+inline bool clsTargetRule::createdByOOVHandler() const
+{
+    return this->Data->CreatedByOOVHandler;
+}
 
 
-#ifdef TARGOMAN_SHOW_DEBUG
+
 inline size_t clsTargetRule::fieldCount() const {
     return (size_t)this->Data->Fields.size();
 }
-#endif
 
 /**
  * @param[in] _index    Index of field.

@@ -49,6 +49,8 @@ public:
 
     void init(bool _justVocab){
         clsTargomanLMProxy::LM.init(_justVocab); // LM must check if it needs to be initialized
+        // Initialization to zero is done in the interface's constructor
+        // this->UnknownWordIndex = 0;
     }
 
     /**

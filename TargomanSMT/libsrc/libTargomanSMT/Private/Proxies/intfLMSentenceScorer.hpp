@@ -35,7 +35,9 @@ class intfLMSentenceScorer : public Common::Configuration::intfModule
 public:
     intfLMSentenceScorer(const QString& _moduleName, quint64 _instanceID) :
         intfModule(_moduleName, _instanceID)
-    {}
+    {
+        UnknownWordIndex = 0;
+    }
 
     virtual ~intfLMSentenceScorer(){}
 
@@ -47,6 +49,14 @@ public:
     virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
     virtual QString getWordByIndex(Common::WordIndex_t _wordIndex) = 0;
     virtual bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const = 0;
+
+protected:
+    Common::WordIndex_t UnknownWordIndex;
+
+public:
+    inline Common::WordIndex_t unknownWordIndex() const {
+        return this->UnknownWordIndex;
+    }
 };
 
 }

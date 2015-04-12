@@ -39,7 +39,6 @@ clsTargetRule::clsTargetRule():
 {
     Q_ASSERT_X(RuleTable::InvalidTargetRuleData != NULL, "clsTargetRule",
         "Invalid target rule instantiated before InvalidTargetRuleData initialization.");
-
 }
 
 /**
@@ -47,11 +46,9 @@ clsTargetRule::clsTargetRule():
  * @param _targetPhrase target language translation phrase.
  * @param _fields   fields of different feature functions for this translation phrase.
  */
-clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields):
-    Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize))
-{
-
-}
+clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields, bool _createdByOOVHandler):
+    Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize, _createdByOOVHandler))
+{ }
 
 void clsTargetRule::readBinary(clsIFStreamExtended &_input)
 {

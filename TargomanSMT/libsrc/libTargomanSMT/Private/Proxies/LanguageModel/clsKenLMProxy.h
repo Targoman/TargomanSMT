@@ -83,6 +83,7 @@ public:
                             Config
                         )
                     );
+        this->UnknownWordIndex = clsKenLMProxy::LM->GetVocabulary().NotFound();
     }
 
     /**

@@ -297,7 +297,7 @@ void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
     QList<WordIndex_t> SourcePhrase;
     foreach(const QString& Word, _sourcePhrase.split(" ", QString::SkipEmptyParts)){
         WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word);
-        if (WordIndex == 0 && Word != "<unk>"){
+        if (WordIndex == gConfigs.EmptyLMScorer->unknownWordIndex() && Word != "<unk>"){
             WordIndex = gConfigs.SourceVocab.size() + 1;
             gConfigs.SourceVocab.insert(Word, WordIndex);
         }
@@ -320,9 +320,9 @@ void clsMosesPlainRuleTable::addUnkToUnkRule(QList<clsRuleNode>& _ruleNodeList)
     for(int i = 0; i < this->PhraseFeatureCount + this->ReorderingFeatureCount; ++i)
         Costs.append(0.0);
     QList<WordIndex_t> SrcUnk;
-    SrcUnk.append(0);
+    SrcUnk.append(gConfigs.EmptyLMScorer->unknownWordIndex());
     QList<WordIndex_t> TgtUnk;
-    TgtUnk.append(0);
+    TgtUnk.append(gConfigs.EmptyLMScorer->unknownWordIndex());
     addRule(_ruleNodeList, SrcUnk, TgtUnk, Costs);
 }
 

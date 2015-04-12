@@ -61,9 +61,11 @@ Common::Cost_t UnknownWordPenalty::scoreSearchGraphNode(clsSearchGraphNode &_new
     _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
 
     Cost_t Cost = 0;
-    for(size_t i = 0; i < _newHypothesisNode.targetRule().size(); ++i)
-        if(_newHypothesisNode.targetRule().at(i) == 0)
-            Cost += 100;
+//    for(size_t i = 0; i < _newHypothesisNode.targetRule().size(); ++i)
+//        if(_newHypothesisNode.targetRule().at(i) == 0)
+//            Cost += 100;
+    if(_newHypothesisNode.targetRule().createdByOOVHandler())
+        Cost = 100;
 
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode)
         Data->CostElements[0] = Cost;
