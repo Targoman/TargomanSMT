@@ -59,34 +59,34 @@ void printMemoryUsage(const QString& _stepString){
       else if (Line.startsWith("VmLib"))
         SharedMemory = Line.replace(" ","").split(":").at(1).trimmed();
     }
-    qDebug()<<"********************************************************************";
-    qDebug()<<"Memory Stat ["<<_stepString<<
-              "]: VirtPeak:"<<VirtualMemory<<
-              " CurrVirt:"<<VirtualMemory<<
-              " ResPeak:"<<ResidentPeak<<
-              " CurRes:"<<ResidentMemory<<
-              " Shared:"<<SharedMemory;
-    qDebug()<<"********************************************************************";
+    std::cerr<<"********************************************************************"<<std::endl;
+    std::cerr<<"Memory Stat ["<<qPrintable(_stepString)<<
+              "]: VirtPeak:"<<qPrintable(VirtualMemory)<<
+              " CurrVirt:"<<qPrintable(VirtualMemory)<<
+              " ResPeak:"<<qPrintable(ResidentPeak)<<
+              " CurRes:"<<qPrintable(ResidentMemory)<<
+              " Shared:"<<qPrintable(SharedMemory)<<std::endl;
+    std::cerr<<"********************************************************************"<<std::endl;
 }
 
 int main(int argc, char *argv[])
 {
     //TARGOMAN_IO_SETTINGS.setDefault();
-    //TARGOMAN_IO_SETTINGS.setDefault(7);
-    //TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
+    TARGOMAN_IO_SETTINGS.setDefault(7);
+    TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
     //TARGOMAN_IO_SETTINGS.setSilent();
 
     try{
         clsSafeCoreApplication App(argc, argv);
 
-        //printMemoryUsage("@first");
+        printMemoryUsage("@first");
         ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf");
 
         //Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
 
-        //printMemoryUsage("after init");
+        printMemoryUsage("after init");
         clsTranslator::init(ConfigManager::instance().configFilePath());
-        //printMemoryUsage("after load all");
+        printMemoryUsage("after load all");
 
         //clsTranslator::saveBinaryRuleTable("../pt/phrase-table.kenlm.bin");
         //return 0;

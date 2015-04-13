@@ -55,7 +55,8 @@ clsBinaryRuleTable::~clsBinaryRuleTable()
 
 void clsBinaryRuleTable::initializeSchema()
 {
-    this->InputStream.reset(new clsIFStreamExtended(clsBinaryRuleTable::FilePath.value()));
+    this->InputStream.reset(new clsIFStreamExtended(clsBinaryRuleTable::FilePath.value(),
+                                                    clsBinaryRuleTable::LoadOnDemand.value() == false));
     if (this->InputStream->is_open() == false)
         throw exRuleTable("Unable to open " + clsBinaryRuleTable::FilePath.value());
     try{

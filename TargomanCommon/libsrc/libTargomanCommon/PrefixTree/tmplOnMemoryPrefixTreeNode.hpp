@@ -58,15 +58,17 @@ public:
     tmplOnMemoryPrefixTreeNode(clsIFStreamExtended& _inputStream) :
         Data(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>())
     {
+        QMap<itmplKey_t, PosType_t> ChildPositions;
         int ChildCount = _inputStream.read<int>();
         for(int i = 0; i < ChildCount; ++i) {
             itmplKey_t Key = _inputStream.read<itmplKey_t>();
             PosType_t Position = _inputStream.read<PosType_t>();
-            PosType_t CurrentPosition = _inputStream.tellp();
-            _inputStream.seekp(Position);
-            this->Data->Children[Key] = tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream);
-            _inputStream.seekp(CurrentPosition);
+            ChildPositions[Key] = Position;
         }
+        this->Data->NodeData.readBinary(_inputStream);
+        for(auto ChildPosIter = ChildPositions.begin(); ChildPosIter != ChildPositions.end(); ++ChildPosIter)
+            this->Data->Children[ChildPosIter.key()] =
+                tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream);
         this->IsInvalid = false;
     }
 

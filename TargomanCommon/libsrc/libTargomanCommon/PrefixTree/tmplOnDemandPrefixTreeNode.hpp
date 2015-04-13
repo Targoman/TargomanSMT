@@ -22,7 +22,7 @@ namespace Targoman {
 namespace Common {
 namespace PrefixTree {
 
-typedef quint64 PosType_t;
+typedef qint64 PosType_t;
 
 //TODO configure cache
 

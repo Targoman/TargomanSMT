@@ -13,10 +13,8 @@
 
 #include "clsTargetRule.h"
 
-#ifdef TARGOMAN_SHOW_DEBUG
 #include "Private/GlobalConfigs.h"
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
-#endif
 
 namespace Targoman {
 namespace SMT {

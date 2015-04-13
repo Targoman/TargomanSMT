@@ -75,7 +75,7 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
 {
     if (_sourcePos.isSingleWord() &&
         _target.size() == 1 &&
-        _target.at(0) == 0){
+        _target.at(0) == 0) {
         clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePos.start());
         if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
             return QString();
@@ -88,14 +88,17 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
         return Token.string();
     }
 
-    QString String;
-    for(size_t i=0; i< _target.size(); ++i){
+    if(_target.size() == 0)
+        return QString();
+
+    QString String = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(0));
+    for(size_t i=1; i< _target.size(); ++i){
         QString Token = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(i));
         if (Token.isEmpty()){
             //TODO Tag management
-            String += "<TAG("+QString::number(_target.at(i))+")>" + " ";
+            String += " <TAG("+QString::number(_target.at(i))+")>";
         }else
-            String+= Token + " ";
+            String+= " " + Token;
     }
 
     return String;
@@ -111,9 +114,12 @@ QString clsOutputComposer::nodeTranslation(const SearchGraph::clsSearchGraphNode
     if(_node.isInvalid())
         return QString();
 
-    return nodeTranslation(_node.prevNode()) +
+    QString PrevNodeTranslation = nodeTranslation(_node.prevNode());
+    if(PrevNodeTranslation.isEmpty() == false)
+        PrevNodeTranslation += " ";
+    return PrevNodeTranslation +
             getTargetString(_node.targetRule(),
-                            stuPhrasePos(_node.sourceRangeBegin(), _node.sourceRangeEnd())) + " ";
+                            stuPhrasePos(_node.sourceRangeBegin(), _node.sourceRangeEnd()));
 }
 
 }
