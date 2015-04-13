@@ -46,9 +46,12 @@ clsTargetRule::clsTargetRule():
  * @param _targetPhrase target language translation phrase.
  * @param _fields   fields of different feature functions for this translation phrase.
  */
-clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields, bool _createdByOOVHandler):
-    Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize, _createdByOOVHandler))
-{ }
+clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields, bool _hasNoRuleTableRecord):
+    Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize, _hasNoRuleTableRecord))
+{
+    if(_targetPhrase.size() == 1 && _targetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex())
+        this->Data->HasNoRuleTableRecord = true;
+}
 
 void clsTargetRule::readBinary(clsIFStreamExtended &_input)
 {
@@ -60,6 +63,8 @@ void clsTargetRule::readBinary(clsIFStreamExtended &_input)
         WordIndex_t WordIndex = _input.read<WordIndex_t>();
         this->Data->TargetPhrase.append(WordIndex);
     }
+    if(this->Data->TargetPhrase.size() == 1 && this->Data->TargetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex())
+        this->Data->HasNoRuleTableRecord = true;
     for(Cost_t& Cost : this->Data->Fields)
         Cost = _input.read<Cost_t>();
     this->Data->PrecomputedValues.fill(-INFINITY, clsTargetRule::PrecomputedValuesSize);

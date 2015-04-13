@@ -431,12 +431,12 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
         for(size_t Length = 1; Length <= MaxLength; ++Length){
             this->Data->RestCostMatrix[FirstPosition][Length - 1]  = this->Data->PhraseCandidateCollections[FirstPosition][Length-1].bestApproximateCost();
             // Torabzadeh
-            std::cerr << FirstPosition << ":" << FirstPosition + Length -1 << " "
-                      << ((int(1000 * this->Data->RestCostMatrix[FirstPosition][Length - 1] + 0.5))/1000.0)
-                      << std::endl;
+//            std::cerr << FirstPosition << ":" << FirstPosition + Length -1 << " "
+//                      << ((int(1000 * this->Data->RestCostMatrix[FirstPosition][Length - 1] + 0.5))/1000.0)
+//                      << std::endl;
         }
     }
-    exit(0);
+//    exit(0);
 
     for(size_t Length = 2; Length <= (size_t)this->Data->Sentence.size(); ++Length)
         for(size_t FirstPosition = 0; FirstPosition + Length <= (size_t)this->Data->Sentence.size(); ++FirstPosition)

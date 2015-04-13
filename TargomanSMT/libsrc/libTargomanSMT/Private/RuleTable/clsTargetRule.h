@@ -50,7 +50,7 @@ public:
     clsTargetRule();
 
     clsTargetRule(const QList<Common::WordIndex_t>& _targetPhrase,
-                  const QList<Common::Cost_t>& _fields, bool _createdByOOVHandler = false);
+                  const QList<Common::Cost_t>& _fields, bool _hasNoRuleTableRecord = false);
 
     /**
      * @brief clsTargetRule copy constructor.
@@ -76,7 +76,7 @@ public:
 
     inline Common::WordIndex_t at(int _index) const;
     inline size_t size() const;
-    inline bool createdByOOVHandler() const;
+    inline bool hasNoRuleTableRecord() const;
     inline size_t fieldCount() const;
     inline Common::Cost_t  field(size_t _index) const;
     inline Common::Cost_t precomputedValue(size_t _index) const;
@@ -151,11 +151,11 @@ public:
     clsTargetRuleData(const QList<Common::WordIndex_t>& _targetPhrase,
                       const QList<Common::Cost_t>& _fields,
                       size_t _precomputedValueSize,
-                      bool _createdByOOVHandler):
+                      bool _hasNoRuleTableRecord):
         TargetPhrase(_targetPhrase),
         Fields(_fields),
         PrecomputedValues(_precomputedValueSize,-INFINITY),
-        CreatedByOOVHandler(_createdByOOVHandler)
+        HasNoRuleTableRecord(_hasNoRuleTableRecord)
     {}
 
     /**
@@ -169,7 +169,7 @@ public:
             throw exRuleTable("Invalid TargetRule must be created after initialization");
         for(int i = 0; i< clsTargetRule::ColumnNames.size(); ++i)
             this->Fields.append(0);
-        this->CreatedByOOVHandler = false;
+        this->HasNoRuleTableRecord = false;
     }
 
     /**
@@ -181,7 +181,7 @@ public:
         TargetPhrase(_other.TargetPhrase),
         Fields(_other.Fields),
         PrecomputedValues(_other.PrecomputedValues),
-        CreatedByOOVHandler(_other.CreatedByOOVHandler)
+        HasNoRuleTableRecord(_other.HasNoRuleTableRecord)
     {}
     ~clsTargetRuleData() {}
 
@@ -189,7 +189,7 @@ public:
     QList<Common::WordIndex_t> TargetPhrase;            /**< Translation (target language phrase) */
     QList<Common::Cost_t>      Fields;                  /**< Feature values */
     QVector<Common::Cost_t>    PrecomputedValues;       /**< It is used for caching */
-    bool                       CreatedByOOVHandler;
+    bool                       HasNoRuleTableRecord;
 };
 
 /***********************************************************/
@@ -211,9 +211,9 @@ inline size_t clsTargetRule::size() const {
     return this->Data->TargetPhrase.size();
 }
 
-inline bool clsTargetRule::createdByOOVHandler() const
+inline bool clsTargetRule::hasNoRuleTableRecord() const
 {
-    return this->Data->CreatedByOOVHandler;
+    return this->Data->HasNoRuleTableRecord;
 }
 
 
