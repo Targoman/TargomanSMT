@@ -29,7 +29,7 @@
 
 using namespace Targoman::Common;
 
-static Configuration::tmplConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
+/*static Configuration::tmplConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
 static Configuration::tmplConfigurable<QString> B(
         "/s","fjkdfjkdsfjk","123",
         Configuration::Validators::tmplPathAccessValidator<
@@ -38,13 +38,13 @@ static Configuration::tmplConfigurable<QString> B(
 //static Configuration::tmplConfigurable<double> C("/s2","fjkdfjkdsfjk",123,
 //                                                  Configuration::Validators::tmplNumericValidator<double, -12, 5>);
 
-static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
+/*static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
                                                   [](const Targoman::Common::Configuration::intfConfigurable& ,QString& ){
                                                       return true;
                                                   });
-
-static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module", "Default");
-
+*/
+/*static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module", "Default");
+*/
 class exSample: public exTargomanBase
 {
 public:
@@ -130,7 +130,8 @@ int main(int argc, char *argv[])
 {
     Targoman::Common::printLoadedLibs();
 
-    //PrefixTree::tmplPrefixTree<WordIndex_t, QString> SamplePrefixTree;
+    QCoreApplication App(argc, argv);
+
 
     Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
     qDebug()<<getTypeStr(A);
@@ -155,13 +156,13 @@ int main(int argc, char *argv[])
     std::cout<<AAA.CrossValidator(-5)<<std::endl;
 
     try{
-      //Targoman::Common::printLoadedLibs();
 
       QString ActorUUID;
 
       TARGOMAN_REGISTER_ACTOR("testLibCommon");
       TARGOMAN_IO_SETTINGS.setFull();
       Targoman::Common::Logger::instance().init("log.log");
+      Configuration::ConfigManager::instance().init("Testlicense", App.arguments().mid(1));
 
       Targoman::Common::TARGOMAN_IO_SETTINGS.ShowColored = false;
       checkOutput();
@@ -223,6 +224,13 @@ int main(int argc, char *argv[])
           PB.setValue(i);
           usleep(500);
       }
+
+      clsCmdProgressBar PBMarquee("Test Marquee", 0);
+      for (int i=0; i< 10001; i++){
+          PBMarquee.setValue(i);
+          usleep(500);
+      }
+      PBMarquee.finalize(true);
 
       return 0;
     }catch(exTargomanBase &e){

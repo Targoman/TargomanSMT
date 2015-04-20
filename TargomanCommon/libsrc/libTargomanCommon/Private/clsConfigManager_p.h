@@ -39,7 +39,7 @@ public:
     void tcpClientManager(int _socketDescriptor);
     void send(QTcpSocket& _clientSocket, const QString& _data);
     void sendError(QTcpSocket& _clientSocket, enuReturnType::Type _type, const QString& _message);
-
+    void startServer();
 public slots:
     void slotNewConnection();
 
@@ -76,8 +76,10 @@ public:
 
     QString ActorUUID;
 
+    static tmplConfigurable<int> ListenPort;
 private:
     ConfigManager& Parent;
+
 };
 
 }

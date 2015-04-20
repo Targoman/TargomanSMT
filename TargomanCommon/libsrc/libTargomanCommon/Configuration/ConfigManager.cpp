@@ -238,6 +238,10 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
 
         if (SaveFile)
             this->save2File(this->pPrivate->ConfigFilePath, FirstTimeConfigFile ? false : true);
+
+        if (this->pPrivate->ListenPort.value() > 0){
+            this->pPrivate->startServer();
+        }
     }catch(...){
         this->pPrivate->Initialized = false;
         throw;

@@ -40,7 +40,8 @@ tmplConfigurable<QString> LogFile(
         "",
         "FILE_PATH",
         "log-file",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
         );
 
 
@@ -55,7 +56,8 @@ tmplConfigurable<bool> DontShow(
         "",
         "",
         "log-dont-show",
-        enuConfigSource::Arg
+        enuConfigSource::Arg,
+        false
         );
 
 tmplConfigurable<bool> Disable(
@@ -69,7 +71,8 @@ tmplConfigurable<bool> Disable(
         "",
         "",
         "log-disable",
-        enuConfigSource::Arg
+        enuConfigSource::Arg,
+        false
         );
 
 /******************************************************************************************/

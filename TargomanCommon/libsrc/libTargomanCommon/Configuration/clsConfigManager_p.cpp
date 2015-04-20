@@ -23,11 +23,31 @@ namespace Common {
 namespace Configuration {
 namespace Private {
 
+tmplConfigurable<int> clsConfigManagerPrivate::ListenPort(
+        "Config/AdminPort",
+        "If set greater than zero Initializes a network channel to monito and program application",
+        0,
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            if (_item.toVariant().toUInt() > 60000){
+                _errorMessage = "Invalid port to listen: " + _item.toVariant().toString();
+                return false;
+            }
+            return true;
+        },
+        "",
+        "PORT",
+        "admin-port",
+        enuConfigSource::Arg,
+        false
+        );
+
+
 void clsConfigManagerPrivate::printHelp(const QString& _license)
 {
     std::cout<<_license.toUtf8().constData()<<std::endl;
     std::cout<<"Usage:"<<std::endl;
     std::cout<<"\t-h|--help:\t Print this help"<<std::endl;
+    std::cout<<"\t--save:\t Saves new configuration file based on old configs and input arguments"<<std::endl;
     QStringList Keys = this->Configs.keys();
     Keys.sort();
     QString LastModule = "";
@@ -497,6 +517,18 @@ void clsConfigManagerPrivate::sendError(QTcpSocket &_clientSocket,
 
     TargomanDebug(8,"Sent and disconnected: " +  Message);
     _clientSocket.disconnectFromHost();
+}
+
+void clsConfigManagerPrivate::startServer()
+{
+    if (this->ListenPort.value() > 0){
+        connect(&this->TCPServer, SIGNAL(newConnection()), this, SLOT(slotNewConnection()));
+        if (this->TCPServer.listen(QHostAddress::Any, this->ListenPort.value())){
+            TargomanLogHappy(5, "Administration server started on port: "<<this->ListenPort.value());
+        }else
+            throw exConfiguration("Unable to start administration server on port: "+
+                                  this->ListenPort.toVariant().toString());
+    }
 }
 }
 }

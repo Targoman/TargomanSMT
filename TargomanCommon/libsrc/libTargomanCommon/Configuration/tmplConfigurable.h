@@ -46,13 +46,15 @@ public:
                         (enuConfigSource::Type)(
                             enuConfigSource::Arg  |
                             enuConfigSource::File |
-                            enuConfigSource::Net ) ) :
+                            enuConfigSource::Net ),
+                     bool _remoteView = true) :
         intfConfigurable(_configPath,
                         _description,
                         _shortSwitch,
                         _shortHelp,
                         _LongSwitch,
-                        _configSources)
+                        _configSources,
+                        _remoteView)
     {
         try{
             QString ErrorMessage;
