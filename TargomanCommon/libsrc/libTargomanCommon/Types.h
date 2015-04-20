@@ -15,6 +15,7 @@
 
 #include <QtCore>
 #include "limits.h"
+#include "Macros.h"
 /**
  * @brief Base namespace surrounding all other namespaces
  */
@@ -33,6 +34,31 @@ typedef union { float AsFloat; quint32 AsUInt32; } FloatEncoded_t;
 
 #define OUTPUT
 #define INOUT
+
+TARGOMAN_DEFINE_ENUM(enuStatus,
+                     Ok              = 'o',
+                     Error           = 'e',
+                     Exclude         = 'd',
+                     Info            = 'i',
+                     Exclamation     = 'x',
+                     NetConnected    = 'c',
+                     NetDisconnected = 'n',
+                     Stop            = 's',
+                     Question        = 'q',
+                     Warning         = 'w',
+                     Unknown         = 'u')
+
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuReturnType,
+                              Result,
+                              Applied,
+                              InvalidData,
+                              ObjectNotFound,
+                              InvalidAction,
+                              InvalidUpdateSource,
+                              InvalidStream,
+                              InvalidLogin,
+                              Undefined)
+
 
 }
 }

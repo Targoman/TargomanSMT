@@ -36,7 +36,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplPrefixTree.h \
     libTargomanCommon/PrefixTree/tmplOnMemoryPrefixTreeNode.hpp \
     libTargomanCommon/PrefixTree/tmplAbstractPrefixTreeNode.hpp \
-    libTargomanCommon/PrefixTree/tmplOnDemandPrefixTreeNode.hpp
+    libTargomanCommon/PrefixTree/tmplOnDemandPrefixTreeNode.hpp \
+    libTargomanCommon/JSONConversationProtocol.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -52,7 +53,9 @@ SOURCES += \
     libTargomanCommon/CompressedStream/clsCompressedInputStream.cpp \
     libTargomanCommon/CompressedStream/clsCompressedOutputStream.cpp \
     libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp \
-    libTargomanCommon/FStreamExtended.cpp
+    libTargomanCommon/FStreamExtended.cpp \
+    libTargomanCommon/JSONConversationProtocol.cpp \
+    libTargomanCommon/Configuration/clsConfigManager_p.cpp
 
 OTHER_FILES +=
 

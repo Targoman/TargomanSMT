@@ -15,7 +15,9 @@
 
 #include <QHash>
 #include <QVariant>
+#include <QtNetwork/QTcpServer>
 #include "Configuration/tmplConfigurable.h"
+#include "Types.h"
 
 namespace Targoman {
 namespace Common {
@@ -26,10 +28,26 @@ namespace Configuration {
  */
 namespace Private {
 
-class clsConfigManagerPrivate
+class clsConfigManagerPrivate : public QObject
 {
+    Q_OBJECT
 public:
+    clsConfigManagerPrivate(ConfigManager& _parent) :
+        Parent(_parent)
+    {}
     void printHelp(const QString &_license);
+    void tcpClientManager(int _socketDescriptor);
+    void send(QTcpSocket& _clientSocket, const QString& _data);
+    void sendError(QTcpSocket& _clientSocket, enuReturnType::Type _type, const QString& _message);
+
+public slots:
+    void slotNewConnection();
+
+private:
+    QList<intfConfigurable*> configItems(const QString& _parent, bool _isRegEX, bool _reportRemote);
+
+
+public:
     /**
      * @brief This is a registry (Map) for all configs and arguments of all programs such as normalizer, the key of
      * this Map, specifies the program and option of that program, and value of this Map, specifies the value of that
@@ -53,6 +71,13 @@ public:
     bool Initialized;
 
     bool SetPathsRelativeToConfigPath;
+
+    QTcpServer  TCPServer;
+
+    QString ActorUUID;
+
+private:
+    ConfigManager& Parent;
 };
 
 }

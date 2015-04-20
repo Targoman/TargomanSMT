@@ -67,6 +67,14 @@ public:
         return static_cast<Type_t*>(this->Instantiatior());
     }
 
+    virtual QString typeString() const{
+        return "QString";
+    }
+
+    virtual QString validValues() const{
+        return "Module Valid Values reporting not implemented yet";
+    }
+
 private:
     QString ActiveModuleName;               /**< Module name which will be set by setFromVariant(const QVariant&)*/
     fpModuleInstantiator_t Instantiatior;   /**< Pointer to the Instantiator function of module.*/

@@ -12,6 +12,7 @@ VERSION=0.0.1
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+=
 
+QT+=network
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 # more info: http://www.qtcentre.org/wiki/index.php?title=Undocumented_qmake   #

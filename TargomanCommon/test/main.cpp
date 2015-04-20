@@ -124,6 +124,8 @@ public:
     std::function<bool(int)> CrossValidator;
 };
 
+#include "FastOperations.hpp"
+
 int main(int argc, char *argv[])
 {
     Targoman::Common::printLoadedLibs();
@@ -131,6 +133,10 @@ int main(int argc, char *argv[])
     //PrefixTree::tmplPrefixTree<WordIndex_t, QString> SamplePrefixTree;
 
     Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
+    qDebug()<<getTypeStr(A);
+    enuBaba::Type B;
+    qDebug()<<getTypeStr(B);
+
     A.clear();
 
     clsCmdProgressBar PB("Marquee");

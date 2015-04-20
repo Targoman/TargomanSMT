@@ -27,6 +27,7 @@ class clsFileBasedConfig : public intfConfigurable{
 public:
     clsFileBasedConfig(const QString&  _configPath) :
         intfConfigurable(_configPath, "OPTIONAL_CONFIGS_IN_FILE","","","",enuConfigSource::Virtual){
+        this->RemoteViewAllowed = false;
         this->ArgCount = -1;
     }
 
@@ -44,6 +45,14 @@ public:
 
     virtual inline bool        crossValidate(QString& ) const{
         return true;
+    }
+
+    virtual QString typeString() const{
+        return "NULL";
+    }
+
+    virtual QString validValues() const{
+        return "";
     }
 };
 

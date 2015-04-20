@@ -17,6 +17,7 @@
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/Macros.h"
+#include "libTargomanCommon/FastOperations.hpp"
 
 namespace Targoman {
 namespace Common {
@@ -103,7 +104,7 @@ public:
      * @brief convert #value variable to QVariant type.
      */
     virtual inline QVariant    toVariant() const{
-        return QVariant(this->Value);
+        return QVariant(this->value());
     }
     /**
      * @brief This function will be overloaded for every type (such as int, float ,...)
@@ -119,8 +120,15 @@ public:
         return this->CrossValidator(*this, _errorMessage);
     }
 
-    inline Type_t  value() const{return this->Value;}
-    inline Type_t  operator ()() const{return this->Value;}
+    inline Type_t  value() const{ /*TODO Thread Safe*/ return this->Value;}
+
+    virtual QString typeString() const{
+        return getTypeStr(this->Value);
+    }
+
+    virtual QString validValues() const{
+        return "Valid Values not implemented yet";
+    }
 
 private:
     Type_t  Value;

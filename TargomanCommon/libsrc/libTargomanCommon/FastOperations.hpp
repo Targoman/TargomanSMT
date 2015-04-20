@@ -28,15 +28,8 @@ inline bool isPositiveFloat(float _num){
     return ! isNegativFloat(_num);
 }
 
-inline quint32 rotl32 ( quint32 x, qint8 r )
-{
-  return (x << r) | (x >> (32 - r));
-}
-
-inline quint64 rotl64 ( quint32 x, qint8 r )
-{
-  return (x << r) | (x >> (64 - r));
-}
+inline quint32 rotl32 ( quint32 x, qint8 r ){return (x << r) | (x >> (32 - r));}
+inline quint64 rotl64 ( quint32 x, qint8 r ){ return (x << r) | (x >> (64 - r));}
 
 /**
  * @param _str Input string
@@ -175,6 +168,22 @@ template<class Class_t, class Container_t, typename Functor_t>
         }
         return _sortedConatiner.size();
     }
+
+#include <typeinfo>
+#include <cxxabi.h>
+
+template<typename T> QString getTypeStr(T _type){
+    char * Name = NULL;
+    QString ReturnVal;
+    int Status;
+    Name = abi::__cxa_demangle(typeid(_type).name(), 0, 0, &Status);
+    if (Name != NULL)
+        ReturnVal =  Name;
+    else
+        ReturnVal =  typeid(_type).name();
+    free(Name);
+    return ReturnVal;
+}
 
 }
 }

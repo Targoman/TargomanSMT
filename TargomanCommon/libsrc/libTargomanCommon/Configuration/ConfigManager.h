@@ -18,6 +18,8 @@
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
+#include "libTargomanCommon/Types.h"
+#include "libTargomanCommon/JSONConversationProtocol.h"
 
 namespace Targoman {
 namespace Common {
@@ -37,8 +39,9 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
  * @brief The ConfigManager class is the manager class for configurables data.
  * Currently it will just manage Arguments and config file
  */
-class ConfigManager
+class ConfigManager :QObject
 {
+    Q_OBJECT
 public:
     ~ConfigManager();
     static inline ConfigManager& instance(){
@@ -57,6 +60,19 @@ public:
 private:
     ConfigManager();
     Q_DISABLE_COPY(ConfigManager)
+
+signals:
+    void sigValidateAgent(INOUT QString&        _user,
+                          const QString&  _pass,
+                          const QString&  _ip,
+                          OUTPUT bool&           _canView,
+                          OUTPUT bool&           _canChange);
+
+    void sigRPC(const  QString&            _funcName,
+                INOUT  QVariantMap&              _arguments,
+                OUTPUT QVariant&                 _returnStorage);
+
+    void sigPing(JSONConversationProtocol::stuPong& _pong);
 
 private:
     static ConfigManager* Instance;

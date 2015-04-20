@@ -61,7 +61,8 @@ public:
                         (enuConfigSource::Type)(
                             enuConfigSource::Arg  |
                             enuConfigSource::File |
-                            enuConfigSource::Net ));
+                            enuConfigSource::Net ),
+                     bool _remoteView = true);
 
     intfConfigurable(const intfConfigurable& _other);
 
@@ -97,16 +98,21 @@ public:
      */
     virtual void        finalizeConfig() {}
 
+    virtual QString     typeString() const = 0;
+    virtual QString     validValues() const = 0;
+
     inline const QString& description()const{return this->Description;}
     inline const QString& shortSwitch()const{return this->ShortSwitch;}
     inline const QString& shortHelp()const{return this->ShortHelp;}
     inline const QString& longSwitch()const{return this->LongSwitch;}
     inline bool  canBemanaged() { return testFlag(this->ConfigSources, enuConfigSource::Virtual) == false; }
+    inline bool  canBeConfigured(enuConfigSource::Type _source) const { return testFlag(this->ConfigSources, _source) ;}
     inline qint8 argCount()const{return this->ArgCount;}
     inline const QString& configPath()const{return this->ConfigPath;}
     inline void  setIsConfigured() { this->WasConfigured = true; }
     inline bool  wasConfigured() const {return this->WasConfigured; }
     inline enuConfigSource::Type configSources() { return this->ConfigSources; }
+    inline bool remoteView() const { return this->RemoteViewAllowed; }
 
 protected:
     QString ConfigPath;     /**< Config path of the configurable item. Path is used to access Item by name or via configuration file */
@@ -117,6 +123,7 @@ protected:
     qint8   ArgCount;       /**< Number of arguments for this configurable */
     bool    WasConfigured;      /**< Indicates that value has been set by Config sources not default */
     enuConfigSource::Type  ConfigSources; /**< Indicates that from which source this item can be configured */
+    bool    RemoteViewAllowed;   /** Indicates wheter this item can be monitored remotely or not **/
 private:
     QScopedPointer<Private::intfConfigurablePrivate> pPrivate;
 };

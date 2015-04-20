@@ -12,6 +12,8 @@
  */
 
 #include <QCoreApplication>
+#include <QtNetwork/QTcpSocket>
+#include <QtConcurrent/QtConcurrent>
 #include <QSettings>
 #include <QFileInfo>
 #include <QSet>
@@ -27,7 +29,7 @@ namespace Configuration {
 ConfigManager* ConfigManager::Instance = NULL;
 /******************************************************************************************/
 ConfigManager::ConfigManager() :
-    pPrivate(new Private::clsConfigManagerPrivate)
+    pPrivate(new Private::clsConfigManagerPrivate(*this))
 {
     this->pPrivate->Initialized = false;
     this->pPrivate->SetPathsRelativeToConfigPath = true;
@@ -366,38 +368,6 @@ void ConfigManager::updateRelativePaths(QString &_path)
 }
 
 /***********************************************************************************************/
-void Private::clsConfigManagerPrivate::printHelp(const QString& _license)
-{
-    std::cout<<_license.toUtf8().constData()<<std::endl;
-    std::cout<<"Usage:"<<std::endl;
-    std::cout<<"\t-h|--help:\t Print this help"<<std::endl;
-    QStringList Keys = this->Configs.keys();
-    Keys.sort();
-    QString LastModule = "";
-    foreach(const QString& Key, Keys){
-        QString Module= Key.mid(0, Key.indexOf("/"));
-        intfConfigurable* Item = this->Configs.value(Key);
-        if (Item && (Item->shortSwitch().size() || Item->longSwitch().size())){
-            if (Module != LastModule){
-                std::cout<<"\n**** "<<Module.toLatin1().constData()<<" ****";
-                LastModule = Module;
-            }
-            std::cout<<"\n\t";
-            if(Item->shortSwitch().size())
-                std::cout<<("-" + Item->shortSwitch()).toUtf8().constData();
-            if (Item->longSwitch().size()){
-                if (Item->shortSwitch().size())
-                    std::cout<<"|";
-                std::cout<<"--"<<Item->longSwitch().toUtf8().constData();
-            }
-            if (Item->shortHelp().size())
-                std::cout<<"\t"<<Item->shortHelp().toUtf8().constData();
-            std::cout<<"\n\t\t"<<Item->description().toUtf8().constData()<<std::endl;
-        }
-    }
-}
-
-/***********************************************************************************************/
 
 namespace Private {
 class intfConfigurablePrivate{
@@ -408,7 +378,8 @@ public:
      * @param _new          new configurable pointer.
      */
     void updateConfig(const intfConfigurable* _old, intfConfigurable* _new){
-        ConfigManager::instance().pPrivate->Configs[ConfigManager::instance().pPrivate->Configs.key((intfConfigurable*)_old)] = _new;
+        ConfigManager::instance().pPrivate->Configs[
+                ConfigManager::instance().pPrivate->Configs.key((intfConfigurable*)_old)] = _new;
     }
 };
 }
@@ -422,7 +393,8 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
                                    const QString &_shortSwitch,
                                    const QString &_shortHelp,
                                    const QString &_longSwitch,
-                                   enuConfigSource::Type _configSources) :
+                                   enuConfigSource::Type _configSources,
+                                   bool _remoteView) :
     pPrivate(new Private::intfConfigurablePrivate)
 {
     try{
@@ -437,6 +409,7 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
         this->ArgCount = this->ShortHelp.split(" ").size();
         this->WasConfigured = false;
         this->ConfigSources = _configSources;
+        this->RemoteViewAllowed = _remoteView;
 
         ConfigManager::instance().addConfig(this->ConfigPath, this);
     }catch(exTargomanBase &e){
