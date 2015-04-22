@@ -21,6 +21,7 @@
 #include <iostream>
 #include "ConfigManager.h"
 #include "Private/clsConfigManager_p.h"
+#include "Private/clsConfigManagerOverNet.h"
 
 namespace Targoman {
 namespace Common {
@@ -70,6 +71,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         exit(1);
         return;
     }
+    Targoman::Common::Logger::instance().registerActor(&this->pPrivate->ActorUUID, "ConfigManager");
+
     // ////////////////////////////////////////////////
     // /check arguments to see wheter we must save file or not
     // ////////////////////////////////////////////////
@@ -95,7 +98,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                 this->save2File(this->pPrivate->ConfigFilePath, false);
                 FirstTimeConfigFile = true;
             }else
-               throw exConfiguration("File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read.");
+                throw exConfiguration("File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read.");
         }
     }
 
@@ -112,7 +115,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     // ////////////////////////////////////////////////
     QSet<QString> Modules;
     if (FirstTimeConfigFile == false &&
-        this->pPrivate->ConfigFilePath.size()){
+            this->pPrivate->ConfigFilePath.size()){
         QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
         foreach (const QString& Key, ConfigFile.allKeys()){
             QString BasePath = Key;
@@ -175,7 +178,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                 if (testFlag(ConfigItemIter.value()->configSources(), enuConfigSource::Arg) == false)
                     continue;
                 if ((KeyIter->startsWith("--") && *KeyIter == "--" + ConfigItemIter.value()->longSwitch()) ||
-                       *KeyIter  == "-" + ConfigItemIter.value()->shortSwitch()){
+                        *KeyIter  == "-" + ConfigItemIter.value()->shortSwitch()){
                     QString Value;
                     for (qint8 i=0; i<ConfigItemIter.value()->argCount(); i++){
                         KeyIter++;
@@ -239,9 +242,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         if (SaveFile)
             this->save2File(this->pPrivate->ConfigFilePath, FirstTimeConfigFile ? false : true);
 
-        if (this->pPrivate->ListenPort.value() > 0){
-            this->pPrivate->startServer();
-        }
+        this->pPrivate->startServer();
     }catch(...){
         this->pPrivate->Initialized = false;
         throw;
@@ -371,9 +372,100 @@ void ConfigManager::updateRelativePaths(QString &_path)
         _path.insert(0, QDir().filePath(this->configFilePath()));
 }
 
-/***********************************************************************************************/
+bool ConfigManager::isNetworkManagable()
+{
+    return this->pPrivate->isNetworkBased();
+}
 
+void ConfigManager::startAdminServer()
+{
+    this->pPrivate->startNetworkListening();
+}
+
+/***********************************************************************************************/
 namespace Private {
+
+clsConfigManagerPrivate::clsConfigManagerPrivate(ConfigManager &_parent) :
+    Parent(_parent),
+    ConfigNetServer(new clsConfigNetworkServer(*this))
+{}
+
+clsConfigManagerPrivate::~clsConfigManagerPrivate()
+{
+    //Just to supress compiler error on QScopped Pointer
+}
+
+void clsConfigManagerPrivate::printHelp(const QString& _license)
+{
+    std::cout<<_license.toUtf8().constData()<<std::endl;
+    std::cout<<"Usage:"<<std::endl;
+    std::cout<<"\t-h|--help:\t Print this help"<<std::endl;
+    std::cout<<"\t--save:\t Saves new configuration file based on old configs and input arguments"<<std::endl;
+    QStringList Keys = this->Configs.keys();
+    Keys.sort();
+    QString LastModule = "";
+    foreach(const QString& Key, Keys){
+        QString Module= Key.mid(0, Key.indexOf("/"));
+        intfConfigurable* Item = this->Configs.value(Key);
+        if (Item && (Item->shortSwitch().size() || Item->longSwitch().size())){
+            if (Module != LastModule){
+                std::cout<<"\n**** "<<Module.toLatin1().constData()<<" ****";
+                LastModule = Module;
+            }
+            std::cout<<"\n\t";
+            if(Item->shortSwitch().size())
+                std::cout<<("-" + Item->shortSwitch()).toUtf8().constData();
+            if (Item->longSwitch().size()){
+                if (Item->shortSwitch().size())
+                    std::cout<<"|";
+                std::cout<<"--"<<Item->longSwitch().toUtf8().constData();
+            }
+            if (Item->shortHelp().size())
+                std::cout<<"\t"<<Item->shortHelp().toUtf8().constData();
+            std::cout<<"\n\t\t"<<Item->description().toUtf8().constData()<<std::endl;
+        }
+    }
+}
+
+QList<intfConfigurable *> clsConfigManagerPrivate::configItems(const QString &_parent, bool _isRegEX, bool _reportRemote)
+{
+    QList<intfConfigurable *> RetVal;
+    foreach(intfConfigurable* Item, this->Configs.values())
+    {
+        if(_isRegEX){
+            if (Item->configPath().contains(QRegExp("^"+ _parent))) {
+                if (_reportRemote == false && Item->remoteView() == false)
+                    continue;
+                RetVal.append(Item);
+            }
+        } else {
+            if (Item->configPath().startsWith(_parent)) {
+                if (_reportRemote == false && Item->remoteView() == false)
+                    continue;
+                RetVal.append(Item);
+            }
+        }
+    }
+
+    return RetVal;
+}
+
+void clsConfigManagerPrivate::startServer()
+{
+    if (this->ConfigNetServer->ListenPort.value() > 0)
+        this->ConfigNetServer->start();
+}
+
+bool clsConfigManagerPrivate::isNetworkBased()
+{
+    return this->ConfigNetServer->ListenPort.value() > 0;
+}
+
+void clsConfigManagerPrivate::startNetworkListening()
+{
+    this->ConfigNetServer->startListening();
+}
+
 class intfConfigurablePrivate{
 public:
     /**

@@ -37,7 +37,16 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplOnMemoryPrefixTreeNode.hpp \
     libTargomanCommon/PrefixTree/tmplAbstractPrefixTreeNode.hpp \
     libTargomanCommon/PrefixTree/tmplOnDemandPrefixTreeNode.hpp \
-    libTargomanCommon/JSONConversationProtocol.h
+    libTargomanCommon/JSONConversationProtocol.h \
+    libTargomanCommon/Private/clsConfigManagerOverNet.h \
+    libTargomanCommon/Network/clsBaseClientManager.h \
+    libTargomanCommon/Network/clsBaseRateController.h \
+    libTargomanCommon/Network/clsBaseTCPServer.h \
+    libTargomanCommon/Network/clsBaseConnectionManager.h \
+    libTargomanCommon/Private/clsBaseClientManager_p.h \
+    libTargomanCommon/Private/clsBaseRateController_p.h \
+    libTargomanCommon/Private/clsBaseTCPServer_p.h \
+    libTargomanCommon/Private/intfTCPServerSecurity.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -55,9 +64,14 @@ SOURCES += \
     libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp \
     libTargomanCommon/FStreamExtended.cpp \
     libTargomanCommon/JSONConversationProtocol.cpp \
-    libTargomanCommon/Configuration/clsConfigManager_p.cpp
+    libTargomanCommon/Configuration/clsConfigManagerOverNet.cpp \
+    libTargomanCommon/Network/clsBaseClientManager.cpp \
+    libTargomanCommon/Network/clsBaseConnectionManager.cpp \
+    libTargomanCommon/Network/clsBaseTCPServer.cpp \
+    libTargomanCommon/Network/clsBaseRateController.cpp
 
-OTHER_FILES +=
+OTHER_FILES += \
+    libTargomanCommon/Private/primeGenerator.sh
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

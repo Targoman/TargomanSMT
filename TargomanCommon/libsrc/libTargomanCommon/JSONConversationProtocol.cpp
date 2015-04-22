@@ -12,9 +12,9 @@
 
 #include "JSONConversationProtocol.h"
 #include <QJsonDocument>
-#include "libETS_JSON/JSONObject.h"
-#include "libETS_JSON/JSONArray.h"
-#include "libETS_JSON/JSONValue.h"
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 
 namespace Targoman {
 namespace Common{

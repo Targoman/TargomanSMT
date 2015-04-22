@@ -147,16 +147,10 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickparticles_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_sql.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_sql_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_testlib.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_testlib_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_widgets.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_widgets_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_xml.pri \
@@ -284,16 +278,10 @@ Makefile: KenLM.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /usr/lib64/qt5/m
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickparticles_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_sql.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_sql_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_testlib.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_testlib_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_widgets.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_widgets_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_xml.pri \
@@ -352,16 +340,10 @@ Makefile: KenLM.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /usr/lib64/qt5/m
 /usr/lib64/qt5/mkspecs/modules/qt_lib_quickparticles_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets_private.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_sql.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_sql_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_testlib.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_testlib_private.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit_private.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_widgets.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_widgets_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_xml.pri:

@@ -56,6 +56,10 @@ public:
     fpModuleInstantiator_t getInstantiator(const QString& _name) const;
     QString configFilePath();
     void updateRelativePaths(QString &_path);
+    bool isNetworkManagable();
+
+public slots:
+    void startAdminServer();
 
 private:
     ConfigManager();

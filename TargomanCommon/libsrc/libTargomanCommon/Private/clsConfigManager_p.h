@@ -15,9 +15,7 @@
 
 #include <QHash>
 #include <QVariant>
-#include <QtNetwork/QTcpServer>
-#include "Configuration/tmplConfigurable.h"
-#include "Types.h"
+#include "Configuration/ConfigManager.h"
 
 namespace Targoman {
 namespace Common {
@@ -28,25 +26,19 @@ namespace Configuration {
  */
 namespace Private {
 
+class clsConfigNetworkServer;
+
 class clsConfigManagerPrivate : public QObject
 {
     Q_OBJECT
 public:
-    clsConfigManagerPrivate(ConfigManager& _parent) :
-        Parent(_parent)
-    {}
+    clsConfigManagerPrivate(ConfigManager& _parent);
+    ~clsConfigManagerPrivate();
     void printHelp(const QString &_license);
-    void tcpClientManager(int _socketDescriptor);
-    void send(QTcpSocket& _clientSocket, const QString& _data);
-    void sendError(QTcpSocket& _clientSocket, enuReturnType::Type _type, const QString& _message);
-    void startServer();
-public slots:
-    void slotNewConnection();
-    void slotClientDisconnected();
-
-private:
     QList<intfConfigurable*> configItems(const QString& _parent, bool _isRegEX, bool _reportRemote);
-
+    void startServer();
+    bool isNetworkBased();
+    void startNetworkListening();
 
 public:
     /**
@@ -73,14 +65,10 @@ public:
 
     bool SetPathsRelativeToConfigPath;
 
-    QTcpServer  TCPServer;
-
     QString ActorUUID;
 
-    static tmplConfigurable<int> ListenPort;
-private:
     ConfigManager& Parent;
-
+    QScopedPointer<clsConfigNetworkServer> ConfigNetServer;
 };
 
 }

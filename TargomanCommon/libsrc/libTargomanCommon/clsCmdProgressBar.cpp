@@ -88,6 +88,7 @@ void clsCmdProgressBar::setValue(quint32 _value)
                    QString(this->LastProgressValue % (ProgressBarMaxWidth - 3), ' ')+"###",-ProgressBarMaxWidth).toUtf8().constData()<<flush;
             ++this->LastProgressValue;
             this->LastShowTime.restart();
+            this->WasShown = true;
         }
 
         return;
