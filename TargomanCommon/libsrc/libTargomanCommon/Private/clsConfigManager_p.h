@@ -42,6 +42,7 @@ public:
     void startServer();
 public slots:
     void slotNewConnection();
+    void slotClientDisconnected();
 
 private:
     QList<intfConfigurable*> configItems(const QString& _parent, bool _isRegEX, bool _reportRemote);
