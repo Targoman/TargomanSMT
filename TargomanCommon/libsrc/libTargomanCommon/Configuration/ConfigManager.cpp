@@ -224,6 +224,11 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         }
 
         // ////////////////////////////////////////////////
+        // /prepare TCP server
+        // ////////////////////////////////////////////////
+        this->pPrivate->prepareServer();
+
+        // ////////////////////////////////////////////////
         // /finalize all config items (for module configurables, this puts instantiator function of module to Instatiator member of that.)
         // ////////////////////////////////////////////////
         foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
@@ -242,7 +247,6 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         if (SaveFile)
             this->save2File(this->pPrivate->ConfigFilePath, FirstTimeConfigFile ? false : true);
 
-        this->pPrivate->startServer();
     }catch(...){
         this->pPrivate->Initialized = false;
         throw;
@@ -450,20 +454,19 @@ QList<intfConfigurable *> clsConfigManagerPrivate::configItems(const QString &_p
     return RetVal;
 }
 
-void clsConfigManagerPrivate::startServer()
+void clsConfigManagerPrivate::prepareServer()
 {
-    if (this->ConfigNetServer->ListenPort.value() > 0)
-        this->ConfigNetServer->start();
+  this->ConfigNetServer->check();
 }
 
 bool clsConfigManagerPrivate::isNetworkBased()
 {
-    return this->ConfigNetServer->ListenPort.value() > 0;
+    return this->ConfigNetServer->isActive();
 }
 
 void clsConfigManagerPrivate::startNetworkListening()
 {
-    this->ConfigNetServer->startListening();
+    this->ConfigNetServer->start(true);
 }
 
 class intfConfigurablePrivate{

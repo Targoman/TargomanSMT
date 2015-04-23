@@ -39,7 +39,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
  * @brief The ConfigManager class is the manager class for configurables data.
  * Currently it will just manage Arguments and config file
  */
-class ConfigManager :QObject
+class ConfigManager : public QObject
 {
     Q_OBJECT
 public:
@@ -67,15 +67,14 @@ private:
 
 signals:
     void sigValidateAgent(INOUT QString&        _user,
-                          const QString&  _pass,
-                          const QString&  _ip,
-                          OUTPUT bool&           _canView,
-                          OUTPUT bool&           _canChange);
+                          const QString&        _pass,
+                          const QString&        _ip,
+                          OUTPUT bool&          _canView,
+                          OUTPUT bool&          _canChange);
 
-    void sigRPC(const  QString&            _funcName,
-                INOUT  QVariantMap&              _arguments,
-                OUTPUT QVariant&                 _returnStorage);
-
+    void sigRPC(const QString&            _funcName,
+                INOUT  QVariantMap&       _arguments,
+                OUTPUT QVariant&          _returnVal);
     void sigPing(JSONConversationProtocol::stuPong& _pong);
 
 private:

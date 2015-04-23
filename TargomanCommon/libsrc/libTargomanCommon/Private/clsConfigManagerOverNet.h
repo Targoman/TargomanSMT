@@ -17,8 +17,6 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
 #include <QTime>
-#include "Network/clsBaseTCPServer.h"
-#include "Network/clsBaseClientManager.h"
 #include "Configuration/tmplConfigurable.h"
 #include "clsConfigManager_p.h"
 
@@ -29,121 +27,62 @@ namespace Private {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exConfigurationServer, exConfiguration);
 
-class clsTCPServer;
-
 /******************************************************************************/
-class clsConfigNetworkServer : public QThread
+class clsConfigNetworkServer : private QTcpServer
 {
     Q_OBJECT
 public:
-    clsConfigNetworkServer(clsConfigManagerPrivate& _configManager, bool _useWebSocketServer = false);
+    clsConfigNetworkServer(clsConfigManagerPrivate& _configManager);
     ~clsConfigNetworkServer();
-
-    void checkPortAvailability();
-    inline void startListening(){this->CanStartListening = true;}
-
-private slots:
-    void slotShutdown();
-
-signals:
-    void sigValidateAgent(INOUT QString&        _user,
-                          const QString&  _pass,
-                          const QString&  _ip,
-                          OUTPUT bool&           _canView,
-                          OUTPUT bool&           _canChange);
-
-    void sigRPC(const QString&            _funcName,
-                INOUT  QVariantMap&       _arguments,
-                OUTPUT QVariant&          _returnVal);
-    void sigPing(JSONConversationProtocol::stuPong& _pong);
+    void start(bool _showNotification);
+    bool check();
+    bool isActive(){
+        return this->ListenPort.value() > 0;
+    }
 
 private:
-    void run();
+    void incomingConnection(qintptr _socketDescriptor);
 
 private:
-    clsConfigManagerPrivate& ConfigManagerPrivate;
-    static tmplConfigurable<int>  ListenPort;
-    static tmplConfigurable<bool> AdminLocal;
-    static tmplConfigurable<int>  MaxSessionTime;
-    static tmplConfigurable<int>  MaxIdleTime;
+    clsConfigManagerPrivate&          ConfigManagerPrivate;
+    static tmplConfigurable<int>      ListenPort;
+    static tmplConfigurable<bool>     AdminLocal;
+    static tmplConfigurable<int>      MaxSessionTime;
+    static tmplConfigurable<int>      MaxIdleTime;
     static tmplConfigurable<quint16>  MaxConnections;
 
-    bool                                CanStartListening;
-    QScopedPointer<QTcpServer>          TCPServer;
-    QString&                            ActorUUID;
-
-    friend class clsConfigManagerPrivate;
-};
-
-/******************************************************************************/
-class clsTCPServer: public Network::clsBaseTCPServer
-{
-  Q_OBJECT
-
-public:
-  clsTCPServer(clsConfigManagerPrivate& _configManager, int _maxConnections);
-
-private:
-    Network::clsBaseClientManager* newClientInstance(const QString&, qint32);
-
-signals:
-    void sigValidateAgent(INOUT QString&        _user,
-                          const QString&        _pass,
-                          const QString&        _ip,
-                          OUTPUT bool&          _canView,
-                          OUTPUT bool&          _canChange);
-
-    void sigRPC(const QString&            _funcName,
-                INOUT  QVariantMap&       _arguments,
-                OUTPUT QVariant&          _returnVal);
-    void sigPing(JSONConversationProtocol::stuPong& _pong);
-
-private slots:
-    void slotNewClient(const QHostAddress& _host, quint16 _port, const QString& _id);
-    void slotClientRemoved(const QHostAddress& _host, quint16 _port, const QString& _id);
-
-private:
-    clsConfigManagerPrivate& ConfigManagerPrivate;
     QString&                            ActorUUID;
 };
-/******************************************************************************/
-class clsConnectionManager : public Network::clsBaseConnectionManager
-{
-public:
-  clsConnectionManager(int _maxConnections) : clsBaseConnectionManager(_maxConnections){}
-  const QByteArray clientId() const;
-};
 
 /******************************************************************************/
-class clsClientManager: public Network::clsBaseClientManager
+class clsClientThread : public QThread
 {
   Q_OBJECT
 public:
-  clsClientManager(const QByteArray& _id, clsConfigManagerPrivate& _configManager, QObject* _parent);
+  clsClientThread(qintptr _socketDescriptor,
+                  clsConfigManagerPrivate& _configManager,
+                  QObject* _parent);
 
 private:
+  void run();
   void sendError(enuReturnType::Type _type, const QString& _message);
   void sendResult(const QString &_data);
-  void processIncomingData();
+
+private slots:
+  void slotReadyRead();
+  void slotDisconnected();
 
 signals:
-  void sigValidateAgent(INOUT QString&        _user,
-                        const QString&        _pass,
-                        const QString&        _ip,
-                        OUTPUT bool&          _canView,
-                        OUTPUT bool&          _canChange);
-
-  void sigRPC(const QString&            _funcName,
-              INOUT  QVariantMap&       _arguments,
-              OUTPUT QVariant&          _returnVal);
-  void sigPing(JSONConversationProtocol::stuPong& _pong);
+  void error(QTcpSocket::SocketError socketerror);
 
 private:
+  qintptr                    SocketDescriptor;
   QString                    ActorName;
   bool                       AllowedToChange;
   bool                       AllowedToView;
   clsConfigManagerPrivate&   ConfigManagerPrivate;
-  QString&                            ActorUUID;
+  QString&                   ActorUUID;
+  QTcpSocket*                Socket;
 };
 
 }

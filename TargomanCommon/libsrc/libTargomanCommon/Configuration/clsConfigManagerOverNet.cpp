@@ -20,8 +20,6 @@ namespace Common {
 namespace Configuration {
 namespace Private {
 
-using namespace Network;
-
 tmplConfigurable<int> clsConfigNetworkServer::ListenPort(
         "ConfigManager/AdminPort",
         "If set greater than zero Initializes a network channel to monitor and control application",
@@ -111,140 +109,60 @@ tmplConfigurable<quint16> clsConfigNetworkServer::MaxConnections(
         false
         );
 
-clsConfigNetworkServer::clsConfigNetworkServer(
-        clsConfigManagerPrivate &_configManager,
-        bool _useWebSocketServer) :
+clsConfigNetworkServer::clsConfigNetworkServer(clsConfigManagerPrivate &_configManager) :
     ConfigManagerPrivate(_configManager),
     ActorUUID(_configManager.ActorUUID)
-{
-    if (_useWebSocketServer)
-        throw exTargomanNotImplemented("WebSocketServer will be available in Qt 5.4");
-    this->CanStartListening = false;
-    //connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(slotShutdown()));
-}
+{}
 
 clsConfigNetworkServer::~clsConfigNetworkServer()
 {
     //Just to suppress compiler erro using QScopedPointer
 }
 
-void clsConfigNetworkServer::checkPortAvailability()
+void clsConfigNetworkServer::start(bool _showNotification)
 {
-    QTcpServer DummyTCPServer;
-
-    if (!DummyTCPServer.listen(this->AdminLocal.value() ? QHostAddress::LocalHost : QHostAddress::Any,
+    if (this->ListenPort.value() > 0){
+        if (!this->listen(this->AdminLocal.value() ? QHostAddress::LocalHost : QHostAddress::Any,
                                this->ListenPort.value()))
-        throw exConfigurationServer(QString("Seems that port: %1 is in use").arg(
-                                        this->ListenPort.value()));
-
-    DummyTCPServer.close();
-}
-
-void clsConfigNetworkServer::slotShutdown()
-{
-    TargomanLogWarn(5,"Shutting down configuration Network Server");
-
-    try{
-        this->TCPServer->close();
-        this->exit();
-    }catch(...){
+            throw exConfigurationServer(QString("Unable to Start Server on: %1:%2").arg(
+                                            this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
+                                            this->ListenPort.value()));
     }
+
+    if (_showNotification)
+        TargomanInfo(5, QString("Configuration server has been started on %1:%2").arg(
+                         this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
+                         this->ListenPort.value()))
 }
 
-void clsConfigNetworkServer::run()
+bool clsConfigNetworkServer::check()
 {
-    QThread::setTerminationEnabled(false);
-
-    TargomanDebug(5, "ConfigurationAdminServer Thread Started");
-
-    this->TCPServer.reset(new clsTCPServer(this->ConfigManagerPrivate, this->MaxConnections.value()));
-    connect(this->TCPServer.data(), SIGNAL(sigValidateAgent(QString&,const QString&,const QString&,bool&,bool&)),
-            this,                   SIGNAL(sigValidateAgent(QString&,const QString&,const QString&,bool&,bool&)),
-            Qt::DirectConnection);
-    connect(this->TCPServer.data(),SIGNAL(sigRPC(QString,QVariantMap&, QVariant&)),
-            this,                  SIGNAL(sigRPC(QString,QVariantMap&, QVariant&)),
-            Qt::DirectConnection);
-    connect(this->TCPServer.data(),  SIGNAL(sigPing(JSONConversationProtocol::stuPong&)),
-            this,                    SIGNAL(sigPing(JSONConversationProtocol::stuPong&)),
-            Qt::DirectConnection);
-
-    this->setTerminationEnabled(true);
-
-    while(this->CanStartListening == false)
-        sleep(1);
-
-    if (!TCPServer->listen(this->AdminLocal.value() ? QHostAddress::LocalHost : QHostAddress::Any,
-                           this->ListenPort.value()))
-        throw exConfigurationServer(QString("Unable to Start Server listening on: %1:%2").arg(
-                                        this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
-                                        this->ListenPort.value()));
-    TargomanInfo(5, QString("Configuration Network Server listening on: %1:%2").arg(
-                        this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
-                        this->ListenPort.value()));
-
-    try{
-        this->exec();
-    }
-    catch(...)
-    {}
+    if (this->ListenPort.value() > 0){
+        this->start(false);
+        this->close();
+        return true;
+    }else
+        return true;
 }
 
-/******************************************************************************/
-clsTCPServer::clsTCPServer(clsConfigManagerPrivate &_configManager,
-                           int _maxConnections):
-    Network::clsBaseTCPServer("OMC", new clsConnectionManager(_maxConnections)),
-    ConfigManagerPrivate(_configManager),
-    ActorUUID(_configManager.ActorUUID)
+void clsConfigNetworkServer::incomingConnection(qintptr _socketDescriptor)
 {
-    connect(this, SIGNAL(sigNewClient(QHostAddress,quint16,QString)),
-            this,  SLOT(slotNewClient(QHostAddress,quint16,QString)));
-    connect(this, SIGNAL(sigClientRemoved(QHostAddress,quint16,QString)),
-            this,  SLOT(slotClientRemoved(QHostAddress,quint16,QString)));
-}
+    clsClientThread* CLT = new clsClientThread(_socketDescriptor,
+                                               this->ConfigManagerPrivate,
+                                               this);
 
-clsBaseClientManager* clsTCPServer::newClientInstance(const QString &, qint32 )
-{
-    clsClientManager* CLM = new clsClientManager(this->ConnectionManager->clientId(),
-                                                 this->ConfigManagerPrivate,
-                                                 this);
+    connect(CLT, SIGNAL(finished()), CLT, SLOT(deleteLater()));
 
-    connect(CLM, SIGNAL(sigValidateAgent(QString&,const QString&,const QString&,bool&,bool&)),
-            this,SIGNAL(sigValidateAgent(QString&,const QString&,const QString&,bool&,bool&)),
-            Qt::DirectConnection);
-    connect(CLM, SIGNAL(sigRPC(QString,QVariantMap&, QVariant&)),
-            this,SIGNAL(sigRPC(QString,QVariantMap&, QVariant&)),
-            Qt::DirectConnection);
-    connect(CLM, SIGNAL(sigPing(JSONConversationProtocol::stuPong&)),
-            this,SIGNAL(sigPing(JSONConversationProtocol::stuPong&)),
-            Qt::DirectConnection);
-
-    return CLM;
-}
-
-void clsTCPServer::slotNewClient(const QHostAddress& _host, quint16 _port, const QString& _id)
-{
-    TargomanLogInfo(5, QString("New Configuration Admin from %1:%2 with id=%3 connected").arg(
-                        _host.toString()).arg(_port).arg(_id));
-}
-
-void clsTCPServer::slotClientRemoved(const QHostAddress& _host, quint16 _port, const QString& _id)
-{
-    TargomanLogInfo(5, qPrintable(QString("Configuration Admin from %1:%2 with id=%3 Closed").arg(
-                                      _host.toString()).arg(_port).arg(_id)));
-}
-
-/******************************************************************************/
-const QByteArray clsConnectionManager::clientId() const
-{
-    return QByteArray::number(++this->TotalConnections);
+    CLT->start();
 }
 
 /******************************************************************************/
 
-clsClientManager::clsClientManager(const QByteArray& _id,
-                                   clsConfigManagerPrivate &_configManager,
-                                   QObject* _parent):
-    clsBaseClientManager(_id, _parent),
+clsClientThread::clsClientThread(qintptr _socketDescriptor,
+                                 clsConfigManagerPrivate &_configManager,
+                                 QObject* _parent):
+    QThread(_parent),
+    SocketDescriptor(_socketDescriptor),
     ConfigManagerPrivate(_configManager),
     ActorUUID(_configManager.ActorUUID)
 {
@@ -252,18 +170,21 @@ clsClientManager::clsClientManager(const QByteArray& _id,
     this->AllowedToView   = false;
 }
 
-void clsClientManager::processIncomingData()
+void clsClientThread::slotReadyRead()
 {
     try
     {
-        if (this->bytesAvailable() < 3)
+        if (this->Socket->bytesAvailable() < 3)
             return;
 
-        if (this->bytesAvailable() > 20000)
+        if (this->Socket->bytesAvailable() > 20000)
             this->sendError(enuReturnType::InvalidStream,"Stream Data is too long");
 
-        QByteArray ReceivedBytes =this->getAllData();
+        QByteArray ReceivedBytes =this->Socket->readLine().trimmed();
         TargomanDebug(9,"Received: "+  ReceivedBytes);
+
+        if(ReceivedBytes.isEmpty())
+            return;
 
         JSONConversationProtocol::stuRequest Request =
                 JSONConversationProtocol::parseRequest(ReceivedBytes);
@@ -287,7 +208,7 @@ void clsClientManager::processIncomingData()
                 emit this->ConfigManagerPrivate.Parent.sigValidateAgent(
                             this->ActorName,
                             Pass,
-                            this->peerAddress().toString(),
+                            this->Socket->peerAddress().toString(),
                             this->AllowedToView,
                             this->AllowedToChange);
 
@@ -308,8 +229,8 @@ void clsClientManager::processIncomingData()
                                               1));
                 } else if (this->ActorName.isEmpty()) {
                     TargomanLogWarn(6, "Attemp to login from"<<
-                                    this->peerAddress().toString()<<":"<<
-                                    this->peerPort()<<" Failed");
+                                    this->Socket->peerAddress().toString()<<":"<<
+                                    this->Socket->peerPort()<<" Failed");
                     return this->sendError(enuReturnType::InvalidLogin,
                                            "Invalid User/Password");
                 } else {
@@ -633,25 +554,55 @@ void clsClientManager::processIncomingData()
     }
 }
 
-void clsClientManager::sendError(enuReturnType::Type _type, const QString& _message)
+void clsClientThread::slotDisconnected()
+{
+    TargomanLogInfo(5, QString("Client with id=%3 disconnected").arg(
+                        this->SocketDescriptor));
+    this->Socket->deleteLater();
+    exit(0);
+}
+
+void clsClientThread::run()
+{
+    this->Socket = new QTcpSocket;
+    if(!this->Socket->setSocketDescriptor(this->SocketDescriptor)){
+        emit error(this->Socket->error());
+        return;
+    }
+
+
+    connect(this->Socket, SIGNAL(readyRead()),
+            this,           SLOT(slotReadyRead()), Qt::DirectConnection);
+    connect(this->Socket, SIGNAL(disconnected()), this, SLOT(slotDisconnected()));
+
+    TargomanLogInfo(5, QString("New Configuration Admin from %1:%2 with id=%3 connected").arg(
+                        this->Socket->peerAddress().toString()).arg(
+                        this->Socket->peerPort()).arg(this->SocketDescriptor));
+
+    this->exec();
+}
+
+void clsClientThread::sendError(enuReturnType::Type _type, const QString& _message)
 {
     QString Message =
             JSONConversationProtocol::prepareError("", "", _type, _message);
-    this->write(Message.toUtf8());
+    this->Socket->write(Message.toUtf8());
 
-    TargomanDebug(8,"Sent and disconnected to("<<
-                  this->peerAddress().toString()<<":"<<
-                  this->peerPort()<<"): "<<Message);
-    this->disconnectFromHost();
-    this->waitForDisconnected();
+    TargomanDebug(8,"Sent and disconnected ("<<
+                  this->ActorName<<"@"<<
+                  this->Socket->peerAddress().toString()<<":"<<
+                  this->Socket->peerPort()<<"): "<<Message);
+    this->Socket->disconnectFromHost();
+    this->Socket->waitForDisconnected();
 }
 
-void clsClientManager::sendResult(const QString &_data)
+void clsClientThread::sendResult(const QString &_data)
 {
-    this->write(_data.toUtf8());
+    this->Socket->write(_data.toUtf8());
     TargomanDebug(8, "Sent to Client ("<<
-                  this->peerAddress().toString()<<":"<<
-                  this->peerPort()<<"): "<<_data);
+                  this->ActorName<<"@"<<
+                  this->Socket->peerAddress().toString()<<":"<<
+                  this->Socket->peerPort()<<"): "<<_data);
 }
 
 }

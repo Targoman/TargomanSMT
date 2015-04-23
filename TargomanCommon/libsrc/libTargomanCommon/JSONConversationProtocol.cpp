@@ -175,6 +175,8 @@ JSONConversationProtocol::stuRequest JSONConversationProtocol::parseRequest(cons
             Request.Name = "ssidPing";
             if (Doc.array().size() > 1)
                 Request.Args.insert("ssid", Doc.array().last().toVariant().toULongLong());
+            else
+                throw exJSONConversationProtocol("No SSID defined for ping type 2");
         }
     } else if (Doc.isObject()) {
         QString FirstObjectName =  Doc.object().begin().key();

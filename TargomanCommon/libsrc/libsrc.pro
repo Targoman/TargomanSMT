@@ -24,7 +24,6 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Configuration/intfConfigurable.hpp \
     libTargomanCommon/Configuration/clsFileBasedConfig.hpp \
     libTargomanCommon/Configuration/tmplConfigurable.h \
-    libTargomanCommon/Private/clsConfigManager_p.h \
     libTargomanCommon/Configuration/ConfigManager.h \
     libTargomanCommon/Configuration/clsModuleConfig.hpp \
     libTargomanCommon/Configuration/intfConfigurableModule.hpp \
@@ -39,14 +38,7 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplOnDemandPrefixTreeNode.hpp \
     libTargomanCommon/JSONConversationProtocol.h \
     libTargomanCommon/Private/clsConfigManagerOverNet.h \
-    libTargomanCommon/Network/clsBaseClientManager.h \
-    libTargomanCommon/Network/clsBaseRateController.h \
-    libTargomanCommon/Network/clsBaseTCPServer.h \
-    libTargomanCommon/Network/clsBaseConnectionManager.h \
-    libTargomanCommon/Private/clsBaseClientManager_p.h \
-    libTargomanCommon/Private/clsBaseRateController_p.h \
-    libTargomanCommon/Private/clsBaseTCPServer_p.h \
-    libTargomanCommon/Private/intfTCPServerSecurity.hpp
+    libTargomanCommon/Private/clsConfigManager_p.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -64,11 +56,7 @@ SOURCES += \
     libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp \
     libTargomanCommon/FStreamExtended.cpp \
     libTargomanCommon/JSONConversationProtocol.cpp \
-    libTargomanCommon/Configuration/clsConfigManagerOverNet.cpp \
-    libTargomanCommon/Network/clsBaseClientManager.cpp \
-    libTargomanCommon/Network/clsBaseConnectionManager.cpp \
-    libTargomanCommon/Network/clsBaseTCPServer.cpp \
-    libTargomanCommon/Network/clsBaseRateController.cpp
+    libTargomanCommon/Configuration/clsConfigManagerOverNet.cpp
 
 OTHER_FILES += \
     libTargomanCommon/Private/primeGenerator.sh

@@ -36,7 +36,7 @@ public:
     ~clsConfigManagerPrivate();
     void printHelp(const QString &_license);
     QList<intfConfigurable*> configItems(const QString& _parent, bool _isRegEX, bool _reportRemote);
-    void startServer();
+    void prepareServer();
     bool isNetworkBased();
     void startNetworkListening();
 
