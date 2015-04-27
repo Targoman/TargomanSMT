@@ -92,17 +92,13 @@ class OOVHandler : public Common::Configuration::intfModule
 
 public:
     void initialize();
-    static OOVHandler& instance(){return *((OOVHandler*)moduleInstance());}
     Common::WordIndex_t                getWordIndex(const QString& _token, QVariantMap &_attrs);
     inline RuleTable::clsRuleNode      getRuleNode(Common::WordIndex_t _wordIndex) const {
         return this->HandledOOVs.value(_wordIndex);
     }
 
 private:
-    OOVHandler():
-        intfModule(this->moduleName())
-    {}
-
+    OOVHandler(): intfModule(this->moduleName()) {}
     void removeWordIndex(Common::WordIndex_t _wordIndex);
     TARGOMAN_DEFINE_SINGLETONMODULE("OOVHandler", OOVHandler);
 

@@ -76,8 +76,6 @@ tmplConfigurable<bool> Disable(
         );
 
 /******************************************************************************************/
-Logger* Logger::Instance = NULL;
-
 Logger::Logger(QObject *parent) :
     QObject(parent),pPrivate(new Targoman::Common::Private::LoggerPrivate)
 {

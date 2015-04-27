@@ -179,7 +179,10 @@ class Logger : public QObject
 {
     Q_OBJECT
 public:
-    static inline Logger& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new Logger));}
+    static inline Logger& instance(){
+        static Logger* Instance = NULL;
+        return *(Q_LIKELY(Instance) ? Instance : (Instance = new Logger));
+    }
     ~Logger();
     
     bool init();

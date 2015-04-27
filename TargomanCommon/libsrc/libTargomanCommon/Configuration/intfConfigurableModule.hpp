@@ -88,13 +88,13 @@ private: \
 #define TARGOMAN_DEFINE_SINGLETONMODULE(_name, _class) \
 public: \
     void   unregister(){}\
-    static Targoman::Common::Configuration::intfModule* moduleInstance(){return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
+    static _class& instance() {return *((_class*)_class::moduleInstance());} \
+    static Targoman::Common::Configuration::intfModule* moduleInstance(){static _class* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
     static QString moduleName(){return QStringLiteral(_name);}  \
     static QString baseConfigPath(){return "/" + moduleName();} \
 private: \
     Q_DISABLE_COPY(_class) \
-    static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
-    static _class* Instance
+    static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for non singleton classes.
@@ -111,8 +111,7 @@ private: \
 
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
-                      Targoman::Common::Configuration::stuInstantiator(_class::moduleInstance,true)); \
-    _class* _class::Instance = NULL
+                      Targoman::Common::Configuration::stuInstantiator(_class::moduleInstance,true));
 }
 }
 }

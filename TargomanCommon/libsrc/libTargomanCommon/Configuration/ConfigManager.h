@@ -45,7 +45,9 @@ class ConfigManager : public QObject
 public:
     ~ConfigManager();
     static inline ConfigManager& instance(){
-        return *(Q_LIKELY(Instance) ? Instance : (Instance = new ConfigManager));}
+        static ConfigManager* Instance = NULL;
+        return *(Q_LIKELY(Instance) ? Instance : (Instance = new ConfigManager));
+    }
 
     void init(const QString &_license, const QStringList &_arguments = QStringList());
     void save2File(const QString&  _fileName, bool _backup);
@@ -78,7 +80,6 @@ signals:
     void sigPing(JSONConversationProtocol::stuPong& _pong);
 
 private:
-    static ConfigManager* Instance;
     QScopedPointer<Private::clsConfigManagerPrivate> pPrivate;
 
     friend class Targoman::Common::Configuration::Private::intfConfigurablePrivate;

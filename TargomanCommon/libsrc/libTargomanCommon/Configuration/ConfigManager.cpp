@@ -28,7 +28,6 @@ namespace Targoman {
 namespace Common {
 namespace Configuration {
 
-ConfigManager* ConfigManager::Instance = NULL;
 /******************************************************************************************/
 ConfigManager::ConfigManager() :
     pPrivate(new Private::clsConfigManagerPrivate(*this))
