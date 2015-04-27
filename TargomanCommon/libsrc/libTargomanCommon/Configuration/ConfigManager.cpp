@@ -183,10 +183,14 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                     for (qint8 i=0; i<ConfigItemIter.value()->argCount(); i++){
                         KeyIter++;
                         if (KeyIter == _arguments.end())
-                            throw exConfiguration("Switch: <" +*KeyIter+ "> needs at least: " +
+                            throw exConfiguration("Switch: <" +*(KeyIter - 1)+ "> needs at least: " +
                                                   QString::number(ConfigItemIter.value()->argCount())+ " arguments.");
                         Value += *KeyIter + " ";
                     }
+
+                    if (ConfigItemIter.value()->argCount() == 0)
+                        Value = "true"; //Used on boolean args with no param
+
                     if (ConfigItemIter.value()->validate(Value.trimmed(), ErrorMessage) == false)
                         throw exConfiguration(ErrorMessage);
                     else{
@@ -466,7 +470,7 @@ bool clsConfigManagerPrivate::isNetworkBased()
 
 void clsConfigManagerPrivate::startNetworkListening()
 {
-    this->ConfigNetServer->start(true);
+    this->ConfigNetServer->start();
 }
 
 class intfConfigurablePrivate{
@@ -505,7 +509,7 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
             this->ConfigPath = _configPath.mid(1);
         else
             this->ConfigPath = _configPath;
-        this->ArgCount = this->ShortHelp.split(" ").size();
+        this->ArgCount = this->shortHelp().size() ? this->ShortHelp.split(" ").size() : 0;
         this->WasConfigured = false;
         this->ConfigSources = _configSources;
         this->RemoteViewAllowed = _remoteView;

@@ -11,6 +11,7 @@
  */
 
 #include <QJsonObject>
+#include <unistd.h>
 #include <QtConcurrent/QtConcurrent>
 #include "Private/clsConfigManagerOverNet.h"
 #include "JSONConversationProtocol.h"
@@ -48,6 +49,20 @@ tmplConfigurable<bool> clsConfigNetworkServer::AdminLocal(
         "",
         "",
         "admin-just-local",
+        enuConfigSource::Arg,
+        false
+        );
+
+tmplConfigurable<bool> clsConfigNetworkServer::WaitPortReady(
+        "ConfigManager/WaitPortReady",
+        "If set to true it will wait till port is ready checking every 500ms.",
+        false,
+        [] (const intfConfigurable&, QString&){
+            return true;
+        },
+        "",
+        "",
+        "admin-wait-port-ready",
         enuConfigSource::Arg,
         false
         );
@@ -119,17 +134,32 @@ clsConfigNetworkServer::~clsConfigNetworkServer()
     //Just to suppress compiler erro using QScopedPointer
 }
 
-void clsConfigNetworkServer::start(bool _showNotification)
+void clsConfigNetworkServer::start(bool _justCheck)
 {
+    bool PrintMessage = true;
     if (this->ListenPort.value() > 0){
-        if (!this->listen(this->AdminLocal.value() ? QHostAddress::LocalHost : QHostAddress::Any,
-                               this->ListenPort.value()))
-            throw exConfigurationServer(QString("Unable to Start Server on: %1:%2").arg(
-                                            this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
-                                            this->ListenPort.value()));
+        do{
+            if (!this->listen(this->AdminLocal.value() ? QHostAddress::LocalHost : QHostAddress::Any,
+                                   this->ListenPort.value())){
+                if (clsConfigNetworkServer::WaitPortReady.value() == false)
+                    throw exConfigurationServer(QString("Unable to Start Server on: %1:%2").arg(
+                                                    this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
+                                                    this->ListenPort.value()));
+                else{
+                    if (PrintMessage && _justCheck == false){
+                        TargomanInfo(5, "Waiting for port %d ready...", this->ListenPort.value());
+                        PrintMessage = false;
+                    }
+                    usleep(500000);
+                }
+            }else
+                break;
+        }while(_justCheck == false);
     }
 
-    if (_showNotification)
+    if (_justCheck)
+        this->close();
+    else
         TargomanInfo(5, QString("Configuration server has been started on %1:%2").arg(
                          this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
                          this->ListenPort.value()))
@@ -138,8 +168,7 @@ void clsConfigNetworkServer::start(bool _showNotification)
 bool clsConfigNetworkServer::check()
 {
     if (this->ListenPort.value() > 0){
-        this->start(false);
-        this->close();
+        this->start(true);
         return true;
     }else
         return true;

@@ -34,7 +34,7 @@ class clsConfigNetworkServer : private QTcpServer
 public:
     clsConfigNetworkServer(clsConfigManagerPrivate& _configManager);
     ~clsConfigNetworkServer();
-    void start(bool _showNotification);
+    void start(bool _justCheck = false);
     bool check();
     bool isActive(){
         return this->ListenPort.value() > 0;
@@ -46,6 +46,7 @@ private:
 private:
     clsConfigManagerPrivate&          ConfigManagerPrivate;
     static tmplConfigurable<int>      ListenPort;
+    static tmplConfigurable<bool>     WaitPortReady;
     static tmplConfigurable<bool>     AdminLocal;
     static tmplConfigurable<int>      MaxSessionTime;
     static tmplConfigurable<int>      MaxIdleTime;
