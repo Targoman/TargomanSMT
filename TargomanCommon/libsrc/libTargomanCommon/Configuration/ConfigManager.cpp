@@ -153,7 +153,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                         continue; // Continue to next key
                     else
                         throw exConfiguration("Configuration path <"+Key+"> is not registered");
-                }else if (this->pPrivate->Configs.contains(Key))
+                }else if (this->pPrivate->Configs.contains(Key) == false)
                     throw exConfiguration("Configuration path <"+Key+"> is not registered");
             }
 
@@ -559,6 +559,11 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
             this->ConfigPath = _configPath.mid(1);
         else
             this->ConfigPath = _configPath;
+
+        if (_configType == enuConfigType::Array ||
+            _configType == enuConfigType::FileBased)
+            if (this->ConfigPath.endsWith("/") == false)
+                this->ConfigPath.append("/");
         this->ArgCount = this->shortHelp().size() ? this->ShortHelp.split(" ").size() : 0;
         this->WasConfigured = false;
         this->ConfigSources = _configSources;

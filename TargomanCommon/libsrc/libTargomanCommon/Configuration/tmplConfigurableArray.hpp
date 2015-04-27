@@ -30,7 +30,7 @@ class tmplConfigurableArrayItem : public itmplType_t{
 public:
     tmplConfigurableArrayItem(const QString& _baseconfigPath,
                               size_t _index) :
-        itmplType_t(QString("%1/%2/").arg(_baseconfigPath).arg(_index))
+        itmplType_t(QString("%1%2/").arg(_baseconfigPath).arg(_index))
     { }
 
     tmplConfigurableArrayItem(const tmplConfigurableArrayItem& _other) :
