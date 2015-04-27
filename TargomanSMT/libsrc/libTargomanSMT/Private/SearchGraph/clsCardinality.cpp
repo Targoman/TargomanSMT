@@ -50,9 +50,9 @@ bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &
 {
     if(_node.getTotalCost() +
             clsCardinalityHypothesisContainer::SearchBeamWidth.value() <
-            this->Data->WorstCostLimit)
+            this->Data->CostLimit)
     {
-        this->Data->WorstCostLimit = _node.getTotalCost() +
+        this->Data->CostLimit = _node.getTotalCost() +
                 clsCardinalityHypothesisContainer::SearchBeamWidth.value();
     }
 
@@ -84,7 +84,7 @@ bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &
 
 bool clsCardinalityHypothesisContainer::mustBePruned(Cost_t _cost) const
 {
-    if(_cost > this->Data->WorstCostLimit)
+    if(_cost > this->Data->CostLimit)
         return true;
     return false;
 }
@@ -240,7 +240,7 @@ void clsCardinalityHypothesisContainer::prune()
     this->Data->TotalSearchGraphNodeCount = TotalSearchGraphNodeCount;
     updateBestAndWorstNodes();
     if(this->Data->TotalSearchGraphNodeCount > 0)
-        this->Data->WorstCostLimit = this->Data->WorstLexicalHypothesis->nodes().last().getTotalCost();
+        this->Data->CostLimit = this->Data->WorstLexicalHypothesis->nodes().last().getTotalCost();
 }
 
 }

@@ -62,9 +62,6 @@ private:
 public:
     inline Common::Cost_t getUnknownWordPenaltyCost(const RuleTable::clsTargetRule& _targetRule) const {
         Common::Cost_t Cost = 0;
-//        for(size_t i = 0; i < _targetRule.size(); ++i)
-//            if(_targetRule.at(i) == 0)
-//                Cost += 100;
         if(_targetRule.hasNoRuleTableRecord())
             Cost = 100;
         return Cost * UnknownWordPenalty::ScalingFactor.value();

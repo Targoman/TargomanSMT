@@ -170,8 +170,8 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
     //Find last bit set then check how many bits are zero before this.
     for(int i=_newCoverage.size() - 1; i>=0; --i)
         if(_newCoverage.testBit(i)){
-            size_t CoutOfPrevZeros = _newCoverage.count(false) + i - _newCoverage.size() + 1;
-            return (CoutOfPrevZeros <= this->ReorderingConstraintMaximumRuns.value());
+            size_t CountOfPrevZeros = _newCoverage.count(false) + i - _newCoverage.size() + 1;
+            return (CountOfPrevZeros <= this->ReorderingConstraintMaximumRuns.value());
         }
     return true;
 }
@@ -282,22 +282,6 @@ bool clsSearchGraphBuilder::decode()
                     if (SkipStep)
                         continue;//TODO if NewPhraseCardinality has not contigeous place breaK
 
-
-
-                    // Skip these candidates if they will cause reordering jump violation in future
-                    int firstUncoveredPosition = PrevCoverage.size();
-                    for(int i = 0; i < PrevCoverage.size(); ++i) {
-                        if(PrevCoverage.testBit(i) == false) {
-                            firstUncoveredPosition = i;
-                            break;
-                        }
-                    }
-                    if(firstUncoveredPosition < PrevCoverage.size()) {
-                        if(qAbs((int)NewPhraseEndPos - firstUncoveredPosition) >
-                                HardReorderingJumpLimit.value())
-                            continue;
-                    }
-
                     Coverage_t NewCoverage(PrevCoverage);
                     for (size_t i=NewPhraseBeginPos; i<NewPhraseEndPos; ++i)
                         NewCoverage.setBit(i);
@@ -324,6 +308,7 @@ bool clsSearchGraphBuilder::decode()
                     Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseBeginPos, NewPhraseEndPos);
 
                     foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
+
 
                         size_t MaxCandidates = qMin((int)PhraseCandidates.usableTargetRuleCount(),
                                                     PhraseCandidates.targetRules().size());
@@ -441,13 +426,8 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
                                 (size_t)this->Data->MaxMatchingSourcePhraseCardinality);
         for(size_t Length = 1; Length <= MaxLength; ++Length){
             this->Data->RestCostMatrix[FirstPosition][Length - 1]  = this->Data->PhraseCandidateCollections[FirstPosition][Length-1].bestApproximateCost();
-            // Torabzadeh
-//            std::cerr << FirstPosition << ":" << FirstPosition + Length -1 << " "
-//                      << ((int(1000 * this->Data->RestCostMatrix[FirstPosition][Length - 1] + 0.5))/1000.0)
-//                      << std::endl;
         }
     }
-//    exit(0);
 
     for(size_t Length = 2; Length <= (size_t)this->Data->Sentence.size(); ++Length)
         for(size_t FirstPosition = 0; FirstPosition + Length <= (size_t)this->Data->Sentence.size(); ++FirstPosition)

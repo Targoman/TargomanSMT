@@ -27,7 +27,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exJanePhraseTable, exRuleTable);
 /**
  * @brief The clsJanePlainRuleTable class is used to load Jane phrase table.
  */
-class clsJanePlainRuleTable : intfRuleTable
+class clsJanePlainRuleTable : public intfRuleTable
 {
 public:
     clsJanePlainRuleTable(quint64 _instanceID);

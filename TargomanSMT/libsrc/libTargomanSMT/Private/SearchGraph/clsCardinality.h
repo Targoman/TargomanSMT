@@ -39,7 +39,7 @@ public:
         this->WorstLexicalHypothesis = NULL;
         this->BestLexicalHypothesis = NULL;
         this->TotalSearchGraphNodeCount = 0;
-        this->WorstCostLimit = INFINITY;
+        this->CostLimit = INFINITY;
     }
 
     clsCardinalityHypothesisContainerData(const clsCardinalityHypothesisContainerData& _other) :
@@ -50,7 +50,7 @@ public:
         BestLexicalHypothesis(_other.BestLexicalHypothesis),
         WorstCoverage(_other.WorstCoverage),
         WorstLexicalHypothesis(_other.WorstLexicalHypothesis),
-        WorstCostLimit(_other.WorstCostLimit)
+        CostLimit(_other.CostLimit)
     {}
 
     ~clsCardinalityHypothesisContainerData(){}
@@ -62,7 +62,7 @@ public:
     clsLexicalHypothesisContainer*  BestLexicalHypothesis;
     Coverage_t                      WorstCoverage;
     clsLexicalHypothesisContainer*  WorstLexicalHypothesis;
-    Common::Cost_t                  WorstCostLimit;
+    Common::Cost_t                  CostLimit;
 };
 
 /**

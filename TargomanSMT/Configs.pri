@@ -62,5 +62,6 @@ for(Project, ProjectDependencies) {
 for(Library, ProjectDependencies):LIBS += -l$$Library
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 
-INCLUDEPATH+=$$BaseLibraryIncludeFolder
+INCLUDEPATH+=$$BaseLibraryIncludeFolder \
+../libsrc/libTargomanSMT
 

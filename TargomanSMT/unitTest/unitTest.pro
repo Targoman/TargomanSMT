@@ -14,7 +14,14 @@ HEADERS += \
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
-    UnitTest.cpp
+    UnitTest.cpp \
+    test_clsInputDecomposer_init.cpp \
+    test_clsSearchGraphBuilder_conformsIBM1Constraint.cpp \
+    test_clsSearchGraphBuilder_conformsHardReorderingJumpLimit.cpp \
+    test_clsSearchGraphBuilder_collectPhraseCandidates.cpp \
+    test_inputDecomposer_parseRichIXML.cpp \
+    test_clsSearchGraphBuilder_initializeRestCostsMatrix.cpp
+
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
@@ -34,3 +41,5 @@ MOC_DIR = $$BaseBuildFolder/moc
 INCLUDEPATH += $$BasePath/libsrc
 QMAKE_LIBDIR += $$BaseLibraryFolder
 LIBS += -l$$ProjectName
+
+QMAKE_POST_LINK += ln -s $$PWD/assets/ $$BaseUnitTestBinFolder || :

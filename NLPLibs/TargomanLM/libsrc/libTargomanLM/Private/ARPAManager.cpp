@@ -102,7 +102,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel& _model, bool _just
 
     std::string LineString;
 
-    quint8        NGramOrder, MaxGram = 0;
+    quint8        NGramOrder = 0, MaxGram = 0;
     quint32       LineNo = 0, Count = 0;
     float         Prob, Backoff;
     bool          IsOK;

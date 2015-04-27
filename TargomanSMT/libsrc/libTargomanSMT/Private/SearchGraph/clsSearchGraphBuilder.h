@@ -66,6 +66,8 @@ public:
 
 private:
     static Common::Configuration::tmplConfigurable<quint8> MaxTargetPhraseCount;
+
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 /**
@@ -132,6 +134,8 @@ public:
 
 private:
     QExplicitlySharedDataPointer<clsPhraseCandidateCollectionData> Data;
+
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 /**
@@ -216,7 +220,6 @@ public:
 
 private:
     Common::Cost_t computeReorderingJumpCost(size_t JumpWidth) const;
-    void initializePhraseRestCostsMatrix();
     Common::Cost_t calculateRestCost(const Coverage_t& _coverage, quint16 _lastPos) const;
     Common::Cost_t computePhraseRestCosts(const Coverage_t& _coverage) const;
     Common::Cost_t computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const;
@@ -235,6 +238,8 @@ private:
     static Common::Configuration::tmplConfigurable<quint8>  ReorderingConstraintMaximumRuns;     /**< A threshold that will be used in IBM1 constrains.*/
     static Common::Configuration::tmplConfigurable<bool>    DoComputePositionSpecificRestCosts;
     static Common::Configuration::tmplConfigurable<bool>    DoPrunePreInsertion;
+
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 }

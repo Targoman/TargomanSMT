@@ -62,7 +62,7 @@ size_t clsNBestFinder::fillBestOptions(const SearchGraph::clsSearchGraphNode &_n
         if (Node.sourceRangeBegin() == _node.sourceRangeBegin() &&
             Node.sourceRangeEnd() == _node.sourceRangeEnd())
             //_node.targetRule has been appended before so take care to not append it twice
-            if (Node.targetRule().isSame(_node.targetRule()))
+            if (Node.targetRule().isSame(_node.targetRule()) == false)
                 TargetRules.append(Node.targetRule());
 
         if (TargetRules.size() > clsNBestFinder::MaxOptions.value())
@@ -71,7 +71,7 @@ size_t clsNBestFinder::fillBestOptions(const SearchGraph::clsSearchGraphNode &_n
 
     this->NBestOptions.insert(stuPhrasePos(_node.sourceRangeBegin(), _node.sourceRangeEnd()),
                              clsNBestFinder::stuTargetOption(
-                                  stuPhrasePos(TargetIndexStart, TargetIndexStart + _node.targetRule().size() - 1),
+                                  stuPhrasePos(TargetIndexStart, TargetIndexStart + _node.targetRule().size()),
                                   TargetRules));
 
     return TargetIndexStart + _node.targetRule().size();

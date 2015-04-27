@@ -87,9 +87,9 @@ public:
         this->Data.detach();
     }
 
-//private:
-public:
+private:
     QExplicitlySharedDataPointer<clsRuleNodeData> Data;  /**< Data member of this class is stored in a seperate class. A shared pointer of this seperate class is stored here */
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 extern clsRuleNodeData* InvalidRuleNodeData;

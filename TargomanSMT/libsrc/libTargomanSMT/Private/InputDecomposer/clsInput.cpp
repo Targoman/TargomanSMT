@@ -213,7 +213,7 @@ void clsInputDecomposer::parseRichIXML(const QString &_inputIXML)
                 continue;
             }
             NextCharEscaped = false;
-            if (Ch == '\\')             //zhnDebug: why do we append '\'
+            if (Ch == '\\')
                 NextCharEscaped = true;
             AttrValue.append(Ch);
             break;

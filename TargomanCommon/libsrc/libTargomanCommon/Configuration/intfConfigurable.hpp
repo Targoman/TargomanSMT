@@ -66,7 +66,7 @@ public:
 
     intfConfigurable(const intfConfigurable& _other);
 
-    ~intfConfigurable();
+    virtual ~intfConfigurable();
 
     /**
      * @brief setFromVariant Pure virtual function to set configurable item by a variant.

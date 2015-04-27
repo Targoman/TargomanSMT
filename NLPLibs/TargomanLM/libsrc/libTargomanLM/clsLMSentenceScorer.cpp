@@ -125,16 +125,13 @@ bool clsLMSentenceScorer::haveSameHistoryAs(const clsLMSentenceScorer &_oldScore
     int ThisEffectiveLength = qMin(this->pPrivate->FoundedGram, (quint8)(this->pPrivate->LM.order() - 1));
     int OlderEffectiveLength = qMin(_oldScorer.pPrivate->FoundedGram, (quint8)(_oldScorer.pPrivate->LM.order() - 1));
 
-    // Torabzadeh
     for (auto& item : this->pPrivate->IndexBasedHistory)
     {
         QString historyWord = this->pPrivate->LM.getWordByID(item);
-        int a = 10;
     }
     for (auto& item : _oldScorer.pPrivate->IndexBasedHistory)
     {
         QString historyWord = _oldScorer.pPrivate->LM.getWordByID(item);
-        int a = 10;
     }
 
 

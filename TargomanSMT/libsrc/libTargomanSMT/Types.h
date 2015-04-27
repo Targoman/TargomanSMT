@@ -17,6 +17,11 @@
 #include "libTargomanCommon/exTargomanBase.h"
 #include <QPair>
 
+namespace UnitTestNameSpace {
+class clsUnitTest;
+}
+
+
 namespace Targoman{
 namespace SMT {
 
