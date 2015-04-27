@@ -160,7 +160,6 @@ public:
 private:
     QMutex      ReadLock; /** A Mutex to prevent multiple threads write at the same time.*/
     bool        UseBuffer;
-    long        StartingOffset;
     QByteArray  Buffer;
     QDataStream BufferStream;
 };

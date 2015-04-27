@@ -81,6 +81,7 @@ void clsBinaryRuleTable::initializeSchema()
             Columns.append(this->InputStream->read<QString>());
         clsTargetRule::setColumnNames(Columns);
 
+        //Load PhraseTable column names
         ColumnCount = this->InputStream->read<int>();
         Columns.clear();
         for(int i=0; i< ColumnCount; ++i)

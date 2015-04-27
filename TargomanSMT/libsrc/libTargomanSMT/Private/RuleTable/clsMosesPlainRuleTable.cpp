@@ -107,8 +107,8 @@ void clsMosesPlainRuleTable::initializeSchema()
     QStringList ReorderingTableFields = QString::fromUtf8(ReorderingTableLine.c_str()).split("|||");
     if (ReorderingTableFields.size() < 3)
         throw exMosesPhraseTable(QString("Bad reordering table file format in first line : %1").arg(ReorderingTableLine.c_str()));
-    if (ReorderingTableFields[mosesFormatSourcePhrase] != ReorderingTableFields[mosesFormatSourcePhrase] ||
-            ReorderingTableFields[mosesFormatTargetPhrase] != ReorderingTableFields[mosesFormatTargetPhrase])
+    if (ReorderingTableFields[mosesFormatSourcePhrase] != PhraseTableFields[mosesFormatSourcePhrase] ||
+            ReorderingTableFields[mosesFormatTargetPhrase] != PhraseTableFields[mosesFormatTargetPhrase])
         throw exMosesPhraseTable(QString("Reordering and phrase tables do not match (at first line) : %1").arg(PhraseTableLine.c_str()));
 
     QStringList PhraseCostsFields = PhraseTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
@@ -179,8 +179,8 @@ void clsMosesPlainRuleTable::loadTableData()
         if (ReorderingTableFields.size() < 3)
             throw exMosesPhraseTable(QString("Bad reordering table file format in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
 
-        if (ReorderingTableFields[mosesFormatSourcePhrase] != ReorderingTableFields[mosesFormatSourcePhrase] ||
-                ReorderingTableFields[mosesFormatTargetPhrase] != ReorderingTableFields[mosesFormatTargetPhrase])
+        if (ReorderingTableFields[mosesFormatSourcePhrase] != PhraseTableFields[mosesFormatSourcePhrase] ||
+                ReorderingTableFields[mosesFormatTargetPhrase] != PhraseTableFields[mosesFormatTargetPhrase])
             throw exMosesPhraseTable(QString("Reordering and phrase tables do not match (at line %1) : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
 
         if (PhraseTableFields[mosesFormatTargetPhrase].isEmpty()){
@@ -296,8 +296,8 @@ void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
 
     QList<WordIndex_t> SourcePhrase;
     foreach(const QString& Word, _sourcePhrase.split(" ", QString::SkipEmptyParts)){
-        WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word);
-        if (WordIndex == gConfigs.EmptyLMScorer->unknownWordIndex() && Word != "<unk>"){
+        WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word, Constants::SrcVocabUnkWordIndex);
+        if (WordIndex == Constants::SrcVocabUnkWordIndex && Word != "<unk>"){
             WordIndex = gConfigs.SourceVocab.size() + 1;
             gConfigs.SourceVocab.insert(Word, WordIndex);
         }

@@ -19,6 +19,10 @@
 #include "Private/OOVHandler/OOVHandler.h"
 #include <iostream>
 
+#ifdef TARGOMAN_SHOW_DEBUG
+#include <iomanip>
+#endif
+
 #define PBT_MAXIMUM_COST 1e200
 
 namespace Targoman{
@@ -98,7 +102,7 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
     if(Node->isInvalid())
         throw exSearchGraph("Invalid empty Rule Table");
 
-    Node = &Node->follow(gConfigs.EmptyLMScorer->unknownWordIndex()); //Search for UNKNOWN word Index
+    Node = &Node->follow(Constants::SrcVocabUnkWordIndex); //Search for UNKNOWN word Index
     if (Node->isInvalid())
         throw exSearchGraph("No Rule defined for UNKNOWN word");
 
@@ -121,7 +125,7 @@ void clsSearchGraphBuilder::collectPhraseCandidates()
         {
             WordIndex_t WordIndex = this->Data->Sentence.at(FirstPosition).wordIndex();
             PrevNode = &PrevNode->follow(WordIndex);
-            if (PrevNode->isInvalid() || WordIndex == gConfigs.EmptyLMScorer->unknownWordIndex()) {
+            if (PrevNode->isInvalid() || WordIndex == Constants::SrcVocabUnkWordIndex) {
                 clsRuleNode OOVRuleNode =
                         OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
                 if (OOVRuleNode.isInvalid())
@@ -186,6 +190,13 @@ bool clsSearchGraphBuilder::conformsHardReorderingJumpLimit(const Coverage_t &_c
     size_t JumpWidth = qAbs((int)_endPos - FirstEmptyPosition);
     return JumpWidth <= clsSearchGraphBuilder::HardReorderingJumpLimit.value();
 }
+
+#ifdef TARGOMAN_SHOW_DEBUG
+float roundDouble(double inputNumber)
+{
+    return (float)((int(100 * inputNumber + 0.5))/100.0);
+}
+#endif
 
 
 /**
@@ -373,12 +384,12 @@ bool clsSearchGraphBuilder::decode()
                 --Iterator) {
                 const QList<clsSearchGraphNode>& Nodes = Iterator->nodes();
                 foreach(const clsSearchGraphNode& SelectedNode, Nodes) {
-                    std::cout << (float)SelectedNode.getTotalCost() << "\t";
+                    std::cout << SelectedNode.getTotalCost() << "\t";
                     std::cout << "Cardinality:  ";
                     std::cout << car2str(NewCardinality).toUtf8().constData();
                     std::cout << "  Coverage:  " << cov2str(SelectedNode.coverage()).toUtf8().constData();
-                    std::cout << "  Cost:  " << (float)(SelectedNode.getCost())
-                              << " , RestCost: " << (float)(SelectedNode.getTotalCost() - SelectedNode.getCost())
+                    std::cout << "  Cost:  " << SelectedNode.getCost()
+                              << " , RestCost: " << SelectedNode.getTotalCost() - SelectedNode.getCost()
                               << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
                               << ")" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
                 }
@@ -471,7 +482,7 @@ Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t& _coverage, siz
             if(Length == 0)
                 StartPosition = i;
             ++Length;
-        }else if(Length){
+        }else if(Length){ // end of contingues zero bits.
             RestCosts += this->Data->RestCostMatrix[StartPosition][Length-1];
             Length = 0;
         }

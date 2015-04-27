@@ -75,7 +75,7 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
 {
     if (_sourcePos.isSingleWord() &&
         _target.size() == 1 &&
-        _target.at(0) == 0) {
+        _target.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex()) {
         clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePos.start());
         if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
             return QString();

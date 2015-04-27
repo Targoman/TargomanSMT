@@ -84,8 +84,8 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
             }
         }
         if (TargetRules.isEmpty()){
-            this->OOVWords.insert(_token,clsExpirableOOVWord(gConfigs.EmptyLMScorer->unknownWordIndex(), _attrs));
-            return gConfigs.EmptyLMScorer->unknownWordIndex(); // There are no new handlers so keep it as unknown and cache result
+            this->OOVWords.insert(_token,clsExpirableOOVWord(Constants::SrcVocabUnkWordIndex, _attrs));
+            return Constants::SrcVocabUnkWordIndex; // There are no new handlers so keep it as unknown and cache result
         }
 
         clsRuleNode RuleNode;

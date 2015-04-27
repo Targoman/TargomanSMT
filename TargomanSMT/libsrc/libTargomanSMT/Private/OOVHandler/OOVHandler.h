@@ -19,7 +19,7 @@
 #include "Private/RuleTable/clsRuleNode.h"
 #include "Private/GlobalConfigs.h"
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
-
+#include "libTargomanCommon/Constants.h"
 namespace Targoman{
 namespace SMT {
 namespace Private{
@@ -41,7 +41,7 @@ class OOVHandler : public Common::Configuration::intfModule
     public:
         clsExpirableOOVWordData() :
             NotSet(true),
-            WordIndex(gConfigs.EmptyLMScorer->unknownWordIndex())
+            WordIndex(Common::Constants::SrcVocabUnkWordIndex)
         { }
 
         clsExpirableOOVWordData(const clsExpirableOOVWordData& _other) :

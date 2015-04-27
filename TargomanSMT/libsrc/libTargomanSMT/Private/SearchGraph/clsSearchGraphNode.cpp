@@ -68,7 +68,6 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
 {
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions) {
         Cost_t Cost = FF->scoreSearchGraphNode(*this);
-        //qDebug() << "Cost: " << Cost;
         this->Data->Cost += Cost;
     }
 }

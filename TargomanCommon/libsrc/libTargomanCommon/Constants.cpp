@@ -21,6 +21,7 @@ const LogP_t Constants::LogP_Zero = -FLT_MAX;            /* log(0) = -Infinity *
 const LogP_t Constants::LogP_Inf  = FLT_MAX;             /* log(Inf) = Infinity */
 const LogP_t Constants::LogP_One  = 0.0;                  /* log(1) = 0 */
 const quint32 Constants::MaxFileIOBytes = 8388608;
+const WordIndex_t Constants::SrcVocabUnkWordIndex = 0;
 
 const int TargomanHashKeys[]={29,71,113,173,229,31,73,127,179,37,79,131,181,41,
                                      83,137,53,11,13,17,19,107,521,607,1279,2203,2281,3217};

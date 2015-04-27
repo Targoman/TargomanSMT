@@ -199,8 +199,8 @@ void clsJanePlainRuleTable::addRule(const QStringList& _phraseCosts,
 
     QList<WordIndex_t> SourcePhrase;
     foreach(const QString& Word, _allFields[janeFormatSourcePosition].split(" ", QString::SkipEmptyParts)){
-        WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word);
-        if (WordIndex == gConfigs.EmptyLMScorer->unknownWordIndex() && Word != "<unknown-word>"){
+        WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word, Constants::SrcVocabUnkWordIndex);
+        if (WordIndex == Constants::SrcVocabUnkWordIndex && Word != "<unknown-word>"){
             WordIndex = gConfigs.SourceVocab.size() + 1;
             gConfigs.SourceVocab.insert(Word, WordIndex);
         }

@@ -77,7 +77,8 @@ Common::Cost_t ReorderingJump::scoreSearchGraphNode(clsSearchGraphNode &_newHypo
 }
 
 /**
- * @brief ReorderingJump::getRestCostForPosition
+ * @brief ReorderingJump::getRestCostForPosition calculates jump width from end of a series of zero
+ * to start of another series of zeros.
  * @param _coverage
  * @param _beginPos
  * @param endPos
@@ -102,13 +103,13 @@ Cost_t ReorderingJump::getRestCostForPosition(const Coverage_t& _coverage, size_
         CurrentPositionCovered = NextPositionCovered;
         NextPositionCovered = (Position + 1 == InputSentenceSize || _coverage.at(Position + 1));
 
-        if( (Position == 0 || LastPositionCovered) && CurrentPositionCovered == 0 )
+        if( (Position == 0 || LastPositionCovered) && CurrentPositionCovered == 0 ) // finds first zero after a series of ones.
         {
             JumpWidth = std::abs((int)(LastPos - Position));
             SumJumpCost += ReorderingJump::getJumpCost(JumpWidth);
         }
 
-        if(Position > 0 && CurrentPositionCovered == 0 && NextPositionCovered )
+        if(Position > 0 && CurrentPositionCovered == 0 && NextPositionCovered ) // finds first one after a series of zeros.
             LastPos = Position + 1;
     }
     Q_ASSERT(SumJumpCost >= 0);
