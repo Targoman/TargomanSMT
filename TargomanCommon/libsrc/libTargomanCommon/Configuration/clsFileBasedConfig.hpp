@@ -26,7 +26,13 @@ namespace Configuration {
 class clsFileBasedConfig : public intfConfigurable{
 public:
     clsFileBasedConfig(const QString&  _configPath) :
-        intfConfigurable(_configPath, "OPTIONAL_CONFIGS_IN_FILE","","","",enuConfigSource::Virtual){
+        intfConfigurable(enuConfigType::FileBased,
+                         _configPath,
+                         "OPTIONAL_CONFIGS_IN_FILE",
+                         "",
+                         "",
+                         "",
+                         enuConfigSource::Invalid){
         this->RemoteViewAllowed = false;
         this->ArgCount = -1;
     }

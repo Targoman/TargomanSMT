@@ -56,7 +56,7 @@ tmplConfigurable<bool> DontShow(
         "",
         "",
         "log-dont-show",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 

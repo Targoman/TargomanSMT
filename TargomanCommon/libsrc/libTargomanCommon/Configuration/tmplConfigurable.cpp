@@ -22,7 +22,7 @@ namespace Configuration {
     template <> \
     bool tmplConfigurable<_type>::validate(const QVariant& _value, QString& _errorMessage) const{ \
         if (_value.canConvert(_variantType) == false) {\
-            _errorMessage = "Unable to convert" + _value.toString() + " to numeric."; \
+            _errorMessage = "Unable to convert " + _value.toString() + " to numeric."; \
             return false;\
         }else if (_value.value<_nextType>() > _max || _value.value<_nextType>() < _min ){ \
             _errorMessage = QString("%1 values must be between (%2 : %3)").arg(_name).arg(_min).arg(_max); \
@@ -71,19 +71,16 @@ void tmplConfigurable<QString>::setFromVariant(const QVariant& _value){ this->Va
 
 //////QStringList
 template <>
-bool tmplConfigurable<QStringList>::validate(const QVariant& _value, QString& _errorMessage )const {
-    if (_value.canConvert(QVariant::List) == false) {
-        _errorMessage = "Unable to convert" + _value.toString() + " to QStringList.";
-        return false;
-    }else
-        return true;
+bool tmplConfigurable<QStringList>::validate(const QVariant& , QString&  )const {
+    return true;
 }
 
 template <>
 void tmplConfigurable<QStringList>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
-    if (this->validate(_value, ErrorMessage))
-        this->Value = _value.value<QStringList>();
+    if (this->validate(_value, ErrorMessage)){
+        this->Value = _value.toString().split(',');
+    }
     else
         throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
@@ -97,7 +94,7 @@ QVariant tmplConfigurable<QStringList>::toVariant() const{
 template <>
 bool tmplConfigurable<bool>::validate(const QVariant& _value, QString& _errorMessage) const{
     if (_value.canConvert(QVariant::Bool) == false) {
-        _errorMessage = "Unable to convert" + _value.toString() + " to bool.";
+        _errorMessage = "Unable to convert " + _value.toString() + " to bool.";
         return false;
     }else
         return true;
@@ -113,7 +110,7 @@ void tmplConfigurable<bool>::setFromVariant(const QVariant& _value){
 template <>
 bool tmplConfigurable<QRegExp, false>::validate(const QVariant& _value, QString& _errorMessage) const{
     if (_value.canConvert(QVariant::RegExp) == false) {
-        _errorMessage = "Unable to convert" + _value.toString() + " to regex.";
+        _errorMessage = "Unable to convert " + _value.toString() + " to regex.";
         return false;
     }else{
         QRegExp TempRegex(_value.toString());
@@ -136,7 +133,7 @@ void tmplConfigurable<QRegExp, false>::setFromVariant(const QVariant& _value){
 template <>
 bool tmplConfigurable<QRegExp, true>::validate(const QVariant& _value, QString& _errorMessage) const{
     if (_value.canConvert(QVariant::RegExp) == false) {
-        _errorMessage = "Unable to convert" + _value.toString() + " to regex.";
+        _errorMessage = "Unable to convert " + _value.toString() + " to regex.";
         return false;
     }else{
         QRegExp TempRegex(_value.toString(), Qt::CaseSensitive);

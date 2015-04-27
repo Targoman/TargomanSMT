@@ -22,6 +22,7 @@
 #include "ConfigManager.h"
 #include "Private/clsConfigManager_p.h"
 #include "Private/clsConfigManagerOverNet.h"
+#include "tmplConfigurableArray.hpp"
 
 namespace Targoman {
 namespace Common {
@@ -78,7 +79,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
     // ////////////////////////////////////////////////
     bool SaveFile = false;
     bool FirstTimeConfigFile = false;
-    if (_arguments.count("--save"))
+    if (_arguments.count("--config-save"))
         SaveFile = true;
     
     // ////////////////////////////////////////////////
@@ -127,19 +128,32 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             if (this->pPrivate->Configs.contains(Key) == false){
                 QString BasePath = Key;
                 bool Found = false;
+                bool Generated = false;
                 do {
                     BasePath.truncate(BasePath.lastIndexOf('/'));
                     Configuration::intfConfigurable* ConfigItem =
                             this->pPrivate->Configs.value(BasePath + "/");
                     if (ConfigItem &&
                             ConfigItem->canBemanaged() == false){
+                        if (ConfigItem->configType() == enuConfigType::Array){
+                            ConfigFile.beginGroup(BasePath);
+                            intfConfigurableArray* ConfArray = dynamic_cast<intfConfigurableArray*>(ConfigItem);
+                            if (!ConfArray)
+                                throw exConfiguration("Invalid use of array flag on non array configuration");
+                            ConfArray->reserve(ConfigFile.childGroups().size());
+                            Generated = true;
+                            ConfigFile.endGroup();
+                        }
                         Found = true;
                         break;
                     }
                 } while(BasePath.count('/') > 1);
-                if (Found)
-                    continue; // Continue to next key
-                else
+                if (Generated == false){
+                    if (Found)
+                        continue; // Continue to next key
+                    else
+                        throw exConfiguration("Configuration path <"+Key+"> is not registered");
+                }else if (this->pPrivate->Configs.contains(Key))
                     throw exConfiguration("Configuration path <"+Key+"> is not registered");
             }
 
@@ -167,7 +181,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
             KeyIter++;
             if (KeyIter != _arguments.end())
                 continue;
-        }else if(*KeyIter == "--save"){
+        }else if(*KeyIter == "--config-save"){
             continue;
         }
         bool ArgumentIsConfigItem = false;
@@ -177,7 +191,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                  ConfigItemIter++){
                 if (testFlag(ConfigItemIter.value()->configSources(), enuConfigSource::Arg) == false)
                     continue;
-                if ((KeyIter->startsWith("--") && *KeyIter == "--" + ConfigItemIter.value()->longSwitch()) ||
+                if ((KeyIter->startsWith("--") &&
+                     (*KeyIter).toLower() == "--" + ConfigItemIter.value()->longSwitch()) ||
                         *KeyIter  == "-" + ConfigItemIter.value()->shortSwitch()){
                     QString Value;
                     for (qint8 i=0; i<ConfigItemIter.value()->argCount(); i++){
@@ -272,9 +287,9 @@ void ConfigManager::save2File(const QString &_fileName, bool _backup)
     }
     QSettings ConfigFile(_fileName, QSettings::IniFormat);
 
-    foreach (Configuration::intfConfigurable* Config, this->pPrivate->Configs.values())
-        if (Config->canBemanaged() && testFlag(Config->configSources(), enuConfigSource::File))
-            ConfigFile.setValue(Config->configPath(),Config->toVariant());
+    foreach (Configuration::intfConfigurable* ConfigItem, this->pPrivate->Configs.values())
+        if (testFlag(ConfigItem->configSources(), enuConfigSource::File))
+            ConfigFile.setValue(ConfigItem->configPath(),ConfigItem->toVariant());
     ConfigFile.sync();
 }
 
@@ -289,6 +304,37 @@ void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
 {
     if (this->pPrivate->Configs.contains(_path))
         throw exConfiguration("Duplicate path key: " + _path);
+    if (_item->shortSwitch().size() && (
+                _item->shortSwitch() == "h" ||
+                _item->shortSwitch() == "c"))
+        throw exConfiguration("Short switch -" +
+                              _item->shortSwitch() +
+                              " on " + _item->configPath() +
+                              " was reserved before by Config manager");
+    if (_item->longSwitch().size() && (
+                _item->longSwitch() == "help" ||
+                _item->longSwitch() == "config" ||
+                _item->longSwitch() == "config-save"))
+        throw exConfiguration("Short switch -" +
+                              _item->longSwitch() +
+                              " on " + _item->configPath() +
+                              " was reserved before by Config manager");
+
+    foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
+        if (_item->shortSwitch().size() && ConfigItem->shortSwitch() == _item->shortSwitch())
+            throw exConfiguration("Short switch -" +
+                                  _item->shortSwitch() +
+                                  " on " + _item->configPath() +
+                                  " was reserved before by: " +
+                                  ConfigItem->configPath());
+        if (_item->longSwitch().size() && ConfigItem->longSwitch() == _item->longSwitch())
+            throw exConfiguration("Long switch --" +
+                                  _item->longSwitch().toLower() +
+                                  " on " + _item->configPath() +
+                                  " was reserved before by: " +
+                                  ConfigItem->configPath());
+    }
+
     this->pPrivate->Configs.insert(_path, _item);
 }
 
@@ -405,13 +451,15 @@ clsConfigManagerPrivate::~clsConfigManagerPrivate()
 
 void clsConfigManagerPrivate::printHelp(const QString& _license)
 {
+    QString LastModule = "ConfigManager";
     std::cout<<_license.toUtf8().constData()<<std::endl;
     std::cout<<"Usage:"<<std::endl;
-    std::cout<<"\t-h|--help:\t Print this help"<<std::endl;
-    std::cout<<"\t--save:\t Saves new configuration file based on old configs and input arguments"<<std::endl;
+    std::cout<<"\t-h|--help \n\t\t Print this help"<<std::endl;
+    std::cout<<"\n**** "<<LastModule.toLatin1().constData()<<" ****\n";
+    std::cout<<"\t-c|--config FILE_PATH\n\t\t Path to config file"<<std::endl;
+    std::cout<<"\t--config-save:\n\t\t Saves new configuration file based on old configs and input arguments"<<std::endl;
     QStringList Keys = this->Configs.keys();
     Keys.sort();
-    QString LastModule = "";
     foreach(const QString& Key, Keys){
         QString Module= Key.mid(0, Key.indexOf("/"));
         intfConfigurable* Item = this->Configs.value(Key);
@@ -491,7 +539,8 @@ public:
 /**
  * @brief constructor of intfConfigurable. this is where each configurable inserts itself to Configs hash map of pPrivate member of ConfigManager class.
  */
-intfConfigurable::intfConfigurable(const QString &_configPath,
+intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
+                                   const QString &_configPath,
                                    const QString &_description,
                                    const QString &_shortSwitch,
                                    const QString &_shortHelp,
@@ -501,9 +550,10 @@ intfConfigurable::intfConfigurable(const QString &_configPath,
     pPrivate(new Private::intfConfigurablePrivate)
 {
     try{
+        this->ConfigType  = _configType;
         this->Description = _description;
         this->ShortSwitch = _shortSwitch;
-        this->LongSwitch = _longSwitch;
+        this->LongSwitch = _longSwitch.toLower();
         this->ShortHelp = _shortHelp;
         if (_configPath.startsWith('/'))
             this->ConfigPath = _configPath.mid(1);
@@ -540,6 +590,10 @@ intfConfigurable::intfConfigurable(const intfConfigurable &_other):
     this->ShortHelp = _other.ShortHelp;
     this->ConfigPath = _other.ConfigPath;
     this->WasConfigured  = _other.WasConfigured;
+    this->ConfigSources = _other.ConfigSources;
+    this->ArgCount = _other.ArgCount;
+    this->ConfigType = _other.ConfigType;
+    this->RemoteViewAllowed = _other.RemoteViewAllowed;
 
     //To replace pointer of old registered config with the new copied config
     this->pPrivate->updateConfig(&_other, this);

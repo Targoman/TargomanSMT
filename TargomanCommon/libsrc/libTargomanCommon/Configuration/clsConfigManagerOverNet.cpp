@@ -35,7 +35,7 @@ tmplConfigurable<int> clsConfigNetworkServer::ListenPort(
         "",
         "PORT",
         "admin-port",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -49,7 +49,7 @@ tmplConfigurable<bool> clsConfigNetworkServer::AdminLocal(
         "",
         "",
         "admin-just-local",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -63,7 +63,7 @@ tmplConfigurable<bool> clsConfigNetworkServer::WaitPortReady(
         "",
         "",
         "admin-wait-port-ready",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -84,7 +84,7 @@ tmplConfigurable<int> clsConfigNetworkServer::MaxSessionTime(
         "",
         "SECONDS",
         "admin-max-session-time",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -106,7 +106,7 @@ tmplConfigurable<int> clsConfigNetworkServer::MaxIdleTime(
         "",
         "SECONDS",
         "admin-max-idle-time",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -119,8 +119,8 @@ tmplConfigurable<quint16> clsConfigNetworkServer::MaxConnections(
         },
         "",
         "MAX_ALLOWED",
-        "max-session-time",
-        enuConfigSource::Arg,
+        "max-connections",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 

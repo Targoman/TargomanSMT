@@ -38,7 +38,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplOnDemandPrefixTreeNode.hpp \
     libTargomanCommon/JSONConversationProtocol.h \
     libTargomanCommon/Private/clsConfigManagerOverNet.h \
-    libTargomanCommon/Private/clsConfigManager_p.h
+    libTargomanCommon/Private/clsConfigManager_p.h \
+    libTargomanCommon/Configuration/tmplConfigurableArray.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

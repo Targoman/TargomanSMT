@@ -34,7 +34,13 @@ TARGOMAN_DEFINE_ENUM(enuConfigSource,
                      File     = 0x02,
                      ReadOnly = 0x04,
                      Net      = 0x08,
-                     Virtual  = 0x10)
+                     Invalid  = 0x00)
+
+TARGOMAN_DEFINE_ENUM(enuConfigType,
+                     Normal,
+                     FileBased,
+                     Array,
+                     Module)
 /**
  * @brief This class is an interface for all kinds of configurables. Configurables are options and configurations of programs.
  *
@@ -52,7 +58,8 @@ public:
      * @param _shortHelp (Optional) Argument structure to be shown when printing help
      * @param _longSwitch (Optional) Long switch to be used to configure item via program arguments
      */
-    intfConfigurable(const QString&  _configPath,
+    intfConfigurable(enuConfigType::Type _configType,
+                     const QString&  _configPath,
                      const QString&  _description,
                      const QString&  _shortSwitch = "",
                      const QString&  _shortHelp = "",
@@ -105,7 +112,8 @@ public:
     inline const QString& shortSwitch()const{return this->ShortSwitch;}
     inline const QString& shortHelp()const{return this->ShortHelp;}
     inline const QString& longSwitch()const{return this->LongSwitch;}
-    inline bool  canBemanaged() { return testFlag(this->ConfigSources, enuConfigSource::Virtual) == false; }
+    inline bool  canBemanaged() { return this->ConfigType == enuConfigType::Normal ||
+                                         this->ConfigType == enuConfigType::Module; }
     inline bool  canBeConfigured(enuConfigSource::Type _source) const { return testFlag(this->ConfigSources, _source) ;}
     inline qint8 argCount()const{return this->ArgCount;}
     inline const QString& configPath()const{return this->ConfigPath;}
@@ -113,8 +121,10 @@ public:
     inline bool  wasConfigured() const {return this->WasConfigured; }
     inline enuConfigSource::Type configSources() { return this->ConfigSources; }
     inline bool remoteView() const { return this->RemoteViewAllowed; }
+    inline enuConfigType::Type configType(){return this->ConfigType;}
 
 protected:
+    enuConfigType::Type  ConfigType; /**< Represent type of configuration item*/
     QString ConfigPath;     /**< Config path of the configurable item. Path is used to access Item by name or via configuration file */
     QString Description;    /**< Description of the configurable item. this will also be used as Long Help String*/
     QString ShortSwitch;    /**< (Optional) Short switch to configure item via arguments */

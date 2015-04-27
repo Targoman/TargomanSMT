@@ -23,6 +23,7 @@
 #include "libTargomanCommon/tmplExpirableCache.hpp"
 #include "libTargomanCommon/FStreamExtended.h"
 #include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
+#include "libTargomanCommon/Configuration/tmplConfigurableArray.hpp"
 
 #include <iostream>
 #include <unistd.h>
@@ -123,6 +124,26 @@ public:
 
     std::function<bool(int)> CrossValidator;
 };
+
+struct stuServers{
+    stuServers(const QString& _basePath) :
+        Address(_basePath + "Address",
+                "kjkjkldfj"),
+        Active(_basePath + "Active",
+               "fdsfdf",
+               true)
+    { }
+
+    Targoman::Common::Configuration::tmplConfigurable<QString> Address;
+    Targoman::Common::Configuration::tmplConfigurable<bool>    Active;
+};
+
+static Targoman::Common::Configuration::tmplConfigurableArray<stuServers> Servers(
+        "App/Servers",
+        "sdfdf",
+        1,
+        5);
+
 
 #include "FastOperations.hpp"
 

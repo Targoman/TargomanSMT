@@ -32,11 +32,16 @@ public:
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
                     const QString&  _LongSwitch = "") :
-        intfConfigurable(_configPath,
+        intfConfigurable(enuConfigType::Module,
+                         _configPath,
                          _description,
                          _shortSwitch,
                          _shortHelp,
-                         _LongSwitch){
+                         _LongSwitch,
+                         (enuConfigSource::Type)(
+                            enuConfigSource::Arg  |
+                            enuConfigSource::File),
+                         false){
         this->ActiveModuleName = _default;
     }
     virtual inline void setFromVariant(const QVariant& _var){

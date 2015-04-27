@@ -31,7 +31,7 @@ static std::function<bool(const intfConfigurable& _item,
 /**
  * @brief The clsConfigurable template is used to store and validate different configurable items
  */
-template <class Type_t, bool ... _rest> class tmplConfigurable : public intfConfigurable
+template <class itmplType_t, bool ... _rest> class tmplConfigurable : public intfConfigurable
 {
 public:
     tmplConfigurable(const QString&  _configPath,
@@ -48,7 +48,8 @@ public:
                             enuConfigSource::File |
                             enuConfigSource::Net ),
                      bool _remoteView = true) :
-        intfConfigurable(_configPath,
+        intfConfigurable(enuConfigType::Normal,
+                         _configPath,
                         _description,
                         _shortSwitch,
                         _shortHelp,
@@ -77,14 +78,14 @@ public:
      */
 
 
-    tmplConfigurable(const tmplConfigurable<Type_t>& _other) :
+    tmplConfigurable(const tmplConfigurable<itmplType_t>& _other) :
         intfConfigurable(_other){
         this->Value = _other.Value;
         this->CrossValidator = _other.CrossValidator;
     }
 
 
-    tmplConfigurable& operator = (const tmplConfigurable<Type_t>& _other){
+    tmplConfigurable& operator = (const tmplConfigurable<itmplType_t>& _other){
         this->ConfigPath = _other.ConfigPath;
         this->Description = _other.Description;
         this->ShortSwitch = _other.ShortSwitch;
@@ -122,7 +123,7 @@ public:
         return this->CrossValidator(*this, _errorMessage);
     }
 
-    inline Type_t  value() const{ /*TODO Thread Safe*/ return this->Value;}
+    inline itmplType_t  value() const{ /*TODO Thread Safe*/ return this->Value;}
 
     virtual QString typeString() const{
         return getTypeStr(this->Value);
@@ -133,7 +134,7 @@ public:
     }
 
 private:
-    Type_t  Value;
+    itmplType_t  Value;
     std::function<bool(const intfConfigurable& _item, QString& _errorMessage)> CrossValidator;
 
 };

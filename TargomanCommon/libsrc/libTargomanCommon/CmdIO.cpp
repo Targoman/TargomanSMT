@@ -71,7 +71,7 @@ tmplConfigurable<QStringList> DebugDetail(
         "",
         "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
         "debug-details",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -86,7 +86,7 @@ tmplConfigurable<quint8> DebugLevel(
         "",
         "LEVEL",
         "debug-level",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -109,7 +109,7 @@ tmplConfigurable<QStringList> InfoDetail(
         "",
         "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
         "info-details",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -124,7 +124,7 @@ tmplConfigurable<quint8> InfoLevel(
         "",
         "LEVEL",
         "info-level",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -147,7 +147,7 @@ tmplConfigurable<QStringList> WarningDetail(
         "",
         "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
         "warning-details",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -162,7 +162,7 @@ tmplConfigurable<quint8> WarningLevel(
         "",
         "LEVEL",
         "warning-level",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -185,7 +185,7 @@ tmplConfigurable<QStringList> ErrorDetail(
         "",
         "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
         "error-details",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -208,7 +208,7 @@ tmplConfigurable<QStringList> HappyDetail(
         "",
         "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
         "happy-details",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -223,7 +223,7 @@ tmplConfigurable<quint8> HappyLevel(
         "",
         "LEVEL",
         "happy-level",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -246,7 +246,7 @@ tmplConfigurable<QStringList> NormalDetail(
         "",
         "SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE",
         "normal-details",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
@@ -261,7 +261,7 @@ tmplConfigurable<quint8> NormalLevel(
         "",
         "LEVEL",
         "normal-level",
-        enuConfigSource::Arg,
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
         false
         );
 
