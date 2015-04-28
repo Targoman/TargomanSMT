@@ -11,6 +11,7 @@
  */
 
 #include "UnitTest.h"
+#include <typeinfo>
 
 namespace UnitTestNameSpace {
 

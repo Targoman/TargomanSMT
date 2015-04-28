@@ -30,12 +30,20 @@ inline void replace_all_indexes(QString& s, const QString& allTokens, const QVec
     }
 }
 
+inline std::ostream& operator << (std::ostream& o, const QString& s)
+{
+    o << "\"" << s.toUtf8().constData() << "\"";
+    return o;
+}
+
+
 #define PRINT_QVERIFY(statement,...) \
 {\
     QString theStatement = #statement;\
     replace_all_indexes(theStatement, #__VA_ARGS__, QVector<int>::fromStdVector({ __VA_ARGS__ }));\
     std::cout << "QVERIFY( " << theStatement.toUtf8().constData() << " == " << statement << " );\n";\
 }
+
 
 #define PRINT_QVERIFY_DOUBLE_PRECISIONS(statement,...) \
 {\
@@ -78,7 +86,10 @@ private slots:
     void test_clsSearchGraphBuilder_collectPhraseCandidates();
     void test_clsSearchGraphBuilder_initializeRestCostsMatrix();
     void test_clsSearchGraphBuilder_conformsHardReorderingJumpLimit();
-
+    void test_clsSearchGraphBuilder_calculateRestCost();
+    void test_ReorderingJump_getRestCostForPosition();
+    void test_clsLexicalHypothesisContainer_insertHypothesis();
+    void test_clsNBestFinder_fillBestOptions();
 };
 }
 #endif // UNITTEST_H

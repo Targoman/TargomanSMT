@@ -56,7 +56,6 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
  */
 bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
-
     size_t InsertionPos = this->Data->Nodes.size();
     for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
         // NOTE: Do not change this to get by reference, it will break the algorithm

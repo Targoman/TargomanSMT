@@ -31,7 +31,9 @@ namespace RuleTable{
 TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);
 
 class clsTargetRuleData;
+
 extern clsTargetRuleData* InvalidTargetRuleData;
+
 
 /**
  * @brief The clsTargetRule class is used to store translation and feature values for target language phrase.
@@ -137,6 +139,8 @@ private:
     static  size_t                                      PrecomputedValuesSize;
 
     friend class clsTargetRuleData;
+    friend class UnitTestNameSpace::clsUnitTest;
+    friend class clsDummyFeatureFunctionForInsertion;
 };
 
 /**

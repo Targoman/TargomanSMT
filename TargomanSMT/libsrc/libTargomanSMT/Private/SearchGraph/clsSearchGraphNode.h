@@ -97,6 +97,8 @@ public:
 
 private:
     QExplicitlySharedDataPointer<clsSearchGraphNodeData>     Data;
+    friend class clsDummyFeatureFunctionForInsertion;
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 
@@ -195,6 +197,9 @@ public:
     QList<clsSearchGraphNode>           CombinedNodes;                  /**< List of nodes that are combined with this node.*/
     QVector<intfFeatureFunctionData*>   FeatureFunctionsData;           /**< Every feature function has a special data. Each index of this list stores data for one the feature function. Each feature function knows his own index in this list.  */
     static  size_t                      RegisteredFeatureFunctionCount; /**< Number of active feature functions.*/
+
+    friend class UnitTestNameSpace::clsUnitTest;
+
 };
 
 

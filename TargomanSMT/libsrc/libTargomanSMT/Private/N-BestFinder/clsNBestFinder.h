@@ -19,6 +19,7 @@
 #include "libTargomanCommon/Types.h"
 #include "Private/SearchGraph/clsSearchGraphBuilder.h"
 
+
 namespace Targoman{
 namespace SMT {
 namespace Private{
@@ -36,8 +37,8 @@ public:
         QList<RuleTable::clsTargetRule> TargetRules;
 
 
-        stuTargetOption(const stuPhrasePos& _pos,
-                        const QList<RuleTable::clsTargetRule>& _target){
+        stuTargetOption(const stuPhrasePos& _pos = stuPhrasePos(),
+                        const QList<RuleTable::clsTargetRule>& _target = QList<RuleTable::clsTargetRule>()){
             this->Pos = _pos;
             this->TargetRules = _target;
         }
@@ -65,6 +66,8 @@ private:
 
 private:
     static Common::Configuration::tmplConfigurable<quint8> MaxOptions;
+    friend class UnitTestNameSpace::clsUnitTest;
+
 };
 
 }

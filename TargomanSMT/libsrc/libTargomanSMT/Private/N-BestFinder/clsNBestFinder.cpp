@@ -65,7 +65,7 @@ size_t clsNBestFinder::fillBestOptions(const SearchGraph::clsSearchGraphNode &_n
             if (Node.targetRule().isSame(_node.targetRule()) == false)
                 TargetRules.append(Node.targetRule());
 
-        if (TargetRules.size() > clsNBestFinder::MaxOptions.value())
+        if (TargetRules.size() >= clsNBestFinder::MaxOptions.value())
             break;
     }
 

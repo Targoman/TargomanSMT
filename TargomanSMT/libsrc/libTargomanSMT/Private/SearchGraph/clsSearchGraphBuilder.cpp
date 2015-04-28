@@ -458,11 +458,11 @@ Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t& _coverage, siz
     size_t Length = 0;
 
     for(size_t i=0; i < (size_t)_coverage.size(); ++i)
-        if(_coverage.testBit(i) == false){
+        if(_coverage.testBit(i) == false){ // start of contiguous zero bits.
             if(Length == 0)
                 StartPosition = i;
             ++Length;
-        }else if(Length){ // end of contingues zero bits.
+        }else if(Length){ // end of contiguous zero bits.
             RestCosts += this->Data->RestCostMatrix[StartPosition][Length-1];
             Length = 0;
         }

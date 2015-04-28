@@ -20,7 +20,11 @@ SOURCES += \
     test_clsSearchGraphBuilder_conformsHardReorderingJumpLimit.cpp \
     test_clsSearchGraphBuilder_collectPhraseCandidates.cpp \
     test_inputDecomposer_parseRichIXML.cpp \
-    test_clsSearchGraphBuilder_initializeRestCostsMatrix.cpp
+    test_clsSearchGraphBuilder_initializeRestCostsMatrix.cpp \
+    test_clsSearchGraphBuilder_calculateRestCost.cpp \
+    test_ReorderingJump_getRestCostForPosition.cpp \
+    test_clsLexicalHypothesisContainer_insertHypothesis.cpp \
+    test_clsNBestFinder_fillBestOptions.cpp
 
 
 ################################################################################

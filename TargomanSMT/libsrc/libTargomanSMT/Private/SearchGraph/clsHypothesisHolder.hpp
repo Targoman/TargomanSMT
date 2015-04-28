@@ -40,6 +40,8 @@ public:
 public:
     QVector<clsCardinalityHypothesisContainer> CardinalityHypotheses;
     Coverage_t EmptyCoverage;
+
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 class clsHypothesisHolder
@@ -76,6 +78,8 @@ public:
 
 private:
     QExplicitlySharedDataPointer<clsHypothesisHolderData> Data;
+
+    friend class UnitTestNameSpace::clsUnitTest;
 
 };
 

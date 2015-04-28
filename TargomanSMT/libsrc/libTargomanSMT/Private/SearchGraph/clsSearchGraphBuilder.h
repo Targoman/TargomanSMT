@@ -176,6 +176,8 @@ public:
     clsHypothesisHolder                                 HypothesisHolder;                       /**< A Container to hold clsCardinalityHypothesisContainer */
     const InputDecomposer::Sentence_t&                  Sentence;                               /**< Input sentence.*/
     RestCostMatrix_t                                    RestCostMatrix;                         /**< A 2D container to store approximate rest cost of translation dim one correspond to begin pos of sentence and dim two correspond to end pos of sentence.*/
+
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 /**

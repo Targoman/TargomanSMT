@@ -37,6 +37,8 @@ public:
     {}
     ~clsLexicalHypothesisContainerData(){}
     QList<clsSearchGraphNode> Nodes;            /**< list of search graph nodes */
+
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 /**
@@ -77,6 +79,9 @@ private:
     QExplicitlySharedDataPointer<clsLexicalHypothesisContainerData> Data;           /**< A pointer of clsLexicalHypothesisContainerData class that stores a list of nodes.*/
 
     static Targoman::Common::Configuration::tmplConfigurable<bool> KeepRecombined;  /**< Store recombined node or node.*/
+
+    friend class UnitTestNameSpace::clsUnitTest;
+
 };
 
 }

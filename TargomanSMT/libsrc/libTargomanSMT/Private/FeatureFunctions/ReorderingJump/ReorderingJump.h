@@ -70,6 +70,8 @@ private:
     //TODO: change name.
     static Common::Configuration::tmplConfigurable<quint8> MaximumJumpWidth;
 
+    friend class UnitTestNameSpace::clsUnitTest;
+
 };
 
 }

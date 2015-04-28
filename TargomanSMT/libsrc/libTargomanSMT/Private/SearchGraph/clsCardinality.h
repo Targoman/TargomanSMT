@@ -63,6 +63,8 @@ public:
     Coverage_t                      WorstCoverage;
     clsLexicalHypothesisContainer*  WorstLexicalHypothesis;
     Common::Cost_t                  CostLimit;
+
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 /**
@@ -207,6 +209,9 @@ private:
     static Common::Configuration::tmplConfigurable<quint16>  MaxCardinalityContainerSize; /**< Maximum number of nodes contained in a cardinality hypothesis container*/
     static Common::Configuration::tmplConfigurable<quint8>  PrimaryCoverageShare; /**< Primary share of each coverage from the cardinality nodes.*/
     static Common::Configuration::tmplConfigurable<double>  SearchBeamWidth; /**< Beam width for the beam search */
+
+    friend class UnitTestNameSpace::clsUnitTest;
+
 };
 
 }
