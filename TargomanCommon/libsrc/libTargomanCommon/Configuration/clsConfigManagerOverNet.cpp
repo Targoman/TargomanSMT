@@ -249,12 +249,12 @@ void clsClientThread::slotReadyRead()
                     if (this->AllowedToChange)
                         return this->sendResult(JSONConversationProtocol::prepareResult(
                                               Request.CallBack,
-                                              Request.CallString,
+                                              Request.CallUID,
                                               3));
                     else
                         return this->sendResult(JSONConversationProtocol::prepareResult(
                                               Request.CallBack,
-                                              Request.CallString,
+                                              Request.CallUID,
                                               1));
                 } else if (this->ActorName.isEmpty()) {
                     TargomanLogWarn(6, "Attemp to login from"<<
@@ -321,7 +321,7 @@ void clsClientThread::slotReadyRead()
                 ReturnVals.insert("t", Table);
                 return this->sendResult(JSONConversationProtocol::prepareResult(
                                       Request.CallBack,
-                                      Request.CallString,
+                                      Request.CallUID,
                                       Table.length(),
                                       ReturnVals));
             }
@@ -332,12 +332,12 @@ void clsClientThread::slotReadyRead()
                 if (ConfigItem)
                     return this->sendResult(JSONConversationProtocol::prepareResult(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           ConfigItem->toVariant().toString()));
                 else
                     return this->sendResult(JSONConversationProtocol::prepareError(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           enuReturnType::ObjectNotFound,
                                           ObjectPath));
             }
@@ -353,7 +353,7 @@ void clsClientThread::slotReadyRead()
                 if (ParenPath.isEmpty())
                     return this->sendResult(JSONConversationProtocol::prepareError(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           enuReturnType::ObjectNotFound,
                                           ParenPath));
 
@@ -368,7 +368,7 @@ void clsClientThread::slotReadyRead()
                 if (ConfigItems.isEmpty())
                     return this->sendResult(JSONConversationProtocol::prepareError(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           enuReturnType::ObjectNotFound,
                                           ParenPath));
 
@@ -423,7 +423,7 @@ void clsClientThread::slotReadyRead()
                 ReturnVals.insert("t", Table);
                 return this->sendResult(JSONConversationProtocol::prepareResult(
                                       Request.CallBack,
-                                      Request.CallString,
+                                      Request.CallUID,
                                       Table.length(),
                                       ReturnVals));
             } //if (Request.Name == "bulkQuery")
@@ -433,7 +433,7 @@ void clsClientThread::slotReadyRead()
                 if (this->AllowedToChange == false)
                     return this->sendResult(JSONConversationProtocol::prepareError(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           enuReturnType::InvalidAction,
                                           "Not Allowed"));
 
@@ -441,7 +441,7 @@ void clsClientThread::slotReadyRead()
                 if (ObjectPath.isEmpty())
                     return this->sendResult(JSONConversationProtocol::prepareError(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           enuReturnType::ObjectNotFound,
                                           ObjectPath));
 
@@ -454,7 +454,7 @@ void clsClientThread::slotReadyRead()
                                 ConfigItem->canBeConfigured(enuConfigSource::Net) == false)
                             return this->sendResult(JSONConversationProtocol::prepareError(
                                                   Request.CallBack,
-                                                  Request.CallString,
+                                                  Request.CallUID,
                                                   enuReturnType::InvalidUpdateSource,
                                                   ObjectPath));
 
@@ -466,7 +466,7 @@ void clsClientThread::slotReadyRead()
                                 ConfigItem->setFromVariant(OldValue);
                                 return this->sendResult(JSONConversationProtocol::prepareError(
                                                       Request.CallBack,
-                                                      Request.CallString,
+                                                      Request.CallUID,
                                                       enuReturnType::InvalidData,
                                                       ErrorMessage + " On: " + ObjectPath));
                             }else{
@@ -477,26 +477,26 @@ void clsClientThread::slotReadyRead()
                                 return this->sendResult(
                                                   JSONConversationProtocol::prepareResult(
                                                       Request.CallBack,
-                                                      Request.CallString,
+                                                      Request.CallUID,
                                                       NewValue.toString()));
                             }//else
                         }catch(exConfiguration &e){
                             return this->sendResult(JSONConversationProtocol::prepareError(
                                                   Request.CallBack,
-                                                  Request.CallString,
+                                                  Request.CallUID,
                                                   enuReturnType::InvalidData,
                                                   e.what().split(">;ex").first() + " On: " + ObjectPath));
                         }//catch
                     }else
                         return this->sendResult(JSONConversationProtocol::prepareError(
                                               Request.CallBack,
-                                              Request.CallString,
+                                              Request.CallUID,
                                               enuReturnType::ObjectNotFound,
                                               ObjectPath));
                 } else
                     this->sendResult(JSONConversationProtocol::prepareError(
                                    Request.CallBack,
-                                   Request.CallString,
+                                   Request.CallUID,
                                    enuReturnType::InvalidAction,
                                    "Unimplemented Set to NULL Command on: " + ObjectPath));
             }// if (Request.Name == "set")
@@ -508,7 +508,7 @@ void clsClientThread::slotReadyRead()
                 if (ProcedureName.isEmpty())
                     return this->sendResult(JSONConversationProtocol::prepareError(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           enuReturnType::ObjectNotFound,
                                           "Invalid RPC call without procedure name"));
 
@@ -519,7 +519,7 @@ void clsClientThread::slotReadyRead()
                     if (Return.isValid() == false){
                         this->sendResult(JSONConversationProtocol::prepareError(
                                        Request.CallBack,
-                                       Request.CallString,
+                                       Request.CallUID,
                                        enuReturnType::ObjectNotFound,
                                        "Procedure: " + ProcedureName +" Not Found"));
                         return;
@@ -551,14 +551,14 @@ void clsClientThread::slotReadyRead()
                     ReturnVals.insert("t", Table);
                     return this->sendResult(JSONConversationProtocol::prepareResult(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           Return.toString(),
                                           ReturnVals));
 
                 }catch(exTargomanBase &e){
                     return this->sendResult(JSONConversationProtocol::prepareError(
                                           Request.CallBack,
-                                          Request.CallString,
+                                          Request.CallUID,
                                           enuReturnType::InvalidData,
                                           e.what()));
                 }
@@ -568,13 +568,13 @@ void clsClientThread::slotReadyRead()
             //Finally seems that request name is invalid
             return this->sendResult(JSONConversationProtocol::prepareError(
                                   Request.CallBack,
-                                  Request.CallString,
+                                  Request.CallUID,
                                   enuReturnType::InvalidAction,
                                   "Invalid request " + Request.Name));
         } catch (exTargomanBase &e) {
             this->sendResult(JSONConversationProtocol::prepareError(
                            Request.CallBack,
-                           Request.CallString,
+                           Request.CallUID,
                            enuReturnType::Undefined,
                            e.what()));
         }

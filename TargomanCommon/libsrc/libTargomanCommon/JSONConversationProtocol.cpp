@@ -77,7 +77,7 @@ QString JSONConversationProtocol::prepareError(const QString& _callBack,
     ReturnStr+=QString("{\"e\":{\"q\":\"%1\",\"c\":%2,\"s\":\"%3:%4\"").arg(
                 _callString).arg(
                 _type).arg(
-                enuReturnType::toStr(_type)).arg(
+                _type).arg(
                 _message);
 
     if (_callBack.size())
@@ -96,6 +96,32 @@ QString JSONConversationProtocol::preparePong(const stuPong& _pong)
                     _pong.SpecialColor == enuStatus::Unknown ?
                         (char)_pong.Status : (char)_pong.SpecialColor).arg(
                     _pong.Message);
+}
+
+QString JSONConversationProtocol::preparePing(quint64 _ssid)
+{
+    if (_ssid)
+        return QString("[2,%1]").arg(_ssid);
+    else
+        return "[1]";
+}
+
+QString JSONConversationProtocol::prepareRequest(const JSONConversationProtocol::stuRequest &_request)
+{
+    QString Request = "{\"r\":{";
+    if (_request.CallBack.size())
+        Request.append("\"b\":\"" + _request.CallBack + "\",");
+    if (_request.CallUID.size())
+        Request.append("\"q\":\"" + _request.CallUID + "\",");
+    if (_request.SendWait)
+        Request.append("\"w\":1,");
+    Request.append("\"" + _request.Name + "\":");
+    if (_request.Args.isEmpty())
+        Request.append("{}");
+    else
+        Request.append(variant2Json(_request.Args));
+
+    return Request + "}}";
 }
 
 QString JSONConversationProtocol::prepareResult(const QString &_callBack,
@@ -161,7 +187,7 @@ QString JSONConversationProtocol::prepareWait(const QString &_callBack,
 
 JSONConversationProtocol::stuRequest JSONConversationProtocol::parseRequest(const QByteArray& _request)
 {
-    stuRequest Request;
+    JSONConversationProtocol::stuRequest Request;
 
     QJsonParseError Error;
     QJsonDocument Doc = QJsonDocument::fromJson(_request, &Error);
@@ -179,8 +205,7 @@ JSONConversationProtocol::stuRequest JSONConversationProtocol::parseRequest(cons
                 throw exJSONConversationProtocol("No SSID defined for ping type 2");
         }
     } else if (Doc.isObject()) {
-        QString FirstObjectName =  Doc.object().begin().key();
-        if (FirstObjectName == "r") {
+        if (Doc.object().begin().key() == "r") {
             QJsonObject RPCObject = Doc.object().value("r").toObject();
             if (RPCObject.isEmpty()){
                 throw exJSONConversationProtocol("Invalid JSON Request");
@@ -195,7 +220,7 @@ JSONConversationProtocol::stuRequest JSONConversationProtocol::parseRequest(cons
                         Request.CallBack = RPCObjectIter.value().toString();
                     else if (RPCObjectIter.key() == "q" &&
                              RPCObjectIter.value().isString())
-                        Request.CallString = RPCObjectIter.value().toString();
+                        Request.CallUID = RPCObjectIter.value().toString();
                     else if (RPCObjectIter.key() == "w" &&
                              RPCObjectIter.value().isBool())
                         Request.SendWait = RPCObjectIter.value().toBool();
@@ -208,7 +233,7 @@ JSONConversationProtocol::stuRequest JSONConversationProtocol::parseRequest(cons
                             ArgIter++;
                             if (ArgIter.value().toString() == "\127\127\127") {
                                 Request.Args.erase(ToDeleteIter);
-                                TargomanWarn(1,"Parameter: %s ignored", ArgIter.key().toStdString().c_str())
+                                TargomanWarn(1,"Parameter: %s ignored", ArgIter.key().toUtf8().constData())
                             }
                         }
                     }
@@ -220,6 +245,62 @@ JSONConversationProtocol::stuRequest JSONConversationProtocol::parseRequest(cons
     else
         throw exJSONConversationProtocol("Doc must be started by object");
     return Request;
+}
+
+JSONConversationProtocol::stuResponse JSONConversationProtocol::parseResponse(const QByteArray &_response)
+{
+    stuResponse Response;
+
+    QJsonParseError Error;
+    QJsonDocument Doc = QJsonDocument::fromJson(_response, &Error);
+    if (Error.error != QJsonParseError::NoError)
+        throw exJSONConversationProtocol(Error.errorString() + QString::number(Error.offset));
+
+    if (Doc.isArray()) {
+        if (Doc.array().first().toVariant().toInt() == 2)
+            Response.Type = stuResponse::Pong;
+        else if (Doc.array().first().toVariant().toInt() == 3) {
+            if (Doc.array().size() < 4)
+                throw exJSONConversationProtocol("Invalid count of arguments on enhanced pong");
+            Response.Result = Doc.array().at(1).toVariant().toChar();
+            Response.Args.insert("Color", Doc.array().at(1).toVariant().toChar());
+            Response.Args.insert("Message", Doc.array().at(1).toVariant().toString());
+            Response.Type = stuResponse::EnhancedPong;
+        }
+    } else if (Doc.isObject()) {
+        if (Doc.object().begin().key() == "e") {
+            QJsonObject RPCObject = Doc.object().value("e").toObject();
+            Response.Type       = stuResponse::Error;
+            Response.CallUID = RPCObject.value("q").toString();
+            Response.Result  = RPCObject.value("c");
+            Response.Args.insert("Code", RPCObject.value("s").toString(":").split(":").first());
+            Response.Args.insert("Message", RPCObject.value("s").toString(":").split(":").last());
+        }else if (Doc.object().begin().key() == "r"){
+            QJsonObject RPCObject = Doc.object().value("r").toObject();
+            Response.Type       = stuResponse::Ok;
+            Response.CallUID = RPCObject.value("q").toString();
+            if (RPCObject.value("r").isArray() == false)
+                throw exJSONConversationProtocol("Invalid response without array");
+
+            QJsonArray ResultArray = RPCObject.value("r").toArray();
+            Response.Result = ResultArray.first();
+            if (ResultArray.size() > 1 && ResultArray.at(1).isObject()){
+                Response.Args = ResultArray.at(1).toObject().toVariantMap();
+                for(QVariantMap::Iterator ArgIter = Response.Args.begin();
+                    ArgIter != Response.Args.end();) {
+                    QVariantMap::Iterator ToDeleteIter = ArgIter;
+                    ArgIter++;
+                    if (ArgIter.value().toString() == "\127\127\127") {
+                        Response.Args.erase(ToDeleteIter);
+                        TargomanWarn(1,"Parameter: %s ignored", ArgIter.key().toUtf8().constData())
+                    }
+                }
+            }
+
+        }else
+            throw exJSONConversationProtocol("Unrecognized protocol command");
+    }
+    return Response;
 }
 
 QString JSONConversationProtocol::variant2Json(const QVariant& _var)
@@ -247,7 +328,7 @@ QString JSONConversationProtocol::variant2Json(const QVariant& _var)
     case QVariant::DateTime:
     case QVariant::Time:
     case QVariant::Url:
-        return "\"" + _var.toString().replace("\"", "\\\"") + "\"";
+        return "\"" + _var.toString().replace("\"", "\\\"").replace("\n","\\n") + "\"";
         break;
 
     case QVariant::List:

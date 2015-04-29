@@ -39,7 +39,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/JSONConversationProtocol.h \
     libTargomanCommon/Private/clsConfigManagerOverNet.h \
     libTargomanCommon/Private/clsConfigManager_p.h \
-    libTargomanCommon/Configuration/tmplConfigurableArray.hpp
+    libTargomanCommon/Configuration/tmplConfigurableArray.hpp \
+    libTargomanCommon/SimpleAuthentication.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -57,7 +58,8 @@ SOURCES += \
     libTargomanCommon/CompressedStream/clsCompressedStreamBuff.cpp \
     libTargomanCommon/FStreamExtended.cpp \
     libTargomanCommon/JSONConversationProtocol.cpp \
-    libTargomanCommon/Configuration/clsConfigManagerOverNet.cpp
+    libTargomanCommon/Configuration/clsConfigManagerOverNet.cpp \
+    libTargomanCommon/SimpleAuthentication.cpp
 
 OTHER_FILES += \
     libTargomanCommon/Private/primeGenerator.sh

@@ -30,10 +30,36 @@ public:
     struct stuRequest
     {
         QString      Name;
-        QString      CallString;
+        QString      CallUID;
         QVariantMap  Args;
         QString      CallBack;
         bool         SendWait;
+        inline stuRequest(const QString& _name = "",
+                          const QString& _uuid = "",
+                          bool _sendWait = false,
+                          const QString& _callback = "",
+                          const QVariantMap& _args = QVariantMap()){
+            this->Name = _name;
+            this->CallUID = _uuid;
+            this->CallBack = _callback;
+            this->Args = _args;
+            this->SendWait = _sendWait;
+        }
+    };
+
+    struct stuResponse
+    {
+        enum enuResponseTypes{
+            Ok,
+            Error,
+            Pong,
+            EnhancedPong
+        };
+
+        enuResponseTypes Type;
+        QString      CallUID;
+        QVariant     Result;
+        QVariantMap  Args;
     };
 
     struct stuPong
@@ -65,7 +91,11 @@ public:
                                 const QString& _message);
 
     static QString preparePong(const stuPong &_pong = enuStatus::Unknown);
+    static QString preparePing(quint64 _ssid = 0);
+    static QString prepareRequest(const stuRequest& _request);
+
     static stuRequest parseRequest(const QByteArray &_request);
+    static stuResponse parseResponse(const QByteArray &_request);
 
 protected:
     static QString variantMap2JSONObject(const QVariantMap& _map);

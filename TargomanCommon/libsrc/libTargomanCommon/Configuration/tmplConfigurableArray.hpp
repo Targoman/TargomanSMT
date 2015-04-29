@@ -39,7 +39,7 @@ public:
         ++a;
     }
 
-    const itmplType_t& baseValue() const{
+    const itmplType_t& constData() const{
         return *this;
     }
 };
