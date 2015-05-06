@@ -6,11 +6,10 @@
 # download it from http://targoman.com/License.txt
 #
 ################################################################################
-BasePath = ".."
+BasePath = "../.."
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-HEADERS += \
-    sampleAgent.hpp
+HEADERS +=
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -26,10 +25,10 @@ error("**** libsrc: Unable to find Configuration file $$ConfigFile ****")
 include ($$ConfigFile)
 
 TEMPLATE = app
-TARGET = test_$$ProjectName
-DESTDIR = $$BaseTestBinFolder
-OBJECTS_DIR = $$BaseBuildFolder/$$TARGET/obj
-MOC_DIR = $$BaseBuildFolder/$$TARGET/moc
+TARGET = tsapasswd
+DESTDIR = $$BaseBinFolder
+OBJECTS_DIR = $$BaseBuildFolder/obj
+MOC_DIR = $$BaseBuildFolder/moc
 INCLUDEPATH += $$BasePath/libsrc \
                $$BasePath/libsrc/lib$$ProjectName
 QMAKE_LIBDIR += $$BaseLibraryFolder

@@ -16,7 +16,18 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <stdio.h>
+#include <termios.h>
+
 #include "libTargomanCommon/Macros.h"
+
+/********************************************************************************************
+ * Missing methods getch and getche on linux
+ ********************************************************************************************/
+#ifndef getch
+extern char getch(void);
+extern char getche(void);
+#define TargomanLinuxGetCH
+#endif
 
 /********************************************************************************************
  * Debugging Necessary Definitions and variables
@@ -202,6 +213,12 @@ public:
 } extern TARGOMAN_IO_SETTINGS;
 
 void printLoadedLibs();
+
+class CmdIO{
+public:
+static inline QString moduleName(){ return "IO";}
+static QString getPassword(const QString& _message, char _replacingChar = '*');
+};
 
 }
 }

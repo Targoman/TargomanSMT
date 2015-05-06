@@ -22,7 +22,7 @@ namespace Configuration {
 namespace Private {
 
 tmplConfigurable<int> clsConfigNetworkServer::ListenPort(
-        "ConfigManager/AdminPort",
+        ConfigManager::moduleName() + "/AdminPort",
         "If set greater than zero Initializes a network channel to monitor and control application",
         0,
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -40,7 +40,7 @@ tmplConfigurable<int> clsConfigNetworkServer::ListenPort(
         );
 
 tmplConfigurable<bool> clsConfigNetworkServer::AdminLocal(
-        "ConfigManager/AdminLocal",
+        ConfigManager::moduleName() + "/AdminLocal",
         "If set to true it will just listen to local connections.",
         false,
         [] (const intfConfigurable&, QString&){
@@ -54,7 +54,7 @@ tmplConfigurable<bool> clsConfigNetworkServer::AdminLocal(
         );
 
 tmplConfigurable<bool> clsConfigNetworkServer::WaitPortReady(
-        "ConfigManager/WaitPortReady",
+        ConfigManager::moduleName() + "/WaitPortReady",
         "If set to true it will wait till port is ready checking every 500ms.",
         false,
         [] (const intfConfigurable&, QString&){
@@ -68,11 +68,11 @@ tmplConfigurable<bool> clsConfigNetworkServer::WaitPortReady(
         );
 
 tmplConfigurable<int> clsConfigNetworkServer::MaxSessionTime(
-        "ConfigManager/MaxSessiontime",
+        ConfigManager::moduleName() + "/MaxSessiontime",
         "Max allowed time for a session. This is independent from idle time and must be greater. -1 means no limit",
         -1,
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            int MaxIdleTime = ConfigManager::instance().getConfig("ConfigManager/MaxIdleTime").toInt();
+            int MaxIdleTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxIdleTime").toInt();
             if (_item.toVariant().toInt() >= 0 &&
                     (MaxIdleTime <0 ||
                      _item.toVariant().toInt() < MaxIdleTime)){
@@ -89,11 +89,11 @@ tmplConfigurable<int> clsConfigNetworkServer::MaxSessionTime(
         );
 
 tmplConfigurable<int> clsConfigNetworkServer::MaxIdleTime(
-        "ConfigManager/MaxIdleTime",
+        ConfigManager::moduleName() + "/MaxIdleTime",
         "Max allowed time for a session. This is independent from idle time and must be greater. -1 means no limit",
         -1,
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            int MaxSessionTime = ConfigManager::instance().getConfig("ConfigManager/MaxSessiontime").toInt();
+            int MaxSessionTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxSessiontime").toInt();
             if (_item.toVariant().toInt() == 0 || (
                         _item.toVariant().toInt() > 0 &&
                         (MaxSessionTime > 0 ||
@@ -111,7 +111,7 @@ tmplConfigurable<int> clsConfigNetworkServer::MaxIdleTime(
         );
 
 tmplConfigurable<quint16> clsConfigNetworkServer::MaxConnections(
-        "ConfigManager/MaxConnections",
+        ConfigManager::moduleName() + "/MaxConnections",
         "Max administration connections allowed",
         1,
         [] (const intfConfigurable&, QString&){
@@ -218,7 +218,10 @@ void clsClientThread::slotReadyRead()
         JSONConversationProtocol::stuRequest Request =
                 JSONConversationProtocol::parseRequest(ReceivedBytes);
         try{
-            if (Request.Name == "simplePing"){
+            if (Request.Name == "simplePing")
+                return this->sendResult(JSONConversationProtocol::preparePong());
+
+            if (Request.Name == "ssidPing"){
                 JSONConversationProtocol::stuPong Pong;
                 emit this->ConfigManagerPrivate.Parent.sigPing(Pong);
                 return this->sendResult(JSONConversationProtocol::preparePong(Pong));
@@ -598,7 +601,6 @@ void clsClientThread::run()
         emit error(this->Socket->error());
         return;
     }
-
 
     connect(this->Socket, SIGNAL(readyRead()),
             this,           SLOT(slotReadyRead()), Qt::DirectConnection);

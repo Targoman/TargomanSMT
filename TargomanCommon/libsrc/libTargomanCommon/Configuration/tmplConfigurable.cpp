@@ -79,7 +79,10 @@ template <>
 void tmplConfigurable<QStringList>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
     if (this->validate(_value, ErrorMessage)){
-        this->Value = _value.toString().split(',');
+        if (_value.canConvert(QVariant::StringList))
+            this->Value = _value.toStringList();
+        else
+            this->Value = _value.toString().split(',');
     }
     else
         throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);

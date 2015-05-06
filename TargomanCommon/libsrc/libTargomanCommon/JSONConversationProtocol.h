@@ -36,9 +36,9 @@ public:
         bool         SendWait;
         inline stuRequest(const QString& _name = "",
                           const QString& _uuid = "",
+                          const QVariantMap& _args = QVariantMap(),
                           bool _sendWait = false,
-                          const QString& _callback = "",
-                          const QVariantMap& _args = QVariantMap()){
+                          const QString& _callback = ""){
             this->Name = _name;
             this->CallUID = _uuid;
             this->CallBack = _callback;

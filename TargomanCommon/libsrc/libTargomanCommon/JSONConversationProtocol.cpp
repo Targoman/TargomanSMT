@@ -136,7 +136,8 @@ QString JSONConversationProtocol::prepareResult(const QString &_callBack,
     else
         ReturnStr = "{\"r\":{";
 
-    ReturnStr+=QString("\"q\":\"%1\",").arg(_callString);
+    if (_callString.size())
+        ReturnStr+=QString("\"q\":\"%1\",").arg(_callString);
 
     ReturnStr+="\"r\":[";
 
@@ -227,15 +228,6 @@ JSONConversationProtocol::stuRequest JSONConversationProtocol::parseRequest(cons
                     else {
                         Request.Name = RPCObjectIter.key();
                         Request.Args = RPCObjectIter.value().toVariant().toMap();
-                        for(QVariantMap::Iterator ArgIter = Request.Args.begin();
-                            ArgIter != Request.Args.end();) {
-                            QVariantMap::Iterator ToDeleteIter = ArgIter;
-                            ArgIter++;
-                            if (ArgIter.value().toString() == "\127\127\127") {
-                                Request.Args.erase(ToDeleteIter);
-                                TargomanWarn(1,"Parameter: %s ignored", ArgIter.key().toUtf8().constData())
-                            }
-                        }
                     }
                 }
             }

@@ -64,7 +64,7 @@ public:
             }
             this->setFromVariant(_default);
             if (this->ShortHelp.size()){
-                this->Description.append(" (default= " + this->toVariant().toString() + " )");
+                this->Description.append(" (default= '" + this->toVariant().toString() + "' )");
             }
             this->CrossValidator = _crossValidator;
         }catch(exTargomanBase &e){

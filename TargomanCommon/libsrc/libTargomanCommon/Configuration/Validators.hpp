@@ -25,7 +25,7 @@ namespace Validators {
 /**
  * @brief The tmplNumericValidator template function can be used for all type of numeric configurables
  */
-template <typename Type_t, int _max, int _min>
+template <typename Type_t, int _min, int _max>
      bool tmplNumericValidator (const intfConfigurable& _item,
                               QString& _errorMessage){
          Type_t Number = _item.toVariant().value<Type_t>();
@@ -53,11 +53,11 @@ template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required 
         QFileInfo PathInfo(Path);
 
         if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Dir) &&
-                PathInfo.isDir() == false){
+                PathInfo.exists() && PathInfo.isDir() == false){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be a directory";
             return false;
         }else if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::File) &&
-                  PathInfo.isFile() == false){
+                  PathInfo.exists() && PathInfo.isFile() == false){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be a file";
             return false;
         }
@@ -72,10 +72,16 @@ template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required 
             _errorMessage = _item.configPath() + ": Unable to open <"+Path+"> for READING";
             return false;
         }
-        if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Writeatble) &&
-                PathInfo.isWritable() == false){
-            _errorMessage = _item.configPath() + ": Unable to open <"+Path+"> for WRITING";
-            return false;
+        if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Writeatble)){
+            if (PathInfo.exists() == false){
+                if (QFileInfo(PathInfo.path()).isWritable() == false){
+                    _errorMessage = _item.configPath() + ": Unable to create <"+Path+">";
+                    return false;
+                }
+            }else if (PathInfo.isWritable() == false){
+                _errorMessage = _item.configPath() + ": Unable to open <"+Path+"> for WRITING";
+                return false;
+            }
         }
         _errorMessage.clear();
 

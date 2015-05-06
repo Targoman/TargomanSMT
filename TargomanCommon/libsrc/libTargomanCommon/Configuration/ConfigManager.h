@@ -49,7 +49,9 @@ public:
         return *(Q_LIKELY(Instance) ? Instance : (Instance = new ConfigManager));
     }
 
-    void init(const QString &_license, const QStringList &_arguments = QStringList());
+    static inline QString moduleName(){return "ConfigManager";}
+
+    void init(const QString &_license, const QStringList &_arguments = QStringList(), bool _minimal = false);
     void save2File(const QString&  _fileName, bool _backup);
     void addConfig(const QString _path, intfConfigurable* _item);
     void addModuleInstantiaor(const QString _name, const stuInstantiator& _instantiator);
@@ -77,7 +79,7 @@ signals:
     void sigRPC(const QString&            _funcName,
                 INOUT  QVariantMap&       _arguments,
                 OUTPUT QVariant&          _returnVal);
-    void sigPing(JSONConversationProtocol::stuPong& _pong);
+    void sigPing(Targoman::Common::JSONConversationProtocol::stuPong& _pong);
 
 private:
     QScopedPointer<Private::clsConfigManagerPrivate> pPrivate;

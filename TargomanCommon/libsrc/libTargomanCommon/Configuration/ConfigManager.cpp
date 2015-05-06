@@ -61,115 +61,118 @@ ConfigManager::~ConfigManager()
  * @exception throws exception if every configurable could not be cross validated
  */
 
-void ConfigManager::init(const QString& _license, const QStringList &_arguments)
+void ConfigManager::init(const QString& _license, const QStringList &_arguments, bool _minimal)
 {
     QString ErrorMessage;
 
     if (_arguments.indexOf(QRegExp("-h|--help")) >= 0){
-        this->pPrivate->printHelp(_license);
+        this->pPrivate->printHelp(_license, _minimal);
         QCoreApplication::exit(1);
         exit(1);
         return;
     }
     Targoman::Common::Logger::instance().registerActor(&this->pPrivate->ActorUUID, "ConfigManager");
 
-    // ////////////////////////////////////////////////
-    // /check arguments to see wheter we must save file or not
-    // ////////////////////////////////////////////////
+    QSet<QString> Modules;
     bool SaveFile = false;
     bool FirstTimeConfigFile = false;
-    if (_arguments.count("--config-save"))
-        SaveFile = true;
-    
-    // ////////////////////////////////////////////////
-    // /check arguments for configFile path or set default cogFileplFile path
-    // ////////////////////////////////////////////////
-    if (_arguments.count("-c") + _arguments.count("--config") > 1)
-        throw exConfiguration("Invalid multiple ConfigManager file definition");
 
-    int Index = _arguments.indexOf(QRegExp("-c|--config"));
-    if (Index>=0){
-        if (_arguments.size() <= Index + 1)
-            throw exConfiguration("Invalid config option with no file name");
-        this->pPrivate->ConfigFilePath = _arguments.at(Index + 1);
-        if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false){
-            if (SaveFile){
-                TargomanWarn(5, "File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read. Creating new file.");
-                this->save2File(this->pPrivate->ConfigFilePath, false);
-                FirstTimeConfigFile = true;
-            }else
-                throw exConfiguration("File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read.");
+    if (_minimal == false){
+        // ////////////////////////////////////////////////
+        // /check arguments to see wheter we must save file or not
+        // ////////////////////////////////////////////////
+
+        if (_arguments.count("--config-save"))
+            SaveFile = true;
+
+        // ////////////////////////////////////////////////
+        // /check arguments for configFile path or set default cogFileplFile path
+        // ////////////////////////////////////////////////
+        if (_arguments.count("-c") + _arguments.count("--config") > 1)
+            throw exConfiguration("Invalid multiple ConfigManager file definition");
+
+        int Index = _arguments.indexOf(QRegExp("-c|--config"));
+        if (Index>=0){
+            if (_arguments.size() <= Index + 1)
+                throw exConfiguration("Invalid config option with no file name");
+            this->pPrivate->ConfigFilePath = _arguments.at(Index + 1);
+            if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false){
+                if (SaveFile){
+                    TargomanWarn(5, "File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read. Creating new file.");
+                    this->save2File(this->pPrivate->ConfigFilePath, false);
+                    FirstTimeConfigFile = true;
+                }else
+                    throw exConfiguration("File: <"+this->pPrivate->ConfigFilePath+"> not found or can not be read.");
+            }
         }
-    }
 
-    if (this->pPrivate->ConfigFilePath.isEmpty()){
-        this->pPrivate->ConfigFilePath = QCoreApplication::applicationDirPath() + QCoreApplication::applicationName() + ".ini";
-        if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false && SaveFile == false){
-            TargomanWarn(1, "No ConfigFile can be found. It is absolutely recomended to write one. Use --save to create one");
-            this->pPrivate->ConfigFilePath.clear();
+        if (this->pPrivate->ConfigFilePath.isEmpty()){
+            this->pPrivate->ConfigFilePath = QCoreApplication::applicationDirPath() + QCoreApplication::applicationName() + ".ini";
+            if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false && SaveFile == false){
+                TargomanWarn(1, "No ConfigFile can be found. It is absolutely recomended to write one. Use --save to create one");
+                this->pPrivate->ConfigFilePath.clear();
+            }
         }
-    }
 
-    // ////////////////////////////////////////////////
-    // /check configFile and load everything
-    // ////////////////////////////////////////////////
-    QSet<QString> Modules;
-    if (FirstTimeConfigFile == false &&
-            this->pPrivate->ConfigFilePath.size()){
-        QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
-        foreach (const QString& Key, ConfigFile.allKeys()){
-            QString BasePath = Key;
-            do{
-                BasePath.truncate(BasePath.lastIndexOf('/'));
-                Modules.insert(BasePath);
-            }while(BasePath.contains('/'));
-
-            if (this->pPrivate->Configs.contains(Key) == false){
+        // ////////////////////////////////////////////////
+        // /check configFile and load everything
+        // ////////////////////////////////////////////////
+        if (FirstTimeConfigFile == false &&
+                this->pPrivate->ConfigFilePath.size()){
+            QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
+            foreach (const QString& Key, ConfigFile.allKeys()){
                 QString BasePath = Key;
-                bool Found = false;
-                bool Generated = false;
-                do {
+                do{
                     BasePath.truncate(BasePath.lastIndexOf('/'));
-                    Configuration::intfConfigurable* ConfigItem =
-                            this->pPrivate->Configs.value(BasePath + "/");
-                    if (ConfigItem &&
-                            ConfigItem->canBemanaged() == false){
-                        if (ConfigItem->configType() == enuConfigType::Array){
-                            ConfigFile.beginGroup(BasePath);
-                            intfConfigurableArray* ConfArray = dynamic_cast<intfConfigurableArray*>(ConfigItem);
-                            if (!ConfArray)
-                                throw exConfiguration("Invalid use of array flag on non array configuration");
-                            ConfArray->reserve(ConfigFile.childGroups().size());
-                            Generated = true;
-                            ConfigFile.endGroup();
+                    Modules.insert(BasePath);
+                }while(BasePath.contains('/'));
+
+                if (this->pPrivate->Configs.contains(Key) == false){
+                    QString BasePath = Key;
+                    bool Found = false;
+                    bool Generated = false;
+                    do {
+                        BasePath.truncate(BasePath.lastIndexOf('/'));
+                        Configuration::intfConfigurable* ConfigItem =
+                                this->pPrivate->Configs.value(BasePath + "/");
+                        if (ConfigItem &&
+                                ConfigItem->canBemanaged() == false){
+                            if (ConfigItem->configType() == enuConfigType::Array){
+                                ConfigFile.beginGroup(BasePath);
+                                intfConfigurableArray* ConfArray = dynamic_cast<intfConfigurableArray*>(ConfigItem);
+                                if (!ConfArray)
+                                    throw exConfiguration("Invalid use of array flag on non array configuration");
+                                ConfArray->reserve(ConfigFile.childGroups().size());
+                                Generated = true;
+                                ConfigFile.endGroup();
+                            }
+                            Found = true;
+                            break;
                         }
-                        Found = true;
-                        break;
-                    }
-                } while(BasePath.count('/') > 1);
-                if (Generated == false){
-                    if (Found)
-                        continue; // Continue to next key
-                    else
+                    } while(BasePath.count('/') > 1);
+                    if (Generated == false){
+                        if (Found)
+                            continue; // Continue to next key
+                        else
+                            throw exConfiguration("Configuration path <"+Key+"> is not registered");
+                    }else if (this->pPrivate->Configs.contains(Key) == false)
                         throw exConfiguration("Configuration path <"+Key+"> is not registered");
-                }else if (this->pPrivate->Configs.contains(Key) == false)
-                    throw exConfiguration("Configuration path <"+Key+"> is not registered");
-            }
+                }
 
-            intfConfigurable* ConfigItem  = this->pPrivate->Configs[Key];
-            if (testFlag(ConfigItem->configSources(), enuConfigSource::File) == false)
-                throw exConfiguration("Configuration path <"+Key+"> can not be configured by file");
+                intfConfigurable* ConfigItem  = this->pPrivate->Configs[Key];
+                if (testFlag(ConfigItem->configSources(), enuConfigSource::File) == false)
+                    throw exConfiguration("Configuration path <"+Key+"> can not be configured by file");
 
-            QVariant Value = ConfigFile.value(Key);
-            if (ConfigItem->validate(Value, ErrorMessage) == false)
-                throw exConfiguration(ErrorMessage);
-            else{
-                ConfigItem->setFromVariant(Value);
-                ConfigItem->setIsConfigured();
+                QVariant Value = ConfigFile.value(Key);
+                if (ConfigItem->validate(Value, ErrorMessage) == false)
+                    throw exConfiguration(ErrorMessage);
+                else{
+                    ConfigItem->setFromVariant(Value);
+                    ConfigItem->setIsConfigured();
+                }
             }
         }
     }
-
     // ////////////////////////////////////////////////
     // /check arguments and override settings
     // ////////////////////////////////////////////////
@@ -244,7 +247,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
         // ////////////////////////////////////////////////
         // /prepare TCP server
         // ////////////////////////////////////////////////
-        this->pPrivate->prepareServer();
+        if (_minimal == false)
+            this->pPrivate->prepareServer();
 
         // ////////////////////////////////////////////////
         // /finalize all config items (for module configurables, this puts instantiator function of module to Instatiator member of that.)
@@ -262,7 +266,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments)
                 Instantiator.fpMethod();
         }
 
-        if (SaveFile)
+        if (_minimal == false && SaveFile)
             this->save2File(this->pPrivate->ConfigFilePath, FirstTimeConfigFile ? false : true);
 
     }catch(...){
@@ -448,19 +452,26 @@ clsConfigManagerPrivate::~clsConfigManagerPrivate()
     //Just to supress compiler error on QScopped Pointer
 }
 
-void clsConfigManagerPrivate::printHelp(const QString& _license)
+void clsConfigManagerPrivate::printHelp(const QString& _license, bool _minimal)
 {
     QString LastModule = "ConfigManager";
     std::cout<<_license.toUtf8().constData()<<std::endl;
     std::cout<<"Usage:"<<std::endl;
     std::cout<<"\t-h|--help \n\t\t Print this help"<<std::endl;
-    std::cout<<"\n**** "<<LastModule.toLatin1().constData()<<" ****\n";
-    std::cout<<"\t-c|--config FILE_PATH\n\t\t Path to config file"<<std::endl;
-    std::cout<<"\t--config-save:\n\t\t Saves new configuration file based on old configs and input arguments"<<std::endl;
+    if (_minimal == false){
+        std::cout<<"\n**** "<<LastModule.toLatin1().constData()<<" ****\n";
+        std::cout<<"\t-c|--config FILE_PATH\n\t\t Path to config file"<<std::endl;
+        std::cout<<"\t--config-save:\n\t\t Saves new configuration file based on old configs and input arguments"<<std::endl;
+    }
     QStringList Keys = this->Configs.keys();
     Keys.sort();
     foreach(const QString& Key, Keys){
         QString Module= Key.mid(0, Key.indexOf("/"));
+        if (_minimal && (
+                    Module == ConfigManager::moduleName() ||
+                    Module == CmdIO::moduleName() ||
+                    Module == Logger::moduleName()))
+            continue;
         intfConfigurable* Item = this->Configs.value(Key);
         if (Item && (Item->shortSwitch().size() || Item->longSwitch().size())){
             if (Module != LastModule){

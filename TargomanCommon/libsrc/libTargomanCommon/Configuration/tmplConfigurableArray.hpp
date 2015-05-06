@@ -42,6 +42,10 @@ public:
     const itmplType_t& constData() const{
         return *this;
     }
+
+    itmplType_t& data() const{
+        return *this;
+    }
 };
 
 class intfConfigurableArray  {
@@ -104,8 +108,12 @@ public:
             this->Items.append(tmplConfigurableArrayItem<itmplType_t>(this->configPath(), i));
     }
 
-    const tmplConfigurableArrayItem<itmplType_t>& at(size_t i){
-        return this->Items.at(i);
+    const tmplConfigurableArrayItem<itmplType_t>& at(size_t _index){
+        return this->Items.at(_index);
+    }
+
+    tmplConfigurableArrayItem<itmplType_t>& operator [](size_t _index){
+        return this->Items[_index];
     }
 
     size_t size(){

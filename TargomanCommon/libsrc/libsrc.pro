@@ -76,8 +76,8 @@ include ($$ConfigFile)
 TEMPLATE = lib
 TARGET = $$ProjectName
 DESTDIR = $$BaseLibraryFolder
-OBJECTS_DIR = $$BaseBuildFolder/obj
-MOC_DIR = $$BaseBuildFolder/moc
+OBJECTS_DIR = $$BaseBuildFolder/$$TARGET/obj
+MOC_DIR = $$BaseBuildFolder/$$TARGET/moc
 QMAKE_CXXFLAGS_RELEASE += -fPIC
 QMAKE_CXXFLAGS_DEBUG += -fPIC
 INCLUDEPATH+=lib$$ProjectName

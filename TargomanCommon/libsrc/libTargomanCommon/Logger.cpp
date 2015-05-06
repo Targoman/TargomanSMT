@@ -29,7 +29,7 @@ namespace Common {
 using namespace Configuration;
 
 tmplConfigurable<QString> LogFile(
-        "Log/File",
+        Logger::moduleName() + "/File",
         "Log File to store logs. If not set then no log file will be generated",
         "",
         [] (const intfConfigurable& _item, QString&){
@@ -46,11 +46,11 @@ tmplConfigurable<QString> LogFile(
 
 
 tmplConfigurable<bool> DontShow(
-        "Log/DontShow",
+        Logger::moduleName() + "/DontShow",
         "Disable showing logs while saving",
         false,
-        [] (const intfConfigurable&, QString&){
-            Logger::instance().setVisible(false);
+        [] (const intfConfigurable& _item, QString&){
+            Logger::instance().setVisible(_item.toVariant().toBool() == false);
             return true;
         },
         "",
@@ -61,11 +61,11 @@ tmplConfigurable<bool> DontShow(
         );
 
 tmplConfigurable<bool> Disable(
-        "Log/Disable",
+        Logger::moduleName() + "/Disable",
         "Disable logs",
         false,
-        [] (const intfConfigurable&, QString&){
-            Logger::instance().setActive(false);
+        [] (const intfConfigurable& _item, QString&){
+            Logger::instance().setActive(_item.toVariant().toBool() == false);
             return true;
         },
         "",

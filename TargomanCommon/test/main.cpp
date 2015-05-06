@@ -24,6 +24,7 @@
 #include "libTargomanCommon/FStreamExtended.h"
 #include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
 #include "libTargomanCommon/Configuration/tmplConfigurableArray.hpp"
+#include "libTargomanCommon/SimpleAuthentication.h"
 
 #include <iostream>
 #include <unistd.h>
@@ -39,12 +40,12 @@ static Configuration::tmplConfigurable<QString> B(
 //static Configuration::tmplConfigurable<double> C("/s2","fjkdfjkdsfjk",123,
 //                                                  Configuration::Validators::tmplNumericValidator<double, -12, 5>);
 
-/*static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
+static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
                                                   [](const Targoman::Common::Configuration::intfConfigurable& ,QString& ){
                                                       return true;
                                                   });
-*/
-/*static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module", "Default");
+
+static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module", "Default");
 */
 class exSample: public exTargomanBase
 {
@@ -144,8 +145,8 @@ static Targoman::Common::Configuration::tmplConfigurableArray<stuServers> Server
         1,
         5);
 
-
 #include "FastOperations.hpp"
+#include "sampleAgent.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -153,10 +154,13 @@ int main(int argc, char *argv[])
 
     QCoreApplication App(argc, argv);
 
+    qDebug()<<SimpleAuthentication::hashPass("mehran", "1234");
+    exit(0);
+
 
     Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
     qDebug()<<getTypeStr(A);
-    enuBaba::Type B;
+    enuBaba::Type B = enuBaba::cc;
     qDebug()<<getTypeStr(B);
 
     A.clear();
@@ -187,6 +191,7 @@ int main(int argc, char *argv[])
         TARGOMAN_IO_SETTINGS.setFull();
 
         if (Configuration::ConfigManager::instance().isNetworkManagable()){
+            new clsSampleAgent;
             QTimer::singleShot(2000,&Configuration::ConfigManager::instance(), SLOT(startAdminServer()));
             return App.exec();
         }

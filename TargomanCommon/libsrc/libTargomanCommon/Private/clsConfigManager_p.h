@@ -34,7 +34,7 @@ class clsConfigManagerPrivate : public QObject
 public:
     clsConfigManagerPrivate(ConfigManager& _parent);
     ~clsConfigManagerPrivate();
-    void printHelp(const QString &_license);
+    void printHelp(const QString &_license, bool _minimal);
     QList<intfConfigurable*> configItems(const QString& _parent, bool _isRegEX, bool _reportRemote);
     void prepareServer();
     bool isNetworkBased();
