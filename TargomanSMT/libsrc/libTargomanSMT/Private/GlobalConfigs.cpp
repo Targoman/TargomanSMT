@@ -45,7 +45,7 @@ tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage(
         "Destination Language to which translating",
         "fa",
         ReturnTrueCrossValidator,
-        "sl",
+        "tl",
         "SOURCE_LANG",
         "target-lang");
 
@@ -63,10 +63,10 @@ QMap<QString, FeatureFunction::intfFeatureFunction*>       stuGlobalConfigs::Act
 
 clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM",
                                              "TODO Desc",
-                                             "TargomanLM");
+                                             "KenLMProxy");
 clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable",
                                                     "TODO Desc",
-                                                    "JanePTPlain");
+                                                    "BinaryRuleTable");
 QScopedPointer<Targoman::SMT::Private::Proxies::intfLMSentenceScorer>  stuGlobalConfigs::EmptyLMScorer;
 QHash<QString, Common::WordIndex_t>                            stuGlobalConfigs::SourceVocab;
 

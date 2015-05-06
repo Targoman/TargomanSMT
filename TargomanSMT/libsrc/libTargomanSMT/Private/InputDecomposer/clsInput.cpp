@@ -30,9 +30,9 @@ QSet<QString>    clsInputDecomposer::SpecialTags;
 
 Configuration::tmplConfigurable<QString>  clsInputDecomposer::UserDefinedTags(
         clsInputDecomposer::moduleName() + "/UserDefinedTags",
-        "User Defined valid XML tags. ",
         "Valid user defined XML tags that must be stored with their attributes."
-        "These must not overlap with predefined XML Tags"
+        "These must not overlap with predefined XML Tags",
+        ""
         /*TODO add lambda to check overlap*/);
 Configuration::tmplConfigurable<bool>    clsInputDecomposer::IsIXML(
         clsInputDecomposer::moduleName() + "/IsIXML",

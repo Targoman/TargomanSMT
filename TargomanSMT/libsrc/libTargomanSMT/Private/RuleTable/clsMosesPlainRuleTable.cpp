@@ -64,7 +64,7 @@ tmplConfigurable<int> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(
         clsMosesPlainRuleTable::baseConfigPath() + "/MaxRuleNodeTargetRuleCount",
         "Maximum number of target rules kept for each rule node.",
         20,
-        Validators::tmplNumericValidator<int, 65536, 0>
+        Validators::tmplNumericValidator<int, 0, 65536>
         );
 
 clsMosesPlainRuleTable::clsMosesPlainRuleTable(quint64 _instanceID)  :

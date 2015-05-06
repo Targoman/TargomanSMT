@@ -13,6 +13,7 @@
 
 #include "clsKenLMProxy.h"
 #include "libTargomanCommon/Configuration/Validators.hpp"
+#include "Private/GlobalConfigs.h"
 
 namespace Targoman {
 namespace SMT {
@@ -27,11 +28,13 @@ using namespace Common;
 using namespace Common::Configuration;
 
 tmplConfigurable<QString> clsKenLMProxy::FilePath(
-        "/KenLM/FilePath",
+        "KenLM/FilePath",
         "File path of ARPA or binary models",
         "",
-        Validators::tmplPathAccessValidator<
-        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>);
+        ConditionalPathValidator(
+            gConfigs.LM.toVariant().toString() == clsKenLMProxy::moduleName(),
+            enuPathAccess::File | enuPathAccess::Readable)
+        );
 
 QScopedPointer<lm::ngram::ProbingModel> clsKenLMProxy::LM;
 
