@@ -59,6 +59,20 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuReturnType,
                               InvalidLogin,
                               Undefined)
 
+struct stuPong
+{
+    enuStatus::Type Status;
+    enuStatus::Type SpecialColor;
+    QString Message;
+
+    inline stuPong(enuStatus::Type _status = enuStatus::Unknown,
+                   enuStatus::Type _specialColor = enuStatus::Unknown,
+                   const QString& _message = QString()){
+        this->Status = _status;
+        this->SpecialColor = _specialColor;
+        this->Message = _message;
+    }
+};
 
 }
 }

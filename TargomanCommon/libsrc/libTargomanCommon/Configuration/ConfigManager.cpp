@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  * Copyright © 2012-2015, Targoman.com
  *
  * Published under the terms of TCRL(Targoman Community Research License)
@@ -23,6 +23,8 @@
 #include "Private/clsConfigManager_p.h"
 #include "Private/clsConfigManagerOverNet.h"
 #include "tmplConfigurableArray.hpp"
+#include "intfRPCExporter.hpp"
+#include "Private/RPCRegistry.hpp"
 
 namespace Targoman {
 namespace Common {
@@ -625,6 +627,11 @@ intfConfigurable::~intfConfigurable()
  */
 clsModuleRegistrar::clsModuleRegistrar(const QString &_name, stuInstantiator _instantiatior){
     ConfigManager::instance().addModuleInstantiaor(_name, _instantiatior);
+}
+/***********************************************************************************************/
+void intfRPCExporter::exportMyRPCs(){
+    for (int i=0; i<this->metaObject()->methodCount(); i++)
+        Private::RPCRegistry::instance().registerRPC(this,this->metaObject()->method(i));
 }
 
 }

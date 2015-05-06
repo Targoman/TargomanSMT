@@ -16,7 +16,6 @@
 
 #include <QObject>
 #include "libTargomanCommon/Types.h"
-#include "libTargomanCommon/JSONConversationProtocol.h"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 
 using namespace Targoman::Common;
@@ -26,19 +25,14 @@ class clsSampleAgent : public QObject
 public:
     clsSampleAgent(){
         connect(&Configuration::ConfigManager::instance(),
-                SIGNAL(sigPing(JSONConversationProtocol::stuPong&)),
+                SIGNAL(sigPing(Targoman::Common::stuPong&)),
                 this,
-                SLOT(slotPong(JSONConversationProtocol::stuPong&)),
+                SLOT(slotPong(Targoman::Common::stuPong&)),
                 Qt::DirectConnection);
         connect(&Configuration::ConfigManager::instance(),
                 SIGNAL(sigValidateAgent(QString&,QString,QString,bool&,bool&)),
                 this,
                 SLOT(slotValidateAgent(QString&,QString,QString,bool&,bool&)),
-                Qt::DirectConnection);
-        connect(&Configuration::ConfigManager::instance(),
-                SIGNAL(sigRPC(QString,QVariantMap&,QVariant&)),
-                this,
-                SLOT(slotRPC(QString,QVariantMap&,QVariant&)),
                 Qt::DirectConnection);
     }
 
@@ -55,16 +49,7 @@ public slots:
         _canChange = true;
     }
 
-    void slotRPC(const QString&            _funcName,
-                INOUT  QVariantMap&       _arguments,
-                OUTPUT QVariant&          _returnVal){
-        if (_funcName == "rpcTest"){
-            _returnVal = "Hello";
-        }
-        Q_UNUSED(_arguments)
-    }
-
-    void slotPong(JSONConversationProtocol::stuPong& _pong){
+    void slotPong(Targoman::Common::stuPong& _pong){
         _pong.Message =" Hey Pong";
         _pong.SpecialColor = Targoman::Common::enuStatus::Error;
         _pong.Status = Targoman::Common::enuStatus::Exclamation;

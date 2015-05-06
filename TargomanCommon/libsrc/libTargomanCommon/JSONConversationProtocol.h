@@ -62,21 +62,6 @@ public:
         QVariantMap  Args;
     };
 
-    struct stuPong
-    {
-        enuStatus::Type Status;
-        enuStatus::Type SpecialColor;
-        QString Message;
-
-        inline stuPong(enuStatus::Type _status = enuStatus::Unknown,
-                       enuStatus::Type _specialColor = enuStatus::Unknown,
-                       QString _message = QString()){
-            this->Status = _status;
-            this->SpecialColor = _specialColor;
-            this->Message = _message;
-        }
-    };
-
     static QString prepareResult(const QString& _callBack,
                                  const QString& _callString,
                                  const QVariant& _result,

@@ -15,6 +15,8 @@
 #include <QtConcurrent/QtConcurrent>
 #include "Private/clsConfigManagerOverNet.h"
 #include "JSONConversationProtocol.h"
+#include "intfRPCExporter.hpp"
+#include "Private/RPCRegistry.hpp"
 
 namespace Targoman {
 namespace Common {
@@ -26,103 +28,103 @@ tmplConfigurable<int> clsConfigNetworkServer::ListenPort(
         "If set greater than zero Initializes a network channel to monitor and control application",
         0,
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            if (_item.toVariant().toUInt() > 60000){
-                _errorMessage = "Invalid port to listen: " + _item.toVariant().toString();
-                return false;
-            }
-            return true;
-        },
-        "",
-        "PORT",
-        "admin-port",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-        false
-        );
+    if (_item.toVariant().toUInt() > 60000){
+        _errorMessage = "Invalid port to listen: " + _item.toVariant().toString();
+        return false;
+    }
+    return true;
+},
+"",
+"PORT",
+"admin-port",
+(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+false
+);
 
 tmplConfigurable<bool> clsConfigNetworkServer::AdminLocal(
         ConfigManager::moduleName() + "/AdminLocal",
         "If set to true it will just listen to local connections.",
         false,
         [] (const intfConfigurable&, QString&){
-            return true;
-        },
-        "",
-        "",
-        "admin-just-local",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-        false
-        );
+    return true;
+},
+"",
+"",
+"admin-just-local",
+(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+false
+);
 
 tmplConfigurable<bool> clsConfigNetworkServer::WaitPortReady(
         ConfigManager::moduleName() + "/WaitPortReady",
         "If set to true it will wait till port is ready checking every 500ms.",
         false,
         [] (const intfConfigurable&, QString&){
-            return true;
-        },
-        "",
-        "",
-        "admin-wait-port-ready",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-        false
-        );
+    return true;
+},
+"",
+"",
+"admin-wait-port-ready",
+(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+false
+);
 
 tmplConfigurable<int> clsConfigNetworkServer::MaxSessionTime(
         ConfigManager::moduleName() + "/MaxSessiontime",
         "Max allowed time for a session. This is independent from idle time and must be greater. -1 means no limit",
         -1,
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            int MaxIdleTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxIdleTime").toInt();
-            if (_item.toVariant().toInt() >= 0 &&
-                    (MaxIdleTime <0 ||
-                     _item.toVariant().toInt() < MaxIdleTime)){
-                _errorMessage = "Invalid Max Session Time. It must be greater than Max IdleTime";
-                return false;
-            }
-            return true;
-        },
-        "",
-        "SECONDS",
-        "admin-max-session-time",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-        false
-        );
+    int MaxIdleTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxIdleTime").toInt();
+    if (_item.toVariant().toInt() >= 0 &&
+            (MaxIdleTime <0 ||
+             _item.toVariant().toInt() < MaxIdleTime)){
+        _errorMessage = "Invalid Max Session Time. It must be greater than Max IdleTime";
+        return false;
+    }
+    return true;
+},
+"",
+"SECONDS",
+"admin-max-session-time",
+(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+false
+);
 
 tmplConfigurable<int> clsConfigNetworkServer::MaxIdleTime(
         ConfigManager::moduleName() + "/MaxIdleTime",
         "Max allowed time for a session. This is independent from idle time and must be greater. -1 means no limit",
         -1,
         [] (const intfConfigurable& _item, QString& _errorMessage){
-            int MaxSessionTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxSessiontime").toInt();
-            if (_item.toVariant().toInt() == 0 || (
-                        _item.toVariant().toInt() > 0 &&
-                        (MaxSessionTime > 0 ||
-                         _item.toVariant().toInt() < MaxSessionTime))){
-                _errorMessage = "Invalid Max Idle Time. It must be greater than zero but less than Max Session Time";
-                return false;
-            }
-            return true;
-        },
-        "",
-        "SECONDS",
-        "admin-max-idle-time",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-        false
-        );
+    int MaxSessionTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxSessiontime").toInt();
+    if (_item.toVariant().toInt() == 0 || (
+                _item.toVariant().toInt() > 0 &&
+                (MaxSessionTime > 0 ||
+                 _item.toVariant().toInt() < MaxSessionTime))){
+        _errorMessage = "Invalid Max Idle Time. It must be greater than zero but less than Max Session Time";
+        return false;
+    }
+    return true;
+},
+"",
+"SECONDS",
+"admin-max-idle-time",
+(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+false
+);
 
 tmplConfigurable<quint16> clsConfigNetworkServer::MaxConnections(
         ConfigManager::moduleName() + "/MaxConnections",
         "Max administration connections allowed",
         1,
         [] (const intfConfigurable&, QString&){
-            return true;
-        },
-        "",
-        "MAX_ALLOWED",
-        "max-connections",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-        false
-        );
+    return true;
+},
+"",
+"MAX_ALLOWED",
+"max-connections",
+(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+false
+);
 
 clsConfigNetworkServer::clsConfigNetworkServer(clsConfigManagerPrivate &_configManager) :
     ConfigManagerPrivate(_configManager),
@@ -140,7 +142,7 @@ void clsConfigNetworkServer::start(bool _justCheck)
     if (this->ListenPort.value() > 0){
         do{
             if (!this->listen(this->AdminLocal.value() ? QHostAddress::LocalHost : QHostAddress::Any,
-                                   this->ListenPort.value())){
+                              this->ListenPort.value())){
                 if (clsConfigNetworkServer::WaitPortReady.value() == false)
                     throw exConfigurationServer(QString("Unable to Start Server on: %1:%2").arg(
                                                     this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
@@ -222,7 +224,7 @@ void clsClientThread::slotReadyRead()
                 return this->sendResult(JSONConversationProtocol::preparePong());
 
             if (Request.Name == "ssidPing"){
-                JSONConversationProtocol::stuPong Pong;
+                stuPong Pong;
                 emit this->ConfigManagerPrivate.Parent.sigPing(Pong);
                 return this->sendResult(JSONConversationProtocol::preparePong(Pong));
             }
@@ -245,24 +247,24 @@ void clsClientThread::slotReadyRead()
                             this->AllowedToChange);
 
                 if (this->AllowedToView) {
-                    TargomanLogInfo(5, QString("User: %1 Logged in with %2 Access").arg(
+                    TargomanLogInfo(5, QString("User <%1> Logged in with %2 Access").arg(
                                         this->ActorName).arg(
                                         this->AllowedToChange ? "ReadWrite" : "ReadOnly"));
 
                     if (this->AllowedToChange)
                         return this->sendResult(JSONConversationProtocol::prepareResult(
-                                              Request.CallBack,
-                                              Request.CallUID,
-                                              3));
+                                                    Request.CallBack,
+                                                    Request.CallUID,
+                                                    3));
                     else
                         return this->sendResult(JSONConversationProtocol::prepareResult(
-                                              Request.CallBack,
-                                              Request.CallUID,
-                                              1));
+                                                    Request.CallBack,
+                                                    Request.CallUID,
+                                                    1));
                 } else if (this->ActorName.isEmpty()) {
-                    TargomanLogWarn(6, "Attemp to login from"<<
+                    TargomanLogWarn(6, "Attemp to login from <"<<
                                     this->Socket->peerAddress().toString()<<":"<<
-                                    this->Socket->peerPort()<<" Failed");
+                                    this->Socket->peerPort()<<"> Failed");
                     return this->sendError(enuReturnType::InvalidLogin,
                                            "Invalid User/Password");
                 } else {
@@ -323,10 +325,10 @@ void clsClientThread::slotReadyRead()
                 QVariantMap ReturnVals;
                 ReturnVals.insert("t", Table);
                 return this->sendResult(JSONConversationProtocol::prepareResult(
-                                      Request.CallBack,
-                                      Request.CallUID,
-                                      Table.length(),
-                                      ReturnVals));
+                                            Request.CallBack,
+                                            Request.CallUID,
+                                            Table.length(),
+                                            ReturnVals));
             }
             /************************************************************/
             if (Request.Name == "query") {
@@ -334,15 +336,15 @@ void clsClientThread::slotReadyRead()
                 intfConfigurable* ConfigItem = this->ConfigManagerPrivate.Configs.value(ObjectPath, NULL);
                 if (ConfigItem)
                     return this->sendResult(JSONConversationProtocol::prepareResult(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          ConfigItem->toVariant().toString()));
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                ConfigItem->toVariant().toString()));
                 else
                     return this->sendResult(JSONConversationProtocol::prepareError(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          enuReturnType::ObjectNotFound,
-                                          ObjectPath));
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                enuReturnType::ObjectNotFound,
+                                                ObjectPath));
             }
             /************************************************************/
             if (Request.Name == "bulkQuery"){
@@ -355,10 +357,10 @@ void clsClientThread::slotReadyRead()
 
                 if (ParenPath.isEmpty())
                     return this->sendResult(JSONConversationProtocol::prepareError(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          enuReturnType::ObjectNotFound,
-                                          ParenPath));
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                enuReturnType::ObjectNotFound,
+                                                ParenPath));
 
                 if (ParenPath.endsWith('/') == false)
                     ParenPath += IsRegex ? "(\\/|$)" : "/";
@@ -370,10 +372,10 @@ void clsClientThread::slotReadyRead()
 
                 if (ConfigItems.isEmpty())
                     return this->sendResult(JSONConversationProtocol::prepareError(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          enuReturnType::ObjectNotFound,
-                                          ParenPath));
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                enuReturnType::ObjectNotFound,
+                                                ParenPath));
 
                 QVariantList TableRows;
                 QVariantList Table;
@@ -425,28 +427,28 @@ void clsClientThread::slotReadyRead()
                 QVariantMap ReturnVals;
                 ReturnVals.insert("t", Table);
                 return this->sendResult(JSONConversationProtocol::prepareResult(
-                                      Request.CallBack,
-                                      Request.CallUID,
-                                      Table.length(),
-                                      ReturnVals));
+                                            Request.CallBack,
+                                            Request.CallUID,
+                                            Table.length(),
+                                            ReturnVals));
             } //if (Request.Name == "bulkQuery")
 
             /************************************************************/
             if (Request.Name == "set") {
                 if (this->AllowedToChange == false)
                     return this->sendResult(JSONConversationProtocol::prepareError(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          enuReturnType::InvalidAction,
-                                          "Not Allowed"));
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                enuReturnType::InvalidAction,
+                                                "Not Allowed"));
 
                 QString ObjectPath       = Request.Args.value("p").toString();
                 if (ObjectPath.isEmpty())
                     return this->sendResult(JSONConversationProtocol::prepareError(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          enuReturnType::ObjectNotFound,
-                                          ObjectPath));
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                enuReturnType::ObjectNotFound,
+                                                ObjectPath));
 
                 QVariant NewValue = Request.Args.value("vl");
                 if (NewValue.isNull() == false) {
@@ -456,10 +458,10 @@ void clsClientThread::slotReadyRead()
                         if (ConfigItem->remoteView() == false ||
                                 ConfigItem->canBeConfigured(enuConfigSource::Net) == false)
                             return this->sendResult(JSONConversationProtocol::prepareError(
-                                                  Request.CallBack,
-                                                  Request.CallUID,
-                                                  enuReturnType::InvalidUpdateSource,
-                                                  ObjectPath));
+                                                        Request.CallBack,
+                                                        Request.CallUID,
+                                                        enuReturnType::InvalidUpdateSource,
+                                                        ObjectPath));
 
                         QString ErrorMessage;
                         QVariant OldValue = ConfigItem->toVariant();
@@ -468,65 +470,47 @@ void clsClientThread::slotReadyRead()
                             if (ConfigItem->crossValidate(ErrorMessage) == false){
                                 ConfigItem->setFromVariant(OldValue);
                                 return this->sendResult(JSONConversationProtocol::prepareError(
-                                                      Request.CallBack,
-                                                      Request.CallUID,
-                                                      enuReturnType::InvalidData,
-                                                      ErrorMessage + " On: " + ObjectPath));
+                                                            Request.CallBack,
+                                                            Request.CallUID,
+                                                            enuReturnType::InvalidData,
+                                                            ErrorMessage + " On: " + ObjectPath));
                             }else{
                                 TargomanLogInfo(5, QString("User: %1 Changed value of %2 to %4").arg(
                                                     this->ActorName).arg(
                                                     ObjectPath).arg(
                                                     NewValue.toString()));
                                 return this->sendResult(
-                                                  JSONConversationProtocol::prepareResult(
-                                                      Request.CallBack,
-                                                      Request.CallUID,
-                                                      NewValue.toString()));
+                                            JSONConversationProtocol::prepareResult(
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                NewValue.toString()));
                             }//else
                         }catch(exConfiguration &e){
                             return this->sendResult(JSONConversationProtocol::prepareError(
-                                                  Request.CallBack,
-                                                  Request.CallUID,
-                                                  enuReturnType::InvalidData,
-                                                  e.what().split(">;ex").first() + " On: " + ObjectPath));
+                                                        Request.CallBack,
+                                                        Request.CallUID,
+                                                        enuReturnType::InvalidData,
+                                                        e.what().split(">;ex").first() + " On: " + ObjectPath));
                         }//catch
                     }else
                         return this->sendResult(JSONConversationProtocol::prepareError(
-                                              Request.CallBack,
-                                              Request.CallUID,
-                                              enuReturnType::ObjectNotFound,
-                                              ObjectPath));
+                                                    Request.CallBack,
+                                                    Request.CallUID,
+                                                    enuReturnType::ObjectNotFound,
+                                                    ObjectPath));
                 } else
                     this->sendResult(JSONConversationProtocol::prepareError(
-                                   Request.CallBack,
-                                   Request.CallUID,
-                                   enuReturnType::InvalidAction,
-                                   "Unimplemented Set to NULL Command on: " + ObjectPath));
+                                         Request.CallBack,
+                                         Request.CallUID,
+                                         enuReturnType::InvalidAction,
+                                         "Unimplemented Set to NULL Command on: " + ObjectPath));
             }// if (Request.Name == "set")
 
             /************************************************************/
-            if (Request.Name == "rpc") {
-                QString ProcedureName = Request.Args.value("rpn").toString();
-
-                if (ProcedureName.isEmpty())
-                    return this->sendResult(JSONConversationProtocol::prepareError(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          enuReturnType::ObjectNotFound,
-                                          "Invalid RPC call without procedure name"));
-
+            if (Request.Name.startsWith("rpc")) {
                 try{
-                    QVariant Return;
-                    emit this->ConfigManagerPrivate.Parent.sigRPC(ProcedureName, Request.Args, Return);
-
-                    if (Return.isValid() == false){
-                        this->sendResult(JSONConversationProtocol::prepareError(
-                                       Request.CallBack,
-                                       Request.CallUID,
-                                       enuReturnType::ObjectNotFound,
-                                       "Procedure: " + ProcedureName +" Not Found"));
-                        return;
-                    }
+                    stuRPCOutput Return =
+                            RPCRegistry::instance().getRPCObject(Request.Name).invoke(Request.Args);
 
                     QVariantList TableRows;
                     QVariantList Table;
@@ -537,52 +521,59 @@ void clsClientThread::slotReadyRead()
 
                     Table.append(TableRows);
 
-                    QVariantMap::iterator ArgumentsIter = Request.Args.begin();
-                    while (ArgumentsIter != Request.Args.end())
+                    QVariantMap::iterator IndirectResultIter = Return.IndirectResult.begin();
+                    while (IndirectResultIter != Request.Args.end())
                     {
                         TableRows.clear();
                         TableRows.insert(TableRows.end(),
                                          QVariantList()<<
-                                         ArgumentsIter.key()<<
-                                         ArgumentsIter.value());
+                                         IndirectResultIter.key()<<
+                                         IndirectResultIter.value());
                         Table.append(TableRows);
 
-                        ArgumentsIter++;
+                        IndirectResultIter++;
                     }
 
-                    QVariantMap ReturnVals;
-                    ReturnVals.insert("t", Table);
+                    QVariantMap IndirectVals;
+                    IndirectVals.insert("t", Table);
                     return this->sendResult(JSONConversationProtocol::prepareResult(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          Return.toString(),
-                                          ReturnVals));
-
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                Return.DirectResult.toString(),
+                                                IndirectVals));
+                }catch(exRPCReg &e){
+                    return this->sendResult(JSONConversationProtocol::prepareError(
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                enuReturnType::ObjectNotFound,
+                                                e.what()));
                 }catch(exTargomanBase &e){
                     return this->sendResult(JSONConversationProtocol::prepareError(
-                                          Request.CallBack,
-                                          Request.CallUID,
-                                          enuReturnType::InvalidData,
-                                          e.what()));
+                                                Request.CallBack,
+                                                Request.CallUID,
+                                                enuReturnType::InvalidData,
+                                                e.what()));
                 }
             }//if (Request.Name == "rpc")
 
             /************************************************************/
             //Finally seems that request name is invalid
             return this->sendResult(JSONConversationProtocol::prepareError(
-                                  Request.CallBack,
-                                  Request.CallUID,
-                                  enuReturnType::InvalidAction,
-                                  "Invalid request " + Request.Name));
+                                        Request.CallBack,
+                                        Request.CallUID,
+                                        enuReturnType::InvalidAction,
+                                        "Invalid request " + Request.Name));
         } catch (exTargomanBase &e) {
             this->sendResult(JSONConversationProtocol::prepareError(
-                           Request.CallBack,
-                           Request.CallUID,
-                           enuReturnType::Undefined,
-                           e.what()));
+                                 Request.CallBack,
+                                 Request.CallUID,
+                                 enuReturnType::Undefined,
+                                 e.what()));
         }
     }catch(exTargomanBase &e){
         this->sendError(enuReturnType::InvalidStream,e.what());
+    }catch(...){
+        this->sendError(enuReturnType::Unknown,"FATAL unknown error");
     }
 }
 

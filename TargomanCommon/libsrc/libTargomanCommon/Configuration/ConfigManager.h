@@ -75,11 +75,7 @@ signals:
                           const QString&        _ip,
                           OUTPUT bool&          _canView,
                           OUTPUT bool&          _canChange);
-
-    void sigRPC(const QString&            _funcName,
-                INOUT  QVariantMap&       _arguments,
-                OUTPUT QVariant&          _returnVal);
-    void sigPing(Targoman::Common::JSONConversationProtocol::stuPong& _pong);
+    void sigPing(Targoman::Common::stuPong& _pong);
 
 private:
     QScopedPointer<Private::clsConfigManagerPrivate> pPrivate;
