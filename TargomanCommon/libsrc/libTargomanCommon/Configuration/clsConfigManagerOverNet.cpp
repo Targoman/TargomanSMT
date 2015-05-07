@@ -512,35 +512,11 @@ void clsClientThread::slotReadyRead()
                     stuRPCOutput Return =
                             RPCRegistry::instance().getRPCObject(Request.Name).invoke(Request.Args);
 
-                    QVariantList TableRows;
-                    QVariantList Table;
-
-                    TableRows.insert(
-                                TableRows.end(),
-                                QVariantList()<<"ArgName"<<"ArgValue");
-
-                    Table.append(TableRows);
-
-                    QVariantMap::iterator IndirectResultIter = Return.IndirectResult.begin();
-                    while (IndirectResultIter != Request.Args.end())
-                    {
-                        TableRows.clear();
-                        TableRows.insert(TableRows.end(),
-                                         QVariantList()<<
-                                         IndirectResultIter.key()<<
-                                         IndirectResultIter.value());
-                        Table.append(TableRows);
-
-                        IndirectResultIter++;
-                    }
-
-                    QVariantMap IndirectVals;
-                    IndirectVals.insert("t", Table);
                     return this->sendResult(JSONConversationProtocol::prepareResult(
                                                 Request.CallBack,
                                                 Request.CallUID,
                                                 Return.DirectResult.toString(),
-                                                IndirectVals));
+                                                Return.IndirectResult));
                 }catch(exRPCReg &e){
                     return this->sendResult(JSONConversationProtocol::prepareError(
                                                 Request.CallBack,

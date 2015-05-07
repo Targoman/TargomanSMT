@@ -38,7 +38,7 @@ public:
         stuRPCOutput Result;
         if (this->Method.invoke(this->parent(),
                                 Qt::DirectConnection,
-                                Q_RETURN_ARG(stuRPCOutput, Result),
+                                Q_RETURN_ARG(Common::Configuration::stuRPCOutput, Result),
                                 Q_ARG(QVariantMap, _args)))
             return Result;
         else
@@ -57,7 +57,7 @@ public:
         if ((_method.name().startsWith("rpc") == false &&
             _method.name().startsWith("asyncRPC") == false)||
             _method.typeName() == NULL ||
-            strcmp(_method.typeName(), "Targoman::Common::Configuration::stuRPCOutput") ||
+            QString(_method.typeName()).endsWith("stuRPCOutput") == false ||
             _method.parameterCount() != 1 ||
             _method.parameterTypes().first() != "QVariantMap")
             return;
