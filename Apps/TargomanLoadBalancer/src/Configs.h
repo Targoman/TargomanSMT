@@ -35,13 +35,16 @@ public:
         Common::Configuration::tmplConfigurable<bool>    Active;
         Common::Configuration::tmplConfigurable<QString> UserName;
         Common::Configuration::tmplConfigurable<QString> Password;
+        struct stuStatistics{
+            stuStatistics(const QString& _basePath);
+            Common::Configuration::tmplConfigurable<qint8> Load1MinPercent;
+            Common::Configuration::tmplConfigurable<qint8> Load15MinPercent;
+            Common::Configuration::tmplConfigurable<qint8> FreeMemoryPercent;
+            Common::Configuration::tmplConfigurable<qint8> TranslationQueuePercent;
+        }Statistics;
     };
 
 public:
-    static inline QString appConfig(const QString& _name){
-        return "App/" + _name;
-    }
-
     static Common::Configuration::tmplConfigurableArray<stuServer> TranslationServers;
 };
 

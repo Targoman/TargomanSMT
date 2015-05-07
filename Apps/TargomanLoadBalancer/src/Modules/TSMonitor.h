@@ -21,28 +21,63 @@ namespace Targoman {
 namespace Apps{
 namespace Modules {
 
-class TSMonitor : Common::Configuration::intfModule, public QThread
+TARGOMAN_ADD_EXCEPTION_HANDLER(exTSMonitor, exTargomanLoadBalancer);
+
+class TSMonitorPrivate : public QObject
 {
     Q_OBJECT
 public:
-    void run();
+    class clsServerConnection : public QTcpSocket
+    {
+    public:
+        size_t   ConfigIndex;
+        quint16  TotalScore;
+        QString LastRequestUUID;
+        QTime   LastRequestTime;
+        bool    LoggedIn;
+        QMutex  Lock;
 
+        clsServerConnection(size_t _configIndex = 0) {
+            this->ConfigIndex = _configIndex;
+            this->TotalScore = 0;
+        }
+    };
+    TSMonitorPrivate(QObject *_parent = NULL);
+public:
+    void timerEvent(QTimerEvent *);
 public slots:
-    void updateInfo();
+    void slotSendRequest();
+    void slotProcessDataOnReceive();
+    void slotUpdateInfo();
 
-private:
-    void timerEvent(QTimerEvent *ev);
-
-private:
-    TARGOMAN_DEFINE_SINGLETONMODULE("TSMonitor", TSMonitor)
-
-private:
-    QMutex  Lock;
-    QList<QTcpSocket*> ServersSocket;
-
-    static Common::Configuration::tmplConfigurable<quint16> UpdtaeInterval;
+public:
+    bool                    InfoUpdated;
+    gConfigs::stuServer*    BestServer;
+    QList<clsServerConnection*>    Servers;
 };
 
+class TSMonitor : public QThread, public Common::Configuration::intfModule
+{
+    Q_OBJECT
+public:
+    const gConfigs::stuServer &bestServer();
+
+
+private:
+    void run();
+    TSMonitor() : intfModule(this->moduleName()) {}
+
+    TARGOMAN_DEFINE_SINGLETONMODULE("TSMonitor", TSMonitor)
+private:
+    QScopedPointer<TSMonitorPrivate> pPrivate;
+
+    static Common::Configuration::tmplConfigurable<quint16> UpdtaeInterval;
+    static Common::Configuration::tmplConfigurable<quint16> WaitOnUpdtae;
+    friend class TSMonitorPrivate;
+};
+
+}
+}
 }
 
 #endif // TARGOMAN_APPS_MODULES_TSMONITOR_H

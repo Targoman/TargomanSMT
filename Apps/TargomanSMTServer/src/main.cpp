@@ -15,7 +15,7 @@
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 
-#include "appTargomanLoadBalancer.h"
+#include "appTargomanSMTServer.h"
 
 const char* LicenseStr =
         "%1 Ver: %2 Build %3\n"
@@ -23,27 +23,25 @@ const char* LicenseStr =
         "%1 [Arguments]\n"
         "Arguments: \n";
 
-#include "Modules/TSMonitor.h"
-
 using namespace Targoman;
 using namespace Targoman::Common;
 using namespace Targoman::Apps;
 
+#include "libTargomanCommon/SimpleAuthentication.h"
 int main(int _argc, char *_argv[])
 {
     try{
         Targoman::Common::printLoadedLibs();
         QCoreApplication App(_argc, _argv);
 
+
         Configuration::ConfigManager::instance().init(
                     QString(LicenseStr).arg(TARGOMAN_M2STR(PROJ_VERSION)).arg(__DATE__),
                     App.arguments().mid(1)
                     );
 
+        QTimer::singleShot(10, new appTargomanSMTServer, SLOT(slotExecute()));
 
-        Modules::TSMonitor::instance().start();
-        QTimer::singleShot(10, new appTargomanLoadBalancer, SLOT(slotExecute()));
-        qDebug()<<"App started: ";
         return App.exec();
     }catch(exTargomanBase& e){
         TargomanError(e.what());

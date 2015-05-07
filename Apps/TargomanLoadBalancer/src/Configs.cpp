@@ -11,6 +11,7 @@
  */
 
 #include "Configs.h"
+#include "libTargomanCommon/Configuration/Validators.hpp"
 
 namespace Targoman {
 namespace Apps {
@@ -28,23 +29,21 @@ gConfigs::stuServer::stuServer(const QString &_basePath) :
          ),
     Port(_basePath + "Port",
          "Server port to connect to",
-         "",
+         1,
          Common::Configuration::ReturnTrueCrossValidator,
          "","","",
          Common::Configuration::enuConfigSource::File
          ),
     AbsoluteScore(_basePath + "AbsoluteScore",
          "Absolute score of Server used in priority computations",
-         "",
-         [] (const Common::Configuration::intfConfigurable& _item, QString&) {
-            return _item.toVariant().toUInt() <= 100;
-         },
+        0,
+         Validators::tmplNumericValidator<quint8,0,100>,
          "","","",
          Common::Configuration::enuConfigSource::File
          ),
     Active(_basePath + "Active",
          "Host or IP Address of Server",
-         "",
+         false,
          Common::Configuration::ReturnTrueCrossValidator,
          "","","",
          Common::Configuration::enuConfigSource::File
@@ -64,13 +63,45 @@ gConfigs::stuServer::stuServer(const QString &_basePath) :
          "","","",
          Common::Configuration::enuConfigSource::File,
          false
-         )
+         ),
+    Statistics(gConfigs::stuServer::stuStatistics(_basePath))
+{}
 
+gConfigs::stuServer::stuStatistics::stuStatistics(const QString &_basePath) :
+    Load1MinPercent(_basePath + "Stats/Load1Min",
+                    "Load average on 1min basis divided by count of cores",
+                    -1,
+                    Common::Configuration::ReturnTrueCrossValidator,
+                    "","","",
+                    Common::Configuration::enuConfigSource::ReadOnly
+                    ),
+    Load15MinPercent(_basePath + "Stats/Load15Min",
+                     "Load average on 15min basis divided by count of cores",
+                     -1,
+                     Common::Configuration::ReturnTrueCrossValidator,
+                     "","","",
+                     Common::Configuration::enuConfigSource::ReadOnly
+                     ),
+    FreeMemoryPercent(_basePath + "Stats/FreeMemory",
+                      "FreeMemory Available on server divided by total amount of memory",
+                      -1,
+                      Common::Configuration::ReturnTrueCrossValidator,
+                      "","","",
+                      Common::Configuration::enuConfigSource::ReadOnly
+                      ),
+    TranslationQueuePercent(_basePath + "Stats/TranslationQueue",
+                            "Translation Queue usage",
+                            -1,
+                            Common::Configuration::ReturnTrueCrossValidator,
+                            "","","",
+                            Common::Configuration::enuConfigSource::ReadOnly
+                            )
   {}
 
 tmplConfigurableArray<gConfigs::stuServer> gConfigs::TranslationServers(
         "TranslationServers",
         "List of valid translation servers to connect to them");
+
 
 }
 }
