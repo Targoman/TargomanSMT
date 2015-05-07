@@ -6,18 +6,30 @@
 # download it from http://targoman.com/License.txt
 #
 ################################################################################
+BasePath = ".."
+
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
+HEADERS +=
+
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
+SOURCES += \
+    main.cpp
+
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 ################################################################################
-ConfigFile = ./Configs.pri
+ConfigFile = $$BasePath/Configs.pri
 !exists($$ConfigFile){
-error("**** $$ProjectName: Unable to find Configuration file $$ConfigFile ****")
+error("**** libsrc: Unable to find Configuration file $$ConfigFile ****")
 }
 include ($$ConfigFile)
 
-TEMPLATE = subdirs
-CONFIG += ordered
-# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-addSubdirs(libsrc)
-addSubdirs(test, libsrc)
-
+TEMPLATE = app
+TARGET = test_$$ProjectName
+DESTDIR = $$BaseTestBinFolder
+OBJECTS_DIR = $$BaseBuildFolder/obj
+MOC_DIR = $$BaseBuildFolder/moc
+INCLUDEPATH += $$BasePath/libsrc \
+               $$BasePath/libsrc/lib$$ProjectName
+QMAKE_LIBDIR += $$BaseLibraryFolder
+LIBS += -l$$ProjectName
