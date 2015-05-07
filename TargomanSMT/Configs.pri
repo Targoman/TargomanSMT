@@ -12,7 +12,8 @@ VERSION=0.0.1
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+=TargomanCommon \
                      TargomanTextProcessor \
-                     TargomanLM
+                     TargomanLM \
+                     KenLM
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
@@ -30,7 +31,6 @@ for(CurrPath, LookUps) {
 }
 DependencySearchPaths +=$$BaseOutput/out/lib
 INCLUDEPATH+=$$BaseOutput/out/include
-LIBS+=-L /home/saeed.torabzadeh/Desktop/Targoman/Trunk/ExternalLibs/KenLM/libs/ -lKenLM
 
 !exists($$ProjectConfig){
 error("***** $$ProjectName: Unable to find Configuration file $$ProjectConfig ***** ")

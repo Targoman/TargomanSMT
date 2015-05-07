@@ -13,7 +13,7 @@ do
   mkdir -pv $Dir
 done 
 
-cp -vrf --parents `find $BasePath -name *.h -o -name *.hpp` $IncludeTarget || :
+cp -vrf --parents `find $BasePath -name *.h -o -name *.hpp -o -name *.hh` $IncludeTarget || :
 rm -rvf $IncludeTarget/$BasePath/Private || :
 mkdir -p $ConfigTarget  || :
 cp -rvf conf/* $ConfigTarget || :

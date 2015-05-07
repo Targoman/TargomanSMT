@@ -18,7 +18,7 @@
 
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
-#include "libKenLM/model.hh"
+#include "libKenLM/lm/model.hh"
 
 namespace Targoman {
 namespace SMT {

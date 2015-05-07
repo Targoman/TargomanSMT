@@ -3,7 +3,14 @@
 
 QMAKE_COMMAND=qmake
 
-Projects="TargomanCommon NLPLibs/TargomanLM/ NLPLibs/TargomanTextProcessor/ ExternalLibs/KenLM TargomanSMT Apps/TargomanSMTConsole"
+Projects="TargomanCommon 
+          NLPLibs/TargomanLM/ 
+	  NLPLibs/TargomanTextProcessor/ 
+	  ExternalToolsAndLibs/KenLM 
+	  TargomanSMT 
+	  Apps/TargomanSMTConsole 
+	  Apps/TargomanSMTServer 
+          Apps/loadBalancer"
 BasePath=`pwd`
 if [ "$1" == "full" ]; then
 	rm -rf out

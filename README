@@ -1,15 +1,22 @@
 Subdirectories of Targoman
-
-	Apps/		     Application derived from Targoman libraries
-	Apps/E4SMT           Essential for Statistical Machine trasnlation text processor
-	Apps/TargomanCmd     Command-line interface to Targoman
-        Apps/TargomanServer  Targoman Server which can be used by the documented API
-        CommonLibs           Commonly used libraries these are shared between different Targoman Apps
-        Docs                 Documantation related to Targoman
-        NLPLibs              All the NLP libraries used in Targoman
-        Scripts              Train, Tune, and other usefull scripts
-        SMTCore              Targoman SMT Core library
-        Test                 BlackBox Tests
+├── Apps
+│   ├── iTagger                 Application based on TargomanTextProcessor which converts text to IXML and vice versa
+│   ├── TargomanLoadBalancer    Application that monitors translation servers and load-balances requests between them
+│   ├── TargomanSMTConsole      Application based on TargomanSMT as a multithreaded console application
+│   ├── TargomanSMTServer       Application based on TargomanSMT as a multithreaded server application. This app comunicates with TargomanLoadBalancer  
+│   ├── TargomanWebAPI          WebAPI to contact with TargomanLoadBalancer and do other DB based stuff
+│   └── TargomanWebUI           WebInterface of Targoman
+├── ExternalToolsAndLibs        
+│   └── KenLM                   KenLM Langugae model library 
+├── NLPLibs
+│   ├── TargomanLM              Targoman Language Model Library
+│   ├── TargomanStem            Targoman Stemmer Library  
+│   ├── TargomanTextProcessor   Targoman TextProcessor Library  
+│   └── TargomanTransliterate   Targoman Transliteration Library which acts like a proxy to Stanford NER
+├── Scripts                     Train, Tune, and other usefull scripts
+├── TargomanCommon              Usefull and common tools as a compact library
+├── TargomanSMT                 Core Targoman SMT Library
+├── Templates                   Templates used to generate subprojects
+└── Tests                       BlackBox Tests
 
 See INSTALL for build instructions.
-
