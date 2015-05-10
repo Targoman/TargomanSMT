@@ -1,7 +1,10 @@
 #!/bin/bash
 
 
-QMAKE_COMMAND=qmake
+QMAKE_COMMAND=qmake-qt5
+if [ -z "$(whereis $QMAKE_COMMAND | awk '{ print $2 }')" ]; then
+	QMAKE_COMMAND=qmake
+fi
 
 Projects="TargomanCommon 
           NLPLibs/TargomanLM/ 

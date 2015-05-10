@@ -12,7 +12,6 @@
 
 #include <QJsonObject>
 #include <unistd.h>
-#include <QtConcurrent/QtConcurrent>
 #include "Private/clsConfigManagerOverNet.h"
 #include "JSONConversationProtocol.h"
 #include "intfRPCExporter.hpp"

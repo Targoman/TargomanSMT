@@ -13,7 +13,6 @@
 
 #include <QCoreApplication>
 #include <QtNetwork/QTcpSocket>
-#include <QtConcurrent/QtConcurrent>
 #include <QSettings>
 #include <QFileInfo>
 #include <QSet>
