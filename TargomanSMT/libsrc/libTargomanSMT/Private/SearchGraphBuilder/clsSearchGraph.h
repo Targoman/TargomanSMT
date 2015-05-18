@@ -24,7 +24,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
-namespace SearchGraph {
+namespace SearchGraphBuilder {
 
 /**
  * @brief The clsPhraseCandidateCollectionData class container for the clsPhraseCandidateCollection data
@@ -143,7 +143,7 @@ private:
  * and it is the top most container. #HypothesisHolder stores a list clsCardinalityHypothesisContainer instances
  * for translation process.
  */
-class clsSearchGraphBuilderData : public QSharedData
+class clsSearchGraphData : public QSharedData
 {
 public:
     /**
@@ -151,14 +151,14 @@ public:
      * and resizes hypothesis holder with input sentence size.
      * @param _sentence input sentence.
      */
-    clsSearchGraphBuilderData(const InputDecomposer::Sentence_t& _sentence):
+    clsSearchGraphData(const InputDecomposer::Sentence_t& _sentence):
         HypothesisHolder(_sentence.size()),
         Sentence(_sentence)
     {}
     /**
      * @brief This is a copy constructor for this class
      */
-    clsSearchGraphBuilderData(const clsSearchGraphBuilderData& _other):
+    clsSearchGraphData(const clsSearchGraphData& _other):
         QSharedData(_other),
         PhraseCandidateCollections(_other.PhraseCandidateCollections),
         GoalNode(_other.GoalNode),
@@ -167,7 +167,7 @@ public:
         Sentence(_other.Sentence),
         RestCostMatrix(_other.RestCostMatrix)
     {}
-    ~clsSearchGraphBuilderData(){}
+    ~clsSearchGraphData(){}
 
 public:
     QList<QVector<clsPhraseCandidateCollection>>        PhraseCandidateCollections;             /**< Loaded phrase table will be stored in this 2D container. The first dimension is correspond to begin position of sentence and the second dimesion is for end position of sentence.*/
@@ -183,18 +183,13 @@ public:
 /**
  * @brief The clsSearchGraphBuilder class has the main duty of decoding process and loading phrase table contents.
  */
-class clsSearchGraphBuilder
+class clsSearchGraph
 {
 public:
-    clsSearchGraphBuilder(const InputDecomposer::Sentence_t& _sentence);
-    clsSearchGraphBuilder(){}
-    clsSearchGraphBuilder(const clsSearchGraphBuilder& _other) :
-        Data(_other.Data)
-    {}
+    clsSearchGraph(const InputDecomposer::Sentence_t& _sentence);
 
     static void init(const QString &_configFilePath);
-    void collectPhraseCandidates();
-    bool decode();
+
 
     /**
      * @brief Returns out best founded translation.
@@ -212,15 +207,22 @@ public:
     }
 
     static inline void saveBinaryRuleTable(const QString& _filePath){
-        Q_ASSERT(clsSearchGraphBuilder::pRuleTable != NULL);
-        clsSearchGraphBuilder::pRuleTable->saveBinaryRuleTable(_filePath);
+        Q_ASSERT(clsSearchGraph::pRuleTable != NULL);
+        clsSearchGraph::pRuleTable->saveBinaryRuleTable(_filePath);
     }
 
 public:
     static inline QString moduleName(){return "SearchGraphBuilder";}
-    static inline QString moduleBaseconfig(){return "/" + clsSearchGraphBuilder::moduleName();}
+    static inline QString moduleBaseconfig(){return "/" + clsSearchGraph::moduleName();}
 
 private:
+    clsSearchGraph(bool, const InputDecomposer::Sentence_t& _sentence) :
+        Data(new clsSearchGraphData(_sentence))
+    {/*Just used by unitTests*/}
+
+    Q_DISABLE_COPY(clsSearchGraph)
+    void collectPhraseCandidates();
+    bool decode();
     Common::Cost_t computeReorderingJumpCost(size_t JumpWidth) const;
     Common::Cost_t calculateRestCost(const Coverage_t& _coverage, quint16 _lastPos) const;
     Common::Cost_t computePhraseRestCosts(const Coverage_t& _coverage) const;
@@ -231,7 +233,7 @@ private:
     Common::Cost_t calculateRestCost(const Coverage_t &_coverage, size_t _beginPos, size_t _endPos) const;
 
 private:
-    QExplicitlySharedDataPointer<clsSearchGraphBuilderData> Data;                               /**< A pointer to clsSearchGraphBuilderData class which manages data member of this class*/
+    QExplicitlySharedDataPointer<clsSearchGraphData> Data;                               /**< A pointer to clsSearchGraphBuilderData class which manages data member of this class*/
 
     static RuleTable::intfRuleTable*                        pRuleTable;                          /**< Rule table loader e.g. Jane phrase Table loader */
     static FeatureFunction::intfFeatureFunction*            pPhraseTable;

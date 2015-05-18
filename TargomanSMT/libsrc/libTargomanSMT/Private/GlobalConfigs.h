@@ -17,7 +17,7 @@
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
-#include "clsTranslator.h"
+#include "Translator.h"
 #include "libTargomanCommon/Types.h"
 #include "Private/PrivateTypes.h"
 

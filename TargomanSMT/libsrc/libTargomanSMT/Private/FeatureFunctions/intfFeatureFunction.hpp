@@ -17,7 +17,7 @@
 #include "Private/InputDecomposer/clsInput.h"
 #include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
 #include "libTargomanSMT/Types.h"
-#include "Private/SearchGraph/clsSearchGraphNode.h"
+#include "Private/SearchGraphBuilder/clsSearchGraphNode.h"
 
 namespace Targoman{
 namespace SMT {
@@ -46,7 +46,7 @@ public:
         gConfigs.ActiveFeatureFunctions.insert(_moduleName, this);
         this->CanComputePositionSpecificRestCost = _canComputePositionSpecificRestCost;
         this->PrecomputedIndex = RuleTable::clsTargetRule::allocatePrecomputedValue();
-        this->DataIndex =  SearchGraph::clsSearchGraphNode::allocateFeatureFunctionData();
+        this->DataIndex =  SearchGraphBuilder::clsSearchGraphNode::allocateFeatureFunctionData();
     }
 
     virtual ~intfFeatureFunction(){}
@@ -58,8 +58,8 @@ public:
      * @param _second Second node.
      * @return returns true if both of nodes have same state.
      */
-    virtual bool nodesHaveSameState(const SearchGraph::clsSearchGraphNode& _first,
-                                    const SearchGraph::clsSearchGraphNode& _second) const {
+    virtual bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode& _first,
+                                    const SearchGraphBuilder::clsSearchGraphNode& _second) const {
         Q_UNUSED(_first)
         Q_UNUSED(_second)
         return true;
@@ -77,7 +77,7 @@ public:
      * The first secondary model will encounter an uninitialized hypothesis state, thus don't forget to call
      * newHypothesisNode.getHypothesisState()->initializeSecondaryModelStatesIfNecessary();
      */
-    virtual Common::Cost_t scoreSearchGraphNode(SearchGraph::clsSearchGraphNode& _newHypothesisNode) const =0 ;
+    virtual Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const =0 ;
 
     /**
      * @brief Returns wethere this feature function can compute node specific rest costs or not. If it can,
@@ -107,7 +107,7 @@ public:
      * in order to always have a valid previous node data for feature functions in scoreSearchGraphNode function.
      * @param _rootNode
      */
-    virtual void initRootNode(SearchGraph::clsSearchGraphNode &_rootNode) = 0;
+    virtual void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode) = 0;
 
     /**
      * @return Returns string list of features' names.

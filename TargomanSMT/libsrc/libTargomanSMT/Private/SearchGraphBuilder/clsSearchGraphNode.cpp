@@ -20,7 +20,7 @@ namespace Private{
 /**
  * @brief Namespace surrounding all classes related to generate, store and manage SearchGraph
  */
-namespace SearchGraph {
+namespace SearchGraphBuilder {
 
 using namespace RuleTable;
 using namespace Common;

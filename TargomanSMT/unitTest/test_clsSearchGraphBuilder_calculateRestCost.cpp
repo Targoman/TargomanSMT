@@ -1,7 +1,7 @@
 #include "UnitTest.h"
 
 using namespace UnitTestNameSpace;
-using namespace Targoman::SMT::Private::SearchGraph;
+using namespace Targoman::SMT::Private::SearchGraphBuilder;
 using namespace Targoman::Common;
 using namespace InputDecomposer;
 
@@ -14,8 +14,8 @@ void clsUnitTest::test_clsSearchGraphBuilder_calculateRestCost()
              << clsToken("word4", 4, "", QVariantMap())
              << clsToken("word5", 5, "", QVariantMap());
 
-    clsSearchGraphBuilder::DoComputePositionSpecificRestCosts.setFromVariant(false);
-    clsSearchGraphBuilder Builder(Sentence);
+    clsSearchGraph::DoComputePositionSpecificRestCosts.setFromVariant(false);
+    clsSearchGraph Builder(Sentence);
 
     Builder.Data->RestCostMatrix.resize(Sentence.size());
 

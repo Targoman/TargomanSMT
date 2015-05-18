@@ -21,7 +21,7 @@ namespace FeatureFunction {
 
 using namespace Common;
 using namespace Common::Configuration;
-using namespace SearchGraph;
+using namespace SearchGraphBuilder;
 using namespace InputDecomposer;
 using namespace RuleTable;
 
@@ -195,7 +195,7 @@ bool LexicalReordering::nodesHaveSameState(const clsSearchGraphNode &_first, con
  */
 
 enuLexicalReorderingFields::Type LexicalReordering::getBackwardOreientation(
-        SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
+        SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
 {
     if (_newHypothesisNode.prevNode().isInvalid()) {
         if (_newHypothesisNode.sourceRangeBegin() == 0)
@@ -218,7 +218,7 @@ enuLexicalReorderingFields::Type LexicalReordering::getBackwardOreientation(
  */
 
 enuLexicalReorderingFields::Type LexicalReordering::getForwardOreientation(
-        SearchGraph::clsSearchGraphNode &_newHypothesisNode) const
+        SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const
 {
     if (_newHypothesisNode.prevNode().isInvalid()) {
         if (_newHypothesisNode.sourceRangeBegin() == 0)

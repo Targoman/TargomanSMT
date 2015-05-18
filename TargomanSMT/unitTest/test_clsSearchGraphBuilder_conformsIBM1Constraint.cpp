@@ -1,20 +1,20 @@
 #include "UnitTest.h"
 using namespace UnitTestNameSpace;
-using namespace Targoman::SMT::Private::SearchGraph;
+using namespace Targoman::SMT::Private::SearchGraphBuilder;
 
 void clsUnitTest::test_clsSearchGraphBuilder_conformsIBM1Constraint()
 {
      Coverage_t  TestConverage;
-     clsSearchGraphBuilder SearchGraphBuilder;
+     clsSearchGraph SearchGraphBuilder(false,InputDecomposer::Sentence_t());
 
-     clsSearchGraphBuilder::ReorderingConstraintMaximumRuns.setFromVariant(4);
+     clsSearchGraph::ReorderingConstraintMaximumRuns.setFromVariant(4);
      TestConverage = makeCoverageByString("110000111000");
      QVERIFY(SearchGraphBuilder.conformsIBM1Constraint(TestConverage) == true);
 
-     clsSearchGraphBuilder::ReorderingConstraintMaximumRuns.setFromVariant(3);
+     clsSearchGraph::ReorderingConstraintMaximumRuns.setFromVariant(3);
      QVERIFY(SearchGraphBuilder.conformsIBM1Constraint(TestConverage) == false);
 
-     clsSearchGraphBuilder::ReorderingConstraintMaximumRuns.setFromVariant(4);
+     clsSearchGraph::ReorderingConstraintMaximumRuns.setFromVariant(4);
      TestConverage = makeCoverageByString("110000");
      QVERIFY(SearchGraphBuilder.conformsIBM1Constraint(TestConverage) == true);
 

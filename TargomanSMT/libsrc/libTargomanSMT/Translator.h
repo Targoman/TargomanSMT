@@ -21,23 +21,12 @@
 namespace Targoman{
 namespace SMT {
 
-namespace Private {
-class clsTranslatorPrivate;
-}
-
-class clsTranslator
+class Translator
 {
 public:
-    clsTranslator(const QString &_inputStr);
-    ~clsTranslator();
-
     static void init(const QString _configFilePath);
     static void saveBinaryRuleTable(const QString& _filePath);
-
-    stuTranslationOutput translate(bool _justTranslationString = false);
-
-private:
-    QScopedPointer<Private::clsTranslatorPrivate> pPrivate;
+    static stuTranslationOutput translate(const QString& _inputStr, bool _justTranslationString = false);
 };
 
 }

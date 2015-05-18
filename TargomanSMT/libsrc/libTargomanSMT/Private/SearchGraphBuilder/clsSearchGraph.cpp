@@ -13,7 +13,7 @@
 
 #include <functional>
 
-#include "clsSearchGraphBuilder.h"
+#include "clsSearchGraph.h"
 #include "../GlobalConfigs.h"
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "Private/OOVHandler/OOVHandler.h"
@@ -28,7 +28,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
-namespace SearchGraph {
+namespace SearchGraphBuilder {
 
 using namespace Common;
 using namespace Common::Configuration;
@@ -37,8 +37,8 @@ using namespace Proxies;
 using namespace InputDecomposer;
 using namespace OOV;
 
-tmplConfigurable<quint8> clsSearchGraphBuilder::HardReorderingJumpLimit(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/HardReorderingJumpLimit",
+tmplConfigurable<quint8> clsSearchGraph::HardReorderingJumpLimit(
+        clsSearchGraph::moduleBaseconfig() + "/HardReorderingJumpLimit",
         "TODO Desc",
         6,
         [] (const intfConfigurable& _item, QString&) {
@@ -48,41 +48,44 @@ tmplConfigurable<quint8> clsSearchGraphBuilder::HardReorderingJumpLimit(
     return true;
 });
 
-tmplConfigurable<quint8> clsSearchGraphBuilder::ReorderingConstraintMaximumRuns(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/ReorderingConstraintMaximumRuns",
+tmplConfigurable<quint8> clsSearchGraph::ReorderingConstraintMaximumRuns(
+        clsSearchGraph::moduleBaseconfig() + "/ReorderingConstraintMaximumRuns",
         "IBM1 reordering constraint",
         2);
-tmplConfigurable<bool>   clsSearchGraphBuilder::DoComputePositionSpecificRestCosts(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/DoComputePositionSpecificRestCosts",
+tmplConfigurable<bool>   clsSearchGraph::DoComputePositionSpecificRestCosts(
+        clsSearchGraph::moduleBaseconfig() + "/DoComputePositionSpecificRestCosts",
         "TODO Desc",
         true);
 tmplConfigurable<quint8> clsPhraseCandidateCollectionData::MaxTargetPhraseCount(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/MaxTargetPhraseCount",
+        clsSearchGraph::moduleBaseconfig() + "/MaxTargetPhraseCount",
         "TODO Desc",
         100);
 
-tmplConfigurable<bool>   clsSearchGraphBuilder::DoPrunePreInsertion(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/PrunePreInsertion",
+tmplConfigurable<bool>   clsSearchGraph::DoPrunePreInsertion(
+        clsSearchGraph::moduleBaseconfig() + "/PrunePreInsertion",
         "TODO Desc",
         true);
 
-FeatureFunction::intfFeatureFunction*  clsSearchGraphBuilder::pPhraseTable = NULL;
-RuleTable::intfRuleTable*              clsSearchGraphBuilder::pRuleTable = NULL;
-RuleTable::clsRuleNode*                clsSearchGraphBuilder::UnknownWordRuleNode;
+FeatureFunction::intfFeatureFunction*  clsSearchGraph::pPhraseTable = NULL;
+RuleTable::intfRuleTable*              clsSearchGraph::pRuleTable = NULL;
+RuleTable::clsRuleNode*                clsSearchGraph::UnknownWordRuleNode;
 
 /**********************************************************************************/
-clsSearchGraphBuilder::clsSearchGraphBuilder(const Sentence_t& _sentence):
-    Data(new clsSearchGraphBuilderData(_sentence))
-{}
+clsSearchGraph::clsSearchGraph(const Sentence_t& _sentence):
+    Data(new clsSearchGraphData(_sentence))
+{
+    this->collectPhraseCandidates();
+    this->decode();
+}
 /**
  * @brief Loads rule and phrase tables, inititializes all feature functions and sets #UnknownWordRuleNode.
  * @param _configFilePath Address of config file.
  */
-void clsSearchGraphBuilder::init(const QString& _configFilePath)
+void clsSearchGraph::init(const QString& _configFilePath)
 {
-    clsSearchGraphBuilder::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
+    clsSearchGraph::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
 
-    clsSearchGraphBuilder::pRuleTable->initializeSchema();
+    clsSearchGraph::pRuleTable->initializeSchema();
 
     //InvalidTargetRuleData has been marshalled here because it depends on loading RuleTable
     RuleTable::InvalidTargetRuleData = new RuleTable::clsTargetRuleData;
@@ -95,10 +98,10 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
 
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
         FF->initialize(_configFilePath);
-    clsSearchGraphBuilder::pRuleTable->loadTableData();
-    clsSearchGraphBuilder::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
+    clsSearchGraph::pRuleTable->loadTableData();
+    clsSearchGraph::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 
-    RulesPrefixTree_t::Node_t* Node = &clsSearchGraphBuilder::pRuleTable->getPrefixTree().rootNode();
+    RulesPrefixTree_t::Node_t* Node = &clsSearchGraph::pRuleTable->getPrefixTree().rootNode();
     if(Node->isInvalid())
         throw exSearchGraph("Invalid empty Rule Table");
 
@@ -106,7 +109,7 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
     if (Node->isInvalid())
         throw exSearchGraph("No Rule defined for UNKNOWN word");
 
-    clsSearchGraphBuilder::UnknownWordRuleNode = new clsRuleNode(Node->getData());
+    clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData());
 }
 
 /**
@@ -114,7 +117,7 @@ void clsSearchGraphBuilder::init(const QString& _configFilePath)
  * PhraseCandidateCollections of #Data. This function also calculates maximum length of matching source phrase with phrase table.
  */
 
-void clsSearchGraphBuilder::collectPhraseCandidates()
+void clsSearchGraph::collectPhraseCandidates()
 {
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
@@ -129,7 +132,7 @@ void clsSearchGraphBuilder::collectPhraseCandidates()
                 clsRuleNode OOVRuleNode =
                         OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
                 if (OOVRuleNode.isInvalid())
-                    this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, *clsSearchGraphBuilder::UnknownWordRuleNode);
+                    this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, *clsSearchGraph::UnknownWordRuleNode);
                 else
                     this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, OOVRuleNode);
             }else
@@ -165,7 +168,7 @@ void clsSearchGraphBuilder::collectPhraseCandidates()
  * @param _newCoverage
  * @return
  */
-bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverage)
+bool clsSearchGraph::conformsIBM1Constraint(const Coverage_t& _newCoverage)
 {
     //Find last bit set then check how many bits are zero before this.
     for(int i=_newCoverage.size() - 1; i>=0; --i)
@@ -176,7 +179,7 @@ bool clsSearchGraphBuilder::conformsIBM1Constraint(const Coverage_t& _newCoverag
     return true;
 }
 
-bool clsSearchGraphBuilder::conformsHardReorderingJumpLimit(const Coverage_t &_coverage,
+bool clsSearchGraph::conformsHardReorderingJumpLimit(const Coverage_t &_coverage,
                                                             size_t _endPos)
 {
     int FirstEmptyPosition = _coverage.size();
@@ -188,7 +191,7 @@ bool clsSearchGraphBuilder::conformsHardReorderingJumpLimit(const Coverage_t &_c
     if(FirstEmptyPosition == _coverage.size())
         return true;
     size_t JumpWidth = qAbs((int)_endPos - FirstEmptyPosition);
-    return JumpWidth <= clsSearchGraphBuilder::HardReorderingJumpLimit.value();
+    return JumpWidth <= clsSearchGraph::HardReorderingJumpLimit.value();
 }
 
 #ifdef TARGOMAN_SHOW_DEBUG
@@ -211,7 +214,7 @@ float roundDouble(double inputNumber)
  *
  * @return Returns whether it was able to find a translation or not.
  */
-bool clsSearchGraphBuilder::decode()
+bool clsSearchGraph::decode()
 {
     this->Data->HypothesisHolder.clear();
     this->Data->HypothesisHolder.resize(this->Data->Sentence.size() + 1);
@@ -325,7 +328,7 @@ bool clsSearchGraphBuilder::decode()
                                                            RestCost);
 
                             // If current NewHypoNode is worse than worst stored node ignore it
-                            if (clsSearchGraphBuilder::DoPrunePreInsertion.value() &&
+                            if (clsSearchGraph::DoPrunePreInsertion.value() &&
                                 CurrCardHypoContainer.mustBePruned(NewHypoNode.getTotalCost())){
                                 ++PrunedPreInsertion;
                                 continue;
@@ -413,7 +416,7 @@ bool clsSearchGraphBuilder::decode()
  * For every possible range of words of input sentence, finds approximate cost of every feature fucntions, then
  * tries to reduce that computed rest cost if sum of rest cost of splited phrase is less than whole phrase rest cost.
  */
-void clsSearchGraphBuilder::initializeRestCostsMatrix()
+void clsSearchGraph::initializeRestCostsMatrix()
 {
     this->Data->RestCostMatrix.resize(this->Data->Sentence.size());
     for (int SentenceStartPos=0; SentenceStartPos<this->Data->Sentence.size(); ++SentenceStartPos)
@@ -451,7 +454,7 @@ void clsSearchGraphBuilder::initializeRestCostsMatrix()
  * @return returns approximate cost of rest cost.
  */
 
-Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t& _coverage, size_t _beginPos, size_t _endPos) const
+Cost_t clsSearchGraph::calculateRestCost(const Coverage_t& _coverage, size_t _beginPos, size_t _endPos) const
 {
     Cost_t RestCosts = 0.0;
     size_t StartPosition = 0;
@@ -469,7 +472,7 @@ Cost_t clsSearchGraphBuilder::calculateRestCost(const Coverage_t& _coverage, siz
     if(Length)
         RestCosts += this->Data->RestCostMatrix[StartPosition][Length-1];
 
-    if(clsSearchGraphBuilder::DoComputePositionSpecificRestCosts.value()) {
+    if(clsSearchGraph::DoComputePositionSpecificRestCosts.value()) {
         foreach(FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions.values()) {
             if(FF->canComputePositionSpecificRestCost())
                 RestCosts += FF->getRestCostForPosition(_coverage, _beginPos, _endPos);

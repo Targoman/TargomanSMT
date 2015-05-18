@@ -45,7 +45,7 @@ public:
     void newSentence(const InputDecomposer::Sentence_t &inputSentence);
 
     Common::Cost_t scoreSearchGraphNode(
-            SearchGraph::clsSearchGraphNode& _newHypothesisNode) const;
+            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage);
         Q_UNUSED(_beginPos);
@@ -56,7 +56,7 @@ public:
                                       unsigned _sourceEnd,
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
-    bool nodesHaveSameState(const SearchGraph::clsSearchGraphNode &_first, const SearchGraph::clsSearchGraphNode &_second) const;
+    bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode &_first, const SearchGraphBuilder::clsSearchGraphNode &_second) const;
 
 private:
     LexicalReordering():
@@ -64,9 +64,9 @@ private:
     {}
 
     enuLexicalReorderingFields::Type getBackwardOreientation(
-            SearchGraph::clsSearchGraphNode &_newHypothesisNode) const;
+            SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
     enuLexicalReorderingFields::Type getForwardOreientation(
-            SearchGraph::clsSearchGraphNode &_newHypothesisNode) const;
+            SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
 
     inline QStringList columnNames() const{
         return LexicalReordering::IsBidirectional.value() ?
@@ -74,7 +74,7 @@ private:
                     enuLexicalReorderingFields::options().mid(0,3);
     }
 
-    void initRootNode(SearchGraph::clsSearchGraphNode &_rootNode);
+    void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
 private:
     static Common::Configuration::tmplConfigurable<bool>      IsBidirectional;      /**< Whether our lexical reordering is biderctional or not.*/

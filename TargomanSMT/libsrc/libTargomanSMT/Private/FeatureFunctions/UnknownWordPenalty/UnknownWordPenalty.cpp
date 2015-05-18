@@ -19,7 +19,7 @@ namespace Private {
 namespace FeatureFunction{
 
 using namespace Common;
-using namespace SearchGraph;
+using namespace SearchGraphBuilder;
 using namespace Proxies;
 using namespace RuleTable;
 

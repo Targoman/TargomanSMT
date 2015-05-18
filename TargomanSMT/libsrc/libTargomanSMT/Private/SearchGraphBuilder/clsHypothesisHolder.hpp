@@ -22,7 +22,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
-namespace SearchGraph {
+namespace SearchGraphBuilder {
 
 class clsHypothesisHolderData : public QSharedData
 {

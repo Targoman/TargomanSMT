@@ -1,7 +1,7 @@
 #include "UnitTest.h"
 
 using namespace UnitTestNameSpace;
-using namespace Targoman::SMT::Private::SearchGraph;
+using namespace Targoman::SMT::Private::SearchGraphBuilder;
 using namespace RuleTable;
 using namespace InputDecomposer;
 using namespace Targoman::Common;
@@ -32,7 +32,7 @@ public:
 
     void initialize(const QString &){}
 
-    Cost_t scoreSearchGraphNode(SearchGraph::clsSearchGraphNode&) const { return 0; }
+    Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode&) const { return 0; }
 
     Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage)
@@ -51,7 +51,7 @@ public:
 
     inline QStringList columnNames() const{return QStringList();}
 
-    void initRootNode(SearchGraph::clsSearchGraphNode&) { }
+    void initRootNode(SearchGraphBuilder::clsSearchGraphNode&) { }
 
 public:
     clsDummyFeatureFunctionForRestCost():
@@ -80,7 +80,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_initializeRestCostsMatrix()
              << clsToken("word5", 5, "", QVariantMap());
 
 
-    clsSearchGraphBuilder Builder(Sentence);
+    clsSearchGraph Builder(Sentence);
 
     for(int i = 0; i < Sentence.size(); ++i) {
         Builder.Data->PhraseCandidateCollections.append(

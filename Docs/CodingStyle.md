@@ -1,0 +1,2 @@
+Targoman Coding Style
+===========================

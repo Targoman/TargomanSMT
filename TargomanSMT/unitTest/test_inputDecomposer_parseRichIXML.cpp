@@ -11,19 +11,19 @@ void clsUnitTest::test_clsInputDecomposer_parseRichIXML()
 {
 
     QString ixmlString = "Saeed Torabzadeh <Number>24</Number><Unknown P=\"21\">dasd</Unknown>";
-    clsInputDecomposer::IsIXML.setFromVariant(true);
-    clsInputDecomposer::DoNormalize.setFromVariant(false);
+    clsInput::IsIXML.setFromVariant(true);
+    clsInput::DoNormalize.setFromVariant(false);
     gConfigs.SourceVocab.clear();
-    clsInputDecomposer::SpecialTags.clear();
+    clsInput::SpecialTags.clear();
 
     //----------------allocateWordIndex----------------------------//
 
-    clsInputDecomposer::SpecialTags.insert("Unknown");
+    clsInput::SpecialTags.insert("Unknown");
 
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
-        clsInputDecomposer::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
+        clsInput::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
 
-    foreach(const QString& Tag, clsInputDecomposer::SpecialTags){
+    foreach(const QString& Tag, clsInput::SpecialTags){
         WordIndex_t WordIndex = gConfigs.SourceVocab.size() + 1;
         gConfigs.SourceVocab.insert(Tag, WordIndex);
     }
@@ -37,7 +37,7 @@ void clsUnitTest::test_clsInputDecomposer_parseRichIXML()
 
     //-------------------------------------------------------------//
 
-    clsInputDecomposer InputDecomposer(ixmlString);
+    clsInput InputDecomposer(ixmlString);
 
 
     /*

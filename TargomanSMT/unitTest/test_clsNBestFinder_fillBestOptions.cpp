@@ -1,12 +1,12 @@
 #include <UnitTest.h>
-#include "libTargomanSMT/Private/SearchGraph/clsLexicalHypothesis.h"
-#include "libTargomanSMT/Private/SearchGraph/clsSearchGraphNode.h"
+#include "libTargomanSMT/Private/SearchGraphBuilder/clsLexicalHypothesis.h"
+#include "libTargomanSMT/Private/SearchGraphBuilder/clsSearchGraphNode.h"
 #include "libTargomanSMT/Private/RuleTable/clsTargetRule.h"
-#include "libTargomanSMT/Private/N-BestFinder/clsNBestFinder.h"
+#include "libTargomanSMT/Private/N-BestFinder/NBestSuggestions.h"
 
 
 using namespace UnitTestNameSpace;
-using namespace Targoman::SMT::Private::SearchGraph;
+using namespace Targoman::SMT::Private::SearchGraphBuilder;
 using namespace Targoman::SMT::Private::RuleTable;
 using namespace Targoman::SMT::Private::NBestFinder;
 using namespace Targoman::SMT;
@@ -24,7 +24,7 @@ void clsUnitTest::test_clsNBestFinder_fillBestOptions()
              << clsToken("word4", 4, "", QVariantMap())
              << clsToken("word5", 5, "", QVariantMap());
 
-    clsSearchGraphBuilder Builder(Sentence);
+    clsSearchGraph SearchGraph(false,Sentence);
 
     InvalidSearchGraphNodeData  = new clsSearchGraphNodeData;
     pInvalidSearchGraphNode     = new clsSearchGraphNode;
@@ -103,51 +103,52 @@ void clsUnitTest::test_clsNBestFinder_fillBestOptions()
     };
 
 
-    Builder.Data->HypothesisHolder.clear();
-    Builder.Data->HypothesisHolder.resize(Sentence.size() + 1);
+    SearchGraph.Data->HypothesisHolder.clear();
+    SearchGraph.Data->HypothesisHolder.resize(Sentence.size() + 1);
 
     clsLexicalHypothesisContainer lexicalHypoContainer;
 
     lexicalHypoContainer.Data->Nodes.push_back(RootNode);
-    Builder.Data->HypothesisHolder[0][makeCoverageByString("00000")] = lexicalHypoContainer;
+    SearchGraph.Data->HypothesisHolder[0][makeCoverageByString("00000")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
     lexicalHypoContainer.Data->Nodes.push_back(Best1st);
     lexicalHypoContainer.Data->Nodes.push_back(Node[0]);
     lexicalHypoContainer.Data->Nodes.push_back(Node[1]);
-    Builder.Data->HypothesisHolder[1][makeCoverageByString("10000")] = lexicalHypoContainer;
+    SearchGraph.Data->HypothesisHolder[1][makeCoverageByString("10000")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
     lexicalHypoContainer.Data->Nodes.push_back(Best2nd);
     lexicalHypoContainer.Data->Nodes.push_back(Node[2]);
     //lexicalHypoContainer.Data->Nodes.push_back(Node[3]);
-    Builder.Data->HypothesisHolder[2][makeCoverageByString("11000")] = lexicalHypoContainer;
+    SearchGraph.Data->HypothesisHolder[2][makeCoverageByString("11000")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
     lexicalHypoContainer.Data->Nodes.push_back(Best3rd);
     lexicalHypoContainer.Data->Nodes.push_back(Node[4]);
     lexicalHypoContainer.Data->Nodes.push_back(Node[5]);
     lexicalHypoContainer.Data->Nodes.push_back(Node[6]);
-    Builder.Data->HypothesisHolder[3][makeCoverageByString("11100")] = lexicalHypoContainer;
+    SearchGraph.Data->HypothesisHolder[3][makeCoverageByString("11100")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
     lexicalHypoContainer.Data->Nodes.push_back(Best4th);
     lexicalHypoContainer.Data->Nodes.push_back(Node[7]);
     lexicalHypoContainer.Data->Nodes.push_back(Node[8]);
     lexicalHypoContainer.Data->Nodes.push_back(Node[9]);
-    Builder.Data->HypothesisHolder[4][makeCoverageByString("11110")] = lexicalHypoContainer;
+    SearchGraph.Data->HypothesisHolder[4][makeCoverageByString("11110")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
     lexicalHypoContainer.Data->Nodes.push_back(Best5th);
-    Builder.Data->HypothesisHolder[5][makeCoverageByString("11111")] = lexicalHypoContainer;
+    SearchGraph.Data->HypothesisHolder[5][makeCoverageByString("11111")] = lexicalHypoContainer;
 
-    NBestFinder::clsNBestFinder Finder(Builder);
-    NBestFinder::clsNBestFinder::MaxOptions.setFromVariant(3);
-    Finder.fillBestOptions(Best5th);
+    NBestFinder::NBestSuggestions::MaxSuggestions.setFromVariant(3);
+   // NBestFinder::NBestSuggestions::Container_t Storage;
+   // NBestFinder::NBestSuggestions::fillBestOptions(Storage,SearchGraph,Best5th);
 
 
-    QMap<stuPhrasePos, clsNBestFinder::stuTargetOption> NBestOptions = Finder.nBestOptions();
-    QVERIFY(NBestOptions.size() == 5);
+    NBestFinder::NBestSuggestions::Container_t NBest =
+            NBestFinder::NBestSuggestions::retrieve(SearchGraph);
+    QVERIFY(NBest.size() == 5);
 
     int ExpectedCandidateCount[] = {
       3, 2, 3, 3, 1
@@ -162,12 +163,12 @@ void clsUnitTest::test_clsNBestFinder_fillBestOptions()
 
     for(int i = 0; i < 5; ++i)
     {
-        QVERIFY(NBestOptions.find(stuPhrasePos(i, i+1)) != NBestOptions.end());
-        QVERIFY(NBestOptions.value(stuPhrasePos(i, i+1)).TargetRules.size() == ExpectedCandidateCount[i]);
-        QVERIFY(NBestOptions.value(stuPhrasePos(i, i+1)).Pos == stuPhrasePos(2*i, 2*i + 2));
-        QVERIFY(NBestOptions.value(stuPhrasePos(i, i+1)).TargetRules.at(0).isSame(Bests[i]->targetRule()));
+        QVERIFY(NBest.find(stuPhrasePos(i, i+1)) != NBest.end());
+        QVERIFY(NBest.value(stuPhrasePos(i, i+1)).TargetRules.size() == ExpectedCandidateCount[i]);
+        QVERIFY(NBest.value(stuPhrasePos(i, i+1)).Pos == stuPhrasePos(2*i, 2*i + 2));
+        QVERIFY(NBest.value(stuPhrasePos(i, i+1)).TargetRules.at(0).isSame(Bests[i]->targetRule()));
         for(int j = 1; j < ExpectedCandidateCount[i]; ++j) {
-            QVERIFY(NBestOptions.value(stuPhrasePos(i, i+1)).TargetRules.at(j).isSame(Node[
+            QVERIFY(NBest.value(stuPhrasePos(i, i+1)).TargetRules.at(j).isSame(Node[
                                                                                       ExpectedNodeIndices[i][j - 1]
                                                                                       ].targetRule()));
         }

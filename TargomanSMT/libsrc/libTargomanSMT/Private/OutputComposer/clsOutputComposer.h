@@ -14,8 +14,7 @@
 #ifndef TARGOMAN_CORE_PRIVATE_OUTPUTCOMPOSER_CLSOUTPUTCOMPOSER_H
 #define TARGOMAN_CORE_PRIVATE_OUTPUTCOMPOSER_CLSOUTPUTCOMPOSER_H
 
-#include "Private/N-BestFinder/clsNBestFinder.h"
-#include "Private/SearchGraph/clsSearchGraphNode.h"
+#include "Private/SearchGraphBuilder/clsSearchGraph.h"
 #include "libTargomanSMT/Types.h"
 
 namespace Targoman{
@@ -30,10 +29,10 @@ namespace OutputComposer {
 class clsOutputComposer
 {
 public:
-    clsOutputComposer(InputDecomposer::clsInputDecomposer& _inputDecomposer,
-                      NBestFinder::clsNBestFinder& _nBestFinder):
+    clsOutputComposer(InputDecomposer::clsInput& _inputDecomposer,
+                      SearchGraphBuilder::clsSearchGraph& _searchGraph):
         InputDecomposerRef(_inputDecomposer),
-        NBestFinderRef(_nBestFinder)
+        SearchGraphRef(_searchGraph)
     {}
 
 public:
@@ -42,11 +41,11 @@ public:
 
 private:
     QString getTargetString(const RuleTable::clsTargetRule& _target, const stuPhrasePos& _sourcePos);
-    QString nodeTranslation(const SearchGraph::clsSearchGraphNode& _node);
+    QString nodeTranslation(const SearchGraphBuilder::clsSearchGraphNode& _node);
 
 private:
-    InputDecomposer::clsInputDecomposer&  InputDecomposerRef;
-    NBestFinder::clsNBestFinder&          NBestFinderRef;
+    InputDecomposer::clsInput&            InputDecomposerRef;
+    SearchGraphBuilder::clsSearchGraph&   SearchGraphRef;
 };
 
 }

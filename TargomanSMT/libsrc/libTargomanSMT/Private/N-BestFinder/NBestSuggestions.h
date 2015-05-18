@@ -17,7 +17,7 @@
 #include "libTargomanCommon/CmdIO.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Types.h"
-#include "Private/SearchGraph/clsSearchGraphBuilder.h"
+#include "Private/SearchGraphBuilder/clsSearchGraph.h"
 
 
 namespace Targoman{
@@ -29,7 +29,7 @@ namespace Private{
  */
 namespace NBestFinder {
 
-class clsNBestFinder
+class NBestSuggestions
 {
 public:
     struct stuTargetOption{
@@ -38,34 +38,24 @@ public:
 
 
         stuTargetOption(const stuPhrasePos& _pos = stuPhrasePos(),
-                        const QList<RuleTable::clsTargetRule>& _target = QList<RuleTable::clsTargetRule>()){
+                        const QList<RuleTable::clsTargetRule>& _target =
+                              QList<RuleTable::clsTargetRule>()){
             this->Pos = _pos;
             this->TargetRules = _target;
         }
     };
 
-    typedef QMap<stuPhrasePos, stuTargetOption> NBestOptions_t;
+    typedef QMap<stuPhrasePos, stuTargetOption> Container_t;
 
 public:
-    clsNBestFinder(const SearchGraph::clsSearchGraphBuilder& _searchGraphBuilder) :
-        SearchGraphBuilderRef(_searchGraphBuilder)
-    {}
-    const NBestOptions_t& nBestOptions();
-
-    const SearchGraph::clsSearchGraphNode& goalNode(){
-        return  this->SearchGraphBuilderRef.goalNode();
-    }
-
+    static Container_t retrieve(const SearchGraphBuilder::clsSearchGraph& _searchGraph);
 
 private:
-    size_t fillBestOptions(const SearchGraph::clsSearchGraphNode &_node);
+    static size_t fillBestOptions(NBestSuggestions::Container_t& _storage, const SearchGraphBuilder::clsSearchGraph &_searchGraph,
+                                  const SearchGraphBuilder::clsSearchGraphNode& _currNode);
 
 private:
-    NBestOptions_t                                        NBestOptions;
-    const SearchGraph::clsSearchGraphBuilder&     SearchGraphBuilderRef;
-
-private:
-    static Common::Configuration::tmplConfigurable<quint8> MaxOptions;
+    static Common::Configuration::tmplConfigurable<quint8> MaxSuggestions;
     friend class UnitTestNameSpace::clsUnitTest;
 
 };

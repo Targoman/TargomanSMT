@@ -22,7 +22,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
-namespace SearchGraph {
+namespace SearchGraphBuilder {
 
 /**
  * @brief The clsLexicalHypothesisContainerData class holds and manages A list of nodes.

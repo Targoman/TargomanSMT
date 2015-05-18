@@ -15,8 +15,8 @@
 
 
 #include "../libsrc/libTargomanSMT/Private/InputDecomposer/clsInput.h"
-#include "../libsrc/libTargomanSMT/Private/SearchGraph/clsSearchGraphBuilder.h"
-#include "../libsrc/libTargomanSMT/Private/N-BestFinder/clsNBestFinder.h"
+#include "../libsrc/libTargomanSMT/Private/SearchGraphBuilder/clsSearchGraph.h"
+#include "../libsrc/libTargomanSMT/Private/N-BestFinder/NBestSuggestions.h"
 #include "../libsrc/libTargomanSMT/Private/OutputComposer/clsOutputComposer.h"
 #include <QtTest/QtTest>
 #include <iostream>

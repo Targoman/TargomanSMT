@@ -12,12 +12,12 @@
  */
 
 #include "clsLexicalHypothesis.h"
-#include "clsSearchGraphBuilder.h"
+#include "clsSearchGraph.h"
 
 namespace Targoman{
 namespace SMT {
 namespace Private{
-namespace SearchGraph {
+namespace SearchGraphBuilder {
 
 using namespace Common;
 using namespace Common::Configuration;
@@ -25,7 +25,7 @@ using namespace Common::Configuration;
 const Cost_t PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST = INFINITY;
 
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesisContainer::KeepRecombined(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/KeepRecombined",
+        clsSearchGraph::moduleBaseconfig() + "/KeepRecombined",
         "Do recombination(default) or let nodes to be separated",
         true
         );

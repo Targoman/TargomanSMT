@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         //Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
 
         printMemoryUsage("after init");
-        clsTranslator::init(ConfigManager::instance().configFilePath());
+        Translator::init(ConfigManager::instance().configFilePath());
         printMemoryUsage("after load all");
 
         //clsTranslator::saveBinaryRuleTable("../pt/phrase-table.kenlm.bin");
@@ -100,8 +100,7 @@ int main(int argc, char *argv[])
 
         while(Stream.atEnd() == false)
         {
-            clsTranslator MyTranslator(Stream.readLine());
-            std::cout << MyTranslator.translate(true).Translation.toStdString() << std::endl;
+            std::cout << Translator::translate(Stream.readLine(), true).Translation.toStdString() << std::endl;
             //printMemoryUsage(QString::number(++LineNumber) + ": after translate");
         }
 

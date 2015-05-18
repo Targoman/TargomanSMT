@@ -31,7 +31,7 @@ public:
 
     void initialize(const QString &){}
 
-    Common::Cost_t scoreSearchGraphNode(SearchGraph::clsSearchGraphNode& _newHypothesisNode) const;
+    Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const;
 
@@ -46,7 +46,7 @@ public:
 
     inline QStringList columnNames() const{return QStringList();}
 
-    void initRootNode(SearchGraph::clsSearchGraphNode &_rootNode);
+    void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
 private:
     ReorderingJump():

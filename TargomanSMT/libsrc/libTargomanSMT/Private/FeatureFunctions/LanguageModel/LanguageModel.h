@@ -31,7 +31,7 @@ public:
 
     void initialize(const QString &){}
 
-    Common::Cost_t scoreSearchGraphNode(SearchGraph::clsSearchGraphNode& _newHypothesisNode) const;
+    Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage);
@@ -48,12 +48,12 @@ public:
                                       unsigned _sourceEnd,
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
-    bool nodesHaveSameState(const SearchGraph::clsSearchGraphNode &_first,
-                            const SearchGraph::clsSearchGraphNode &_second) const;
+    bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode &_first,
+                            const SearchGraphBuilder::clsSearchGraphNode &_second) const;
 
     inline QStringList columnNames() const{return QStringList();}
 
-    void initRootNode(SearchGraph::clsSearchGraphNode &_rootNode);
+    void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
 private:
     LanguageModel():

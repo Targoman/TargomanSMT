@@ -12,6 +12,7 @@
  */
 
 #include "clsOutputComposer.h"
+#include "Private/N-BestFinder/NBestSuggestions.h"
 
 namespace Targoman{
 namespace SMT {
@@ -36,10 +37,11 @@ stuTranslationOutput clsOutputComposer::translationOutput()
     Output.Translation = this->translationString();
     Output.NormalizedSource = this->InputDecomposerRef.normalizedString();
 
-    const clsNBestFinder::NBestOptions_t&     NBestOptions = this->NBestFinderRef.nBestOptions();
+    NBestSuggestions::Container_t NBestSuggestions =
+            NBestSuggestions::retrieve(this->SearchGraphRef);
 
-    for(clsNBestFinder::NBestOptions_t::ConstIterator NBestIter = NBestOptions.constBegin();
-        NBestIter != NBestOptions.constEnd();
+    for(NBestSuggestions::Container_t::ConstIterator NBestIter = NBestSuggestions.constBegin();
+        NBestIter != NBestSuggestions.constEnd();
         ++NBestIter){
         QStringList TargetOptions;
         foreach(const clsTargetRule& TargetRule, NBestIter.value().TargetRules)
@@ -61,7 +63,7 @@ stuTranslationOutput clsOutputComposer::translationOutput()
  */
 QString clsOutputComposer::translationString()
 {
-    return this->nodeTranslation(this->NBestFinderRef.goalNode());
+    return this->nodeTranslation(this->SearchGraphRef.goalNode());
 }
 
 
@@ -109,7 +111,7 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
  * @param _node                                 input translation hypothesis
  * @return
  */
-QString clsOutputComposer::nodeTranslation(const SearchGraph::clsSearchGraphNode &_node)
+QString clsOutputComposer::nodeTranslation(const SearchGraphBuilder::clsSearchGraphNode &_node)
 {
     if(_node.isInvalid())
         return QString();

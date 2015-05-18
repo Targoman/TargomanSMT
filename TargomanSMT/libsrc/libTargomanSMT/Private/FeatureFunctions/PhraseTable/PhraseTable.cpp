@@ -20,7 +20,7 @@ namespace FeatureFunction{
 
 using namespace Common;
 using namespace Common::Configuration;
-using namespace SearchGraph;
+using namespace SearchGraphBuilder;
 using namespace RuleTable;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable);

@@ -12,30 +12,30 @@
  */
 
 #include "clsCardinality.h"
-#include "clsSearchGraphBuilder.h"
+#include "clsSearchGraph.h"
 #include <iostream>
 
 namespace Targoman{
 namespace SMT {
 namespace Private{
-namespace SearchGraph {
+namespace SearchGraphBuilder {
 
 using namespace Common;
 using namespace Common::Configuration;
 
 
 tmplConfigurable<quint16> clsCardinalityHypothesisContainer::MaxCardinalityContainerSize(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/MaxCardinalityContainerSize",
+        clsSearchGraph::moduleBaseconfig() + "/MaxCardinalityContainerSize",
         "TODO Desc",
         100);
 tmplConfigurable<quint8> clsCardinalityHypothesisContainer::PrimaryCoverageShare(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/PrimaryCoverageShare",
+        clsSearchGraph::moduleBaseconfig() + "/PrimaryCoverageShare",
         "TODO Desc",
         0
         );
 
 tmplConfigurable<double> clsCardinalityHypothesisContainer::SearchBeamWidth(
-        clsSearchGraphBuilder::moduleBaseconfig() + "/SearchBeamWidth",
+        clsSearchGraph::moduleBaseconfig() + "/SearchBeamWidth",
         "TODO Desc",
         5
         );

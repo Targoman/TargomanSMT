@@ -1,7 +1,7 @@
 #include "UnitTest.h"
 
 using namespace UnitTestNameSpace;
-using namespace Targoman::SMT::Private::SearchGraph;
+using namespace Targoman::SMT::Private::SearchGraphBuilder;
 using namespace RuleTable;
 using namespace InputDecomposer;
 using namespace Targoman::Common;
@@ -99,7 +99,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_collectPhraseCandidates()
                 QList<Cost_t>() << 4 << 2
                 );
 
-    clsSearchGraphBuilder Builder(Sentence);
+    clsSearchGraph Builder(Sentence);
     Builder.pRuleTable = &RuleTable;
     Builder.collectPhraseCandidates();
 

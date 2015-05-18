@@ -49,11 +49,11 @@ typedef QList<clsToken> Sentence_t;
  * @brief class clsInputDecomposer This class is defined to manage input string tokens.
  * This input string can be in ixml or plain format.
  */
-class clsInputDecomposer
+class clsInput
 {
 public:
-    clsInputDecomposer(const QString& _inputStr);
-    ~clsInputDecomposer(){}
+    clsInput(const QString& _inputStr);
+    ~clsInput(){}
 
     static void init(const QString &_configFilePath);
 

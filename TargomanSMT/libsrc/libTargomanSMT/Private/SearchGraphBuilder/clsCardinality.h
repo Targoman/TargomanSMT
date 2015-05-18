@@ -22,7 +22,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
-namespace SearchGraph {
+namespace SearchGraphBuilder {
 
 /**
  * @brief CoverageLexicalHypothesisMap_t    used to make the source code more readable

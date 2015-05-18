@@ -11,12 +11,13 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#include "clsTranslator.h"
+#include "Translator.h"
 
-#include "Private/clsTranslator_p.h"
 #include "libTargomanTextProcessor/TextProcessor.h"
+#include "Private/InputDecomposer/clsInput.h"
+#include "Private/SearchGraphBuilder/clsSearchGraph.h"
+#include "Private/OutputComposer/clsOutputComposer.h"
 #include "Private/OOVHandler/OOVHandler.h"
-
 
 namespace Targoman{
 /**
@@ -27,58 +28,49 @@ namespace SMT {
 using namespace Private;
 using namespace NLPLibs;
 using namespace Private::OOV;
-using namespace SearchGraph;
+using namespace SearchGraphBuilder;
 
-bool clsTranslatorPrivate::Initialized = false;
+static bool TranslatorInitialized = false;
 
-clsTranslator::clsTranslator(const QString &_inputStr) :
-    pPrivate(new Private::clsTranslatorPrivate(_inputStr))
+void Translator::init(const QString _configFilePath)
 {
-    TargomanDebug(5,_inputStr);
-}
-
-clsTranslator::~clsTranslator()
-{
-    ///@note Just to suppress compiler error using QScoppedPointer
-}
-
-void clsTranslator::init(const QString _configFilePath)
-{
-    if (clsTranslatorPrivate::Initialized){
+    if (TranslatorInitialized){
         TargomanWarn(5, "Reinitialization of translator has no effect");
         return;
     }
 
-    InputDecomposer::clsInputDecomposer::init(_configFilePath);
+    InputDecomposer::clsInput::init(_configFilePath);
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());
     gConfigs.EmptyLMScorer->init(false);
 
-    SearchGraph::clsSearchGraphBuilder::init(_configFilePath);
+    SearchGraphBuilder::clsSearchGraph::init(_configFilePath);
     OOVHandler::instance().initialize();
 
-    clsTranslatorPrivate::Initialized = true;
+    TranslatorInitialized = true;
 }
 
-stuTranslationOutput clsTranslator::translate(bool _justTranslationString)
+stuTranslationOutput Translator::translate(const QString &_inputStr, bool _justTranslationString)
 {
-    if (clsTranslatorPrivate::Initialized == false)
+    if (TranslatorInitialized == false)
         throw exTargomanCore("Translator is not initialized");
 
-    //Input was decomposed in constructor
-    this->pPrivate->SearchGraphBuilder->collectPhraseCandidates();
-    this->pPrivate->SearchGraphBuilder->decode();
+    InputDecomposer::clsInput Input(_inputStr);
+    SearchGraphBuilder::clsSearchGraph  SearchGraph(Input.tokens());
+    OutputComposer::clsOutputComposer   OutputComposer(Input, SearchGraph);
 
     if (_justTranslationString){
         stuTranslationOutput Output;
-        Output.Translation = this->pPrivate->Output->translationString();
+        Output.Translation = OutputComposer.translationString();
         return Output;
     }else
-        return this->pPrivate->Output->translationOutput();
+        return OutputComposer.translationOutput();
 }
 
-void clsTranslator::saveBinaryRuleTable(const QString &_filePath)
+void Translator::saveBinaryRuleTable(const QString &_filePath)
 {
-    clsSearchGraphBuilder::saveBinaryRuleTable(_filePath);
+    if (TranslatorInitialized == false)
+        throw exTargomanCore("Translator is not initialized");
+    clsSearchGraph::saveBinaryRuleTable(_filePath);
 }
 
 }

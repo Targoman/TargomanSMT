@@ -12,17 +12,15 @@ BasePath = ".."
 HEADERS += \
     libTargomanSMT/Private/InputDecomposer/clsInput.h \
     libTargomanSMT/Private/InputDecomposer/clsToken.h \
-    libTargomanSMT/clsTranslator.h \
-    libTargomanSMT/Private/SearchGraph/clsSearchGraphBuilder.h \
-    libTargomanSMT/Private/clsTranslator_p.h \
     libTargomanSMT/Private/GlobalConfigs.h \
-    libTargomanSMT/Private/N-BestFinder/clsNBestFinder.h \
     libTargomanSMT/Private/OutputComposer/clsOutputComposer.h \
-    libTargomanSMT/Private/SearchGraph/clsLexicalHypothesis.h \
+    libTargomanSMT/Private/SearchGraphBuilder/clsLexicalHypothesis.h \
+    libTargomanSMT/Private/SearchGraphBuilder/clsSearchGraphNode.h \
+    libTargomanSMT/Private/SearchGraphBuilder/clsCardinality.h \
+    libTargomanSMT/Private/SearchGraphBuilder/clsHypothesisHolder.hpp \
+    libTargomanSMT/Private/SearchGraphBuilder/clsSearchGraph.h \
     libTargomanSMT/Private/Proxies/intfLMSentenceScorer.hpp \
     libTargomanSMT/Private/Proxies/LanguageModel/clsTargomanLMProxy.h \
-    libTargomanSMT/Private/SearchGraph/clsSearchGraphNode.h \
-    libTargomanSMT/Private/SearchGraph/clsCardinality.h \
     libTargomanSMT/Private/FeatureFunctions/intfFeatureFunction.hpp \
     libTargomanSMT/Private/FeatureFunctions/LexicalReordering/LexicalReordering.h \
     libTargomanSMT/Private/RuleTable/clsRuleNode.h \
@@ -30,7 +28,6 @@ HEADERS += \
     libTargomanSMT/Private/RuleTable/clsJanePlainRuleTable.h \
     libTargomanSMT/Private/RuleTable/intfRuleTable.hpp \
     libTargomanSMT/Private/FeatureFunctions/PhraseTable/PhraseTable.h \
-    libTargomanSMT/Private/SearchGraph/clsHypothesisHolder.hpp \
     libTargomanSMT/Private/OOVHandler/OOVHandler.h \
     libTargomanSMT/Private/OOVHandler/intfOOVHandlerModule.hpp \
     libTargomanSMT/Private/OOVHandler/OOVDefaultHandlers.h \
@@ -42,20 +39,19 @@ HEADERS += \
     libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.h \
     libTargomanSMT/Private/RuleTable/clsBinaryRuleTable.h \
     libTargomanSMT/Private/FeatureFunctions/UnknownWordPenalty/UnknownWordPenalty.h \
-    libTargomanSMT/Private/Proxies/LanguageModel/clsKenLMProxy.h
+    libTargomanSMT/Private/Proxies/LanguageModel/clsKenLMProxy.h \
+    libTargomanSMT/Translator.h \
+    libTargomanSMT/Private/N-BestFinder/NBestSuggestions.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
     libTargomanSMT/Private/InputDecomposer/clsInput.cpp \
-    libTargomanSMT/clsTranslator.cpp \
     libTargomanSMT/Private/GlobalConfigs.cpp \
-    libTargomanSMT/Private/N-BestFinder/clsNBestFinder.cpp \
     libTargomanSMT/Private/OutputComposer/clsOutputComposer.cpp \
-    libTargomanSMT/Private/SearchGraph/clsLexicalHypothesis.cpp \
-    libTargomanSMT/Private/Proxies/LanguageModel/clsTargomanLMProxy.cpp \
-    libTargomanSMT/Private/SearchGraph/clsSearchGraphNode.cpp \
-    libTargomanSMT/Private/SearchGraph/clsCardinality.cpp \
-    libTargomanSMT/Private/SearchGraph/clsSearchGraphBuilder.cpp \
+    libTargomanSMT/Private/SearchGraphBuilder/clsLexicalHypothesis.cpp \
+    libTargomanSMT/Private/SearchGraphBuilder/clsSearchGraphNode.cpp \
+    libTargomanSMT/Private/SearchGraphBuilder/clsCardinality.cpp \
+    libTargomanSMT/Private/SearchGraphBuilder/clsSearchGraph.cpp \
     libTargomanSMT/Private/FeatureFunctions/LexicalReordering/LexicalReordering.cpp \
     libTargomanSMT/Private/RuleTable/clsRuleNode.cpp \
     libTargomanSMT/Private/RuleTable/clsTargetRule.cpp \
@@ -69,7 +65,10 @@ SOURCES += libID.cpp \
     libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.cpp \
     libTargomanSMT/Private/RuleTable/clsBinaryRuleTable.cpp \
     libTargomanSMT/Private/FeatureFunctions/UnknownWordPenalty/UnknownWordPenalty.cpp \
-    libTargomanSMT/Private/Proxies/LanguageModel/clsKenLMProxy.cpp
+    libTargomanSMT/Private/Proxies/LanguageModel/clsTargomanLMProxy.cpp \
+    libTargomanSMT/Private/Proxies/LanguageModel/clsKenLMProxy.cpp \
+    libTargomanSMT/Translator.cpp \
+    libTargomanSMT/Private/N-BestFinder/NBestSuggestions.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=
