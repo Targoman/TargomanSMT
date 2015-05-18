@@ -10,8 +10,7 @@ if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
 	fi
 fi
 
-Projects="ExternalToolsAndLibs/giza-pp
-	  TargomanCommon 
+Projects="TargomanCommon 
           NLPLibs/TargomanLM/ 
 	  NLPLibs/TargomanTextProcessor/ 
 	  ExternalToolsAndLibs/KenLM
