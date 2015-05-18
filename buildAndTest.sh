@@ -2,34 +2,45 @@
 
 
 QMAKE_COMMAND=qmake-qt5
-if [ -z "$(whereis $QMAKE_COMMAND | awk '{ print $2 }')" ]; then
+if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
 	QMAKE_COMMAND=qmake
+	if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
+		echo -e "\n\e[31m!!!!!!!!!!!!!!!!! QMake version 5 is needed for compiling the project! !!!!!!!!!!!!!!!! \e[39m\n"
+		exit 1
+	fi
 fi
 
-Projects="TargomanCommon 
+Projects="ExternalToolsAndLibs/giza-pp
+	  TargomanCommon 
           NLPLibs/TargomanLM/ 
 	  NLPLibs/TargomanTextProcessor/ 
-	  ExternalToolsAndLibs/KenLM 
+	  ExternalToolsAndLibs/KenLM
 	  TargomanSMT 
 	  Apps/TargomanSMTConsole 
 	  Apps/TargomanSMTServer 
           Apps/loadBalancer"
+          
 BasePath=`pwd`
 if [ "$1" == "full" ]; then
 	rm -rf out
 	for Proj in $Projects
 	do
 		cd  $BasePath/$Proj
-		make distclean
-		if [ "$2" != "release" ] ; then
- 			$QMAKE_COMMAND CONFIG+=debug
+		if [ -f *.pro ]; then
+			make distclean
+			if [ "$2" != "release" ] ; then
+				$QMAKE_COMMAND CONFIG+=debug
+			else
+				$QMAKE_COMMAND
+			fi
 		else
-			$QMAKE_COMMAND
+			make clean
+			echo "HERE IT IS!!!!!!!!!!!!!!!!!!!!!!"
 		fi
 		make
 		if [ $? -ne 0 ];then
 			echo -e "\n\e[31m!!!!!!!!!!!!!!!!! $Proj Build Has failed!!!!!!!!!!!!!!!! \e[39m\n"
-			break;
+			exit 1;
 		else
 			echo -e "\n\e[32m Module $Proj Compiled Successfully\e[39m\n"
 		fi
@@ -41,7 +52,7 @@ else
 		make
 		if [ $? -ne 0 ];then
 			echo -e "\n\e[31m!!!!!!!!!!!!!!!!! $Proj Build Has failed!!!!!!!!!!!!!!!! \e[39m\n"
-			break;
+			exit 1;
 		else
 			echo -e "\n\e[32m Module $Proj Compiled Successfully\e[39m\n"
 		fi

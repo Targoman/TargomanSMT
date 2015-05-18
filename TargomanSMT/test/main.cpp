@@ -13,7 +13,7 @@
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanSMT/Private/GlobalConfigs.h"
 #include "libTargomanCommon/Logger.h"
-#include "libTargomanSMT/clsTranslator.h"
+#include "libTargomanSMT/Translator.h"
 #include "libTargomanCommon/clsSafeCoreApplication.h"
 
 
