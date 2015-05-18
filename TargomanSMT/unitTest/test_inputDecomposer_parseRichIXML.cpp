@@ -37,7 +37,7 @@ void clsUnitTest::test_clsInputDecomposer_parseRichIXML()
 
     //-------------------------------------------------------------//
 
-    clsInput InputDecomposer(ixmlString);
+    clsInput InputDecomposer(ixmlString, false);
 
 
     /*

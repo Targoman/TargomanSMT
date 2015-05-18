@@ -17,7 +17,7 @@ Projects="TargomanCommon
 	  TargomanSMT 
 	  Apps/TargomanSMTConsole 
 	  Apps/TargomanSMTServer 
-          Apps/loadBalancer"
+          Apps/TargomanLoadBalancer"
           
 BasePath=`pwd`
 if [ "$1" == "full" ]; then

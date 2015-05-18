@@ -30,90 +30,90 @@ SUBTARGETS    =  \
 
 sub-libsrc-qmake_all:  FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile
+	cd libsrc/ && $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile
 	cd libsrc/ && $(MAKE) -f Makefile qmake_all
 sub-libsrc: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
 sub-libsrc-make_first-ordered: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
 sub-libsrc-make_first: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
 sub-libsrc-all-ordered: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
 sub-libsrc-all: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
 sub-libsrc-clean-ordered: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
 sub-libsrc-clean: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
 sub-libsrc-distclean-ordered: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
 sub-libsrc-distclean: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
 sub-libsrc-install_subtargets-ordered: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
 sub-libsrc-install_subtargets: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
 sub-libsrc-uninstall_subtargets-ordered: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-libsrc-uninstall_subtargets: FORCE
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-test-qmake_all: sub-libsrc-qmake_all FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile
+	cd test/ && $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile
 	cd test/ && $(MAKE) -f Makefile qmake_all
 sub-test: sub-libsrc FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
 sub-test-make_first-ordered: sub-libsrc-make_first-ordered  FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
 sub-test-make_first: sub-libsrc-make_first FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
 sub-test-all-ordered: sub-libsrc-all-ordered  FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
 sub-test-all: sub-libsrc-all FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
 sub-test-clean-ordered: sub-libsrc-clean-ordered  FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
 sub-test-clean: sub-libsrc-clean FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
 sub-test-distclean-ordered: sub-libsrc-distclean-ordered  FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
 sub-test-distclean: sub-libsrc-distclean FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
 sub-test-install_subtargets-ordered: sub-libsrc-install_subtargets-ordered  FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
 sub-test-install_subtargets: sub-libsrc-install_subtargets FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
 sub-test-uninstall_subtargets-ordered: sub-libsrc-uninstall_subtargets-ordered  FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-test-uninstall_subtargets: sub-libsrc-uninstall_subtargets FORCE
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: KenLM.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/common/shell-unix.conf \
@@ -152,16 +152,10 @@ Makefile: KenLM.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /usr/lib64/qt5/m
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickparticles_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_sql.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_sql_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_testlib.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_testlib_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit_private.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri \
-		/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_widgets.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_widgets_private.pri \
 		/usr/lib64/qt5/mkspecs/modules/qt_lib_xml.pri \
@@ -220,16 +214,10 @@ Makefile: KenLM.pro /usr/lib64/qt5/mkspecs/linux-g++/qmake.conf /usr/lib64/qt5/m
 /usr/lib64/qt5/mkspecs/modules/qt_lib_quickparticles_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_quickwidgets_private.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_sensors_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_sql.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_sql_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_testlib.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_testlib_private.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_webkit_private.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri:
-/usr/lib64/qt5/mkspecs/modules/qt_lib_webkitwidgets_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_widgets.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_widgets_private.pri:
 /usr/lib64/qt5/mkspecs/modules/qt_lib_xml.pri:
@@ -265,25 +253,25 @@ uninstall_subtargets: sub-libsrc-uninstall_subtargets-ordered sub-test-uninstall
 
 sub-libsrc-check_ordered:
 	@test -d libsrc/ || mkdir -p libsrc/
-	cd libsrc/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
+	cd libsrc/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/libsrc/libsrc.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
 sub-test-check_ordered: sub-libsrc-check_ordered 
 	@test -d test/ || mkdir -p test/
-	cd test/ && ( test -e Makefile || $(QMAKE) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
+	cd test/ && ( test -e Makefile || $(QMAKE) /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/KenLM/test/test.pro CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
 check: sub-libsrc-check_ordered sub-test-check_ordered
 install_target: FORCE
-	@test -d $(INSTALL_ROOT)/home/b.vedadian/local/ || mkdir -p $(INSTALL_ROOT)/home/b.vedadian/local/
-	rm -rvf /home/b.vedadian/local/lib/lib/
-	-$(INSTALL_DIR) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/out/bin $(INSTALL_ROOT)/home/b.vedadian/local/
-	-$(INSTALL_DIR) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/out/lib $(INSTALL_ROOT)/home/b.vedadian/local/
-	-$(INSTALL_DIR) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/out/include $(INSTALL_ROOT)/home/b.vedadian/local/
-	-$(INSTALL_DIR) /Share/local/vedadian/Targoman/SVN/targoman/Trunk/out/conf $(INSTALL_ROOT)/home/b.vedadian/local/
+	@test -d $(INSTALL_ROOT)/home/user/local/ || mkdir -p $(INSTALL_ROOT)/home/user/local/
+	rm -rvf /home/user/local/lib/lib/
+	-$(INSTALL_DIR) /home/user/SVN/Targoman/targoman/Trunk/out/bin $(INSTALL_ROOT)/home/user/local/
+	-$(INSTALL_DIR) /home/user/SVN/Targoman/targoman/Trunk/out/lib $(INSTALL_ROOT)/home/user/local/
+	-$(INSTALL_DIR) /home/user/SVN/Targoman/targoman/Trunk/out/include $(INSTALL_ROOT)/home/user/local/
+	-$(INSTALL_DIR) /home/user/SVN/Targoman/targoman/Trunk/out/conf $(INSTALL_ROOT)/home/user/local/
 
 uninstall_target: FORCE
-	-$(DEL_FILE) -r $(INSTALL_ROOT)/home/b.vedadian/local/conf
-	-$(DEL_FILE) -r $(INSTALL_ROOT)/home/b.vedadian/local/include
-	-$(DEL_FILE) -r $(INSTALL_ROOT)/home/b.vedadian/local/lib
-	-$(DEL_FILE) -r $(INSTALL_ROOT)/home/b.vedadian/local/bin
-	-$(DEL_DIR) $(INSTALL_ROOT)/home/b.vedadian/local/ 
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/home/user/local/conf
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/home/user/local/include
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/home/user/local/lib
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/home/user/local/bin
+	-$(DEL_DIR) $(INSTALL_ROOT)/home/user/local/ 
 
 
 install: install_subtargets install_target  FORCE

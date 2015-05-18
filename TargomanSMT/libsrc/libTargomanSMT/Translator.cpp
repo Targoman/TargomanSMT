@@ -49,12 +49,14 @@ void Translator::init(const QString _configFilePath)
     TranslatorInitialized = true;
 }
 
-stuTranslationOutput Translator::translate(const QString &_inputStr, bool _justTranslationString)
+stuTranslationOutput Translator::translate(const QString &_inputStr,
+                                           bool _justTranslationString,
+                                           bool _isIXML)
 {
     if (TranslatorInitialized == false)
         throw exTargomanCore("Translator is not initialized");
 
-    InputDecomposer::clsInput Input(_inputStr);
+    InputDecomposer::clsInput Input(_inputStr, _isIXML);
     SearchGraphBuilder::clsSearchGraph  SearchGraph(Input.tokens());
     OutputComposer::clsOutputComposer   OutputComposer(Input, SearchGraph);
 

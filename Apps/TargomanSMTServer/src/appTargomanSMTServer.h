@@ -8,7 +8,6 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
- @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #ifndef TARGOMAN_APPS_APPTARGOMANSMTCONSOLE_H
@@ -28,6 +27,8 @@ class appTargomanSMTServer : public Common::Configuration::intfRPCExporter
 public:
     appTargomanSMTServer() {
         this->exportMyRPCs();
+        this->PendingTranslations = 0;
+        this->TotalTranslations = 0;
     }
 
 public slots:
@@ -42,8 +43,11 @@ public slots:
 
 public slots:
     Common::Configuration::stuRPCOutput rpcGetStatistics(const QVariantMap&);
+    Common::Configuration::stuRPCOutput rpcTranslate(const QVariantMap& _args);
 
 private:
+    quint64 TotalTranslations;
+    quint64 PendingTranslations;
 };
 
 }

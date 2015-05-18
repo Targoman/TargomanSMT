@@ -8,26 +8,21 @@
  *************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
- @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
 #include <unistd.h>
-#include <QFile>
-#include <QTextStream>
 #include <sys/sysinfo.h>
 #include "appTargomanSMTServer.h"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/CmdIO.h"
-//#include "libTargomanSMT/clsTranslator.h"
 #include "Configs.h"
 #include "libTargomanCommon/SimpleAuthentication.h"
-//#include "TranslationWriter.h"
-//#include "clsTranslationJob.h"
+#include "clsTranslationJob.h"
 
 namespace Targoman {
 namespace Apps {
 
-//using namespace SMT;
+
 using namespace Common;
 using namespace Common::Configuration;
 
@@ -47,32 +42,10 @@ void appTargomanSMTServer::slotExecute()
                 SLOT(slotValidateAgent(QString&,QString,QString,bool&,bool&)),
                 Qt::DirectConnection);
 
+    //        Translator::init(ConfigManager::instance().configFilePath());
 
+        QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
         Configuration::ConfigManager::instance().startAdminServer();
-
-       // while(1)
-       //         sleep(10);
-        /*
-        clsTranslator::init(Configuration::ConfigManager::instance().configFilePath());
-
-        if(gConfigs::InputText.value().size()){
-            clsTranslator Translator(gConfigs::InputText.value());
-            TranslationWriter::instance().writeTranslation(1,Translator.translate(true).Translation);
-        } else if (gConfigs::InputFile.value().size()) {
-            QFile InFile(gConfigs::InputFile.value());
-            if (InFile.open(QFile::ReadOnly) == false)
-                throw exTargomanSMTConsole("Unable to open <" + InFile.fileName() + "> for reading.");
-
-            QTextStream InStream(&InFile);
-            InStream.setCodec("UTF-8");
-            QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
-            int Index = 0;
-            while(InStream.atEnd() == false){
-                QThreadPool::globalInstance()->start(new clsTranslationJob(++Index, InStream.readLine()));
-            }
-        }
-*/
-       // QCoreApplication::exit(0);
     }catch(exTargomanBase& e){
         TargomanError(e.what());
         QCoreApplication::exit(-1);
@@ -118,9 +91,22 @@ stuRPCOutput appTargomanSMTServer::rpcGetStatistics(const QVariantMap &)
         Args.insert("L1", qMin(int((float(SysInfo.loads[0])/shiftfloat/get_nprocs()) * 100.), 100));
         Args.insert("L15",qMin(int((float(SysInfo.loads[2])/shiftfloat/get_nprocs()) * 100.), 100));
         Args.insert("FM", qMin(int(double(SysInfo.freeram)/double(SysInfo.totalram) * 100.), 100));
-        Args.insert("TQ", 5); //TODO complete me
+        Args.insert("TQ", qMin(int(double(QThreadPool::globalInstance()->activeThreadCount()) /
+                                   double(QThreadPool::globalInstance()->maxThreadCount())*100.),100));
     }
     return stuRPCOutput(1, Args);
+}
+
+stuRPCOutput appTargomanSMTServer::rpcTranslate(const QVariantMap &_args)
+{
+    QString Text  = _args.value("txt").toString();
+    if (Text.isEmpty())
+        throw exTargomanSMTServer("Obligatory argument 'txt' missing");
+
+    QVariantMap Result;
+    Result.insert("t",clsTranslationJob(_args.value("brief",false).toBool(),
+                                        _args.value("keep",false).toBool()).doJob(Text));
+    return stuRPCOutput(1, Result);
 }
 
 }

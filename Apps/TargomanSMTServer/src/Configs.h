@@ -21,7 +21,7 @@
 namespace Targoman {
 namespace Apps {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTConsole, Common::exTargomanBase);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTServer, Common::exTargomanBase);
 
 class gConfigs{
 public:

@@ -11,17 +11,17 @@ BasePath = "."
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 HEADERS += \
     src/Configs.h \
-    src/clsTranslationJob.h \
-    src/TranslationWriter.h \
-    src/appTargomanSMTServer.h
+    src/appTargomanSMTServer.h \
+    src/clsTranslationJob.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
     src/main.cpp \
     src/Configs.cpp \
-    src/clsTranslationJob.cpp \
-    src/TranslationWriter.cpp \
-    src/appTargomanSMTServer.cpp
+    src/appTargomanSMTServer.cpp \
+    src/clsTranslationJob.cpp
+
+QT+=concurrent
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

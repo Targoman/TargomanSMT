@@ -26,7 +26,10 @@ class Translator
 public:
     static void init(const QString _configFilePath);
     static void saveBinaryRuleTable(const QString& _filePath);
-    static stuTranslationOutput translate(const QString& _inputStr, bool _justTranslationString = false);
+    static stuTranslationOutput translate(const QString& _inputStr,
+                                          bool _justTranslationString = false,
+                                          bool _isIXML = false);
+    static QStringList break2Sentences(const QString& _inputStr);
 };
 
 }

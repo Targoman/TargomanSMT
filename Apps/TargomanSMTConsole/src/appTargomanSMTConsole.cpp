@@ -16,7 +16,7 @@
 #include "appTargomanSMTConsole.h"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/CmdIO.h"
-#include "libTargomanSMT/clsTranslator.h"
+#include "libTargomanSMT/Translator.h"
 #include "Configs.h"
 #include "TranslationWriter.h"
 #include "clsTranslationJob.h"
@@ -30,11 +30,11 @@ using namespace Common;
 void appTargomanSMTConsole::slotExecute()
 {
     try{
-        clsTranslator::init(Configuration::ConfigManager::instance().configFilePath());
+        Translator::init(Configuration::ConfigManager::instance().configFilePath());
 
         if(gConfigs::InputText.value().size()){
-            clsTranslator Translator(gConfigs::InputText.value());
-            TranslationWriter::instance().writeTranslation(1,Translator.translate(true).Translation);
+            TranslationWriter::instance().writeTranslation(1,
+                                                           Translator::translate(gConfigs::InputText.value(), true).Translation);
         } else if (gConfigs::InputFile.value().size()) {
             QFile InFile(gConfigs::InputFile.value());
             if (InFile.open(QFile::ReadOnly) == false)

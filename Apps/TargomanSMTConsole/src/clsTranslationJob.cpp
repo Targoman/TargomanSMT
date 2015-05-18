@@ -12,7 +12,7 @@
  */
 
 #include "clsTranslationJob.h"
-#include "libTargomanSMT/clsTranslator.h"
+#include "libTargomanSMT/Translator.h"
 #include "TranslationWriter.h"
 
 namespace Targoman {
@@ -28,10 +28,9 @@ clsTranslationJob::clsTranslationJob(quint64 _index, const QString& _sourceStrin
 
 void clsTranslationJob::run()
 {
-    clsTranslator Translator(this->SourceString);
     TranslationWriter::instance().writeTranslation(
                 this->Index,
-                Translator.translate(true).Translation);
+                Translator::translate(this->SourceString,true).Translation);
 }
 
 }

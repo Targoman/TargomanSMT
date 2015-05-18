@@ -21,9 +21,6 @@
 #include "Private/RuleTable/clsBinaryRuleTable.h"
 
 
-
-
-
 #include <QDebug>
 
 #include <iostream>

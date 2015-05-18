@@ -52,11 +52,10 @@ typedef QList<clsToken> Sentence_t;
 class clsInput
 {
 public:
-    clsInput(const QString& _inputStr);
+    clsInput(const QString& _inputStr, bool _isIXML);
     ~clsInput(){}
 
     static void init(const QString &_configFilePath);
-
 
     static QString moduleName(){return "Input";}
 

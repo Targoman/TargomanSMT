@@ -65,6 +65,7 @@ const gConfigs::stuServer& TSMonitor::bestServer()
 
     TSMonitorPrivate::clsServerConnection* BestServer;
     qint16 BestServerScore = 0;
+    qint16 BestServerIndex;
 
     foreach (TSMonitorPrivate::clsServerConnection* Server, this->pPrivate->Servers){
         QMutexLocker Locker(&Server->Lock);

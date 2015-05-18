@@ -52,10 +52,10 @@ Configuration::tmplConfigurable<bool>    clsInput::TagNameEntities(
  * @brief clsInput::clsInput Instructor of this class gets input string and based on input arguments parses that.
  * @param _inputStr input string.
  */
-clsInput::clsInput(const QString &_inputStr)
+clsInput::clsInput(const QString &_inputStr, bool _isIXML)
 {
-    if (this->IsIXML.value()) {
-        if (this->DoNormalize.value())
+    if (_isIXML || clsInput::IsIXML.value()) {
+        if (clsInput::DoNormalize.value())
             this->parseRichIXML(_inputStr,true);
         else
             this->parseRichIXML(_inputStr);
@@ -101,7 +101,9 @@ void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize)
 {
     if (_normalize){
         this->parseRichIXML(
-                    TargomanTextProcessor::instance().normalizeText(_inputIXML, false, gConfigs.SourceLanguage.value()));
+                    TargomanTextProcessor::instance().normalizeText(_inputIXML,
+                                                                    false,
+                                                                    gConfigs.SourceLanguage.value()));
     }else
         this->parseRichIXML(_inputIXML);
 }

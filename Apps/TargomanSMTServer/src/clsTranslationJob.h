@@ -13,21 +13,27 @@
 #ifndef TARGOMAN_APPS_CLSTRANSLATIONJOB_H
 #define TARGOMAN_APPS_CLSTRANSLATIONJOB_H
 
-#include <QRunnable>
-#include <QString>
+#include <QVariantList>
+#include "libTargomanSMT/Translator.h"
 
 namespace Targoman {
 namespace Apps {
 
-class clsTranslationJob : public QRunnable
+class clsTranslationJob
 {
 public:
-    clsTranslationJob(quint64 _index, const QString &_sourceString);
-    void run();
+    clsTranslationJob(bool _brief, bool _keepAsSource);
+    QVariantList doJob(const QString& _inputStr);
 
 private:
-    quint64 Index;
-    QString SourceString;
+    SMT::stuTranslationOutput mapLineTranslation(const QString& _line);
+    SMT::stuTranslationOutput mapSentenceTranslation(const QString& _ixml);
+    void reduceLineTranslation(QVariantList &_result, const SMT::stuTranslationOutput& _intermediate);
+    void reduceSentenceTranslation(SMT::stuTranslationOutput& _result, const SMT::stuTranslationOutput& _intermediate);
+
+private:
+    bool Brief;
+    bool KeepAsSource;
 };
 
 }
