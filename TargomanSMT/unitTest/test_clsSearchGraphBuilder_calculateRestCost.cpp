@@ -15,7 +15,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_calculateRestCost()
              << clsToken("word5", 5, "", QVariantMap());
 
     clsSearchGraph::DoComputePositionSpecificRestCosts.setFromVariant(false);
-    clsSearchGraph Builder(Sentence);
+    clsSearchGraph Builder(false, Sentence);
 
     Builder.Data->RestCostMatrix.resize(Sentence.size());
 

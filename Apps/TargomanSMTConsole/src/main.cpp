@@ -30,8 +30,9 @@ using namespace Targoman::Apps;
 int main(int _argc, char *_argv[])
 {
     try{
-        Targoman::Common::printLoadedLibs();
+        //Targoman::Common::printLoadedLibs();
         QCoreApplication App(_argc, _argv);
+
 
         Configuration::ConfigManager::instance().init(
                     QString(LicenseStr).arg(TARGOMAN_M2STR(PROJ_VERSION)).arg(__DATE__),

@@ -80,7 +80,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_initializeRestCostsMatrix()
              << clsToken("word5", 5, "", QVariantMap());
 
 
-    clsSearchGraph Builder(Sentence);
+    clsSearchGraph Builder(false, Sentence);
 
     for(int i = 0; i < Sentence.size(); ++i) {
         Builder.Data->PhraseCandidateCollections.append(

@@ -34,7 +34,6 @@ if [ "$1" == "full" ]; then
 			fi
 		else
 			make clean
-			echo "HERE IT IS!!!!!!!!!!!!!!!!!!!!!!"
 		fi
 		make
 		if [ $? -ne 0 ];then

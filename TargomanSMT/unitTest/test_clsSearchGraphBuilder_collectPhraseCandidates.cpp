@@ -99,7 +99,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_collectPhraseCandidates()
                 QList<Cost_t>() << 4 << 2
                 );
 
-    clsSearchGraph Builder(Sentence);
+    clsSearchGraph Builder(false, Sentence);
     Builder.pRuleTable = &RuleTable;
     Builder.collectPhraseCandidates();
 

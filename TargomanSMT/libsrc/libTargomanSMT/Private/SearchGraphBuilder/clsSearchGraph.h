@@ -233,7 +233,7 @@ private:
     Common::Cost_t calculateRestCost(const Coverage_t &_coverage, size_t _beginPos, size_t _endPos) const;
 
 private:
-    QExplicitlySharedDataPointer<clsSearchGraphData> Data;                               /**< A pointer to clsSearchGraphBuilderData class which manages data member of this class*/
+    QExplicitlySharedDataPointer<clsSearchGraphData>        Data;                               /**< A pointer to clsSearchGraphBuilderData class which manages data member of this class*/
 
     static RuleTable::intfRuleTable*                        pRuleTable;                          /**< Rule table loader e.g. Jane phrase Table loader */
     static FeatureFunction::intfFeatureFunction*            pPhraseTable;

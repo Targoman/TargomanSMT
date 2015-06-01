@@ -142,12 +142,13 @@ void clsUnitTest::test_clsNBestFinder_fillBestOptions()
     SearchGraph.Data->HypothesisHolder[5][makeCoverageByString("11111")] = lexicalHypoContainer;
 
     NBestFinder::NBestSuggestions::MaxSuggestions.setFromVariant(3);
-   // NBestFinder::NBestSuggestions::Container_t Storage;
-   // NBestFinder::NBestSuggestions::fillBestOptions(Storage,SearchGraph,Best5th);
 
+    NBestSuggestions::Container_t NBest;
 
-    NBestFinder::NBestSuggestions::Container_t NBest =
-            NBestFinder::NBestSuggestions::retrieve(SearchGraph);
+    NBestSuggestions::fillBestOptions(NBest, SearchGraph, Best5th);
+
+//    NBestFinder::NBestSuggestions::Container_t NBest =
+//            NBestFinder::NBestSuggestions::retrieve(SearchGraph);
     QVERIFY(NBest.size() == 5);
 
     int ExpectedCandidateCount[] = {
