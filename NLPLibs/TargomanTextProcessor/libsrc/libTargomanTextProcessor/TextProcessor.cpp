@@ -25,8 +25,9 @@ using namespace Targoman::NLPLibs::TargomanTP::Private;
 namespace Targoman {
 namespace NLPLibs {
 
-TargomanTextProcessor* TargomanTextProcessor::Instance = NULL;
 QString ActorUUID;
+bool Initialized = false;
+
 
 /**
  * @brief TextProcessor::TextProcessor
@@ -43,9 +44,12 @@ TargomanTextProcessor::TargomanTextProcessor()
  */
 bool TargomanTextProcessor::init(const stuConfigs& _configs)
 {
+    if (Initialized)
+        return true;
     Normalizer::instance().init(_configs.NormalizationFile);
     SpellCorrector::instance().init(_configs.SpellCorrectorBaseConfigPath, _configs.SpellCorrectorLanguageBasedConfigs);
     IXMLWriter::instance().init(_configs.AbbreviationsFile);
+    Initialized = true;
     return true;
 }
 
@@ -90,16 +94,15 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
                                  bool _useSpellCorrector,
                                  QList<enuTextTags::Type> _removingTags) const
 {
+    if (!Initialized)
+        throw exTextProcessor("Text Processor has not been initialized");
     TargomanLogDebug(7,"ConvertToIXML Process Started");
 
     const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
 
-    if(!LangCode || strlen(LangCode) == 0)
-        throw exTextProcessor("Invalid language code. It must be in ISO639 format");
-
     QString IXML = IXMLWriter::instance().convert2IXML(
                 _inStr,
-                LangCode,
+                LangCode ? LangCode : "",
                 _lineNo,
                 _interactive,
                 _useSpellCorrector);
@@ -115,50 +118,16 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
 }
 
 /**
- * @brief TextProcessor::text2RichIXML
- * @param _inStr
- * @return
- */
-QString TargomanTextProcessor::text2RichIXML(const QString &_inStr,
-                                     const QString &_lang) const
-{
-    TargomanLogDebug(5,"ConvertToRichIXML Process Started");
-
-    const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
-
-    if(!LangCode || strlen(LangCode) == 0)
-        throw exTextProcessor("Invalid language code. It must be in ISO639 format");
-
-    QString IXML = IXMLWriter::instance().convert2IXML(_inStr, LangCode);
-
-    //TODO convert tags to rich tags
-
-    TargomanDebug(7, "[NO-TAGS]"<<IXML);
-    TargomanLogDebug(5,"ConvertToRichIXML Process Finished");
-    return IXML;
-}
-
-/**
  * @brief TextProcessor::ixml2Text
  * @param _ixml
  * @return
  */
 QString TargomanTextProcessor::ixml2Text(const QString &_ixml) const
 {
-    Q_UNUSED(_ixml)
-    //TODO detokenize
-    return "";
-}
+    if (!Initialized)
+        throw exTextProcessor("Text Processor has not been initialized");
 
-/**
- * @brief TextProcessor::richIXML2Text
- * @param _ixml
- * @return
- */
-QString TargomanTextProcessor::richIXML2Text(const QString &_ixml) const
-{
     Q_UNUSED(_ixml)
-
     //TODO detokenize
     return "";
 }
@@ -176,9 +145,7 @@ QString TargomanTextProcessor::normalizeText(const QString _input, bool _interac
     QString Output = Normalizer::instance().normalize(_input, _interactive);
     if (_lang.size()){
         const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
-        if(!LangCode || strlen(LangCode) == 0)
-            throw exTextProcessor("Invalid language code. It must be in ISO639 format");
-        Output = SpellCorrector::instance().process(LangCode, Output, _interactive);
+        Output = SpellCorrector::instance().process(LangCode ? LangCode : "", Output, _interactive);
     }
 
     return Normalizer::fullTrim(Output);

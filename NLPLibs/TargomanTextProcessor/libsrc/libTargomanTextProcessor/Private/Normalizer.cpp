@@ -28,9 +28,6 @@ namespace NLPLibs {
 namespace TargomanTP{
 namespace Private {
 
-
-Normalizer* Normalizer::Instance = NULL;
-
 Normalizer::Normalizer()
 {
     initUnicodeNormalizers();

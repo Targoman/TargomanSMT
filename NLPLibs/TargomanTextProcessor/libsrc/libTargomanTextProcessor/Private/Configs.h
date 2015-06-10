@@ -22,8 +22,8 @@ namespace TargomanTP{
 namespace Private {
 
 struct stuConfigs{
-    static Targoman::Common::Configuration::tmplConfigurable<QString> AbbreviationFile;
-    static Targoman::Common::Configuration::tmplConfigurable<QString> NormalizationFile;
+    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> AbbreviationFile;
+    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> NormalizationFile;
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> SpellCorrectorBaseConfigPath;
     static Targoman::Common::Configuration::clsFileBasedConfig SpellCorrectorLanguageBasedConfigs;
 }extern Configs;

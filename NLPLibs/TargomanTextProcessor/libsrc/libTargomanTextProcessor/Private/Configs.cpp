@@ -19,11 +19,11 @@ namespace Private {
 
 stuConfigs Configs;
 
-Targoman::Common::Configuration::tmplConfigurable<QString> stuConfigs::AbbreviationFile(
+Targoman::Common::Configuration::tmplConfigurable<FilePath_t> stuConfigs::AbbreviationFile(
         "TextProcessor/AbbreviationFile",
         "File path where abbreviations are stored",
         "");
-Targoman::Common::Configuration::tmplConfigurable<QString> stuConfigs::NormalizationFile(
+Targoman::Common::Configuration::tmplConfigurable<FilePath_t> stuConfigs::NormalizationFile(
         "TextProcessor/NormalizationFile",
         "File path where normalization rules are stored",
         "");

@@ -54,7 +54,10 @@ public:
     /**
      * @brief Makes an instance of Normalizer class if it is not instantiated. If it is instantiated, returns that instance.
      */
-    static Normalizer& instance(){return *(Q_LIKELY(Instance) ? Instance : (Instance = new Normalizer));}
+    static Normalizer& instance(){
+        static Normalizer*      Instance = NULL;
+        return *(Q_LIKELY(Instance) ? Instance : (Instance = new Normalizer));
+    }
 
     QString normalize(const QChar& _char,
                       const QChar& _nextChar,
@@ -94,7 +97,6 @@ private:
     QList<QChar> str2QChar(QString _str, quint16 _line, bool _allowRange = true);
 
 private:
-    static Normalizer*      Instance;                   /** < Static instnace of normalizer class */
     QHash<QChar,QString>    ReplacingTable;             /** < A Map to contain chars that should be replaced. Content of this variable will be added using Normalization config file. */
     QList<QVariant>         BinTable;                   /** < A List that has normalize form of all character. Index of normal form of each character in this list, is its unicode value.*/
     QSet<QChar>             WhiteList;                  /** < A Set to contain valid chars. Content of this variable will be added using Normalization config file. */

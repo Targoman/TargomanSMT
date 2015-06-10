@@ -52,7 +52,9 @@ public:
 
 public:
     static inline TargomanTextProcessor& instance(){
-        return *(Q_LIKELY(Instance) ? Instance : (Instance = new TargomanTextProcessor));}
+        static TargomanTextProcessor* Instance = NULL;
+        return *(Q_LIKELY(Instance) ? Instance : (Instance = new TargomanTextProcessor));
+    }
 
     bool init(const stuConfigs &_configs);
     bool init(const QString _configFile = "");
@@ -63,18 +65,14 @@ public:
                       bool _interactive = true,
                       bool _useSpellCorrector = true,
                       QList<enuTextTags::Type> _removingTags = QList<enuTextTags::Type>()) const;
-    QString text2RichIXML(const QString& _inStr, const QString& _lang = "") const;
 
     QString ixml2Text(const QString& _ixml) const;
-    QString richIXML2Text(const QString& _ixml) const;
 
     QString normalizeText(const QString _input,  bool _interactive = false, const QString& _lang = "") const;
 
 private:
     TargomanTextProcessor();
     Q_DISABLE_COPY(TargomanTextProcessor)
-private:
-    static TargomanTextProcessor* Instance;
 };
 
 
