@@ -84,7 +84,7 @@ clsMosesPlainRuleTable::~clsMosesPlainRuleTable()
 void clsMosesPlainRuleTable::initializeSchema()
 {
     TargomanLogInfo(5,
-                    "Initializing clsMosesPlainRuleTable schema from " +
+                    "Initializing Moses Plain Rule Table schema from " +
                     this->PhraseTableFilePath.value() +
                     " and " + this->ReorderingTableFilePath.value());
 
@@ -135,6 +135,7 @@ void clsMosesPlainRuleTable::initializeSchema()
     if(ReorderingCostsFields.size() == 3 && ColumnNames.size() != PhraseCostsFields.size() + 3)
         ColumnNames = ColumnNames.mid(0, ColumnNames.size() - 3);
     clsTargetRule::setColumnNames(ColumnNames);
+    TargomanLogInfo(5, "Moses plain text rule set schema loaded. ");
 }
 
 /**
@@ -231,6 +232,7 @@ void clsMosesPlainRuleTable::loadTableData()
                     TargetRuleList.end()
                     );
     }
+    TargomanLogInfo(5, "Moses plain text rule set loaded. ");
 }
 
 /**

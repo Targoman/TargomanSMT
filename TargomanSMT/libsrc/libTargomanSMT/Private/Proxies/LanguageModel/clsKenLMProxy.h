@@ -11,8 +11,8 @@
  @author Saeed Torabzadeh <saeed.torabzadeh@gmail.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_clsKenLMProxy_HPP
-#define TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_clsKenLMProxy_HPP
+#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_CLSKENLMProxy_HPP
+#define TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_CLSKENLMProxy_HPP
 
 #define KENLM_MAX_ORDER 6
 
@@ -29,21 +29,20 @@ namespace LanguageModel{
 /**
  * @brief This class is a proxy for using sentenceScorer class.
  */
-
 class clsKenLMProxy : public intfLMSentenceScorer
 {
 private:
-    class VocabEnumerator : public lm::EnumerateVocab {
+    class clsVocabEnumerator : public lm::EnumerateVocab {
       public:
-        virtual ~VocabEnumerator() { }
-        void Add(lm::WordIndex index, const StringPiece &str) {
+        virtual ~clsVocabEnumerator() { }
+        void add(lm::WordIndex _index, const StringPiece &_str) {
             this->DirectVocab.insert(
-                        QString::fromUtf8(str.data()),
-                        index
+                        QString::fromUtf8(_str.data()),
+                        _index
                         );
             this->ReverseVocab.insert(
-                        index,
-                        QString::fromUtf8(str.data())
+                        _index,
+                        QString::fromUtf8(_str.data())
                         );
         }
 
@@ -72,7 +71,7 @@ public:
 
     void init(bool _justVocab){
         Q_UNUSED(_justVocab);
-
+        TargomanLogInfo(5,"Initializing KenLM from " + clsKenLMProxy::FilePath.value());
         lm::ngram::Config Config;
         clsKenLMProxy::Vocab.DirectVocab.clear();
         clsKenLMProxy::Vocab.ReverseVocab.clear();
@@ -150,13 +149,10 @@ public:
 
 
 private:
-
-    static QScopedPointer<lm::ngram::ProbingModel> LM;
-
-    static VocabEnumerator Vocab;
-
     lm::ngram::State State;
 
+    static QScopedPointer<lm::ngram::ProbingModel> LM;
+    static clsVocabEnumerator Vocab;
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> FilePath;
 
     TARGOMAN_DEFINE_MODULE("KenLMProxy", clsKenLMProxy);
@@ -168,4 +164,4 @@ private:
 }
 }
 
-#endif // TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_clsKenLMProxy_HPP
+#endif // TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_CLSKENLMProxy_HPP

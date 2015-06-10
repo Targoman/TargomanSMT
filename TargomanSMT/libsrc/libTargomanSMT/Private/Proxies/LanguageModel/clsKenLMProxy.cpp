@@ -38,7 +38,7 @@ tmplConfigurable<FilePath_t> clsKenLMProxy::FilePath(
 
 QScopedPointer<lm::ngram::ProbingModel> clsKenLMProxy::LM;
 
-clsKenLMProxy::VocabEnumerator clsKenLMProxy::Vocab;
+clsKenLMProxy::clsVocabEnumerator clsKenLMProxy::Vocab;
 
 TARGOMAN_REGISTER_MODULE(clsKenLMProxy);
 

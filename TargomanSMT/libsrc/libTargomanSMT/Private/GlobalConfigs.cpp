@@ -13,6 +13,7 @@
 
 #include "GlobalConfigs.h"
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "ISO639.h"
 
 namespace Targoman {
 namespace SMT {
@@ -36,7 +37,12 @@ tmplConfigurable<QString> stuGlobalConfigs::SourceLanguage(
         "/Common/Language/Source",
         "Source language from which translating",
         "en",
-        ReturnTrueCrossValidator,
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            if (ISO639isValid(_item.toVariant().toString().toLatin1().constData()))
+                return true;
+            _errorMessage = "Invalid ISO639 Code ("+_item.toVariant().toString() +") for Source Language";
+            return false;
+        },
         "sl",
         "SOURCE_LANG",
         "source-lang");
@@ -44,7 +50,12 @@ tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage(
         "/Common/Language/Destination",
         "Destination Language to which translating",
         "fa",
-        ReturnTrueCrossValidator,
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            if (ISO639isValid(_item.toVariant().toString().toLatin1().constData()))
+                return true;
+            _errorMessage = "Invalid ISO639 Code ("+_item.toVariant().toString() +") for Target Language";
+            return false;
+        },
         "tl",
         "SOURCE_LANG",
         "target-lang");

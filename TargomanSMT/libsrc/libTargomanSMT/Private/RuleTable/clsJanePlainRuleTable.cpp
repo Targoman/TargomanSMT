@@ -80,7 +80,7 @@ clsJanePlainRuleTable::~clsJanePlainRuleTable()
  */
 void clsJanePlainRuleTable::initializeSchema()
 {
-    TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FilePath.value());
+    TargomanLogInfo(5, "Loading Jane plain text rule set schema from: " + this->FilePath.value());
 
     this->PrefixTree.reset(new RulesPrefixTree_t());
     QStringList ColumnNames = clsJanePlainRuleTable::PhraseCostNames.value().split(",");
@@ -128,7 +128,7 @@ void clsJanePlainRuleTable::initializeSchema()
 
         clsTargetRule::setColumnNames(ColumnNames);
     }
-
+    TargomanLogInfo(5, "Jane plain text rule set schema loaded. ");
 }
 
 /**
@@ -176,7 +176,7 @@ void clsJanePlainRuleTable::loadTableData()
 
         this->addRule(PhraseCostsFields, Fields, this->AcceptedAdditionalFieldsIndexes, RulesRead);
     }
-
+    TargomanLogInfo(5, "Jane plain text rule set loaded. ");
 }
 
 /**

@@ -66,7 +66,7 @@ void clsBinaryRuleTable::initializeSchema()
         if (BinFileHeader != TARGOMAN_BINARY_RULETABLE_HEADER)
             throw exRuleTable("Invalid Binary file");
 
-        TargomanLogInfo(5, "Loading binary rule table from " + clsBinaryRuleTable::FilePath.value() + "...");
+        TargomanLogInfo(5, "Loading binary rule table schema from " + clsBinaryRuleTable::FilePath.value() + "...");
 
         //Load Vocab
         int VocabCount = this->InputStream->read<int>();
@@ -92,12 +92,16 @@ void clsBinaryRuleTable::initializeSchema()
     }catch(std::exception &e){
         throw exRuleTable(QString::fromUtf8(e.what()));
     }
+    TargomanLogInfo(5, "Binary rule table set schema loaded. ");
 }
 
 void clsBinaryRuleTable::loadTableData()
 {
+    TargomanLogInfo(5, "Loading binary rule table from: " + this->FilePath.value());
+
     this->PrefixTree.reset(new RulesPrefixTree_t());
     this->PrefixTree->readBinary(*this->InputStream, clsBinaryRuleTable::LoadOnDemand.value() == false);
+    TargomanLogInfo(5, "Binary rule table loaded. ");
 }
 
 
