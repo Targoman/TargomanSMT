@@ -27,7 +27,7 @@ namespace LanguageModel {
 using namespace Common;
 using namespace Common::Configuration;
 
-tmplConfigurable<QString> clsKenLMProxy::FilePath(
+tmplConfigurable<FilePath_t> clsKenLMProxy::FilePath(
         "KenLM/FilePath",
         "File path of ARPA or binary models",
         "",

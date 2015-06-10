@@ -32,7 +32,7 @@
 using namespace Targoman::Common;
 
 /*static Configuration::tmplConfigurable<qint8> A("/","fjkdfjkdsfjk",123);
-static Configuration::tmplConfigurable<QString> B(
+static Configuration::tmplConfigurable<FilePath_t> B(
         "/s","fjkdfjkdsfjk","123",
         Configuration::Validators::tmplPathAccessValidator<
         (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Readable)>);

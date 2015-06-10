@@ -52,7 +52,7 @@ public:
 private:
     QScopedPointer<Private::clsLanguageModelPrivate> pPrivate;
 
-    static Targoman::Common::Configuration::tmplConfigurable<QString> FilePath;
+    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> FilePath;
     static Targoman::Common::Configuration::tmplConfigurable<double>  DeafultUnknownProb;
     static Targoman::Common::Configuration::tmplConfigurable<double>  DeafultUnknownBackoff;
     static Targoman::Common::Configuration::tmplConfigurable<bool>    UseIndexBasedModel;

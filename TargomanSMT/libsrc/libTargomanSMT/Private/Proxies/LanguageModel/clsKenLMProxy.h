@@ -157,7 +157,7 @@ private:
 
     lm::ngram::State State;
 
-    static Targoman::Common::Configuration::tmplConfigurable<QString> FilePath;
+    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> FilePath;
 
     TARGOMAN_DEFINE_MODULE("KenLMProxy", clsKenLMProxy);
 };

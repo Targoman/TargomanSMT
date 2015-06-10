@@ -21,7 +21,7 @@ namespace Common {
 
 using namespace Configuration;
 
-tmplConfigurable<QString> SimpleAuthentication::UserInfoFile(
+tmplConfigurable<FilePath_t> SimpleAuthentication::UserInfoFile(
         "Authentication/UserInfoFile",
         "Path to file containing valid usernames and passwords",
         "",

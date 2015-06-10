@@ -74,7 +74,17 @@ struct stuPong
     }
 };
 
+class clsFilePath : public QString{
+public:
+    clsFilePath& operator = (const QString& _str){
+        QString::operator =(_str);
+        return *this;
+    }
+};
+
 }
 }
+
+typedef Targoman::Common::clsFilePath FilePath_t;
 
 #endif // TARGOMAN_COMMON_TYPES_H

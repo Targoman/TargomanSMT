@@ -77,10 +77,12 @@ void clsInput::init(const QString& _configFilePath)
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         clsInput::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
 
+/* TODO this must be moved to IXMLTagHandler constructor
     foreach(const QString& Tag, clsInput::SpecialTags){
         WordIndex_t WordIndex = gConfigs.SourceVocab.size() + 1;
         gConfigs.SourceVocab.insert(Tag, WordIndex);
     }
+    */
 }
 
 /**
@@ -93,7 +95,7 @@ void clsInput::parsePlain(const QString &_inputStr)
     this->NormalizedString =
             TargomanTextProcessor::instance().normalizeText(_inputStr, false, gConfigs.SourceLanguage.value());
     this->parseRichIXML(
-                TargomanTextProcessor::instance().text2RichIXML(_inputStr, gConfigs.SourceLanguage.value()), false);
+                TargomanTextProcessor::instance().text2IXML(_inputStr, gConfigs.SourceLanguage.value()), false);
 }
 
 

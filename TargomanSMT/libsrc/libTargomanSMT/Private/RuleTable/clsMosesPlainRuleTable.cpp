@@ -42,7 +42,7 @@ TARGOMAN_REGISTER_MODULE(clsMosesPlainRuleTable);
 
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 
-tmplConfigurable<QString> clsMosesPlainRuleTable::PhraseTableFilePath(
+tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::PhraseTableFilePath(
         clsMosesPlainRuleTable::baseConfigPath() + "/PhraseTableFilePath",
         "Filepath where phrase table is stored",
         "",
@@ -51,7 +51,7 @@ tmplConfigurable<QString> clsMosesPlainRuleTable::PhraseTableFilePath(
             enuPathAccess::File | enuPathAccess::Readable)
         );
 
-tmplConfigurable<QString> clsMosesPlainRuleTable::ReorderingTableFilePath(
+tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::ReorderingTableFilePath(
         clsMosesPlainRuleTable::baseConfigPath() + "/ReorderingTableFilePath",
         "Filepath where reordering table is stored",
         "",

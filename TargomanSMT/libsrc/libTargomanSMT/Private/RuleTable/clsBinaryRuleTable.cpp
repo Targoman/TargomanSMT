@@ -26,7 +26,7 @@ using namespace Common;
 using namespace Common::Configuration;
 using namespace FeatureFunction;
 
-tmplConfigurable<QString> clsBinaryRuleTable::FilePath(
+tmplConfigurable<FilePath_t> clsBinaryRuleTable::FilePath(
         clsBinaryRuleTable::baseConfigPath() + "/FilePath",
         "FilePath where rule table is stored",
         "",

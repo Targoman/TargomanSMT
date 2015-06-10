@@ -46,7 +46,7 @@ stuTranslationOutput clsTranslationJob::mapLineTranslation(const QString &_line)
     if (this->KeepAsSource)
         return Translator::translate(_line, this->Brief);
 
-    QStringList Sentences = TargomanTextProcessor::instance().text2RichIXML(
+    QStringList Sentences = TargomanTextProcessor::instance().text2IXML(
                 _line,
                 ConfigManager::instance().getConfig("/Common/Language/Source").toString()).replace(
                 " . ", " .\n").split("\n");

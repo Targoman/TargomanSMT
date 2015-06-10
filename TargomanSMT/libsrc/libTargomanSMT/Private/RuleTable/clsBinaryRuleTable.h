@@ -42,7 +42,7 @@ private:
     QScopedPointer<Common::clsIFStreamExtended> InputStream;
 
 private:
-    static Targoman::Common::Configuration::tmplConfigurable<QString>   FilePath;            /**< File name of phrase table. */
+    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   FilePath;            /**< File name of phrase table. */
     static Targoman::Common::Configuration::tmplConfigurable<bool>   LoadOnDemand;
 
     TARGOMAN_DEFINE_MODULE("BinaryRuleTable", clsBinaryRuleTable);

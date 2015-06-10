@@ -27,7 +27,7 @@ Targoman::Common::Configuration::tmplConfigurable<QString> stuConfigs::Normaliza
         "TextProcessor/NormalizationFile",
         "File path where normalization rules are stored",
         "");
-Targoman::Common::Configuration::tmplConfigurable<QString> stuConfigs::SpellCorrectorBaseConfigPath(
+Targoman::Common::Configuration::tmplConfigurable<FilePath_t> stuConfigs::SpellCorrectorBaseConfigPath(
         "TextProcessor/SpellCorrectorBaseConfigPath",
         "File path where spell correction dics are stored",
         "");

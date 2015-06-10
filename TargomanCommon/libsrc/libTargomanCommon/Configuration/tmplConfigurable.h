@@ -183,6 +183,7 @@ SPECIAL_CONFIGURABLE(quint64);
 SPECIAL_CONFIGURABLE(double);
 SPECIAL_CONFIGURABLE(float);
 SPECIAL_CONFIGURABLE(QString);
+SPECIAL_CONFIGURABLE(FilePath_t);
 SPECIAL_CONFIGURABLE(QStringList);
 template <> QVariant Targoman::Common::Configuration::tmplConfigurable<QStringList>::toVariant() const;
 
@@ -194,4 +195,6 @@ SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA true); /* Used on wildcard matchin
 }
 }
 }
+
+
 #endif // TARGOMAN_COMMON_CONFIGURATION_TMPLCONFIGURABLE_HPP

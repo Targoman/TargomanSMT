@@ -51,7 +51,7 @@ tmplConfigurable<bool> ActionAdd(
             SelectedAction = enuAction::Add;
             return true;
         },
-        "a","","add");
+        "a","","add",enuConfigSource::Arg);
 tmplConfigurable<bool> ActionRemove(
         "Actions/Remove",
         "Delete user from specified file",
@@ -66,7 +66,7 @@ tmplConfigurable<bool> ActionRemove(
             SelectedAction = enuAction::Remove;
             return true;
         },
-        "r","","remove");
+        "r","","remove",enuConfigSource::Arg);
 tmplConfigurable<bool> ActionChangeParams(
         "Actions/ChangeParams",
         "Change Parameters or password of specified user",
@@ -81,9 +81,9 @@ tmplConfigurable<bool> ActionChangeParams(
             SelectedAction = enuAction::Change;
             return true;
         },
-        "g","","change");
+        "g","","change",enuConfigSource::Arg);
 
-tmplConfigurable<QString> UserInfoFile(
+tmplConfigurable<FilePath_t> UserInfoFile(
         "File/Path",
         "File to where store information",
         "./tsa.ini",
@@ -101,7 +101,7 @@ tmplConfigurable<QString> UserName(
         ReturnTrueCrossValidator,
         "u",
         "USER_NAME",
-        "user");
+        "user",enuConfigSource::Arg);
 
 tmplConfigurable<QString> Password(
         "Arguments/Pass",
@@ -119,7 +119,7 @@ tmplConfigurable<QString> CIDR(
         ReturnTrueCrossValidator,
         "i",
         "CIDR",
-        "cidr");
+        "cidr",enuConfigSource::Arg);
 
 tmplConfigurable<QString> Access(
         "/Arguments/Access",
@@ -135,7 +135,7 @@ tmplConfigurable<QString> Access(
         },
         "s",
         "ACCESS",
-        "access"
+        "access",enuConfigSource::Arg
         );
 
 

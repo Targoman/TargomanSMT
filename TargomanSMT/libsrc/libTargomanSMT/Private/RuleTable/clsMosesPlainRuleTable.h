@@ -55,8 +55,8 @@ private:
     int PrecomputedValueIndex = -1;
 
 private:
-    static Targoman::Common::Configuration::tmplConfigurable<QString>   PhraseTableFilePath;            /**< File name of phrase table. */
-    static Targoman::Common::Configuration::tmplConfigurable<QString>   ReorderingTableFilePath;        /**< File name of reordering table. */
+    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   PhraseTableFilePath;            /**< File name of phrase table. */
+    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   ReorderingTableFilePath;        /**< File name of reordering table. */
     static Targoman::Common::Configuration::tmplConfigurable<int>       MaxRuleNodeTargetRuleCount;     /**< Maximum number of target rules kept for each rule node. */
 
     TARGOMAN_DEFINE_MODULE("MosesPTPlain", clsMosesPlainRuleTable);

@@ -33,7 +33,7 @@ const QString BIN_FILE_HEADER = "TargomanLMBin";
 using namespace Private;
 using namespace Targoman::Common::Configuration;
 
-tmplConfigurable<QString> clsLanguageModel::FilePath(
+tmplConfigurable<FilePath_t> clsLanguageModel::FilePath(
         "/TargomanLM/FilePath",
         "File path of ARPA or binary models",
         "",

@@ -44,7 +44,7 @@ TARGOMAN_REGISTER_MODULE(clsJanePlainRuleTable);
 
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 
-tmplConfigurable<QString> clsJanePlainRuleTable::FilePath(
+tmplConfigurable<FilePath_t> clsJanePlainRuleTable::FilePath(
         clsJanePlainRuleTable::baseConfigPath() + "/FilePath",
         "FilePath where phrase table is stored",
         "",

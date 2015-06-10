@@ -58,6 +58,7 @@ public:
      * that config file in #ConfigFilePath
      */
     QString                              ConfigFilePath;
+    QString                              ConfigFileDir;
     /**
      * @brief This variable will be true if init() function of Configuration class works without any exceptions.
      */

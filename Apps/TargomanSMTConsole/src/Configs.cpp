@@ -18,7 +18,7 @@ namespace Apps {
 using namespace Common;
 using namespace Common::Configuration;
 
-tmplConfigurable<QString>     gConfigs::InputFile(
+tmplConfigurable<FilePath_t>     gConfigs::InputFile(
         gConfigs::appConfig("InputFile"),
         "Input file path to convert",
         "",
@@ -38,7 +38,7 @@ tmplConfigurable<QString>     gConfigs::InputText(
         "TEXT",
         "input-text");
 
-tmplConfigurable<QString>     gConfigs::OutputFile(
+tmplConfigurable<FilePath_t>     gConfigs::OutputFile(
         gConfigs::appConfig("Output"),
         "output path to write translation",
         "",

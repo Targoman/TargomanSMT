@@ -69,6 +69,14 @@ bool tmplConfigurable<QString>::validate(const QVariant&, QString& )const { retu
 template <>
 void tmplConfigurable<QString>::setFromVariant(const QVariant& _value){ this->Value = _value.toString(); }
 
+//////FilePath_t
+template <>
+bool tmplConfigurable<FilePath_t>::validate(const QVariant&, QString& )const { return true; }
+template <>
+void tmplConfigurable<FilePath_t>::setFromVariant(const QVariant& _value){
+    this->Value = ConfigManager::instance().getAbsolutePath(_value.toString());
+}
+
 //////QStringList
 template <>
 bool tmplConfigurable<QStringList>::validate(const QVariant& , QString&  )const {

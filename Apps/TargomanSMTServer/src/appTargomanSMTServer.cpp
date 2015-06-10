@@ -42,7 +42,7 @@ void appTargomanSMTServer::slotExecute()
                 SLOT(slotValidateAgent(QString&,QString,QString,bool&,bool&)),
                 Qt::DirectConnection);
 
-    //        Translator::init(ConfigManager::instance().configFilePath());
+        Targoman::SMT::Translator::init(ConfigManager::instance().configFilePath());
 
         QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
         Configuration::ConfigManager::instance().startAdminServer();

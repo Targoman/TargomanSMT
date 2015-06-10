@@ -56,7 +56,7 @@ public:
                              bool  _canChange);
 
 public:
-    static Common::Configuration::tmplConfigurable<QString> UserInfoFile;
+    static Common::Configuration::tmplConfigurable<FilePath_t> UserInfoFile;
 };
 
 }

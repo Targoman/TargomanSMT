@@ -115,6 +115,12 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
             }
         }
 
+        if (this->pPrivate->ConfigFilePath.size()){
+            this->pPrivate->ConfigFilePath = QFileInfo(this->pPrivate->ConfigFilePath).absoluteFilePath();
+            this->pPrivate->ConfigFileDir = QFileInfo(this->pPrivate->ConfigFilePath).absoluteDir().path()+"/";
+        }
+
+
         // ////////////////////////////////////////////////
         // /check configFile and load everything
         // ////////////////////////////////////////////////
@@ -424,10 +430,16 @@ QString ConfigManager::configFilePath()
     return this->pPrivate->ConfigFilePath;
 }
 
-void ConfigManager::updateRelativePaths(QString &_path)
+QString ConfigManager::configFileDir()
 {
-    if (this->pPrivate->SetPathsRelativeToConfigPath && _path.startsWith("/"))
-        _path.insert(0, QDir().filePath(this->configFilePath()));
+    return this->pPrivate->ConfigFileDir;
+}
+
+QString ConfigManager::getAbsolutePath(const QString &_path)
+{
+    if (this->pPrivate->SetPathsRelativeToConfigPath && _path.startsWith("/") == false)
+        return this->configFileDir() + _path;
+    return _path;
 }
 
 bool ConfigManager::isNetworkManagable()
