@@ -22,7 +22,7 @@ TranslationWriter* TranslationWriter::Instance = NULL;
 
 TranslationWriter::TranslationWriter()
 {
-    this->LastInsertedIndex = 0;
+    this->LastSavedIndex = 0;
     if (gConfigs::OutputFile.value().size())
         QFile::remove(gConfigs::OutputFile.value());
 }
@@ -39,18 +39,20 @@ void TranslationWriter::writeTranslation(const QString &_translation)
     }else{
         TargomanHappy(1,_translation)
     }
-    ++this->LastInsertedIndex;
+    ++this->LastSavedIndex;
+    this->PendingTranslations.remove(this->LastSavedIndex);
 }
 
 void TranslationWriter::writeTranslation(quint64 _index, const QString &_translation)
 {
     QMutexLocker Locker(&this->OutputListLock);
 
-    if (_index == this->LastInsertedIndex + 1){
+    if (_index == this->LastSavedIndex + 1){
         this->writeTranslation(_translation);
-        while(this->PendingTranslations.size() &&
-              this->PendingTranslations.begin().key() == this->LastInsertedIndex)
+        while(isFinished() == false){
             this->writeTranslation(this->PendingTranslations.begin().value());
+        }
+
     }else{
         this->PendingTranslations.insert(_index,_translation);
     }

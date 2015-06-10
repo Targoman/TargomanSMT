@@ -38,7 +38,7 @@ private:
 private:
     QMutex                  OutputListLock;
     QMap<quint64, QString>  PendingTranslations;
-    quint64                 LastInsertedIndex = 0;
+    quint64                 LastSavedIndex = 0;
     static TranslationWriter*      Instance;
 };
 
