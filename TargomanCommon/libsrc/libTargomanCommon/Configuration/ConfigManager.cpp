@@ -382,7 +382,7 @@ QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default
         Path.remove(0,1);
 
     intfConfigurable* Item= this->pPrivate->Configs.value(Path);
-    if (Item && Item->toVariant().isValid() == false)
+    if (Item && Item->toVariant().isValid())
         return Item->toVariant();
     else
         return _default;

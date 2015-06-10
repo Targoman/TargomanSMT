@@ -50,7 +50,6 @@ public:
 
 public:
     QFile   LogFile;
-    clsLogSettings* LogSettings;    /**< a pointer to clsLogSettings class, which specifies level of details of log files  */
     quint64 MaxFileSize;
     char GlobalSettings;            /**< first bit of this boolean defines whether it is active or not and second bit defines whether it is visible or not*/
     QMutex  mxLog;                  /**< a mutex for insuring unique access for logging outputs for safty */

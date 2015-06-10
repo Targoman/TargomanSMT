@@ -75,30 +75,186 @@ tmplConfigurable<bool> Disable(
         false
         );
 
+static clsLogSettings* LogSettings = new clsLogSettings[enuLogType::getCount()];
+
+tmplConfigurable<QStringList> LogDebugDetail(
+        Logger::moduleName() + "/DebugDetail",
+        "Set Details of Normal Logs",
+        QStringList()<<"true"<<"true",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(",");
+            if (Params.size() < 2){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            LogSettings[enuLogType::Debug].setDetails(QVariant(Params.at(0)).toBool(),
+                                                      QVariant(Params.at(1)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_ACTOR",
+        "log-debug-details",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
+tmplConfigurable<quint8> LogDebugLevel(
+        Logger::moduleName() + "/DebugLevel",
+        "Set Normal level",
+        5,
+        [] (const intfConfigurable& _item, QString&){
+            LogSettings[enuLogType::Debug].setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "log-debug-level",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
+tmplConfigurable<QStringList> LogWarningDetail(
+        Logger::moduleName() + "/WarningDetail",
+        "Set Details of Normal Logs",
+        QStringList()<<"true"<<"true",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(",");
+            if (Params.size() < 2){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            LogSettings[enuLogType::Warning].setDetails(QVariant(Params.at(0)).toBool(),
+                                                      QVariant(Params.at(1)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_ACTOR",
+        "log-warning-details",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
+tmplConfigurable<quint8> LogWarningLevel(
+        Logger::moduleName() + "/WarningLevel",
+        "Set Normal level",
+        5,
+        [] (const intfConfigurable& _item, QString&){
+            LogSettings[enuLogType::Warning].setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "log-warning-level",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
+tmplConfigurable<QStringList> LogErrorDetail(
+        Logger::moduleName() + "/ErrorDetail",
+        "Set Details of Normal Logs",
+        QStringList()<<"true"<<"true",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(",");
+            if (Params.size() < 2){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            LogSettings[enuLogType::Error].setDetails(QVariant(Params.at(0)).toBool(),
+                                                      QVariant(Params.at(1)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_ACTOR",
+        "log-error-details",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
+tmplConfigurable<QStringList> LogInfoDetail(
+        Logger::moduleName() + "/InfoDetail",
+        "Set Details of Normal Logs",
+        QStringList()<<"true"<<"true",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(",");
+            if (Params.size() < 2){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            LogSettings[enuLogType::Info].setDetails(QVariant(Params.at(0)).toBool(),
+                                                      QVariant(Params.at(1)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_ACTOR",
+        "log-info-details",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
+tmplConfigurable<quint8> LogInfoLevel(
+        Logger::moduleName() + "/InfoLevel",
+        "Set Normal level",
+        5,
+        [] (const intfConfigurable& _item, QString&){
+            LogSettings[enuLogType::Info].setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "log-info-level",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
+tmplConfigurable<QStringList> LogHappyDetail(
+        Logger::moduleName() + "/HappyDetail",
+        "Set Details of Normal Logs",
+        QStringList()<<"true"<<"true",
+        [] (const intfConfigurable& _item, QString& _errorMessage){
+            QStringList Params = _item.toVariant().toString().split(",");
+            if (Params.size() < 2){
+                _errorMessage = "Invalid count of arguments for " + _item.configPath();
+                return false;
+            }
+            LogSettings[enuLogType::Happy].setDetails(QVariant(Params.at(0)).toBool(),
+                                                      QVariant(Params.at(1)).toBool());
+            return true;
+        },
+        "",
+        "SHOW_TIME,SHOW_ACTOR",
+        "log-happy-details",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
+tmplConfigurable<quint8> LogHappyLevel(
+        Logger::moduleName() + "/HappyLevel",
+        "Set Normal level",
+        5,
+        [] (const intfConfigurable& _item, QString&){
+            LogSettings[enuLogType::Happy].setLevel(_item.toVariant().toUInt());
+            return true;
+        },
+        "",
+        "LEVEL",
+        "log-happy-level",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
+
 /******************************************************************************************/
 Logger::Logger(QObject *parent) :
     QObject(parent),pPrivate(new Targoman::Common::Private::LoggerPrivate)
 {
-    this->pPrivate->LogSettings[enuLogType::Debug].setLevel(9);
-    this->pPrivate->LogSettings[enuLogType::Error].setLevel(9);
-    this->pPrivate->LogSettings[enuLogType::Warning].setLevel(9);
-    this->pPrivate->LogSettings[enuLogType::Info].setLevel(9);
-    this->pPrivate->LogSettings[enuLogType::Happy].setLevel(9);
     this->registerActor(&this->pPrivate->ActorUUID,"BaseLogger");
 }
 
 bool Logger::init(const QString &_fileName,
-                  QMap<enuLogType::Type, clsLogSettings> _logSettings,
                   quint64 _maxSize,
                   bool _show)
 {
     qRegisterMetaType<Targoman::Common::enuLogType::Type>("Targoman::Common::enuLogType::Type");
     this->pPrivate->LogFile.setFileName(_fileName.size() ? _fileName : "/dev/null");
-    this->pPrivate->LogSettings[enuLogType::Debug] = _logSettings.value(enuLogType::Debug);
-    this->pPrivate->LogSettings[enuLogType::Error] = _logSettings.value(enuLogType::Error);
-    this->pPrivate->LogSettings[enuLogType::Warning] = _logSettings.value(enuLogType::Warning);
-    this->pPrivate->LogSettings[enuLogType::Info] = _logSettings.value(enuLogType::Info);
-    this->pPrivate->LogSettings[enuLogType::Happy] = _logSettings.value(enuLogType::Happy);
     this->pPrivate->MaxFileSize = _maxSize * 1024 * 1024;
     this->setVisible(_show);
     this->setActive();
@@ -112,20 +268,17 @@ void Logger::write(const QString &_actorID,
                    const QString &_message,
                    bool _newLine)
 {
-    if (this->isActive() == false || this->pPrivate->LogSettings[_type].canBeShown(_level) == false)
+    if (this->isActive() == false || LogSettings[_type].canBeShown(_level) == false)
         return;
 
     QString Actor = this->pPrivate->Actors.value(_actorID);
     if (!_actorID.isEmpty() && Actor.isEmpty())
         throw exLogger(QString("Actor ID %1 Not registerd: message(%2)").arg(_actorID).arg(_message));
 
-    QByteArray LogMessage=
-            QString("[" + QDateTime().currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]").toUtf8();
+    QByteArray LogMessage= LogSettings[_type].details(Actor).toLatin1();
 
     LogMessage+= QString("[%1]").arg(enuLogType::toStr(_type));
-    LogMessage += "[" + QString::number(_level) + "]";
-
-    LogMessage += QString("[%1] ").arg(Actor.isEmpty() ? "UNREG" : Actor);
+    LogMessage += "[" + QString::number(_level) + "]: ";
 
     if (_newLine)
         LogMessage += _message+"\n";
@@ -242,7 +395,6 @@ bool Logger::isVisible()
 
 Targoman::Common::Private::LoggerPrivate::LoggerPrivate()
 {
-    this->LogSettings = new clsLogSettings[enuLogType::getCount()];
 }
 
 bool Targoman::Common::Private::LoggerPrivate::open()

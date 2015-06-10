@@ -124,6 +124,26 @@ class clsLogSettings
     inline bool canBeShown(quint8 _level){
         return (this->Details & 0x0F) >= _level;
     }
+
+    inline void setDetails(bool _time = false, bool _actor = false) {
+        this->Details &= 0x0F;
+        if(_time)
+            this->Details |= 0x10;
+        if(_actor)
+            this->Details |= 0x40;
+    }
+
+    inline QString details(const QString& _actor){
+        QString OutStr;
+        OutStr +=  (this->Details & 0x10 ?
+                    QString("[" + QDateTime().currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]") :
+                    QString(""));
+        if (this->Details & 0x40)
+                OutStr +=   QString("[%1]").arg(_actor.isEmpty() ? "UNREG" : _actor);
+
+        return OutStr;
+    }
+
     /**
      * @brief sets level of details.
      */
@@ -196,7 +216,6 @@ public:
      * @return bool true if successful else false
      **/
     bool   init(const QString& _fileName,
-                QMap<enuLogType::Type, clsLogSettings> _logSettings = QMap<enuLogType::Type, clsLogSettings>(),
                 quint64 _maxSize = 10,
                 bool _show = true);
     /**
@@ -273,14 +292,6 @@ private:
     QScopedPointer<Targoman::Common::Private::LoggerPrivate> pPrivate;
 
     friend class Targoman::Common::Private::LoggerPrivate;
-
-    /*
-    static Configuration::tmplConfigurable<clsLogSettings>    LogDebugSettings;
-    static Configuration::tmplConfigurable<clsLogSettings>    LogInfoSettings;
-    static Configuration::tmplConfigurable<clsLogSettings>    LogWarningSettings;
-    static Configuration::tmplConfigurable<clsLogSettings>    LogHappySettings;
-    static Configuration::tmplConfigurable<clsLogSettings>    LogErrorSettings;
-    static Configuration::tmplConfigurable<clsLogSettings>    LogNormalSettings;*/
 };
 
 }
