@@ -18,8 +18,6 @@
 namespace Targoman {
 namespace Apps {
 
-TranslationWriter* TranslationWriter::Instance = NULL;
-
 TranslationWriter::TranslationWriter()
 {
     this->LastSavedIndex = 0;
@@ -36,11 +34,18 @@ void TranslationWriter::writeTranslation(const QString &_translation)
         QTextStream Stream(&OutFile);
         Stream.setCodec("UTF-8");
         Stream<<_translation<<"\n";
+
     }else{
         TargomanHappy(1,_translation)
     }
     ++this->LastSavedIndex;
     this->PendingTranslations.remove(this->LastSavedIndex);
+}
+
+void TranslationWriter::finialize()
+{
+    while(this->PendingTranslations.size())
+        this->writeTranslation(this->PendingTranslations.begin().value());
 }
 
 void TranslationWriter::writeTranslation(quint64 _index, const QString &_translation)
@@ -49,12 +54,13 @@ void TranslationWriter::writeTranslation(quint64 _index, const QString &_transla
 
     if (_index == this->LastSavedIndex + 1){
         this->writeTranslation(_translation);
-        while(isFinished() == false){
-            this->writeTranslation(this->PendingTranslations.begin().value());
-        }
-
     }else{
-        this->PendingTranslations.insert(_index,_translation);
+        this->PendingTranslations.insert(_index, _translation);
+    }
+
+    while(this->PendingTranslations.size() &&
+          this->PendingTranslations.firstKey() == this->LastSavedIndex + 1){
+        this->writeTranslation(this->PendingTranslations.begin().value());
     }
 }
 

@@ -30,9 +30,10 @@ using namespace Common;
 void appTargomanSMTConsole::slotExecute()
 {
     try{
-        Translator::init(Configuration::ConfigManager::instance().configFilePath());
+        TranslationWriter::instance(); //Just to initialize first instance in order to suppress multithreaded instantiation
 
         if(gConfigs::InputText.value().size()){
+            Translator::init(Configuration::ConfigManager::instance().configFilePath());
             TranslationWriter::instance().writeTranslation(1,
                                                            Translator::translate(gConfigs::InputText.value(), true).Translation);
         } else if (gConfigs::InputFile.value().size()) {
@@ -43,13 +44,19 @@ void appTargomanSMTConsole::slotExecute()
             QTextStream InStream(&InFile);
             InStream.setCodec("UTF-8");
             QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
+            Translator::init(Configuration::ConfigManager::instance().configFilePath());
             int Index = 0;
             while(InStream.atEnd() == false){
                 QThreadPool::globalInstance()->start(new clsTranslationJob(++Index, InStream.readLine()));
             }
+            QThreadPool::globalInstance()->waitForDone();
+            TranslationWriter::instance().finialize();
+        }else{
+            TargomanWarn(1,"No job to be done!!!");
         }
 
         QCoreApplication::exit(0);
+        return;
     }catch(exTargomanBase& e){
         TargomanError(e.what());
     }catch (std::exception &e){

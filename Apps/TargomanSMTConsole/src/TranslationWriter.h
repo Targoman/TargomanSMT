@@ -24,12 +24,14 @@ class TranslationWriter
 {
 public:
     static TranslationWriter& instance(){
-        return Q_LIKELY(TranslationWriter::Instance) ?
-                    * TranslationWriter::Instance :
-                    *(TranslationWriter::Instance = new TranslationWriter);
+        static TranslationWriter*      Instance = NULL;
+
+        return Q_LIKELY(Instance) ?
+                    * Instance :
+                    *(Instance = new TranslationWriter);
     }
     void writeTranslation(quint64 _index, const QString& _translation);
-    bool isFinished(){ return this->PendingTranslations.isEmpty(); }
+    void finialize();
 
 private:
     TranslationWriter();
@@ -39,7 +41,6 @@ private:
     QMutex                  OutputListLock;
     QMap<quint64, QString>  PendingTranslations;
     quint64                 LastSavedIndex = 0;
-    static TranslationWriter*      Instance;
 };
 
 }

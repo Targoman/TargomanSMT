@@ -18,7 +18,7 @@ namespace Apps {
 using namespace Common;
 using namespace Common::Configuration;
 
-tmplConfigurable<FilePath_t>     gConfigs::InputFile(
+tmplConfigurable<QString>     gConfigs::InputFile(
         gConfigs::appConfig("InputFile"),
         "Input file path to convert",
         "",
@@ -38,7 +38,7 @@ tmplConfigurable<QString>     gConfigs::InputText(
         "TEXT",
         "input-text");
 
-tmplConfigurable<FilePath_t>     gConfigs::OutputFile(
+tmplConfigurable<QString>     gConfigs::OutputFile(
         gConfigs::appConfig("Output"),
         "output path to write translation",
         "",
@@ -53,7 +53,7 @@ tmplConfigurable<quint8>     gConfigs::MaxThreads(
         gConfigs::appConfig("MaxThreads"),
         "Maximum Concurrent Translations",
         5,
-        Validators::tmplNumericValidator<quint8, 0, 64>,
+        Validators::tmplNumericValidator<quint8, 0, 255>,
         "t",
         "MAX_THREADS",
         "max-threads");

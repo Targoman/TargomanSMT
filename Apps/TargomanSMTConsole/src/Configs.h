@@ -29,9 +29,9 @@ public:
         return "App/" + _name;
     }
 
-    static Common::Configuration::tmplConfigurable<FilePath_t>          InputFile;
+    static Common::Configuration::tmplConfigurable<QString>          InputFile;
     static Common::Configuration::tmplConfigurable<QString>          InputText;
-    static Common::Configuration::tmplConfigurable<FilePath_t>          OutputFile;
+    static Common::Configuration::tmplConfigurable<QString>          OutputFile;
     static Common::Configuration::tmplConfigurable<quint8>           MaxThreads;
 };
 
