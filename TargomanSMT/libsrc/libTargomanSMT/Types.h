@@ -30,8 +30,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanCore, Targoman::Common::exTargomanBase)
 
 struct stuPhrasePos : public QPair<qint32, qint32>{
     stuPhrasePos(qint32 _start = -1, qint32 _end = -1) :
-        QPair<qint32, qint32>(_start, _end)
-    {
+       QPair<qint32, qint32>(_start, _end) {
         Q_ASSERT((_start < _end) || (_start == -1 && _end == -1));
     }
 
@@ -59,6 +58,8 @@ struct stuTranslationOutput{
 
     QString            Translation;
     QString            NormalizedSource;
+    QString            OriginalText;
+    bool               SpellCorrected;
     QList<stuMetaInfo> MetaInfo;
 };
 

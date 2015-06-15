@@ -18,6 +18,7 @@
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "Private/OOVHandler/OOVHandler.h"
 #include <iostream>
+#include <sstream>
 
 #ifdef TARGOMAN_SHOW_DEBUG
 #include <iomanip>
@@ -372,19 +373,21 @@ bool clsSearchGraph::decode()
                 --Iterator) {
                 const QList<clsSearchGraphNode>& Nodes = Iterator->nodes();
                 foreach(const clsSearchGraphNode& SelectedNode, Nodes) {
-                    std::cout << SelectedNode.getTotalCost() << "\t";
-                    std::cout << "Cardinality:  ";
-                    std::cout << car2str(NewCardinality).toUtf8().constData();
-                    std::cout << "  Coverage:  " << cov2str(SelectedNode.coverage()).toUtf8().constData();
-                    std::cout << "  Cost:  " << SelectedNode.getCost()
-                              << " , RestCost: " << SelectedNode.getTotalCost() - SelectedNode.getCost()
-                              << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
-                              << ")" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
+                    std::stringstream Stream;
+                    Stream << SelectedNode.getTotalCost() << "\t";
+                    Stream << "Cardinality:  ";
+                    Stream << car2str(NewCardinality).toUtf8().constData();
+                    Stream << "  Coverage:  " << cov2str(SelectedNode.coverage()).toUtf8().constData();
+                    Stream << "  Cost:  " << SelectedNode.getCost()
+                           << " , RestCost: " << SelectedNode.getTotalCost() - SelectedNode.getCost()
+                           << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
+                           << ")" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
+                    TargomanDebug(9,QString::fromUtf8(Stream.str().c_str()));
                 }
                 if(Iterator == CurrCardHypoContainer.lexicalHypotheses().begin())
                     break;
             }
-            std::cout << std::endl << std::endl << std::endl;
+            TargomanDebug(9,"\n\n\n");
         }
         //*/
 #endif

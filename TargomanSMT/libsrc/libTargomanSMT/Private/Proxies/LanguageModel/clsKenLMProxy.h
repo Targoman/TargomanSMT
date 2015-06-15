@@ -35,7 +35,7 @@ private:
     class clsVocabEnumerator : public lm::EnumerateVocab {
       public:
         virtual ~clsVocabEnumerator() { }
-        void add(lm::WordIndex _index, const StringPiece &_str) {
+        void Add(lm::WordIndex _index, const StringPiece &_str) {
             this->DirectVocab.insert(
                         QString::fromUtf8(_str.data()),
                         _index
