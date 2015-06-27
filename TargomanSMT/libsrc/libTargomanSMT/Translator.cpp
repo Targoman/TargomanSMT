@@ -17,7 +17,9 @@
 #include "Private/InputDecomposer/clsInput.h"
 #include "Private/SearchGraphBuilder/clsSearchGraph.h"
 #include "Private/OutputComposer/clsOutputComposer.h"
-#include "Private/OOVHandler/OOVHandler.h"
+#include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
+#include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
+
 
 namespace Targoman{
 /**
@@ -27,7 +29,8 @@ namespace SMT {
 
 using namespace Private;
 using namespace NLPLibs;
-using namespace Private::OOV;
+using namespace Private::SpecialTokenHandler::OOV;
+using namespace Private::SpecialTokenHandler::IXMLTagHandler;
 using namespace SearchGraphBuilder;
 
 static bool TranslatorInitialized = false;
@@ -45,6 +48,7 @@ void Translator::init(const QString _configFilePath)
 
     SearchGraphBuilder::clsSearchGraph::init(_configFilePath);
     OOVHandler::instance().initialize();
+    IXMLTagHandler::instance().initialize();
 
     TranslatorInitialized = true;
 }

@@ -36,7 +36,7 @@ SpellCorrector* SpellCorrector::Instance = NULL;
  * @brief instructor of this class adds default languages data to the #Processors variable.
  */
 SpellCorrector::SpellCorrector():
-    NormalizerInstance(this->NormalizerInstance) //zhnDebug: what is this?
+    NormalizerInstance(this->NormalizerInstance)
 {
     this->Processors.insert("fa", new clsPersianSpellCorrector);
 }

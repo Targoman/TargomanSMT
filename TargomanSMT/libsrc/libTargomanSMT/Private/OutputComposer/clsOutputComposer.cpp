@@ -75,34 +75,49 @@ QString clsOutputComposer::translationString()
  */
 QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const stuPhrasePos &_sourcePos)
 {
-    if (_sourcePos.isSingleWord() &&
-        _target.size() == 1 &&
-        _target.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex()) {
+    if (_sourcePos.isSingleWord() && _target.size() == 1) {
         clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePos.start());
         if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
             return QString();
         if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::ShowSource), false) == true)
             return Token.string();
-        if (Token.tagStr().size())
-            return Token.attrs().value(
-                        enuDefaultAttrs::toStr(enuDefaultAttrs::Translation),
-                        Token.string()).toString();
+        if(Token.tagStr().size())
+        {
+            if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)))
+                return Token.attrs().value(
+                            enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)).toString();
+            if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)))
+                return Token.attrs().value(
+                            enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
+        }
         return Token.string();
     }
 
     if(_target.size() == 0)
         return QString();
 
-    QString String = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(0));
-    for(size_t i=1; i< _target.size(); ++i){
-        QString Token = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(i));
-        if (Token.isEmpty()){
-            //TODO Tag management
-            String += " <TAG("+QString::number(_target.at(i))+")>";
-        }else
-            String+= " " + Token;
+    QString String;
+    for(size_t i=0; i< _target.size(); ++i)
+    {
+        int Alignment = _target.wordLevelAlignment(i);
+        if(Alignment > 0)
+        {
+            clsToken Token = this->InputDecomposerRef.tokens().at(Alignment + _sourcePos.start());
+            if(Token.tagStr().size())
+            {
+                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)))
+                    String += Token.attrs().value(
+                                enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)).toString();
+                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)))
+                    String += Token.attrs().value(
+                                enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
+            }
+        }
+        QString TargetWordString = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(i));
+        String+= TargetWordString;
+        if(Q_LIKELY(i != _target.size() - 1))
+            String+= " ";
     }
-
     return String;
 }
 

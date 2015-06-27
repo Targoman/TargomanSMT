@@ -77,8 +77,10 @@ public:
     inline bool isSame(const clsTargetRule& _other) const;
 
     inline Common::WordIndex_t at(int _index) const;
+    inline int wordLevelAlignment(int _index) const;
     inline size_t size() const;
-    inline bool hasNoRuleTableRecord() const;
+    inline bool isUnknownWord() const;
+    inline void setIsUnknownWord(bool);
     inline size_t fieldCount() const;
     inline Common::Cost_t  field(size_t _index) const;
     inline Common::Cost_t precomputedValue(size_t _index) const;
@@ -129,6 +131,25 @@ public:
         this->Data.detach();
     }
 
+    static clsTargetRule createZeroCostTargetRule(const QList<Common::WordIndex_t>& _targetPhrase, bool _isUnknownWord) {
+        static QList<Common::Cost_t> ZeroCost;
+        if(Q_UNLIKELY(ZeroCost.size() == 0)) {
+            for(int i = 0; i < clsTargetRule::columnNames().size(); ++i)
+                ZeroCost.append(0);
+        }
+        return clsTargetRule(_targetPhrase, ZeroCost, _isUnknownWord);
+    }
+
+    static clsTargetRule createMinCostTargetRule(const QList<Common::WordIndex_t>& _targetPhrase, bool _isUnknownWord) {
+        // TODO:  Set minimum cost instead of Zero cost!!!!!
+        static QList<Common::Cost_t> ZeroCost;
+        if(Q_UNLIKELY(ZeroCost.size() == 0)) {
+            for(int i = 0; i < clsTargetRule::columnNames().size(); ++i)
+                ZeroCost.append(0);
+        }
+        return clsTargetRule(_targetPhrase, ZeroCost, _isUnknownWord);
+    }
+
 #ifdef TARGOMAN_SHOW_DEBUG
     QString toStr() const;
 #endif
@@ -159,7 +180,7 @@ public:
         TargetPhrase(_targetPhrase),
         Fields(_fields),
         PrecomputedValues(_precomputedValueSize,-INFINITY),
-        HasNoRuleTableRecord(_hasNoRuleTableRecord)
+        IsUnknownWord(_hasNoRuleTableRecord)
     {}
 
     /**
@@ -173,7 +194,7 @@ public:
             throw exRuleTable("Invalid TargetRule must be created after initialization");
         for(int i = 0; i< clsTargetRule::ColumnNames.size(); ++i)
             this->Fields.append(0);
-        this->HasNoRuleTableRecord = false;
+        this->IsUnknownWord = false;
     }
 
     /**
@@ -185,15 +206,16 @@ public:
         TargetPhrase(_other.TargetPhrase),
         Fields(_other.Fields),
         PrecomputedValues(_other.PrecomputedValues),
-        HasNoRuleTableRecord(_other.HasNoRuleTableRecord)
+        IsUnknownWord(_other.IsUnknownWord)
     {}
     ~clsTargetRuleData() {}
 
 public:
-    QList<Common::WordIndex_t> TargetPhrase;            /**< Translation (target language phrase) */
-    QList<Common::Cost_t>      Fields;                  /**< Feature values */
-    QVector<Common::Cost_t>    PrecomputedValues;       /**< It is used for caching */
-    bool                       HasNoRuleTableRecord;
+    QList<Common::WordIndex_t>                      TargetPhrase;            /**< Translation (target language phrase) */
+    QMap<int, int>                                  Alignment;               /**< word level alignment */
+    QList<Common::Cost_t>                           Fields;                  /**< Feature values */
+    QVector<Common::Cost_t>                         PrecomputedValues;       /**< It is used for caching */
+    bool                                            IsUnknownWord;
 };
 
 /***********************************************************/
@@ -207,6 +229,10 @@ inline Common::WordIndex_t clsTargetRule::at(int _index) const{
     return this->Data->TargetPhrase.at(_index);
 }
 
+inline int clsTargetRule::wordLevelAlignment(int _index) const{
+    return this->Data->Alignment.value(_index, -1);
+}
+
 /**
  * @return  Returns size of target language phrase letters.
  */
@@ -215,11 +241,15 @@ inline size_t clsTargetRule::size() const {
     return this->Data->TargetPhrase.size();
 }
 
-inline bool clsTargetRule::hasNoRuleTableRecord() const
+inline bool clsTargetRule::isUnknownWord() const
 {
-    return this->Data->HasNoRuleTableRecord;
+    return this->Data->IsUnknownWord;
 }
 
+inline void clsTargetRule::setIsUnknownWord(bool _isUknownWord)
+{
+    this->Data->IsUnknownWord = _isUknownWord;
+}
 
 
 inline size_t clsTargetRule::fieldCount() const {

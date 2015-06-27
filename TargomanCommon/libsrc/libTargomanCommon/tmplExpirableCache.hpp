@@ -60,6 +60,27 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
             return BaseContainer_t<itmplKey, itmplVal>::insert(_key, _val);
         }
 
+        inline Iterator_t insertMulti(itmplKey _key, itmplVal _val){
+            //while(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
+            if(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
+                QList<QTime> Values = this->KeyAccessDateTime.values();
+//                qStableSort(Values);
+//                QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Values.first());
+                QTime Oldest = Values.first();
+                for(int i = 0; i < Values.size(); ++i)
+                    if(Values.at(i) < Oldest)
+                        Oldest = Values.at(i);
+                QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Oldest);
+
+                foreach(itmplKey Key, ExpiredKeys){
+                    this->remove(Key);
+                }
+            }
+
+            this->KeyAccessDateTime.insertMulti(_key, QTime::currentTime());
+            return BaseContainer_t<itmplKey, itmplVal>::insertMulti(_key, _val);
+        }
+
         inline void clear(){
             BaseContainer_t<itmplKey, itmplVal>::clear();
             this->KeyAccessDateTime.clear();
@@ -80,6 +101,24 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
             if (_updateAccessTime)
                 this->KeyAccessDateTime.insert(_key, QTime::currentTime());
             return BaseContainer_t<itmplKey, itmplVal>::value(_key);
+        }
+
+        inline QList<itmplVal> values(const itmplKey& _key,
+                              bool _updateAccessTime = true,
+                              const itmplVal& _defaultValue = itmplVal()){
+            if (BaseContainer_t<itmplKey, itmplVal>::contains(_key) == false)
+                return _defaultValue;
+
+
+            if (_updateAccessTime) {
+                auto Iter = this->KeyAccessDateTime.find(_key);
+                QTime Time = QTime::currentTime();
+                while(Iter != this->KeyAccessDateTime.end() && Iter.key() == _key) {
+                    Iter.value() = Time;
+                    ++Iter;
+                }
+            }
+            return BaseContainer_t<itmplKey, itmplVal>::values(_key);
         }
 
         inline itmplVal& operator[] ( const itmplKey & _key){

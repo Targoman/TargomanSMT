@@ -64,7 +64,7 @@ Common::Cost_t UnknownWordPenalty::scoreSearchGraphNode(clsSearchGraphNode &_new
 //    for(size_t i = 0; i < _newHypothesisNode.targetRule().size(); ++i)
 //        if(_newHypothesisNode.targetRule().at(i) == 0)
 //            Cost += 100;
-    if(_newHypothesisNode.targetRule().hasNoRuleTableRecord())
+    if(_newHypothesisNode.targetRule().isUnknownWord())
         Cost = 100;
 
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode)

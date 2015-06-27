@@ -57,7 +57,7 @@ public:
      * @param _endPos                           ending position of source phrase
      * @param _ruleNode                         the rule node from which target rules will be considered
      */
-    clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const RuleTable::clsRuleNode& _ruleNode);
+    clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const QList<RuleTable::clsRuleNode>& _ruleNodes);
 
 public:
     int UsableTargetRuleCount;
@@ -90,14 +90,18 @@ public:
         Data(_other.Data)
     {}
 
+    clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos,  const RuleTable::clsRuleNode& _ruleNodes) :
+        Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, QList<RuleTable::clsRuleNode>() << _ruleNodes))
+    {}
+
     /**
      * @brief clsPhraseCandidateCollection  main constructor that gets rule node, beginning and ending position for the candidate phrase and calls the data constructor to build the usable rule list
      * @param _beginPos                     beginning position of source phrase
      * @param _endPos                       ending position of source phrase
      * @param _ruleNode                     the rule node from which target rules will be considered
      */
-    clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos,  const RuleTable::clsRuleNode& _ruleNode) :
-        Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, _ruleNode))
+    clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos,  const QList<RuleTable::clsRuleNode>& _ruleNodes) :
+        Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, _ruleNodes))
     {}
 
     /**
@@ -221,6 +225,10 @@ private:
     {/*Just used by unitTests*/}
 
     Q_DISABLE_COPY(clsSearchGraph)
+
+    void extendSourcePhrase(const QList<Common::WordIndex_t>& _wordIndexes,
+                            INOUT QList<RuleTable::RulesPrefixTree_t::Node_t*>& _prevNodes,
+                            QList<RuleTable::clsRuleNode>& _ruleNodes);
     void collectPhraseCandidates();
     bool decode();
     Common::Cost_t computeReorderingJumpCost(size_t JumpWidth) const;

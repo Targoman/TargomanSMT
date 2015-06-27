@@ -59,6 +59,14 @@ tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::ReorderingTableFilePath(
             gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName(),
             enuPathAccess::File | enuPathAccess::Readable)
         );
+//tmplConfigurable<QString> clsMosesPlainRuleTable::WordAlignmentFilePath(
+//        clsMosesPlainRuleTable::baseConfigPath() + "/WordAlignmentFilePath",
+//        "Filepath where word alignment data of phrases is stored",
+//        "",
+//        Validators::tmplPathAccessValidator<
+//                           (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), false>
+//        );
+
 
 tmplConfigurable<int> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(
         clsMosesPlainRuleTable::baseConfigPath() + "/MaxRuleNodeTargetRuleCount",
@@ -90,6 +98,11 @@ void clsMosesPlainRuleTable::initializeSchema()
 
     clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFilePath.value().toStdString());
     clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFilePath.value().toStdString());
+//    clsCompressedInputStream AlignmentInputStream;
+//    bool AlignmentFileExists = QFile::exists(clsMosesPlainRuleTable::WordAlignmentFilePath.value());
+//    if(AlignmentFileExists)
+//        AlignmentInputStream.open(clsMosesPlainRuleTable::WordAlignmentFilePath.value().toStdString(), true);
+
 
 
     if(PhraseTableInputStream.peek() < 0 && ReorderingTableInputStream.peek() < 0)

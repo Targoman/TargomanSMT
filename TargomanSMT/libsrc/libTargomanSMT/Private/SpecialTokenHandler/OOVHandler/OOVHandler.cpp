@@ -17,6 +17,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
+namespace SpecialTokenHandler {
 namespace OOV{
 
 using namespace Common;
@@ -60,7 +61,7 @@ void OOVHandler::initialize()
             throw exOOVHandler("Invalid OOVHandler name: "+ OOVHandlerName );
         this->ActiveOOVHandlers.append(pOOVHandler);
     }
-    this->WordIndexOffset = gConfigs.SourceVocab.size() + 1;
+
 }
 
 /**
@@ -70,12 +71,12 @@ void OOVHandler::initialize()
  * @return                          Word index of input OOV word.
  */
 
-Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap &_attrs)
+QList<Common::WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token, QVariantMap &_attrs)
 {
-    QMutexLocker Locker(&this->Lock);
-    clsExpirableOOVWord ExpirableOOVWord = this->OOVWords.value(_token);
-    Locker.unlock();
-    if (ExpirableOOVWord.Data->NotSet){
+    SpecialTokensRegistry::clsExpirableSpecialToken ExpirableSpecialToken =
+            SpecialTokensRegistry::instance().getExpirableSpecialToken(_token);
+
+    if (ExpirableSpecialToken.Data->NotSet){
         TargetRulesContainer_t TargetRules;
         foreach(intfOOVHandlerModule* pOOVHandler, this->ActiveOOVHandlers){
             const clsTargetRule&  OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
@@ -84,48 +85,34 @@ Common::WordIndex_t OOVHandler::getWordIndex(const QString &_token, QVariantMap 
             }
         }
         if (TargetRules.isEmpty()){
-            this->OOVWords.insert(_token,clsExpirableOOVWord(Constants::SrcVocabUnkWordIndex, _attrs));
-            return Constants::SrcVocabUnkWordIndex; // There are no new handlers so keep it as unknown and cache result
+            SpecialTokensRegistry::instance().insertExpirableSpecialToken(_token, SpecialTokensRegistry::clsExpirableSpecialToken(Constants::SrcVocabUnkWordIndex, _attrs));
+            return (QList<Common::WordIndex_t>() << Constants::SrcVocabUnkWordIndex); // There are no new handlers so keep it as unknown and cache result
         }
 
         clsRuleNode RuleNode;
         RuleNode.detachInvalidData();
         RuleNode.targetRules().append(TargetRules);
 
-        Locker.relock();
-        WordIndex_t WordIndex;
-        if (this->AvailableWordIndexes.size())
-            WordIndex = this->AvailableWordIndexes.takeFirst();
-        else
-            WordIndex = this->WordIndexOffset + this->OOVWords.keys().size();
+        WordIndex_t WordIndex = SpecialTokensRegistry::instance().obtainWordIndex();
+        SpecialTokensRegistry::instance().insertExpirableSpecialToken(_token, SpecialTokensRegistry::clsExpirableSpecialToken(WordIndex, _attrs));
+        SpecialTokensRegistry::instance().insertRuleNode(WordIndex, RuleNode);
 
-        this->OOVWords.insert(_token, clsExpirableOOVWord(WordIndex, _attrs));
-        this->HandledOOVs.insert(WordIndex, RuleNode);
-
-        return WordIndex;
+        return (QList<Common::WordIndex_t>() << WordIndex);
     }
 
-    //When ExpiranbleOOVWord has been found
-    for(QVariantMap::ConstIterator Attr = ExpirableOOVWord.Data->Attributes.begin();
-        Attr != ExpirableOOVWord.Data->Attributes.end();
+    //When ExpirableOOVWord has been found
+    for(QVariantMap::ConstIterator Attr = ExpirableSpecialToken.Data->Attributes.begin();
+        Attr != ExpirableSpecialToken.Data->Attributes.end();
         ++Attr){
         _attrs.insert(Attr.key(), Attr.value());
     }
 
-    return ExpirableOOVWord.Data->WordIndex;
-}
-/**
- * @brief OOVHandler::removeWordIndex When an OOV exipres this function  will be called to removes that word index from #HandledOOVs and add that word index to #AvailableWordIndexes.
- * @param _wordIndex input word index.
- */
-void OOVHandler::removeWordIndex(WordIndex_t _wordIndex)
-{
-    QMutexLocker Locker(&this->Lock);
-    this->HandledOOVs.remove(_wordIndex);
-    this->AvailableWordIndexes.append(_wordIndex);
+    return ExpirableSpecialToken.Data->WordIndexes;
+
 }
 
 
+}
 }
 }
 }

@@ -48,7 +48,7 @@ clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QLis
     Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize, _hasNoRuleTableRecord))
 {
     if(_targetPhrase.size() == 1 && _targetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex())
-        this->Data->HasNoRuleTableRecord = true;
+        this->Data->IsUnknownWord = true;
 }
 
 void clsTargetRule::readBinary(clsIFStreamExtended &_input)
@@ -62,7 +62,7 @@ void clsTargetRule::readBinary(clsIFStreamExtended &_input)
         this->Data->TargetPhrase.append(WordIndex);
     }
     if(this->Data->TargetPhrase.size() == 1 && this->Data->TargetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex())
-        this->Data->HasNoRuleTableRecord = true;
+        this->Data->IsUnknownWord = true;
     for(Cost_t& Cost : this->Data->Fields)
         Cost = _input.read<Cost_t>();
     this->Data->PrecomputedValues.fill(-INFINITY, clsTargetRule::PrecomputedValuesSize);

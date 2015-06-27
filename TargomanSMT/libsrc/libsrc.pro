@@ -28,9 +28,9 @@ HEADERS += \
     libTargomanSMT/Private/RuleTable/clsJanePlainRuleTable.h \
     libTargomanSMT/Private/RuleTable/intfRuleTable.hpp \
     libTargomanSMT/Private/FeatureFunctions/PhraseTable/PhraseTable.h \
-    libTargomanSMT/Private/OOVHandler/OOVHandler.h \
-    libTargomanSMT/Private/OOVHandler/intfOOVHandlerModule.hpp \
-    libTargomanSMT/Private/OOVHandler/OOVDefaultHandlers.h \
+    libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/OOVHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/intfOOVHandlerModule.hpp \
+    libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/OOVDefaultHandlers.h \
     libTargomanSMT/Private/RuleTable/clsMosesPlainRuleTable.h \
     libTargomanSMT/Private/FeatureFunctions/LanguageModel/LanguageModel.h \
     libTargomanSMT/Private/FeatureFunctions/ReorderingJump/ReorderingJump.h \
@@ -41,7 +41,20 @@ HEADERS += \
     libTargomanSMT/Private/FeatureFunctions/UnknownWordPenalty/UnknownWordPenalty.h \
     libTargomanSMT/Private/Proxies/LanguageModel/clsKenLMProxy.h \
     libTargomanSMT/Translator.h \
-    libTargomanSMT/Private/N-BestFinder/NBestSuggestions.h
+    libTargomanSMT/Private/N-BestFinder/NBestSuggestions.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsDateHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/SpecialTokensRegistry.hpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/intfIXMLTagHandlerModule.hpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsNumberHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsSpecialNumberHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsEmailHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsURLHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsAbbreviationHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsOrderedListItemHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsTimeHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsOrdinalsHandler.h \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsSymbolHandler.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -57,8 +70,8 @@ SOURCES += libID.cpp \
     libTargomanSMT/Private/RuleTable/clsTargetRule.cpp \
     libTargomanSMT/Private/RuleTable/clsJanePlainRuleTable.cpp \
     libTargomanSMT/Private/FeatureFunctions/PhraseTable/PhraseTable.cpp \
-    libTargomanSMT/Private/OOVHandler/OOVHandler.cpp \
-    libTargomanSMT/Private/OOVHandler/OOVDefaultHandlers.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/OOVHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/OOVDefaultHandlers.cpp \
     libTargomanSMT/Private/RuleTable/clsMosesPlainRuleTable.cpp \
     libTargomanSMT/Private/FeatureFunctions/LanguageModel/LanguageModel.cpp \
     libTargomanSMT/Private/FeatureFunctions/ReorderingJump/ReorderingJump.cpp \
@@ -68,7 +81,18 @@ SOURCES += libID.cpp \
     libTargomanSMT/Private/Proxies/LanguageModel/clsTargomanLMProxy.cpp \
     libTargomanSMT/Private/Proxies/LanguageModel/clsKenLMProxy.cpp \
     libTargomanSMT/Translator.cpp \
-    libTargomanSMT/Private/N-BestFinder/NBestSuggestions.cpp
+    libTargomanSMT/Private/N-BestFinder/NBestSuggestions.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsDateHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsNumberHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsSpecialNumberHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsEmailHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsURLHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsAbbreviationHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsOrderedListItemHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsTimeHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsOrdinalsHandler.cpp \
+    libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsSymbolHandler.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

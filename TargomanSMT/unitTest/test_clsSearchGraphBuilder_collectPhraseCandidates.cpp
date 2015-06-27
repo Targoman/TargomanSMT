@@ -73,7 +73,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_collectPhraseCandidates()
 
     for(int i = 0; i < Sentence.size(); ++i)
         RuleTable.addRule(
-                    QList<WordIndex_t>() << Sentence.at(i).wordIndex(),
+                    QList<WordIndex_t>() << Sentence.at(i).wordIndexes(),
                     QList<WordIndex_t>() << i + 1,
                     QList<Cost_t>() << 1 << 1
                     );

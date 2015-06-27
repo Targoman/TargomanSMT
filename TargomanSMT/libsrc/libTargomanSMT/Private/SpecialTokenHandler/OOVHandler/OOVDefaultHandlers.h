@@ -11,8 +11,8 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef OOVDEFAULTHANDLERS_H
-#define OOVDEFAULTHANDLERS_H
+#ifndef TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_OOVDEFAULTHANDLERS_H
+#define TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_OOVDEFAULTHANDLERS_H
 
 #include "Types.h"
 #include "intfOOVHandlerModule.hpp"
@@ -21,6 +21,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
+namespace SpecialTokenHandler {
 namespace OOV{
 
 using namespace RuleTable;
@@ -44,13 +45,12 @@ public:
 
     RuleTable::clsTargetRule process(const QString &_token, QVariantMap& _attrs){
         Q_UNUSED(_token)
-
         _attrs.insert(InputDecomposer::enuDefaultAttrs::toStr(InputDecomposer::enuDefaultAttrs::NoShow), true);
+        //TODO: Check this invalid target rule whether it cause segmentation fault.
         return clsTargetRule();
     }
 
 private:
-
     TARGOMAN_DEFINE_MODULE("OOVRemoveOnTarget", clsOOVRemoveOnTarget);
 };
 
@@ -74,6 +74,7 @@ public:
         Q_UNUSED(_token)
 
         _attrs.insert(InputDecomposer::enuDefaultAttrs::toStr(InputDecomposer::enuDefaultAttrs::NoDecode), true);
+        // Note: input decomposer removes this token.
         return clsTargetRule();
     }
 
@@ -99,19 +100,10 @@ public:
      */
 
     RuleTable::clsTargetRule process(const QString &_token, QVariantMap& _attrs){
-        Q_UNUSED(_attrs)
-        // TODO: Change the following enum, its not useful, the created alternative translation must be
-        // scored by feature functions and as such attributes are no good for this purpose
-//        _attrs.insert(InputDecomposer::enuDefaultAttrs::toStr(InputDecomposer::enuDefaultAttrs::ShowSource), true);
-//        return clsTargetRule();
-        static QList<Cost_t> ZeroCost;
-        if(ZeroCost.size() == 0) {
-            for(int i = 0; i < clsTargetRule::columnNames().size(); ++i)
-                ZeroCost.append(0);
-        }
+        Q_UNUSED(_attrs);
         QList<WordIndex_t> TargetPhrase;
         TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(_token));
-        return clsTargetRule(TargetPhrase, ZeroCost, true);
+        return clsTargetRule::createZeroCostTargetRule(TargetPhrase, true);
     }
 
 private:
@@ -123,5 +115,5 @@ private:
 }
 }
 }
-
-#endif // OOVDEFAULTHANDLERS_H
+}
+#endif // TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_OOVDEFAULTHANDLERS_H

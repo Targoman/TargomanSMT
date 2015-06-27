@@ -19,11 +19,18 @@
 #include "../TextProcessor.h"
 #include "Normalizer.h"
 #include "SpellCorrector.h"
+#include <functional>
 
 namespace Targoman {
 namespace NLPLibs {
 namespace TargomanTP{
 namespace Private {
+
+
+static std::function<QString(const QString& _lang,
+                          const QString& _token)> defaultTransformationFunction = [] (const QString&, const QString& ) {
+    return QString();
+};
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exIXMLWriter, exTextProcessor);
 
@@ -37,6 +44,12 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exIXMLWriter, exTextProcessor);
 class IXMLWriter
 {
 public:
+
+    struct stuTagInfoList {
+        QStringList Tokens;
+        QStringList RichIXMLInfos;
+    };
+
     /**
      * @brief Makes (if needed) and return an initialized instance of this class.
      */
@@ -45,20 +58,34 @@ public:
 
     QString convert2IXML(const QString& _inStr,
                          const QString& _lang = "",
+                         bool _isRichIXML = false,
                          quint32 _lineNo = 0,
                          bool _interactive = false,
                          bool _useSpellCorrector = true);
 
 private:
+
+
+
     QString markByRegex(const QString &_phrase,
                         QRegExp &_regex,
                         const QString &_mark,
-                        QStringList *_listOfMatches,
+                        const QString &_lang,
+                        bool _isRichIXML,
+                        std::function<QString(const QString &, const QString &)> transformationFunction,
+                        stuTagInfoList *_listOfMatches,
                         quint8 _capID = 0);
 
-    inline void replaceTag(QString& _output, enuTextTags::Type _type, const QString& _value){
-        _output.append(QString("<%1>%2</%1>").arg(enuTextTags::toStr(_type)).arg(_value));
+    inline void replaceTag(QString& _output, enuTextTags::Type _type, const QString& _value, const QString& translationAttribte = ""){
+        if(translationAttribte.isEmpty())
+            _output.append(QString("<%1>%2</%1>").arg(enuTextTags::toStr(_type)).arg(_value));
+        else
+            _output.append(QString("<%1 Translation=%3>%2</%1>").arg(enuTextTags::toStr(_type)).arg(_value).arg(translationAttribte));
     }
+
+
+
+
 
 
 private:

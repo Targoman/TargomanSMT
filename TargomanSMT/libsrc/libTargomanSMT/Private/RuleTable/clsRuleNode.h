@@ -51,7 +51,12 @@ class clsRuleNode
 {
 public:
     clsRuleNode();
-    clsRuleNode(const clsRuleNode & _other) : Data(_other.Data) {}
+    clsRuleNode(const clsRuleNode & _other, bool _isUnknown = false) : Data(_other.Data) {
+        if(Q_UNLIKELY(_isUnknown))
+            for(clsTargetRule& TargetRule : this->Data->TargetRules)
+                TargetRule.setIsUnknownWord(true);
+    }
+
     ~clsRuleNode(){
         // InvalidRuleNodeData needs to be alive during the whole run
         // otherwise we will encounter invalid rule nodes with

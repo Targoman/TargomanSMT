@@ -40,7 +40,8 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuDefaultAttrs,
                               NoShow,
                               NoDecode,
                               ShowSource,
-                              Translation
+                              Translation,
+                              DefaultTranslation
                               );
 
 typedef QList<clsToken> Sentence_t;
@@ -86,6 +87,7 @@ private:
     static Targoman::Common::Configuration::tmplConfigurable<bool>    IsIXML;           /**< A configurable to specify whether input string has inline xml or not. */
     static Targoman::Common::Configuration::tmplConfigurable<bool>    DoNormalize;      /**< A configurable to specify whether input string should be normalized or not. */
     static Targoman::Common::Configuration::tmplConfigurable<bool>    TagNameEntities;  /**< Use NER to tag name entities */
+    // TODO: Add a configuration that selects wether to keep the inside of IXML tags in translation or whatever!
 
     friend class UnitTestNameSpace::clsUnitTest;
 };

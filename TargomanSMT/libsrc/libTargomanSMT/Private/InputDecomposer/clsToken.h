@@ -35,27 +35,34 @@ namespace InputDecomposer {
 class clsToken
 {
 public:
+
     clsToken(const QString& _value,
-             const Common::WordIndex_t _wordIndex,
+             const QList<Common::WordIndex_t>& _wordIndexes,
              const QString& _tagStr,
              const QVariantMap& _attrs){
         this->String = _value;
-        this->WordIndex = _wordIndex;
+        this->WordIndexes = _wordIndexes;
         this->TagStr = _tagStr;
         this->Attrs = _attrs;
     }
-    ~clsToken(){}
+
+    clsToken(const QString& _value,
+             const Common::WordIndex_t _wordIndexes,
+             const QString& _tagStr,
+             const QVariantMap& _attrs)
+        : clsToken(_value, QList<Common::WordIndex_t>() << _wordIndexes, _tagStr, _attrs)
+    { }
 
     inline const QString& string() const {return this->String;}
-    inline const Common::WordIndex_t& wordIndex() const {return this->WordIndex;}
+    inline const QList<Common::WordIndex_t>& wordIndexes() const {return this->WordIndexes;}
     inline const QString& tagStr() const {return this->TagStr;}
     inline const QVariantMap& attrs() const {return this->Attrs;}
 
 private:
-    QString String;                      /**< String of token. */
-    Common::WordIndex_t WordIndex;      /**< Index of token in hash table. */
-    QString TagStr;                     /**< If token is in ixml tag, its tag string will be recorded in this variable. */
-    QVariantMap         Attrs;          /**< Some ixml tags has attributes. If token is in attributed ixml tag, attribute names and attributes values will be recorded in this variable.  */
+    QString String;                             /**< String of token. */
+    QList<Common::WordIndex_t> WordIndexes;     /**< Indexes of token in hash table. */
+    QString TagStr;                             /**< If token is in ixml tag, its tag string will be recorded in this variable. */
+    QVariantMap         Attrs;                  /**< Some ixml tags has attributes. If token is in attributed ixml tag, attribute names and attributes values will be recorded in this variable.  */
 };
 
 

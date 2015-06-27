@@ -92,7 +92,7 @@ template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required 
    [] (const intfConfigurable& _item, QString& _errorMessage) { \
        if(_condition) \
            return Validators::tmplPathAccessValidator< \
-                   (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), true>( \
+                   (enuPathAccess::Type)(_requiredAccess), true>( \
                        _item, _errorMessage); \
        else \
             return true;\

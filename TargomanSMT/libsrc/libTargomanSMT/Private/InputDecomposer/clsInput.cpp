@@ -14,7 +14,8 @@
 #include <QStringList>
 #include "libTargomanTextProcessor/TextProcessor.h"
 #include "clsInput.h"
-#include "Private/OOVHandler/OOVHandler.h"
+#include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
+#include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
 
 using Targoman::NLPLibs::TargomanTextProcessor;
 
@@ -24,7 +25,8 @@ namespace Private {
 namespace InputDecomposer {
 
 using namespace Common;
-using namespace OOV;
+using namespace SpecialTokenHandler::OOV;
+using namespace SpecialTokenHandler::IXMLTagHandler;
 
 QSet<QString>    clsInput::SpecialTags;
 
@@ -76,13 +78,6 @@ void clsInput::init(const QString& _configFilePath)
             clsInput::SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         clsInput::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
-
-/* TODO this must be moved to IXMLTagHandler constructor
-    foreach(const QString& Tag, clsInput::SpecialTags){
-        WordIndex_t WordIndex = gConfigs.SourceVocab.size() + 1;
-        gConfigs.SourceVocab.insert(Tag, WordIndex);
-    }
-    */
 }
 
 /**
@@ -298,21 +293,25 @@ void clsInput::newToken(const QString &_token, const QString &_tagStr, const QVa
     if (_token.isEmpty())
         return;
 
-    WordIndex_t WordIndex;
-    QVariantMap Attributes = _attrs;
+    QList<WordIndex_t> WordIndexes;
+    QVariantMap Attributes = _attrs;   
 
-    if (_tagStr.size())
-        WordIndex =  gConfigs.SourceVocab.value(_tagStr);
-    else{
-        WordIndex = gConfigs.SourceVocab.value(_token, Constants::SrcVocabUnkWordIndex);
+    if (_tagStr.size() )
+        WordIndexes = IXMLTagHandler::instance().getWordIndexOptions(_tagStr, _token, Attributes);
+
+    if (Attributes.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
+        return; // User Or IXMLTagHandler says that I must ignore this word when decoding
+
+    if (WordIndexes.isEmpty()){
+        WordIndex_t WordIndex = gConfigs.SourceVocab.value(_token, Constants::SrcVocabUnkWordIndex);
         if (WordIndex == Constants::SrcVocabUnkWordIndex){
-            WordIndex = OOVHandler::instance().getWordIndex(_token, Attributes);
+            WordIndexes = OOVHandler::instance().getWordIndexOptions(_token, Attributes);
             if (Attributes.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
                 return; // OOVHandler says that I must ignore this word when decoding
-        }
+        }else
+            WordIndexes.append(WordIndex);
     }
-
-    this->Tokens.append(clsToken(_token, WordIndex, _tagStr, Attributes));
+    this->Tokens.append(clsToken(_token, WordIndexes, _tagStr, Attributes));
 }
 
 /**

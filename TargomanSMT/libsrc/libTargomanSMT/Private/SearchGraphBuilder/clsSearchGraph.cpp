@@ -16,7 +16,7 @@
 #include "clsSearchGraph.h"
 #include "../GlobalConfigs.h"
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
-#include "Private/OOVHandler/OOVHandler.h"
+#include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -36,7 +36,7 @@ using namespace Common::Configuration;
 using namespace RuleTable;
 using namespace Proxies;
 using namespace InputDecomposer;
-using namespace OOV;
+using namespace SpecialTokenHandler;
 
 tmplConfigurable<quint8> clsSearchGraph::HardReorderingJumpLimit(
         clsSearchGraph::moduleBaseconfig() + "/HardReorderingJumpLimit",
@@ -110,52 +110,70 @@ void clsSearchGraph::init(const QString& _configFilePath)
     if (Node->isInvalid())
         throw exSearchGraph("No Rule defined for UNKNOWN word");
 
-    clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData());
+    clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData(), true);
+}
+
+void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,  INOUT QList<RulesPrefixTree_t::Node_t*>& _prevNodes, QList<clsRuleNode>& _ruleNodes)
+{
+    QList<RulesPrefixTree_t::Node_t*> NextNodes;
+    foreach(RulesPrefixTree_t::Node_t* PrevNode, _prevNodes) {
+        foreach(WordIndex_t WordIndex, _wordIndexes) {
+            RulesPrefixTree_t::Node_t* NextNode = &PrevNode->follow(WordIndex);
+            if(NextNode->isInvalid() == false) {
+                _ruleNodes.append(NextNode->getData());
+                NextNodes.append(NextNode);
+            }
+        }
+    }
+    _prevNodes = NextNodes;
 }
 
 /**
  * @brief Looks up prefix tree for all phrases that matches with some parts of input sentence and stores them in the
  * PhraseCandidateCollections of #Data. This function also calculates maximum length of matching source phrase with phrase table.
  */
-
 void clsSearchGraph::collectPhraseCandidates()
 {
+    // TODO: When looking for phrases containing IXML tags, search both for the tagged version
+    // and surface form version, e.g. "I ate <num>3</num>" => search for "I ate <num/>" and "I ate 3"
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseCandidateCollections.append(QVector<clsPhraseCandidateCollection>(this->Data->Sentence.size() - FirstPosition));
-        RulesPrefixTree_t::Node_t* PrevNode = &this->pRuleTable->getPrefixTree().rootNode();
+        QList<RulesPrefixTree_t::Node_t*> PrevNodes =
+                QList<RulesPrefixTree_t::Node_t*>() << &this->pRuleTable->getPrefixTree().rootNode();
 
         if(true /* On 1-grams */)
         {
-            WordIndex_t WordIndex = this->Data->Sentence.at(FirstPosition).wordIndex();
-            PrevNode = &PrevNode->follow(WordIndex);
-            if (PrevNode->isInvalid() || WordIndex == Constants::SrcVocabUnkWordIndex) {
-                clsRuleNode OOVRuleNode =
-                        OOVHandler::instance().getRuleNode(this->Data->Sentence.at(FirstPosition).wordIndex());
-                if (OOVRuleNode.isInvalid())
-                    this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, *clsSearchGraph::UnknownWordRuleNode);
-                else
-                    this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, OOVRuleNode);
-            }else
-                this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, PrevNode->getData());
+            QList<clsRuleNode> RuleNodes;
+            this->extendSourcePhrase(this->Data->Sentence.at(FirstPosition).wordIndexes(),
+                                     PrevNodes,
+                                     RuleNodes);
 
-            if (this->Data->PhraseCandidateCollections[FirstPosition][0].isInvalid() == false)
-                this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality, 1);
+            foreach(WordIndex_t WordIndex, this->Data->Sentence.at(FirstPosition).wordIndexes()) {
+                clsRuleNode SpecialRuleNode = SpecialTokensRegistry::instance().getRuleNode(WordIndex);
+                if(SpecialRuleNode.isInvalid() == false)
+                    RuleNodes.append(SpecialRuleNode);
+            }
 
-            if (PrevNode->isInvalid())
-                continue;
+            if(RuleNodes.isEmpty())
+                RuleNodes.append(*clsSearchGraph::UnknownWordRuleNode);
+
+            this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality, 1);
+
+            this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, RuleNodes);
         }
 
         //Max PhraseTable order will be implicitly checked by follow
         for (size_t LastPosition = FirstPosition + 1; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
-            PrevNode = &PrevNode->follow(this->Data->Sentence.at(LastPosition).wordIndex());
 
-            if (PrevNode->isInvalid())
+            QList<clsRuleNode> RuleNodes;
+            extendSourcePhrase(this->Data->Sentence.at(LastPosition).wordIndexes(), PrevNodes, RuleNodes);
+
+            if (RuleNodes.isEmpty())
                 break; // appending next word breaks phrase lookup
 
-            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, PrevNode->getData());
-            if (this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].isInvalid() == false)
-                this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
+            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, RuleNodes);
+            this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                       (int)(LastPosition - FirstPosition + 1));
         }
     }
@@ -484,9 +502,11 @@ Cost_t clsSearchGraph::calculateRestCost(const Coverage_t& _coverage, size_t _be
     return RestCosts;
 }
 
-clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const clsRuleNode &_ruleNode)
+clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const QList<clsRuleNode> &_ruleNodes)
 {
-    this->TargetRules = _ruleNode.targetRules();
+    foreach(const clsRuleNode& RuleNode, _ruleNodes)
+        this->TargetRules.append(RuleNode.targetRules());
+
     this->UsableTargetRuleCount = qMin(
                 (int)clsPhraseCandidateCollectionData::MaxTargetPhraseCount.value(),
                 this->TargetRules.size()

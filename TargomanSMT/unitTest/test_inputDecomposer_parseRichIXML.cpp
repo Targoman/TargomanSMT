@@ -61,10 +61,10 @@ void clsUnitTest::test_clsInputDecomposer_parseRichIXML()
 
     QVERIFY( InputDecomposer.tokens().size() == 4 );
     QVERIFY( InputDecomposer.tokens().at(0).string() == "Saeed" );
-    QVERIFY( InputDecomposer.tokens().at(0).wordIndex() == 12 );
+    QVERIFY( InputDecomposer.tokens().at(0).wordIndexes() == (QList<WordIndex_t>() << 12) );
     QVERIFY( InputDecomposer.tokens().at(0).attrs().size() == 0 );
     QVERIFY( InputDecomposer.tokens().at(1).string() == "Torabzadeh" );
-    QVERIFY( InputDecomposer.tokens().at(1).wordIndex() == 13 );
+    QVERIFY( InputDecomposer.tokens().at(1).wordIndexes() == (QList<WordIndex_t>() << 13) );
     QVERIFY( InputDecomposer.tokens().at(1).attrs().size() == 0 );
     QVERIFY( InputDecomposer.tokens().at(2).string() == "24" );
     QVERIFY( InputDecomposer.tokens().at(2).tagStr() == "Number" );

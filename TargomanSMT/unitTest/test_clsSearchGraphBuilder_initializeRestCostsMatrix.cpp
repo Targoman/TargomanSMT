@@ -99,7 +99,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_initializeRestCostsMatrix()
                             clsTargetRule(TargetPhrase,
                                           QList<Cost_t>() << PredictableRandom() << PredictableRandom()));
             }
-            Builder.Data->PhraseCandidateCollections[i][0] = clsPhraseCandidateCollection(i, i + 1, RuleNode);
+            Builder.Data->PhraseCandidateCollections[i][0] = clsPhraseCandidateCollection(i, i + 1, (QList<clsRuleNode>() << RuleNode));
         }
         for(int j = 1; j < Builder.Data->PhraseCandidateCollections[i].size(); ++j) {
             clsRuleNode RuleNode;
@@ -115,7 +115,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_initializeRestCostsMatrix()
                             clsTargetRule(TargetPhrase,
                                           QList<Cost_t>() << PredictableRandom() << PredictableRandom()));
             }
-            Builder.Data->PhraseCandidateCollections[i][j] = clsPhraseCandidateCollection(i, i + j + 1, RuleNode);
+            Builder.Data->PhraseCandidateCollections[i][j] = clsPhraseCandidateCollection(i, i + j + 1, (QList<clsRuleNode>() << RuleNode));
         }
     }
 

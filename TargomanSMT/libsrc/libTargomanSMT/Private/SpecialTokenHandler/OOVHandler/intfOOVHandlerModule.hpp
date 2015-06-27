@@ -11,8 +11,8 @@
  @author Behrooz Vedadian <vedadian@gmail.com>
  */
 
-#ifndef INTFOOVHANDLERMODULE_HPP
-#define INTFOOVHANDLERMODULE_HPP
+#ifndef TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_INTFOOVHANDLERMODULE_HPP
+#define TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_INTFOOVHANDLERMODULE_HPP
 
 #include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
 #include "Private/RuleTable/clsTargetRule.h"
@@ -21,6 +21,7 @@
 namespace Targoman{
 namespace SMT {
 namespace Private{
+namespace SpecialTokenHandler {
 namespace OOV{
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exOOVHandlerModule, exOOVHandler);
@@ -50,4 +51,5 @@ public:
 }
 }
 }
-#endif // INTFOOVHANDLERMODULE_HPP
+}
+#endif // TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_INTFOOVHANDLERMODULE_HPP

@@ -367,4 +367,3 @@ QString IXMLWriter::markByRegex(const QString &_phrase,
 }
 }
 }
-

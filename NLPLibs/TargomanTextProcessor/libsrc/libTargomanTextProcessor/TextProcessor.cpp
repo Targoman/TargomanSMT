@@ -103,6 +103,7 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
     QString IXML = IXMLWriter::instance().convert2IXML(
                 _inStr,
                 LangCode ? LangCode : "",
+                false,
                 _lineNo,
                 _interactive,
                 _useSpellCorrector);
@@ -116,6 +117,9 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
     TargomanLogDebug(7,"ConvertToIXML Process Finished");
     return IXML;
 }
+
+
+
 
 /**
  * @brief TextProcessor::ixml2Text
