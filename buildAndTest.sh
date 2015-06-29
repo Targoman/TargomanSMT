@@ -35,7 +35,7 @@ if [ "$1" == "full" ]; then
 		else
 			make clean
 		fi
-		make
+		make -j 8
 		if [ $? -ne 0 ];then
 			echo -e "\n\e[31m!!!!!!!!!!!!!!!!! $Proj Build Has failed!!!!!!!!!!!!!!!! \e[39m\n"
 			exit 1;
@@ -47,7 +47,7 @@ else
 	for Proj in $Projects
 	do
 		cd  $BasePath/$Proj
-		make
+		make -j 8
 		if [ $? -ne 0 ];then
 			echo -e "\n\e[31m!!!!!!!!!!!!!!!!! $Proj Build Has failed!!!!!!!!!!!!!!!! \e[39m\n"
 			exit 1;

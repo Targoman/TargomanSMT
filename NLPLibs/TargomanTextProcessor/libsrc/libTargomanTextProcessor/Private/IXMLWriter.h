@@ -45,11 +45,6 @@ class IXMLWriter
 {
 public:
 
-    struct stuTagInfoList {
-        QStringList Tokens;
-        QStringList RichIXMLInfos;
-    };
-
     /**
      * @brief Makes (if needed) and return an initialized instance of this class.
      */
@@ -59,7 +54,6 @@ public:
     QString convert2IXML(const QString& _inStr,
                          INOUT bool& _spellCorrected,
                          const QString& _lang = "",
-                         bool _isRichIXML = false,
                          quint32 _lineNo = 0,
                          bool _interactive = false,
                          bool _useSpellCorrector = true);
@@ -71,10 +65,7 @@ private:
     QString markByRegex(const QString &_phrase,
                         QRegExp _regex,
                         const QString &_mark,
-                        const QString &_lang,
-                        bool _isRichIXML,
-                        std::function<QString(const QString &, const QString &)> transformationFunction,
-                        stuTagInfoList *_listOfMatches,
+                        QStringList *_listOfMatches,
                         quint8 _capID = 0);
 
     inline void replaceTag(QString& _output, enuTextTags::Type _type, const QString& _value, const QString& translationAttribte = ""){

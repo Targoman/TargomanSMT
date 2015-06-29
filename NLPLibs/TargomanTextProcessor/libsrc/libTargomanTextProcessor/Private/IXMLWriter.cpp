@@ -345,7 +345,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
 QString IXMLWriter::markByRegex(const QString &_phrase,
                                 QRegExp _regex,
                                 const QString &_mark,
-                                QStringList *_listOfMatches,
+                                QStringList* _listOfMatches,
                                 quint8 _capID)
 {
     int Pos=0;

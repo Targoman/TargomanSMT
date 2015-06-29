@@ -106,7 +106,6 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
                 _inStr,
                 _spellCorrected,
                 LangCode ? LangCode : "",
-                false,
                 _lineNo,
                 _interactive,
                 _useSpellCorrector);

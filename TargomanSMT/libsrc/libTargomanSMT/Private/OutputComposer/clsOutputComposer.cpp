@@ -75,7 +75,7 @@ QString clsOutputComposer::translationString()
  */
 QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const stuPos &_sourcePhrasePos)
 {
-    if (_sourcePhrasePos.isSingleWord() && _target.size() == 1) {
+    if (_sourcePhrasePos.hasSingleItem() && _target.size() == 1) {
         clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePhrasePos.start());
         if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
             return QString();
@@ -102,7 +102,7 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
         int Alignment = _target.wordLevelAlignment(i);
         if(Alignment > 0)
         {
-            clsToken Token = this->InputDecomposerRef.tokens().at(Alignment + _sourcePos.start());
+            clsToken Token = this->InputDecomposerRef.tokens().at(Alignment + _sourcePhrasePos.start());
             if(Token.tagStr().size())
             {
                 if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)))
