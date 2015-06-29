@@ -33,12 +33,12 @@ tmplConfigurable<QString> IXMLTagHandler::IXMLTagHandlerModules(
 });
 
 tmplConfigurable<bool> IXMLTagHandler::IgnoreUserDefinedTags(
-        IXMLTagHandler::moduleName() + "/Handlers",
+        IXMLTagHandler::moduleName() + "/IgnoreUserDefinedTags",
         "Whether ignore user defined tags or not",
         true);
 
 tmplConfigurable<bool> IXMLTagHandler::KeepUnknownUserDefinedTags(
-        IXMLTagHandler::moduleName() + "/Handlers",
+        IXMLTagHandler::moduleName() + "/KeepUnknownUserDefinedTags",
         "If user defined tag does not exist in source vocab, whether keep user defined tags or not",
         false);
 
