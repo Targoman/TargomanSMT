@@ -158,13 +158,13 @@ int main(int argc, char *argv[])
     exit(0);
 
 
-    Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
+    /*Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
     qDebug()<<getTypeStr(A);
     enuBaba::Type B = enuBaba::cc;
     qDebug()<<getTypeStr(B);
 
     A.clear();
-
+*/
     clsCmdProgressBar PB("Marquee");
     for (int i=0;i<10;i++){
         PB.setValue(i);

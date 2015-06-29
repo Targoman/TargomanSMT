@@ -18,6 +18,7 @@
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/FastOperations.hpp"
+#include "libTargomanCommon/Helpers.hpp"
 
 namespace Targoman {
 namespace Common {

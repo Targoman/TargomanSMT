@@ -76,9 +76,9 @@ size_t NBestSuggestions::fillBestOptions(NBestSuggestions::Container_t& _storage
             break;
     }
 
-    _storage.insert(stuPhrasePos(_currNode.sourceRangeBegin(), _currNode.sourceRangeEnd()),
+    _storage.insert(stuPos(_currNode.sourceRangeBegin(), _currNode.sourceRangeEnd()),
                     NBestSuggestions::stuTargetOption(
-                        stuPhrasePos(TargetIndexStart, TargetIndexStart + _currNode.targetRule().size()),
+                        stuPos(TargetIndexStart, TargetIndexStart + _currNode.targetRule().size()),
                         TargetRules));
 
     return TargetIndexStart + _currNode.targetRule().size();

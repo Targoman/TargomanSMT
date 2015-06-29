@@ -108,7 +108,7 @@ class SpellCorrector
 public:
     static SpellCorrector& instance() {return Q_LIKELY(Instance) ? *Instance : *(Instance = new SpellCorrector);}
 
-    QString process(const QString& _lang, const QString& _inputStr, bool _interactive);
+    QString process(const QString& _lang, const QString& _inputStr, INOUT bool& _changed, bool _interactive);
     void init(const QString& _baseConfigPath, const QHash<QString, QVariantHash> &_settings);
 
 private:

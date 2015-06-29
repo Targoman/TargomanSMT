@@ -89,8 +89,11 @@ void clsInput::parsePlain(const QString &_inputStr)
 {
     this->NormalizedString =
             TargomanTextProcessor::instance().normalizeText(_inputStr, false, gConfigs.SourceLanguage.value());
+    bool SpellCorrectorChanges;
     this->parseRichIXML(
-                TargomanTextProcessor::instance().text2IXML(_inputStr, gConfigs.SourceLanguage.value()), false);
+                TargomanTextProcessor::instance().text2IXML(_inputStr,
+                                                            SpellCorrectorChanges,
+                                                            gConfigs.SourceLanguage.value()), false);
 }
 
 

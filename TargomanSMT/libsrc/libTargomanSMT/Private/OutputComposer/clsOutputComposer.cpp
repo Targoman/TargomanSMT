@@ -35,7 +35,7 @@ stuTranslationOutput clsOutputComposer::translationOutput()
     stuTranslationOutput Output;
 
     Output.Translation = this->translationString();
-    Output.NormalizedSource = this->InputDecomposerRef.normalizedString();
+    Output.TaggedSource = this->InputDecomposerRef.normalizedString();
 
     NBestSuggestions::Container_t NBestSuggestions =
             NBestSuggestions::retrieve(this->SearchGraphRef);
@@ -73,10 +73,10 @@ QString clsOutputComposer::translationString()
  * @param _sourcePos                            position of the source phrase for which the hypothesis holds the given target rule, used for extracting input attributes and using them in creating the string representation
  * @return
  */
-QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const stuPhrasePos &_sourcePos)
+QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const stuPos &_sourcePhrasePos)
 {
-    if (_sourcePos.isSingleWord() && _target.size() == 1) {
-        clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePos.start());
+    if (_sourcePhrasePos.isSingleWord() && _target.size() == 1) {
+        clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePhrasePos.start());
         if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
             return QString();
         if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::ShowSource), false) == true)
@@ -136,7 +136,7 @@ QString clsOutputComposer::nodeTranslation(const SearchGraphBuilder::clsSearchGr
         PrevNodeTranslation += " ";
     return PrevNodeTranslation +
             getTargetString(_node.targetRule(),
-                            stuPhrasePos(_node.sourceRangeBegin(), _node.sourceRangeEnd()));
+                            stuPos(_node.sourceRangeBegin(), _node.sourceRangeEnd()));
 }
 
 }

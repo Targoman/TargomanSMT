@@ -17,6 +17,7 @@
 #include "libTargomanCommon/CmdIO.h"
 #include "Configs.h"
 #include "libTargomanCommon/SimpleAuthentication.h"
+#include "libTargomanTextProcessor/TextProcessor.h"
 #include "clsTranslationJob.h"
 
 namespace Targoman {
@@ -42,7 +43,11 @@ void appTargomanSMTServer::slotExecute()
                 SLOT(slotValidateAgent(QString&,QString,QString,bool&,bool&)),
                 Qt::DirectConnection);
 
+        clsTranslationJob::SourceLanguage =
+                ConfigManager::instance().getConfig("/Common/Language/Source").toString();
+
         Targoman::SMT::Translator::init(ConfigManager::instance().configFilePath());
+        Targoman::NLPLibs::TargomanTextProcessor::instance().init(ConfigManager::instance().configFilePath());
 
         QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
         Configuration::ConfigManager::instance().startAdminServer();

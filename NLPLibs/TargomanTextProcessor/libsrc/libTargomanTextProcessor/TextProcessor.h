@@ -17,6 +17,7 @@
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Logger.h"
+#include "libTargomanCommon/Types.h"
 #include "ISO639.h" //From https://github.com/softnhard/ISO639
 
 namespace Targoman {
@@ -60,6 +61,7 @@ public:
     bool init(const QString _configFile = "");
 
     QString text2IXML(const QString& _inStr,
+                      INOUT bool &_spellCorrected,
                       const QString& _lang = "",
                       quint32 _lineNo = 0,
                       bool _interactive = true,
@@ -68,7 +70,17 @@ public:
 
     QString ixml2Text(const QString& _ixml) const;
 
-    QString normalizeText(const QString _input,  bool _interactive = false, const QString& _lang = "") const;
+    inline QString normalizeText(const QString _input,
+                                 bool _interactive,
+                                 const QString &_lang) const{
+        bool SpellCorrected;
+        return this->normalizeText(_input, SpellCorrected, _interactive, _lang);
+    }
+
+    QString normalizeText(const QString _input,
+                          INOUT bool &_spellCorrected,
+                          bool _interactive = false,
+                          const QString& _lang = "") const;
 
 private:
     TargomanTextProcessor();

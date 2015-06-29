@@ -42,7 +42,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Configuration/tmplConfigurableArray.hpp \
     libTargomanCommon/SimpleAuthentication.h \
     libTargomanCommon/Private/RPCRegistry.hpp \
-    libTargomanCommon/Configuration/intfRPCExporter.hpp
+    libTargomanCommon/Configuration/intfRPCExporter.hpp \
+    libTargomanCommon/Helpers.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

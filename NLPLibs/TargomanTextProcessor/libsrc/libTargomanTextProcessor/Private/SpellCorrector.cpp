@@ -77,7 +77,10 @@ void SpellCorrector::init(const QString& _baseConfigPath, const QHash<QString, Q
  * @return spell corrected string.
  */
 
-QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, bool _interactive)
+QString SpellCorrector::process(const QString& _lang,
+                                const QString& _inputStr,
+                                INOUT bool& _changed,
+                                bool _interactive)
 {
     intfSpellCorrector* Processor = this->Processors.value(_lang, NULL);
     if (!Processor)
@@ -89,6 +92,7 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
     QString Normalized;
     QStringList Tokens;
     QStringList MultiWordBuffer;
+    _changed = false;
 
     //Correct all single words
     do{
@@ -178,6 +182,9 @@ QString SpellCorrector::process(const QString& _lang, const QString& _inputStr, 
             }while(Output.trimmed() != Phrase.trimmed());
         }
     }while(Output.trimmed() != FinalPhrase.trimmed());
+
+    if (Output.trimmed() != _inputStr.trimmed())
+        _changed = true;
 
     return Output;
 }

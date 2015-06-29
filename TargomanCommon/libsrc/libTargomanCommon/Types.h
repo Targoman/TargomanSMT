@@ -82,6 +82,19 @@ public:
     }
 };
 
+struct stuPos : public QPair<qint32, qint32>{
+    stuPos(qint32 _start = -1, qint32 _end = -1) :
+       QPair<qint32, qint32>(_start, _end) {
+        Q_ASSERT((_start < _end) || (_start == -1 && _end == -1));
+    }
+
+    size_t start()const         {return this->first;}
+    size_t end()const           {return this->second;}
+    bool   isValid() const      {return this->first >= 0;}
+    bool   hasSingleItem() const {return this->second - this->first == 1; }
+};
+
+
 }
 }
 

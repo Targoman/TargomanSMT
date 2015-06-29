@@ -13,11 +13,12 @@
 #include "UnitTest.h"
 #include <QTest>
 #define VERIFY_TXT2IXML(_lang, _check, _desired) \
-    Targoman::NLPLibs::TargomanTextProcessor::instance().text2IXML(QStringLiteral(_check), _lang, 0, false) == \
+    Targoman::NLPLibs::TargomanTextProcessor::instance().text2IXML(QStringLiteral(_check), SpellCorrected, _lang, 0, false) == \
         QStringLiteral(_desired)
 
 void UnitTest::text2IXML()
 {
+    bool SpellCorrected;
     QVERIFY(VERIFY_TXT2IXML("en","this is just  a test.", "this is just a test ."));
     QVERIFY(VERIFY_TXT2IXML("en","A simple \"Test\" for you.", "A simple \" Test \" for you ."));
     QVERIFY(VERIFY_TXT2IXML("en","A simple 'Test' for you.", "A simple ' Test ' for you ."));

@@ -15,6 +15,7 @@
 
 #include <QHash>
 #include <QTime>
+#include <QMutex>
 #include "libTargomanCommon/exTargomanBase.h"
 
 namespace Targoman {
@@ -40,11 +41,9 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         typedef typename BaseContainer_t<itmplKey, itmplVal>::iterator   Iterator_t;
 
         inline Iterator_t insert(itmplKey _key, itmplVal _val){
-            //while(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
+            QMutexLocker Locker(&this->Lock);
             if(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
                 QList<QTime> Values = this->KeyAccessDateTime.values();
-//                qStableSort(Values);
-//                QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Values.first());
                 QTime Oldest = Values.first();
                 for(int i = 0; i < Values.size(); ++i)
                     if(Values.at(i) < Oldest)
@@ -82,6 +81,7 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         }
 
         inline void clear(){
+            QMutexLocker Locker(&this->Lock);
             BaseContainer_t<itmplKey, itmplVal>::clear();
             this->KeyAccessDateTime.clear();
         }
@@ -89,14 +89,9 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         inline itmplVal value(const itmplKey& _key,
                               bool _updateAccessTime = true,
                               const itmplVal& _defaultValue = itmplVal()){
+            QMutexLocker Locker(&this->Lock);
             if (BaseContainer_t<itmplKey, itmplVal>::contains(_key) == false)
                 return _defaultValue;
-            /*
-            if (this->TTL > 0 && QTime::currentTime().msecsTo(this->KeyAccessDateTime.value(_key)) > this->TTL){
-                this->remove(_key);
-                return _defaultValue;
-            }
-            */
 
             if (_updateAccessTime)
                 this->KeyAccessDateTime.insert(_key, QTime::currentTime());
@@ -122,16 +117,9 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         }
 
         inline itmplVal& operator[] ( const itmplKey & _key){
+            QMutexLocker Locker(&this->Lock);
             if (BaseContainer_t<itmplKey, itmplVal>::contains(_key) == false)
                 return  BaseContainer_t<itmplKey, itmplVal>::operator [] (_key);
-
-            /*
-            if (this->TTL > 0 &&
-                this->KeyAccessDateTime.value(_key).elapsed() > this->TTL){
-                this->KeyAccessDateTime.remove(_key);
-                return BaseContainer_t<itmplKey, itmplVal>::take(_key);
-            }
-            */
 
             QTime AccessTime = QTime::currentTime();
             this->KeyAccessDateTime.insert(_key, AccessTime);
@@ -140,6 +128,7 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         }
 
         inline int remove(const itmplKey& _key){
+            QMutexLocker Locker(&this->Lock);
             this->KeyAccessDateTime.remove(_key);
             return BaseContainer_t<itmplKey, itmplVal>::remove(_key);
         }
@@ -151,6 +140,7 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         quint32 ttl(){ return this->TTL; }
 
     private:
+        QMutex                       Lock;
         QHash<itmplKey, QTime >      KeyAccessDateTime;
 
         quint32 MaxItems;

@@ -49,6 +49,7 @@ bool TargomanTextProcessor::init(const stuConfigs& _configs)
     Normalizer::instance().init(_configs.NormalizationFile);
     SpellCorrector::instance().init(_configs.SpellCorrectorBaseConfigPath, _configs.SpellCorrectorLanguageBasedConfigs);
     IXMLWriter::instance().init(_configs.AbbreviationsFile);
+    ISO639init();
     Initialized = true;
     return true;
 }
@@ -88,11 +89,12 @@ bool TargomanTextProcessor::init(const QString _configFile)
  * @return
  */
 QString TargomanTextProcessor::text2IXML(const QString &_inStr,
-                                 const QString& _lang,
-                                 quint32 _lineNo,
-                                 bool _interactive,
-                                 bool _useSpellCorrector,
-                                 QList<enuTextTags::Type> _removingTags) const
+                                         INOUT bool& _spellCorrected,
+                                         const QString& _lang,
+                                         quint32 _lineNo,
+                                         bool _interactive,
+                                         bool _useSpellCorrector,
+                                         QList<enuTextTags::Type> _removingTags) const
 {
     if (!Initialized)
         throw exTextProcessor("Text Processor has not been initialized");
@@ -102,6 +104,7 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
 
     QString IXML = IXMLWriter::instance().convert2IXML(
                 _inStr,
+                _spellCorrected,
                 LangCode ? LangCode : "",
                 false,
                 _lineNo,
@@ -141,15 +144,21 @@ QString TargomanTextProcessor::ixml2Text(const QString &_ixml) const
  *        _lang is provided
  * @param _input Input phrase to be normalized
  * @param _interactive In interactive mode new entries can be learnt
- * @param _lang An ISO639 Language code. If provided input phrase will be spell checked
+ * @param _lang An ISO639 Language code. If provided input phrase will be spell corrected
  * @return Normalized phrase
  */
-QString TargomanTextProcessor::normalizeText(const QString _input, bool _interactive, const QString &_lang) const
+QString TargomanTextProcessor::normalizeText(const QString _input,
+                                             bool &_spellCorrected,
+                                             bool _interactive,
+                                             const QString &_lang) const
 {
     QString Output = Normalizer::instance().normalize(_input, _interactive);
     if (_lang.size()){
         const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
-        Output = SpellCorrector::instance().process(LangCode ? LangCode : "", Output, _interactive);
+        Output = SpellCorrector::instance().process(LangCode ? LangCode : "",
+                                                    Output,
+                                                    _spellCorrected,
+                                                    _interactive);
     }
 
     return Normalizer::fullTrim(Output);

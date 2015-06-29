@@ -164,12 +164,12 @@ void clsUnitTest::test_clsNBestFinder_fillBestOptions()
 
     for(int i = 0; i < 5; ++i)
     {
-        QVERIFY(NBest.find(stuPhrasePos(i, i+1)) != NBest.end());
-        QVERIFY(NBest.value(stuPhrasePos(i, i+1)).TargetRules.size() == ExpectedCandidateCount[i]);
-        QVERIFY(NBest.value(stuPhrasePos(i, i+1)).Pos == stuPhrasePos(2*i, 2*i + 2));
-        QVERIFY(NBest.value(stuPhrasePos(i, i+1)).TargetRules.at(0).isSame(Bests[i]->targetRule()));
+        QVERIFY(NBest.find(stuPos(i, i+1)) != NBest.end());
+        QVERIFY(NBest.value(stuPos(i, i+1)).TargetRules.size() == ExpectedCandidateCount[i]);
+        QVERIFY(NBest.value(stuPos(i, i+1)).Pos == stuPos(2*i, 2*i + 2));
+        QVERIFY(NBest.value(stuPos(i, i+1)).TargetRules.at(0).isSame(Bests[i]->targetRule()));
         for(int j = 1; j < ExpectedCandidateCount[i]; ++j) {
-            QVERIFY(NBest.value(stuPhrasePos(i, i+1)).TargetRules.at(j).isSame(Node[
+            QVERIFY(NBest.value(stuPos(i, i+1)).TargetRules.at(j).isSame(Node[
                                                                                       ExpectedNodeIndices[i][j - 1]
                                                                                       ].targetRule()));
         }

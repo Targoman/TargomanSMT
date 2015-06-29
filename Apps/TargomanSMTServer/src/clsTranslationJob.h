@@ -30,10 +30,12 @@ private:
     SMT::stuTranslationOutput mapSentenceTranslation(const QString& _ixml);
     void reduceLineTranslation(QVariantList &_result, const SMT::stuTranslationOutput& _intermediate);
     void reduceSentenceTranslation(SMT::stuTranslationOutput& _result, const SMT::stuTranslationOutput& _intermediate);
-
 private:
     bool Brief;
     bool KeepAsSource;
+
+public:
+    static QString SourceLanguage; // Just for speed optimization
 };
 
 }

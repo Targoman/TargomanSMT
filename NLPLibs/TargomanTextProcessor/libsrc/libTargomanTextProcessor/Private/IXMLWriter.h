@@ -57,6 +57,7 @@ public:
     void init(const QString &_configFile);
 
     QString convert2IXML(const QString& _inStr,
+                         INOUT bool& _spellCorrected,
                          const QString& _lang = "",
                          bool _isRichIXML = false,
                          quint32 _lineNo = 0,
@@ -68,7 +69,7 @@ private:
 
 
     QString markByRegex(const QString &_phrase,
-                        QRegExp &_regex,
+                        QRegExp _regex,
                         const QString &_mark,
                         const QString &_lang,
                         bool _isRichIXML,

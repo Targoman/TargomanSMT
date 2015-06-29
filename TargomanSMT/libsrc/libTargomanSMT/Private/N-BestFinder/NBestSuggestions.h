@@ -33,11 +33,11 @@ class NBestSuggestions
 {
 public:
     struct stuTargetOption{
-        stuPhrasePos Pos;
+        stuPos Pos;
         QList<RuleTable::clsTargetRule> TargetRules;
 
 
-        stuTargetOption(const stuPhrasePos& _pos = stuPhrasePos(),
+        stuTargetOption(const stuPos& _pos = stuPos(),
                         const QList<RuleTable::clsTargetRule>& _target =
                               QList<RuleTable::clsTargetRule>()){
             this->Pos = _pos;
@@ -45,7 +45,7 @@ public:
         }
     };
 
-    typedef QMap<stuPhrasePos, stuTargetOption> Container_t;
+    typedef QMap<stuPos, stuTargetOption> Container_t;
 
 public:
     static Container_t retrieve(const SearchGraphBuilder::clsSearchGraph& _searchGraph);

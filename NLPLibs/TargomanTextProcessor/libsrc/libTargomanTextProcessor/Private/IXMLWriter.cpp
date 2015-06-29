@@ -140,6 +140,7 @@ void IXMLWriter::init(const QString &_configFile)
  */
 
 QString IXMLWriter::convert2IXML(const QString &_inStr,
+                                 bool &_spellCorrected,
                                  const QString& _lang,
                                  quint32 _lineNo,
                                  bool _interactive,
@@ -158,30 +159,28 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
 
     //normalize input text.
     for (int i=0; i<InputPhrase.size(); i++){
-        OutputPhrase.append(
-                    this->NormalizerInstance.normalize(
-                        InputPhrase.at(i),
-                        ((i + 1) < InputPhrase.size() ? InputPhrase.at(i+1) : QChar('\n')),
-                        _interactive,
-                        _lineNo,
-                        InputPhrase,
-                        i));
+        OutputPhrase.append(this->NormalizerInstance.normalize(
+                    InputPhrase.at(i),
+                    ((i + 1) < InputPhrase.size() ? InputPhrase.at(i+1) : QChar('\n')),
+                    _interactive,
+                    _lineNo,
+                    InputPhrase,
+                    i));
     }
     OutputPhrase+=" ."; //append a space and a dot to the end of string for some bug fixings.
 
-
-    QStringList LstURL;             //list of founded URLs
-    QStringList LstEmail;           //list of founded Emails
-    QStringList LstAbbr[3];         //list of founded three kind of abbriviations.
-    QStringList LstDate;            //list of founded Dates.
-    QStringList LstTime;            //list of founded Times.
-    QStringList LstSpecialNumber;   //list of founded Special Numbers.
-    QStringList LstOrdinal;         //list of founded Ordinal Numbers.
-    QStringList LstNumberLeft;      //list of founded Numbers that were in left side of a word.
-    QStringList LstNumberRight;     //list of founded Numbers that were in right side of a word.
-    QStringList LstSuffixes;        //list of founded Suffixes.
-    QStringList LstOrderedItem;     //list of founded ordered items.
-    QStringList LstSymbols;         //list of founded symbols.
+    QStringList LstURL;             //list of found URLs
+    QStringList LstEmail;           //list of found Emails
+    QStringList LstAbbr[3];         //list of found three kind of abbriviations.
+    QStringList LstDate;            //list of found Dates.
+    QStringList LstTime;            //list of found Times.
+    QStringList LstSpecialNumber;   //list of found Special Numbers.
+    QStringList LstOrdinal;         //list of found Ordinal Numbers.
+    QStringList LstNumberLeft;      //list of found Numbers that were in left side of a word.
+    QStringList LstNumberRight;     //list of found Numbers that were in right side of a word.
+    QStringList LstSuffixes;        //list of found Suffixes.
+    QStringList LstOrderedItem;     //list of found ordered items.
+    QStringList LstSymbols;         //list of found symbols.
 
     TargomanDebug(7,"[NRM] |"<<OutputPhrase<<"|");
     OutputPhrase.replace("&amp;", " & ").replace("&gt;", " > ").replace("&lt;", " < "); //replace '<' a '>' with some special string in order to prevent errors in xml tags.
@@ -272,7 +271,11 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     TargomanDebug(7,"[SYM] |"<<OutputPhrase<<"|");
 
     if (_useSpellCorrector)
-        OutputPhrase = this->SpellCorrectorInstance.process(_lang, OutputPhrase, _interactive);
+        OutputPhrase = this->SpellCorrectorInstance.process(
+                    _lang,
+                    OutputPhrase,
+                    _spellCorrected,
+                    _interactive);
 
     TargomanDebug(7,"[SPL] |"<<OutputPhrase<<"|");
 
@@ -340,7 +343,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
  * @return returns replaced string with mark.
  */
 QString IXMLWriter::markByRegex(const QString &_phrase,
-                                QRegExp &_regex,
+                                QRegExp _regex,
                                 const QString &_mark,
                                 QStringList *_listOfMatches,
                                 quint8 _capID)

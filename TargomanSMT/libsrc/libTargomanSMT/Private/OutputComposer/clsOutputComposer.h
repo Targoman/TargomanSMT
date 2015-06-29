@@ -40,7 +40,7 @@ public:
     QString translationString();
 
 private:
-    QString getTargetString(const RuleTable::clsTargetRule& _target, const stuPhrasePos& _sourcePos);
+    QString getTargetString(const RuleTable::clsTargetRule& _target, const stuPos& _sourcePhrasePos);
     QString nodeTranslation(const SearchGraphBuilder::clsSearchGraphNode& _node);
 
 private:
