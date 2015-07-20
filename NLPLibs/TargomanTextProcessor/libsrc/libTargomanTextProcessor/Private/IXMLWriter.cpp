@@ -151,7 +151,7 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     QString InputPhrase, OutputPhrase;
     InputPhrase += _inStr;
 
-    TargomanDebug(7,"[ORG] "<<InputPhrase);
+    TargomanDebug(6,"[ORG] "<<InputPhrase);
 
     //Normalize
     OutputPhrase.clear();
