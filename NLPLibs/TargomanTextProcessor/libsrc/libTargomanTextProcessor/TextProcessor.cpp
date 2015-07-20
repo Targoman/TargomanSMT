@@ -115,7 +115,7 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
                     QString("<%1>").arg(enuTextTags::toStr(Tag))).remove(
                     QString("</%1>").arg(enuTextTags::toStr(Tag)));
 
-    TargomanDebug(7, "[REM-TAGS] |"<<IXML<<"|");
+    TargomanDebug(6, "[REM-TAGS] |"<<IXML<<"|");
     TargomanLogDebug(7,"ConvertToIXML Process Finished");
     return IXML;
 }
