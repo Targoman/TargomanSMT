@@ -44,29 +44,25 @@ tmplConfigurable<bool> clsConfigNetworkServer::AdminLocal(
         ConfigManager::moduleName() + "/AdminLocal",
         "If set to true it will just listen to local connections.",
         false,
-        [] (const intfConfigurable&, QString&){
-    return true;
-},
-"",
-"",
-"admin-just-local",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
+        ReturnTrueCrossValidator,
+        "",
+        "",
+        "admin-just-local",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
 
 tmplConfigurable<bool> clsConfigNetworkServer::WaitPortReady(
         ConfigManager::moduleName() + "/WaitPortReady",
         "If set to true it will wait till port is ready checking every 500ms.",
         false,
-        [] (const intfConfigurable&, QString&){
-    return true;
-},
-"",
-"",
-"admin-wait-port-ready",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
+        ReturnTrueCrossValidator,
+        "",
+        "",
+        "admin-wait-port-ready",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
 
 tmplConfigurable<int> clsConfigNetworkServer::MaxSessionTime(
         ConfigManager::moduleName() + "/MaxSessiontime",

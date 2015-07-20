@@ -24,10 +24,11 @@ namespace Targoman {
 namespace Common {
 namespace Configuration {
 
-/// this is a lambda function variable that its arguments are intfConfigurable and a QString and always returns true.
+/// @brief A predefined lambda function used which always returns true used when there
+/// is no further crossvalidation condition.
 static std::function<bool(const intfConfigurable& _item,
-                          QString& _errorMessage)> ReturnTrueCrossValidator = [] (const intfConfigurable&, QString& ) {
-    return true;};
+                          QString& _errorMessage)> ReturnTrueCrossValidator =
+        [] (const intfConfigurable&, QString& ) {return true;};
 
 /**
  * @brief The clsConfigurable template is used to store and validate different configurable items
@@ -36,27 +37,29 @@ template <class itmplType_t, bool ... _rest> class tmplConfigurable : public int
 {
 public:
     tmplConfigurable(const QString&  _configPath,
-                    const QString&  _description,
-                    const QVariant& _default = QVariant(),
-                    const std::function< bool(const intfConfigurable& _item,
-                                              QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator,
-                    const QString&  _shortSwitch = "",
-                    const QString&  _shortHelp = "",
-                    const QString&  _LongSwitch = "",
-                     enuConfigSource::Type _configSources =
-                        (enuConfigSource::Type)(
-                            enuConfigSource::Arg  |
-                            enuConfigSource::File |
-                            enuConfigSource::Net ),
-                     bool _remoteView = true) :
+                     const QString&  _description,
+                     const QVariant& _default = QVariant(),
+                     const std::function< bool(const intfConfigurable& _item,
+                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator,
+                     const QString&  _shortSwitch = "",
+                     const QString&  _shortHelp = "",
+                     const QString&  _LongSwitch = "",
+                     enuConfigSource::Type _configSources = (enuConfigSource::Type)(
+                enuConfigSource::Arg  |
+                enuConfigSource::File |
+                enuConfigSource::Net ),
+                     bool _remoteView = true,
+                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer
+                     ) :
         intfConfigurable(enuConfigType::Normal,
                          _configPath,
-                        _description,
-                        _shortSwitch,
-                        _shortHelp,
-                        _LongSwitch,
-                        _configSources,
-                        _remoteView)
+                         _description,
+                         _shortSwitch,
+                         _shortHelp,
+                         _LongSwitch,
+                         _configSources,
+                         _remoteView,
+                         _finalizer)
     {
         try{
             QString ErrorMessage;
@@ -137,7 +140,6 @@ public:
 private:
     itmplType_t  Value;
     std::function<bool(const intfConfigurable& _item, QString& _errorMessage)> CrossValidator;
-
 };
 
 /***************************************************************************************/
@@ -149,28 +151,36 @@ private:
     template <> void Targoman::Common::Configuration::tmplConfigurable<_type>::setFromVariant(const QVariant& _value)
 
 #define ENUM_CONFIGURABLE(_enum) \
+    namespace Targoman { namespace Common { namespace Configuration { \
     template <> bool Targoman::Common::Configuration::tmplConfigurable<_enum::Type>::validate(const QVariant& _value, QString& _errorMessage) const ;\
     template <> void Targoman::Common::Configuration::tmplConfigurable<_enum::Type>::setFromVariant(const QVariant& _value);\
-    template <> QVariant Targoman::Common::Configuration::tmplConfigurable<_enum::Type>::toVariant() const
+    template <> QVariant Targoman::Common::Configuration::tmplConfigurable<_enum::Type>::toVariant() const; \
+}}}
 
 #define ENUM_CONFIGURABLE_IMPL(_enum) \
-template <>\
-bool tmplConfigurable<_enum::Type>::validate(const QVariant& _value, QString& _errorMessage) const{\
-    if(_enum::toEnum(_value.toString().toLatin1().constData()) != _enum::Unknown)  return true; \
+    namespace Targoman { namespace Common { namespace Configuration { \
+    template <> \
+    bool tmplConfigurable<_enum::Type>::validate(const QVariant& _value, QString& _errorMessage) const{ \
+    QString Option = _value.toString(); \
+    if (Option.size() && Option.at(0).isDigit()){ \
+    if (Option.toInt() >=0 && Option.toInt() < _enum::getCount()) return true; \
+}else if(_enum::toEnum(Option.toLatin1().constData()) != _enum::Unknown)  return true; \
     _errorMessage = "Unrecognized option: " + _value.toString() + " for: " + this->configPath(); \
     return false; \
 } \
-template <> \
-void tmplConfigurable<_enum::Type>::setFromVariant(const QVariant& _value){ \
+    template <> \
+    void tmplConfigurable<_enum::Type>::setFromVariant(const QVariant& _value){ \
     QString ErrorMessage; \
     if (this->validate(_value, ErrorMessage)) this->Value = \
-            _enum::toEnum(_value.toString().toLatin1().constData()); \
+    (_value.toString().at(0).isDigit() ? \
+    (_enum::Type)_value.toInt() : \
+    _enum::toEnum(_value.toString().toLatin1().constData())); \
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage); \
 } \
-template <>\
-QVariant tmplConfigurable<_enum::Type>::toVariant() const{ \
+    template <> \
+    QVariant tmplConfigurable<_enum::Type>::toVariant() const{ \
     return _enum::toStr(this->Value); \
-}
+}}}}
 
 /***************************************************************************************/
 SPECIAL_CONFIGURABLE(qint8);
@@ -189,10 +199,11 @@ SPECIAL_CONFIGURABLE(QStringList);
 template <> QVariant Targoman::Common::Configuration::tmplConfigurable<QStringList>::toVariant() const;
 
 SPECIAL_CONFIGURABLE(bool);
-SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA false); /* Used on normal regex matching */
+SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA false); /* Used on normal regex matching */template <> QVariant Targoman::Common::Configuration::tmplConfigurable<QRegExp, false>::toVariant() const; \
+template <> QVariant Targoman::Common::Configuration::tmplConfigurable<QRegExp, false>::toVariant() const; \
 SPECIAL_CONFIGURABLE(QRegExp MACRO_SAFE_COMMA true); /* Used on wildcard matching */
+template <> QVariant Targoman::Common::Configuration::tmplConfigurable<QRegExp, true>::toVariant() const; \
 
-//TODO add Special QFile and QDir
 }
 }
 }

@@ -85,13 +85,6 @@ QHash<QString, Common::WordIndex_t>                            stuGlobalConfigs:
 
 }
 }
-namespace Common {
-namespace Configuration {
-
-using namespace SMT::Private;
-
-ENUM_CONFIGURABLE_IMPL(enuWorkingModes)
-
 }
-}
-}
+
+ENUM_CONFIGURABLE_IMPL(SMT::Private::enuWorkingModes)

@@ -27,11 +27,9 @@ using namespace Targoman;
 using namespace Targoman::Common;
 using namespace Targoman::Apps;
 
-#include "libTargomanCommon/SimpleAuthentication.h"
 int main(int _argc, char *_argv[])
 {
     try{
-        Targoman::Common::printLoadedLibs();
         QCoreApplication App(_argc, _argv);
 
 

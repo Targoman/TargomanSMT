@@ -14,6 +14,8 @@
 #define TARGOMAN_APPS_APPTARGOMANLOADBALANCER_H
 
 #include "libTargomanCommon/clsSafeCoreApplication.h"
+#include "libTargomanCommon/Types.h"
+
 
 namespace Targoman {
 namespace Apps{
@@ -27,7 +29,10 @@ public:
 public slots:
     void slotExecute();
 
-private:
+private slots:
+    void slotValidateAgent(QString &_user, const QString &_pass, const QString &_ip, bool &_canView, bool &_canChange);
+    void slotPong(Targoman::Common::stuPong &_pong);
+
 };
 
 }

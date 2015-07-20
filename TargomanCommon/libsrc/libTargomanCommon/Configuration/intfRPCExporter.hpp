@@ -30,6 +30,11 @@ struct stuRPCOutput{
         DirectResult(_direct),
         IndirectResult(_indirect)
     {}
+
+    stuRPCOutput(quint8 _errCode, const QString& _errString):
+        DirectResult(_errCode){
+        IndirectResult.insert("err",_errString);
+    }
 };
 
 class intfRPCExporter : public QObject{

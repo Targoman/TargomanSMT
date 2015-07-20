@@ -12,14 +12,22 @@ BasePath = "."
 HEADERS += \
     src/appTargomanLoadBalancer.h \
     src/Configs.h \
-    src/Modules/TSMonitor.h
+    src/Modules/TSMonitor.h \
+    src/Modules/TSManager.h \
+    src/clsTranslationServer.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
     src/main.cpp \
     src/appTargomanLoadBalancer.cpp \
     src/Configs.cpp \
-    src/Modules/TSMonitor.cpp
+    src/Modules/TSMonitor.cpp \
+    src/Modules/TSManager.cpp \
+    src/clsTranslationServer.cpp
+
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
+QT+= network
+QT+= websockets
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

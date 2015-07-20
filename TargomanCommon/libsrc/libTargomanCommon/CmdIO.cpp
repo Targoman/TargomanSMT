@@ -24,45 +24,67 @@ typedef std::string (*delGetTargomanLibVersion)();
 namespace Targoman {
 namespace Common {
 
+int targomanLinkedLibrariesCallback(struct dl_phdr_info *_info, size_t _size, void *_data);
+
 using namespace Configuration;
 
 tmplConfigurable<bool> Silent(
         CmdIO::moduleName() + "/Silent",
         "Set output off",
         false,
-        [] (const intfConfigurable& _item, QString&){
+        ReturnTrueCrossValidator,
+        "",
+        "",
+        "out-silent",
+        enuConfigSource::Arg,
+        false,
+        [] (const intfConfigurable& _item){
             if(_item.toVariant().toBool()){
                 TARGOMAN_IO_SETTINGS.setSilent();
-                Logger::instance().setActive(false);
+                Logger::instance().setVisible(false);
             }
             return true;
-        },
+        }
+        );
+
+tmplConfigurable<bool> PrintLibs(
+        CmdIO::moduleName() + "/PrintLibs",
+        "Print libs loaded with current binary",
+        false,
+        ReturnTrueCrossValidator,
         "",
         "",
-        "io-silent",
-        enuConfigSource::Arg
+        "out-libs",
+        enuConfigSource::Arg,
+        false,
+        [] (const intfConfigurable& _item){
+            if(_item.toVariant().toBool())
+                dl_iterate_phdr(targomanLinkedLibrariesCallback, NULL);
+            return true;
+        }
         );
 
 tmplConfigurable<bool> Full(
         CmdIO::moduleName() + "/Full",
         "Set output to full mode",
         false,
-        [] (const intfConfigurable& _item, QString&){
+        ReturnTrueCrossValidator,
+        "",
+        "",
+        "out-full",
+        enuConfigSource::Arg,
+        false,
+        [] (const intfConfigurable& _item){
             if(_item.toVariant().toBool())
                 TARGOMAN_IO_SETTINGS.setFull();
             return true;
-        },
-        "",
-        "",
-        "io-full",
-        enuConfigSource::Arg,
-        false
+        }
         );
 
 tmplConfigurable<QStringList> DebugDetail(
         CmdIO::moduleName() + "/DebugDetail",
         "Set Details to be shown for debug",
-        QStringList()<<"true"<<"true"<<"true"<<"false",
+        QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
@@ -100,7 +122,7 @@ tmplConfigurable<quint8> DebugLevel(
 tmplConfigurable<QStringList> InfoDetail(
         CmdIO::moduleName() + "/InfoDetail",
         "Set Details to be shown for Info",
-        QStringList()<<"true"<<"true"<<"true"<<"false",
+        QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
@@ -138,7 +160,7 @@ tmplConfigurable<quint8> InfoLevel(
 tmplConfigurable<QStringList> WarningDetail(
         CmdIO::moduleName() + "/WarningDetail",
         "Set Details to be shown for Warning",
-        QStringList()<<"true"<<"true"<<"true"<<"false",
+        QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
@@ -176,7 +198,7 @@ tmplConfigurable<quint8> WarningLevel(
 tmplConfigurable<QStringList> ErrorDetail(
         CmdIO::moduleName() + "/ErrorDetail",
         "Set Details to be shown for Error",
-        QStringList()<<"true"<<"true"<<"true"<<"false",
+        QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
@@ -199,7 +221,7 @@ tmplConfigurable<QStringList> ErrorDetail(
 tmplConfigurable<QStringList> HappyDetail(
         CmdIO::moduleName() + "/HappyDetail",
         "Set Details to be shown for Happy",
-        QStringList()<<"true"<<"true"<<"true"<<"false",
+        QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
@@ -237,7 +259,7 @@ tmplConfigurable<quint8> HappyLevel(
 tmplConfigurable<QStringList> NormalDetail(
         CmdIO::moduleName() + "/NormalDetail",
         "Set Details to be shown for Normal",
-        QStringList()<<"true"<<"true"<<"true"<<"false",
+        QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
             if (Params.size() < 4){
@@ -289,18 +311,14 @@ int targomanLinkedLibrariesCallback(struct dl_phdr_info *_info, size_t _size, vo
     *(void**) (&getTargomanLibVersion) = dlsym (Handle, "getTargomanLibVersion");
 
     if (dlerror() != NULL)
-        qDebug("System Lib: %s",_info->dlpi_name);
+        fprintf(stderr,"System Lib: %s\n",_info->dlpi_name);
     else if (getTargomanLibVersion)
-        qDebug("  Targoman  Lib: %s : %s",_info->dlpi_name, getTargomanLibVersion().c_str());
+        fprintf(stderr,"  Targoman Lib: %s : %s\n",_info->dlpi_name, getTargomanLibVersion().c_str());
     else
-        qDebug("Loaded System Lib: %s",_info->dlpi_name);
+        fprintf(stderr,"Loaded System Lib: %s\n",_info->dlpi_name);
 
     dlclose(Handle);
     return 0;
-}
-
-void dummyPrintLoadedLibs()
-{
 }
 
 /**
@@ -308,10 +326,9 @@ void dummyPrintLoadedLibs()
  */
 void printLoadedLibs()
 {
-    if (TARGOMAN_IO_SETTINGS.Debug.canBeShown(5) == false)
-        return;
-
+#if TARGOMAN_SHOW_DEBUG
     dl_iterate_phdr(targomanLinkedLibrariesCallback, NULL);
+#endif
 }
 
 clsIOSettings TARGOMAN_IO_SETTINGS;
@@ -330,8 +347,6 @@ QString CmdIO::getPassword(const QString& _message, char _replacingChar)
     std::cout<<std::endl;
     return QString::fromUtf8(Data);
 }
-
-
 
 }
 }

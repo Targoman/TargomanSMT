@@ -16,6 +16,7 @@
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/CmdIO.h"
 #include "Modules/TSMonitor.h"
+#include "libTargomanCommon/SimpleAuthentication.h"
 
 namespace Targoman {
 namespace Apps {
@@ -25,9 +26,28 @@ using namespace Modules;
 void appTargomanLoadBalancer::slotExecute()
 {
     try{
-        while(1){
-            sleep(3);
-        TSMonitor::instance().bestServer();
+
+        connect(&Configuration::ConfigManager::instance(),
+                SIGNAL(sigPing(Targoman::Common::stuPong&)),
+                this,
+                SLOT(slotPong(Targoman::Common::stuPong&)),
+                Qt::DirectConnection);
+        connect(&Configuration::ConfigManager::instance(),
+                SIGNAL(sigValidateAgent(QString&,QString,QString,bool&,bool&)),
+                this,
+                SLOT(slotValidateAgent(QString&,QString,QString,bool&,bool&)),
+                Qt::DirectConnection);
+
+        Modules::TSMonitor::instance().start();
+        while(true){
+            try{
+                sleep(1);
+                Modules::TSMonitor::instance().bestServerIndex();
+                Configuration::ConfigManager::instance().startAdminServer();
+                break;
+            }catch(exTargomanLoadBalancer &e){
+                TargomanInfo(1,"Waiting for at least one server to be available");
+            }
         }
     }catch(exTargomanBase& e){
         TargomanError(e.what());
@@ -36,8 +56,28 @@ void appTargomanLoadBalancer::slotExecute()
     }catch(...){
         TargomanError("FATAL Unrecognized exception");
     }
+}
 
-    QCoreApplication::exit(-1);
+void appTargomanLoadBalancer::slotValidateAgent(QString &_user, const QString &_pass, const QString &_ip, bool &_canView, bool &_canChange)
+{
+    try{
+        SimpleAuthentication::stuLoginInfo LoginInfo =
+                SimpleAuthentication::checkLogin(_user, _pass, _ip);
+        _canChange = LoginInfo.CanChange;
+        _canView = LoginInfo.CanView;
+    }catch(exSimpleAuthentication &e){
+        TargomanLogError(e.what());
+        _canView = false;
+        _canChange = false;
+        throw;
+    }
+}
+
+void appTargomanLoadBalancer::slotPong(stuPong &_pong)
+{
+    //TODO complete me to be more verbose on status reporting
+    _pong.Status = enuStatus::Ok;
+    _pong.Message = QString("%1/%2").arg(TSMonitor::instance().connectedServers()).arg(gConfigs::TranslationServers.size());
 }
 
 }

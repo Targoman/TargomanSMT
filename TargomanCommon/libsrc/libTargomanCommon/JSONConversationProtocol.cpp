@@ -193,7 +193,7 @@ JSONConversationProtocol::stuRequest JSONConversationProtocol::parseRequest(cons
     QJsonParseError Error;
     QJsonDocument Doc = QJsonDocument::fromJson(_request, &Error);
     if (Error.error != QJsonParseError::NoError)
-        throw exJSONConversationProtocol(Error.errorString() + QString::number(Error.offset));
+        throw exJSONConversationProtocol(Error.errorString() +": " + QString::number(Error.offset));
 
     if (Doc.isArray()) {
         if (Doc.array().first().toVariant().toInt() == 1)
@@ -246,7 +246,7 @@ JSONConversationProtocol::stuResponse JSONConversationProtocol::parseResponse(co
     QJsonParseError Error;
     QJsonDocument Doc = QJsonDocument::fromJson(_response, &Error);
     if (Error.error != QJsonParseError::NoError)
-        throw exJSONConversationProtocol(Error.errorString() + QString::number(Error.offset));
+        throw exJSONConversationProtocol(Error.errorString() +": " + QString::number(Error.offset));
 
     if (Doc.isArray()) {
         if (Doc.array().first().toVariant().toInt() == 2)
@@ -278,15 +278,15 @@ JSONConversationProtocol::stuResponse JSONConversationProtocol::parseResponse(co
             Response.Result = ResultArray.first();
             if (ResultArray.size() > 1 && ResultArray.at(1).isObject()){
                 Response.Args = ResultArray.at(1).toObject().toVariantMap();
-                for(QVariantMap::Iterator ArgIter = Response.Args.begin();
-                    ArgIter != Response.Args.end();) {
+                /*for(QVariantMap::Iterator ArgIter = Response.Args.begin();
+                    ArgIter != Response.Args.end();
+                    ArgIter++) {
                     QVariantMap::Iterator ToDeleteIter = ArgIter;
-                    ArgIter++;
                     if (ArgIter.value().toString() == "\127\127\127") {
                         Response.Args.erase(ToDeleteIter);
                         TargomanWarn(1,"Parameter: %s ignored", ArgIter.key().toUtf8().constData())
                     }
-                }
+                }*/
             }
 
         }else

@@ -1,0 +1,27 @@
+/*************************************************************************
+ * Copyright © 2012-2015, Targoman.com
+ *
+ * Published under the terms of TCRL(Targoman Community Research License)
+ * You can find a copy of the license file with distributed source or
+ * download it from http://targoman.com/License.txt
+ *
+ *************************************************************************/
+/**
+ @author S. Mohammad M. Ziabary <smm@ziabary.com>
+ @author Behrooz Vedadian <vedadian@gmail.com>
+ */
+
+#ifndef TEST_H
+#define TEST_H
+
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
+
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuTestEnum,
+                              A,B);
+ENUM_CONFIGURABLE(enuTestEnum);
+
+extern Targoman::Common::Configuration::tmplConfigurable<enuTestEnum::Type> TestE;
+extern Targoman::Common::Configuration::tmplConfigurable<QRegExp,true>      WildPattern;
+extern Targoman::Common::Configuration::tmplConfigurable<QRegExp,false>     RegexPattern;
+
+#endif // TEST_H

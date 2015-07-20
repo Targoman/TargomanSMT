@@ -506,6 +506,8 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
     this->BinaryMode = _binaryMode;
 
     if (_binaryMode){
+        if (QFile::exists(_configFile) == false)
+            throw exNormalizer("File <" + _configFile + " not found.");
         QFile BinFile(_configFile);
         BinFile.open(QFile::ReadOnly);
         if (!BinFile.isReadable())
@@ -525,13 +527,15 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
         TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, "Loaded");
         return;
     }
-    QFile ConfigFile(this->ConfigFileName);
-    ConfigFile.open(QIODevice::ReadOnly);
-    if(!ConfigFile.isReadable ())
+    if (QFile::exists(this->ConfigFileName) == false)
+        throw exNormalizer("File: <" + this->ConfigFileName + "> not found");
+    QFile NormalizationFile(this->ConfigFileName);
+    NormalizationFile.open(QIODevice::ReadOnly);
+    if(!NormalizationFile.isReadable ())
         throw exNormalizer("Unable to open normalization file: <" + this->ConfigFileName + ">");
 
-    QTextStream ConfigStream(&ConfigFile);
-    ConfigStream.setCodec("UTF-8");
+    QTextStream NormalizationConfigStream(&NormalizationFile);
+    NormalizationConfigStream.setCodec("UTF-8");
 
     QString ConfigLine;
     int CommentIndex = -1;
@@ -539,9 +543,9 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
     enuDicType::Type DicStep = enuDicType::Unknown;
     bool IsEOF = false;
 
-    while (!ConfigStream.atEnd() && !IsEOF)
+    while (!NormalizationConfigStream.atEnd() && !IsEOF)
     {
-        ConfigLine = ConfigStream.readLine().trimmed();
+        ConfigLine = NormalizationConfigStream.readLine().trimmed();
         LineNumber++;
         if (ConfigLine.startsWith("##") || ConfigLine.trimmed().isEmpty())
             continue;

@@ -50,7 +50,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
 
 #define TargomanLogError( _message) {\
     QString Buffer; \
-    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, \
+    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Error, \
                                                1,\
                                                *(QTextStream(&Buffer)<<_message).string());\
 }
@@ -206,7 +206,7 @@ public:
     ~Logger();
     static inline QString moduleName(){ return "Log";}
 
-    
+
     bool init();
     /**
      * @brief Initialization method. If Logger is not initialized then no other function will work

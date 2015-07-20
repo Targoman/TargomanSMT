@@ -36,11 +36,17 @@ TARGOMAN_DEFINE_ENUM(enuConfigSource,
                      Net      = 0x08,
                      Invalid  = 0x00)
 
-TARGOMAN_DEFINE_ENUM(enuConfigType,
-                     Normal,
-                     FileBased,
-                     Array,
-                     Module)
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuConfigType,
+                              Normal,
+                              FileBased,
+                              Array,
+                              Module);
+
+class intfConfigurable;
+/// @brief A predefined lambda function used which always returns true used when there
+/// is no further crossvalidation condition.
+static std::function<void(const intfConfigurable&)> VoidFinalizer = [] (const intfConfigurable&) {};
+
 /**
  * @brief This class is an interface for all kinds of configurables. Configurables are options and configurations of programs.
  *
@@ -69,7 +75,9 @@ public:
                             enuConfigSource::Arg  |
                             enuConfigSource::File |
                             enuConfigSource::Net ),
-                     bool _remoteView = true);
+                     bool _remoteView = true,
+                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer
+                     );
 
     intfConfigurable(const intfConfigurable& _other);
 
@@ -103,7 +111,7 @@ public:
     /**
      * @brief finalizeConfig method called on those configurable items which need an extra post-configuration method
      */
-    virtual void        finalizeConfig() {}
+    virtual void        finalizeConfig();
 
     virtual QString     typeString() const = 0;
     virtual QString     validValues() const = 0;

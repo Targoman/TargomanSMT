@@ -209,7 +209,7 @@ inline constexpr _name::Type operator & (const _name::Type _first, const _name::
       return Strings[_type]; \
       toStr(Unknown);  \
     } \
-    inline static Type toEnum(QString _name) { \
+    inline static Type toEnum(const QString& _name) { \
       if (_name.isEmpty()) \
         return Unknown; \
       int EnumSize = getCount(); \

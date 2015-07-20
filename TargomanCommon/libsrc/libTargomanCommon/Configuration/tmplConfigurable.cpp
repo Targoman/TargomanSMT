@@ -120,50 +120,54 @@ void tmplConfigurable<bool>::setFromVariant(const QVariant& _value){
 //////QRegExp
 template <>
 bool tmplConfigurable<QRegExp, false>::validate(const QVariant& _value, QString& _errorMessage) const{
-    if (_value.canConvert(QVariant::RegExp) == false) {
-        _errorMessage = "Unable to convert " + _value.toString() + " to regex.";
-        return false;
-    }else{
-        QRegExp TempRegex(_value.toString());
+    if (_value.toString().size()){
+        QRegExp TempRegex(_value.toString(), Qt::CaseSensitive, QRegExp::RegExp);
         if (TempRegex.isValid() == false){
-            _errorMessage = "Invalid regex pattern: " + TempRegex.errorString();
+            _errorMessage = "Invalid RegEx pattern: " + TempRegex.errorString();
             return false;
-        }else
-        return true;
+        }
     }
-
+    return true;
 }
 template <>
 void tmplConfigurable<QRegExp, false>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
-    if (this->validate(_value, ErrorMessage))this->Value = _value.value<QRegExp>();
+    if (this->validate(_value, ErrorMessage)) this->Value = QRegExp(_value.value<QString>(),
+                                                                    Qt::CaseSensitive,
+                                                                    QRegExp::RegExp);
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
+}
+
+template <>
+QVariant tmplConfigurable<QRegExp, false>::toVariant() const{
+    return this->Value.pattern();
 }
 
 //////QRegExp when used as wildcard
 template <>
 bool tmplConfigurable<QRegExp, true>::validate(const QVariant& _value, QString& _errorMessage) const{
-    if (_value.canConvert(QVariant::RegExp) == false) {
-        _errorMessage = "Unable to convert " + _value.toString() + " to regex.";
-        return false;
-    }else{
-        QRegExp TempRegex(_value.toString(), Qt::CaseSensitive);
+    if (_value.toString().size()){
+        QRegExp TempRegex(_value.toString(), Qt::CaseSensitive, QRegExp::WildcardUnix);
         if (TempRegex.isValid() == false){
-            _errorMessage = "Invalid regex pattern: " + TempRegex.errorString();
+            _errorMessage = "Invalid wildcard pattern: " + TempRegex.errorString();
             return false;
-        }else
-        return true;
+        }
     }
+    return true;
 }
 template <>
 void tmplConfigurable<QRegExp, true>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
-    if (this->validate(_value, ErrorMessage))this->Value = _value.value<QRegExp>();
+    if (this->validate(_value, ErrorMessage))this->Value = QRegExp(_value.value<QString>(),
+                                                                   Qt::CaseSensitive,
+                                                                   QRegExp::WildcardUnix);
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
 
-
-
+template <>
+QVariant tmplConfigurable<QRegExp, true>::toVariant() const{
+    return this->Value.pattern();
+}
 
 }
 }

@@ -12,7 +12,8 @@ fi
 
 Projects="TargomanCommon 
           NLPLibs/TargomanLM/ 
-	  NLPLibs/TargomanTextProcessor/ 
+	  NLPLibs/TargomanTextProcessor/
+	  Apps/E4SMT 
 	  ExternalToolsAndLibs/KenLM
 	  TargomanSMT 
 	  Apps/TargomanSMTConsole 

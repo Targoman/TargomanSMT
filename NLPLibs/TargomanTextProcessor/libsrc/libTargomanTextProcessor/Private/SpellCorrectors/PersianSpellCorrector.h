@@ -23,10 +23,10 @@ namespace TargomanTP{
 namespace Private {
 namespace SpellCorrectors {
 
-class clsPersianSpellCorrector : public intfSpellCorrector
+class PersianSpellCorrector : public intfSpellCorrector
 {
 public:
-    clsPersianSpellCorrector();
+    PersianSpellCorrector();
     bool postInit(const QVariantHash _settings);
     QString process(const QStringList& _tokens);
     bool canBeCheckedInteractive(const QString &_inputWord) const;

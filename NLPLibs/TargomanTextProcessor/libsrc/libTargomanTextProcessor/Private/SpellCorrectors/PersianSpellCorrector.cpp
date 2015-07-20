@@ -13,13 +13,16 @@
 
 #include <QStringList>
 
-#include "clsPersianSpellCorrector.h"
+#include "PersianSpellCorrector.h"
 
 namespace Targoman {
 namespace NLPLibs {
 namespace TargomanTP{
 namespace Private {
 namespace SpellCorrectors {
+
+//Essential global instance in order to be registered in SpellCorrectors
+PersianSpellCorrector Instance;
 
 const QString PERSIAN_Mi         = QStringLiteral("می");
 const QString PERSIAN_Nemi       = QStringLiteral("نمی");
@@ -36,12 +39,10 @@ const QString PERSIAN_Noon       = QStringLiteral("ن");
 const QString PERSIAN_Ye         = QStringLiteral("ی");
 //const QChar Fathatan             = QChar(0x64B);
 
-/**
- * @brief Initializes ConfigTypes list and RegExp data members.
- */
-clsPersianSpellCorrector::clsPersianSpellCorrector()
+PersianSpellCorrector::PersianSpellCorrector() :
+    intfSpellCorrector("fa")
 {
-    this->Lang                  = "Persian";
+    this->Lang = "Persian";
     this->ConfigTypes.append(stuConfigType("AutoCorrectTerms",&this->AutoCorrectTerms));
     this->ConfigTypes.append(stuConfigType("StartWith_Bi_Ba",&this->CanStartWithBi_Ba));
     this->ConfigTypes.append(stuConfigType("StartWith_Na",&this->CanStartWithNa));
@@ -51,8 +52,15 @@ clsPersianSpellCorrector::clsPersianSpellCorrector()
     this->ConfigTypes.append(stuConfigType("VerbStemPresent",&this->VerbStemPresent));
     this->ConfigTypes.append(stuConfigType("VerbStemPast",&this->VerbStemPast));
     this->ConfigTypes.append(stuConfigType("HamzeOrMadAllowed",&this->HamzeAllowed));
-    this->ConfigTypes.append(stuConfigType("AdverbsEndWithFathatan",&this->AdverbsEndWithFathatan));
+//    this->ConfigTypes.append(stuConfigType("AdverbsEndWithFathatan",&this->AdverbsEndWithFathatan));
+}
 
+/**
+ * @brief Initializes ConfigTypes list and RegExp data members.
+ */
+bool PersianSpellCorrector::postInit(const QVariantHash _settings)
+{
+    Q_UNUSED(_settings)
     this->RxInteractiveChars    = QRegExp(QStringLiteral("[ؤئإأآ]"));
     this->RxPresentImperfect    = QRegExp(QStringLiteral("(م|ی|د|یم|ید|ند)$"));
     this->RxPastImperfect       = QRegExp(QStringLiteral("(م|ی|یم|ید|ند)$"));
@@ -68,11 +76,6 @@ clsPersianSpellCorrector::clsPersianSpellCorrector()
     this->RxEndPastPerfect      = QRegExp(".*" + this->RxPastPerfect.pattern());
     this->RxEndVerbPerfect      = QRegExp(".*" + this->RxVerbPerfect.pattern());
     this->RxEndWithPossesive    = QRegExp(".*" + this->RxPossesive.pattern());
-}
-
-bool clsPersianSpellCorrector::postInit(const QVariantHash _settings)
-{
-    Q_UNUSED(_settings)
     return true;
 }
 
@@ -82,7 +85,7 @@ bool clsPersianSpellCorrector::postInit(const QVariantHash _settings)
  * @return returns a unified normalized string or an empty string.
  */
 
-QString clsPersianSpellCorrector::process(const QStringList &_tokens)
+QString PersianSpellCorrector::process(const QStringList &_tokens)
 {
     QString Buffer, Prefix, Postfix;
 
@@ -212,7 +215,7 @@ QString clsPersianSpellCorrector::process(const QStringList &_tokens)
  * @return true if suspicious else false.
  */
 
-bool clsPersianSpellCorrector::canBeCheckedInteractive(const QString &_inputWord) const
+bool PersianSpellCorrector::canBeCheckedInteractive(const QString &_inputWord) const
 {
     return false; //Temporarily ignored
 
@@ -228,14 +231,14 @@ bool clsPersianSpellCorrector::canBeCheckedInteractive(const QString &_inputWord
  * @param _from wrong word that we want to be corrected automatically.
  * @param _to correct word.
  */
-void clsPersianSpellCorrector::storeAutoCorrectTerm(const QString &_from, const QString &_to)
+void PersianSpellCorrector::storeAutoCorrectTerm(const QString &_from, const QString &_to)
 {
     this->AutoCorrectTerms.insert(_from, _to);
     /// @todo save to file
 }
 
 
-QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString>& _set,
+QString PersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString>& _set,
                                                               const QString &_prefix,
                                                               const QString &_postfix)
 {
@@ -314,7 +317,7 @@ QString clsPersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString
     return "";
 }
 
-QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QString _postfix)
+QString PersianSpellCorrector::processVerbs(const QString &_prefix, const QString _postfix)
 {
     QString Buffer = Normalizer::sidesTrim(_postfix);
     if (Buffer.isEmpty())
@@ -399,7 +402,7 @@ QString clsPersianSpellCorrector::processVerbs(const QString &_prefix, const QSt
     return "";
 }
 
-QString clsPersianSpellCorrector::processHa(const QString &_prefix,
+QString PersianSpellCorrector::processHa(const QString &_prefix,
                                             const QString &_complexWord,
                                             const QString &_postfix)
 {
@@ -429,7 +432,7 @@ QString clsPersianSpellCorrector::processHa(const QString &_prefix,
     return "";
 }
 
-QString clsPersianSpellCorrector::processTar_Tarin(const QSet<QString>& _set,
+QString PersianSpellCorrector::processTar_Tarin(const QSet<QString>& _set,
                                                    const QString& _prefix,
                                                    const QString& _complexWord,
                                                    const QString& _postfix,

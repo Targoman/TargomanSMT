@@ -19,9 +19,6 @@
 
 #include "SpellCorrector.h"
 
-/****************************/
-#include "SpellCorrectors/clsPersianSpellCorrector.h"
-/****************************/
 #define DUAL_SPACE "  "
 
 namespace Targoman {
@@ -29,17 +26,12 @@ namespace NLPLibs {
 namespace TargomanTP{
 namespace Private {
 
-using namespace SpellCorrectors;
-SpellCorrector* SpellCorrector::Instance = NULL;
-
 /**
  * @brief instructor of this class adds default languages data to the #Processors variable.
  */
 SpellCorrector::SpellCorrector():
-    NormalizerInstance(this->NormalizerInstance)
-{
-    this->Processors.insert("fa", new clsPersianSpellCorrector);
-}
+    refNormalizerInstance(this->refNormalizerInstance)
+{}
 
 /**
  * @brief Initializes all languages that are in _settings variable and delete each language from #Processors if it is not active.
@@ -61,9 +53,8 @@ void SpellCorrector::init(const QString& _baseConfigPath, const QHash<QString, Q
     QString LangCode;
     foreach (const QString Lang, this->Processors.keys()){
         LangCode = ISO639getAlpha2(Lang.toLatin1().constData());
-        if (this->Processors.value(Lang, NULL) && this->Processors.value(Lang)->active() == false){
+        if (this->Processors.value(Lang, NULL) && this->Processors.value(Lang)->active() == false)
             delete this->Processors.take(Lang);
-        }
     }
 }
 
@@ -190,17 +181,18 @@ QString SpellCorrector::process(const QString& _lang,
 }
 
 /**************************************************************************************************/
-intfSpellCorrector::intfSpellCorrector() :
-    NormalizerInstance(Normalizer::instance())
+intfSpellCorrector::intfSpellCorrector(const char _code[]) :
+    refNormalizerInstance(Normalizer::instance())
 {
     this->Active = true;
+    SpellCorrector::instance().registerProcessor(_code, this);
 }
 
 /**
  * @brief initialize spellCorrector configurations.
  *
  * Every language has some specific configurations.
- * This function can load all configurations of all language specific spellCheckers without any need to overload it in derived classes.
+ * This function can load all configurations of language specific spellCheckers without any need to overload it in derived classes.
  * This function also calculates and sets #MaxAutoCorrectTokens and call postInit function language specific spellCorrectors.
  *
  * @param _baseConfigPath base address of language specific configuration path.
@@ -213,11 +205,13 @@ intfSpellCorrector::intfSpellCorrector() :
 bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash _settings)
 {
     this->Active = _settings.value("Active",true).toBool();
-    TargomanInlineInfo(5, "Loading " + this->Lang + " Config file...");
+    TargomanInlineInfo(5, "Loading " << this->Lang << " Config file...");
 
     this->MaxAutoCorrectTokens = 0;
     foreach (const stuConfigType& Config, this->ConfigTypes){ // #ConfigTypes list is already initiallized in constructor of language specific spellCorrectors.
         QString ConfigFilePath = _baseConfigPath + "/" + this->Lang + "/" + Config.Name + ".tbl";
+        if (QFile::exists(ConfigFilePath) == false)
+            throw exSpellCorrector("File: <"+ConfigFilePath+"> Not found");
         QFile ConfigFile(ConfigFilePath);
         ConfigFile.open(QIODevice::ReadOnly);
         if(!ConfigFile.isReadable ())
@@ -247,8 +241,8 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
             if (Config.IsKeyVal){
                 QStringList Pair = ConfigLine.split('=');
                 if (Pair.size() == 2){
-                    QString Key = this->NormalizerInstance.normalize(Pair[0].trimmed());
-                    QString Val = this->NormalizerInstance.normalize(Pair[1].trimmed());
+                    QString Key = this->refNormalizerInstance.normalize(Pair[0].trimmed());
+                    QString Val = this->refNormalizerInstance.normalize(Pair[1].trimmed());
                     Config.KeyValStorage->insert(Key, Val);
                     this->MaxAutoCorrectTokens = qMax(this->MaxAutoCorrectTokens,
                                                       Key.split(" ", QString::SkipEmptyParts).size()); //finds maximum possible tokens, by checking each data line.
@@ -257,12 +251,12 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
                     throw exSpellCorrector(QString("Invalid Word Pair at line: %1 ==> %2").arg(LineNumber).arg(ConfigLine));
                 }
             }else
-                Config.ListStorage->insert(this->NormalizerInstance.normalize(ConfigLine.trimmed()));
+                Config.ListStorage->insert(this->refNormalizerInstance.normalize(ConfigLine.trimmed()));
 
         }
     }
 
-    TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, this->Lang + "Loaded");
+    TargomanFinishInlineInfo(TARGOMAN_COLOR_HAPPY, this->Lang + " Loaded");
     foreach (const stuConfigType& Config, this->ConfigTypes)
         if (Config.IsKeyVal){
             TargomanInfo(5, "\t" + Config.Name + ": " +
@@ -272,7 +266,7 @@ bool intfSpellCorrector::init(const QString& _baseConfigPath, const QVariantHash
                          QString::number(Config.ListStorage->size()) + " Entries");
         }
 
-    this->MaxAutoCorrectTokens = qMax(4, this->MaxAutoCorrectTokens); //sets MaxAutoCorrectTokens to 4 if it is set to a number bigger than 4.
+    this->MaxAutoCorrectTokens = qMax(4, this->MaxAutoCorrectTokens);
     return this->postInit(_settings);
 }
 

@@ -17,7 +17,6 @@
 #include "libTargomanCommon/clsCmdProgressBar.h"
 #include "libTargomanCommon/HashFunctions.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
-#include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
 #include "libTargomanCommon/tmplExpirableCache.hpp"
@@ -147,15 +146,29 @@ static Targoman::Common::Configuration::tmplConfigurableArray<stuServers> Server
 
 #include "FastOperations.hpp"
 #include "sampleAgent.hpp"
+#include "test.h"
+
+
+
+
+
 
 int main(int argc, char *argv[])
 {
+    try{
     Targoman::Common::printLoadedLibs();
 
     QCoreApplication App(argc, argv);
 
+    qDebug()<<TestE.value();
+    WildPattern.setFromVariant("*.xml");
+    qDebug()<<WildPattern.value();
+    RegexPattern.setFromVariant("^[a-z]*");
+    qDebug()<<RegexPattern.value();
+
     qDebug()<<SimpleAuthentication::hashPass("mehran", "1234");
     exit(0);
+
 
 
     /*Targoman::Common::tmplExpirableCache<QHash,int,QString> A;
@@ -180,7 +193,6 @@ int main(int argc, char *argv[])
     std::cout<<AAA.CrossValidator(5)<<std::endl;
     std::cout<<AAA.CrossValidator(-5)<<std::endl;
 
-    try{
 
         QString ActorUUID;
 
@@ -213,7 +225,7 @@ int main(int argc, char *argv[])
 
         clsSample Sample;
 
-        clsSafeCoreApplication App(argc, argv);
+        clsSafeCoreApplication App2(argc, argv);
 
         TargomanLogWarn(5, " Log Warn");
         TargomanLogInfo(5, " Log Info");
@@ -251,9 +263,9 @@ int main(int argc, char *argv[])
 
         // Configuration::ConfigManager::instance().init("Sample");
         // Configuration::ConfigManager::instance().init("Sample", QStringList()<<"-h");
-        clsCmdProgressBar PB("Test Progress", 10000);
+        clsCmdProgressBar PB2("Test Progress", 10000);
         for (int i=0; i< 10001; i++){
-            PB.setValue(i);
+            PB2.setValue(i);
             usleep(100);
         }
 

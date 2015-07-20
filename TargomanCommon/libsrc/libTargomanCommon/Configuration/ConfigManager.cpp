@@ -110,7 +110,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
         if (this->pPrivate->ConfigFilePath.isEmpty()){
             this->pPrivate->ConfigFilePath = QCoreApplication::applicationDirPath() + QCoreApplication::applicationName() + ".ini";
             if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false && SaveFile == false){
-                TargomanWarn(1, "No ConfigFile can be found. It is absolutely recomended to write one. Use --save to create one");
+                TargomanWarn(1, "No ConfigFile could be found. It is absolutely recomended to write one. Use --config-save to create one");
                 this->pPrivate->ConfigFilePath.clear();
             }
         }
@@ -119,7 +119,6 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
             this->pPrivate->ConfigFilePath = QFileInfo(this->pPrivate->ConfigFilePath).absoluteFilePath();
             this->pPrivate->ConfigFileDir = QFileInfo(this->pPrivate->ConfigFilePath).absoluteDir().path()+"/";
         }
-
 
         // ////////////////////////////////////////////////
         // /check configFile and load everything
@@ -135,17 +134,17 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
                 }while(BasePath.contains('/'));
 
                 if (this->pPrivate->Configs.contains(Key) == false){
-                    QString BasePath = Key;
+                    QString ParentPath = Key;
                     bool Found = false;
                     bool Generated = false;
                     do {
-                        BasePath.truncate(BasePath.lastIndexOf('/'));
+                        ParentPath.truncate(ParentPath.lastIndexOf('/'));
                         Configuration::intfConfigurable* ConfigItem =
-                                this->pPrivate->Configs.value(BasePath + "/");
+                                this->pPrivate->Configs.value(ParentPath + "/");
                         if (ConfigItem &&
                                 ConfigItem->canBemanaged() == false){
                             if (ConfigItem->configType() == enuConfigType::Array){
-                                ConfigFile.beginGroup(BasePath);
+                                ConfigFile.beginGroup(ParentPath);
                                 intfConfigurableArray* ConfArray = dynamic_cast<intfConfigurableArray*>(ConfigItem);
                                 if (!ConfArray)
                                     throw exConfiguration("Invalid use of array flag on non array configuration");
@@ -156,7 +155,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
                             Found = true;
                             break;
                         }
-                    } while(BasePath.count('/') > 1);
+                    } while(ParentPath.count('/') >= 1);
                     if (Generated == false){
                         if (Found)
                             continue; // Continue to next key
@@ -190,7 +189,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
             KeyIter++;
             if (KeyIter != _arguments.end())
                 continue;
-        }else if(*KeyIter == "--config-save"){
+        }else if(*KeyIter == "--config-save" ||
+                 *KeyIter == "--config-print"){
             continue;
         }
         bool ArgumentIsConfigItem = false;
@@ -258,7 +258,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
             this->pPrivate->prepareServer();
 
         // ////////////////////////////////////////////////
-        // /finalize all config items (for module configurables, this puts instantiator function of module to Instatiator member of that.)
+        // /finalize all config items (for module configurables, this puts instantiator
+        // /function of module to Instatiator member of that.)
         // ////////////////////////////////////////////////
         foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
             ConfigItem->finalizeConfig();
@@ -276,330 +277,363 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
         if (_minimal == false && SaveFile)
             this->save2File(this->pPrivate->ConfigFilePath, FirstTimeConfigFile ? false : true);
 
-    }catch(...){
-        this->pPrivate->Initialized = false;
-        throw;
+        if (_arguments.count("--config-print")){
+            QString LastModule;
+            QStringList Keys = this->pPrivate->Configs.keys();
+            Keys.sort();
+            foreach(const QString& Key, Keys){
+                QString Module= Key.mid(0, Key.indexOf("/"));
+                intfConfigurable* Item = this->pPrivate->Configs.value(Key);
+                if (Item) {
+                    if (Module != LastModule){
+                        std::cout<<"\n**** "<<Module.toLatin1().constData()<<" ****\n";
+                        LastModule = Module;
+                    }
+                    if(Item->configType() == enuConfigType::Normal ||
+                       Item->configType() == enuConfigType::Array){
+                        std::cout<<"\t";
+                        std::cout<<Key.mid(Key.indexOf("/")+1).toUtf8().constData()<<" = ";
+                        std::cout<<Item->toVariant().toString().toUtf8().constData()<<"\n";
+                    }else{
+                        std::cout<<"\t";
+                        std::cout<<Key.mid(Key.indexOf("/")+1).toUtf8().constData()<<" is "<<
+                                   enuConfigType::toStr(Item->configType())<<"\n";
+                    }
+                }
+            }
+        }
+
+
+
+        }catch(...){
+            this->pPrivate->Initialized = false;
+            throw;
+        }
     }
-}
 
 
-/**
+    /**
  * @brief save current configuration to ini file (not implimented yet).
  * @param _fileName name of file to save.
  * @param _backup save backup option.
  */
 
-void ConfigManager::save2File(const QString &_fileName, bool _backup)
-{
-    if (_backup){
-        if (QFile::exists(_fileName))
-            QFile::copy(_fileName, _fileName + ".back-" + QDateTime::currentDateTime().toString("dd-MM-yyyy_hh:mm:ss"));
+    void ConfigManager::save2File(const QString &_fileName, bool _backup)
+    {
+        if (_backup){
+            if (QFile::exists(_fileName))
+                QFile::copy(_fileName, _fileName + ".back-" + QDateTime::currentDateTime().toString("dd-MM-yyyy_hh:mm:ss"));
+        }
+        QSettings ConfigFile(_fileName, QSettings::IniFormat);
+
+        foreach (Configuration::intfConfigurable* ConfigItem, this->pPrivate->Configs.values())
+            if (testFlag(ConfigItem->configSources(), enuConfigSource::File))
+                ConfigFile.setValue(ConfigItem->configPath(),ConfigItem->toVariant());
+        ConfigFile.sync();
     }
-    QSettings ConfigFile(_fileName, QSettings::IniFormat);
 
-    foreach (Configuration::intfConfigurable* ConfigItem, this->pPrivate->Configs.values())
-        if (testFlag(ConfigItem->configSources(), enuConfigSource::File))
-            ConfigFile.setValue(ConfigItem->configPath(),ConfigItem->toVariant());
-    ConfigFile.sync();
-}
-
-/**
+    /**
  * @brief Registers new configurations
  * @param _path configuration path
  * @param _item configurable item
  * @exception throws exception if a path for a configurable already exists.
  */
 
-void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
-{
-    if (this->pPrivate->Configs.contains(_path))
-        throw exConfiguration("Duplicate path key: " + _path);
-    if (_item->shortSwitch().size() && (
-                _item->shortSwitch() == "h" ||
-                _item->shortSwitch() == "c"))
-        throw exConfiguration("Short switch -" +
-                              _item->shortSwitch() +
-                              " on " + _item->configPath() +
-                              " was reserved before by Config manager");
-    if (_item->longSwitch().size() && (
-                _item->longSwitch() == "help" ||
-                _item->longSwitch() == "config" ||
-                _item->longSwitch() == "config-save"))
-        throw exConfiguration("Short switch -" +
-                              _item->longSwitch() +
-                              " on " + _item->configPath() +
-                              " was reserved before by Config manager");
-
-    foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
-        if (_item->shortSwitch().size() && ConfigItem->shortSwitch() == _item->shortSwitch())
+    void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
+    {
+        if (this->pPrivate->Configs.contains(_path))
+            throw exConfiguration("Duplicate path key: " + _path);
+        if (_item->shortSwitch().size() && (
+                    _item->shortSwitch() == "h" ||
+                    _item->shortSwitch() == "c"))
             throw exConfiguration("Short switch -" +
                                   _item->shortSwitch() +
                                   " on " + _item->configPath() +
-                                  " was reserved before by: " +
-                                  ConfigItem->configPath());
-        if (_item->longSwitch().size() && ConfigItem->longSwitch() == _item->longSwitch())
-            throw exConfiguration("Long switch --" +
-                                  _item->longSwitch().toLower() +
+                                  " was reserved before by Config manager");
+        if (_item->longSwitch().size() && (
+                    _item->longSwitch() == "help" ||
+                    _item->longSwitch() == "config" ||
+                    _item->longSwitch() == "config-save"))
+            throw exConfiguration("Short switch -" +
+                                  _item->longSwitch() +
                                   " on " + _item->configPath() +
-                                  " was reserved before by: " +
-                                  ConfigItem->configPath());
+                                  " was reserved before by Config manager");
+
+        foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
+            if (_item->shortSwitch().size() && ConfigItem->shortSwitch() == _item->shortSwitch())
+                throw exConfiguration("Short switch -" +
+                                      _item->shortSwitch() +
+                                      " on " + _item->configPath() +
+                                      " was reserved before by: " +
+                                      ConfigItem->configPath());
+            if (_item->longSwitch().size() && ConfigItem->longSwitch() == _item->longSwitch())
+                throw exConfiguration("Long switch --" +
+                                      _item->longSwitch().toLower() +
+                                      " on " + _item->configPath() +
+                                      " was reserved before by: " +
+                                      ConfigItem->configPath());
+        }
+
+        this->pPrivate->Configs.insert(_path, _item);
     }
 
-    this->pPrivate->Configs.insert(_path, _item);
-}
-
-/**
+    /**
  * @brief Registers new modules.
  * @param _name         Name of module
  * @param _instantiator A structure to encapsulate module instantiator and whether it is singleton or not.
  * @exception throws exception if a name for a module already exists.
  */
 
-void ConfigManager::addModuleInstantiaor(const QString _name, const stuInstantiator &_instantiator)
-{
-    if (this->pPrivate->Configs.contains(_name))
-        throw exConfiguration("Duplicate Module Name: " + _name);
-    this->pPrivate->ModuleInstantiators.insert(_name, _instantiator);
-}
+    void ConfigManager::addModuleInstantiaor(const QString _name, const stuInstantiator &_instantiator)
+    {
+        if (this->pPrivate->Configs.contains(_name))
+            throw exConfiguration("Duplicate Module Name: " + _name);
+        this->pPrivate->ModuleInstantiators.insert(_name, _instantiator);
+    }
 
-/**
+    /**
  * @brief gives value of a configurable in QVariant format.
  * @param _path     path of configurable (key in config registery Map).
  * @param _default  default value if value could not be convert to variant.
  * @exception throws exception configuration class is not initialized yet.
  */
 
-QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default) const
-{
-    if (this->pPrivate->Initialized == false)
-        throw exConfiguration("Configuration is not initialized yet.");
+    QVariant ConfigManager::getConfig(const QString &_path, const QVariant& _default) const
+    {
+        if (this->pPrivate->Initialized == false)
+            throw exConfiguration("Configuration is not initialized yet.");
 
-    if(_path.endsWith('/'))
-        throw exConfiguration("Invalid query to non terminal path: "+ _path);
+        if(_path.endsWith('/'))
+            throw exConfiguration("Invalid query to non terminal path: "+ _path);
 
-    QString Path = _path;
-    if (Path.startsWith('/'))
-        Path.remove(0,1);
+        QString Path = _path;
+        if (Path.startsWith('/'))
+            Path.remove(0,1);
 
-    intfConfigurable* Item= this->pPrivate->Configs.value(Path);
-    if (Item && Item->toVariant().isValid())
-        return Item->toVariant();
-    else
-        return _default;
-}
+        intfConfigurable* Item= this->pPrivate->Configs.value(Path);
+        if (Item && Item->toVariant().isValid())
+            return Item->toVariant();
+        else
+            return _default;
+    }
 
-/**
+    /**
  * @brief           Sets _value of a configurable in Config data member of #pPrivate using its _path.
  * @param _path     Path of configurable (key of hash map in the Config data member of #pPrivate).
  * @param _value    Value of configurable. (value of hash map in the Config data member of #pPrivate).
  * @exception       Throws exception if #pPrivate is not initialized yet.
  */
 
-void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
-{
-    if (this->pPrivate->Initialized == false)
-        throw exConfiguration("Configuration is not initialized yet.");
+    void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
+    {
+        if (this->pPrivate->Initialized == false)
+            throw exConfiguration("Configuration is not initialized yet.");
 
-    intfConfigurable* Item= this->pPrivate->Configs.value(_path);
-    if (Item){
-        Item->setFromVariant(_value);
-        Item->setIsConfigured();
+        intfConfigurable* Item= this->pPrivate->Configs.value(_path);
+        if (Item){
+            Item->setFromVariant(_value);
+            Item->setIsConfigured();
+        }
     }
-}
 
-/**
+    /**
  * @brief gives instantiator function of a module.
  * @param _name     Name of module.
  * @exception throws exception if ConfigManager is not initialized yet.
  * @exception throws exception if input module is singleton (because singleton module can not be reinitialized).
  */
-fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) const
-{
-    if (this->pPrivate->Initialized == false)
-        throw exConfiguration("Configuration is not initialized yet.");
-
-    stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(_name);
-    if (Instantiator.IsSingleton)
-        throw exConfiguration(_name + " Is a singleton module and can not be reinstantiated");
-
-    return Instantiator.fpMethod;
-}
-
-QString ConfigManager::configFilePath()
-{
-    return this->pPrivate->ConfigFilePath;
-}
-
-QString ConfigManager::configFileDir()
-{
-    return this->pPrivate->ConfigFileDir;
-}
-
-QString ConfigManager::getAbsolutePath(const QString &_path)
-{
-    if (this->pPrivate->SetPathsRelativeToConfigPath && _path.startsWith("/") == false)
-        return this->configFileDir() + _path;
-    return _path;
-}
-
-bool ConfigManager::isNetworkManagable()
-{
-    return this->pPrivate->isNetworkBased();
-}
-
-void ConfigManager::startAdminServer()
-{
-    this->pPrivate->startNetworkListening();
-}
-
-/***********************************************************************************************/
-namespace Private {
-
-clsConfigManagerPrivate::clsConfigManagerPrivate(ConfigManager &_parent) :
-    Parent(_parent),
-    ConfigNetServer(new clsConfigNetworkServer(*this))
-{}
-
-clsConfigManagerPrivate::~clsConfigManagerPrivate()
-{
-    //Just to supress compiler error on QScopped Pointer
-}
-
-void clsConfigManagerPrivate::printHelp(const QString& _license, bool _minimal)
-{
-    QString LastModule = "ConfigManager";
-    std::cout<<_license.toUtf8().constData()<<std::endl;
-    std::cout<<"Usage:"<<std::endl;
-    std::cout<<"\t-h|--help \n\t\t Print this help"<<std::endl;
-    if (_minimal == false){
-        std::cout<<"\n**** "<<LastModule.toLatin1().constData()<<" ****\n";
-        std::cout<<"\t-c|--config FILE_PATH\n\t\t Path to config file"<<std::endl;
-        std::cout<<"\t--config-save:\n\t\t Saves new configuration file based on old configs and input arguments"<<std::endl;
-    }
-    QStringList Keys = this->Configs.keys();
-    Keys.sort();
-    foreach(const QString& Key, Keys){
-        QString Module= Key.mid(0, Key.indexOf("/"));
-        if (_minimal && (
-                    Module == ConfigManager::moduleName() ||
-                    Module == CmdIO::moduleName() ||
-                    Module == Logger::moduleName()))
-            continue;
-        intfConfigurable* Item = this->Configs.value(Key);
-        if (Item && (Item->shortSwitch().size() || Item->longSwitch().size())){
-            if (Module != LastModule){
-                std::cout<<"\n**** "<<Module.toLatin1().constData()<<" ****";
-                LastModule = Module;
-            }
-            std::cout<<"\n\t";
-            if(Item->shortSwitch().size())
-                std::cout<<("-" + Item->shortSwitch()).toUtf8().constData();
-            if (Item->longSwitch().size()){
-                if (Item->shortSwitch().size())
-                    std::cout<<"|";
-                std::cout<<"--"<<Item->longSwitch().toUtf8().constData();
-            }
-            if (Item->shortHelp().size())
-                std::cout<<"\t"<<Item->shortHelp().toUtf8().constData();
-            std::cout<<"\n\t\t"<<Item->description().toUtf8().constData()<<std::endl;
-        }
-    }
-}
-
-QList<intfConfigurable *> clsConfigManagerPrivate::configItems(const QString &_parent, bool _isRegEX, bool _reportRemote)
-{
-    QList<intfConfigurable *> RetVal;
-    foreach(intfConfigurable* Item, this->Configs.values())
+    fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) const
     {
-        if(_isRegEX){
-            if (Item->configPath().contains(QRegExp("^"+ _parent))) {
-                if (_reportRemote == false && Item->remoteView() == false)
-                    continue;
-                RetVal.append(Item);
-            }
-        } else {
-            if (Item->configPath().startsWith(_parent)) {
-                if (_reportRemote == false && Item->remoteView() == false)
-                    continue;
-                RetVal.append(Item);
+        if (this->pPrivate->Initialized == false)
+            throw exConfiguration("Configuration is not initialized yet.");
+
+        stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(_name);
+        if (Instantiator.IsSingleton)
+            throw exConfiguration(_name + " Is a singleton module and can not be reinstantiated");
+
+        return Instantiator.fpMethod;
+    }
+
+    QString ConfigManager::configFilePath()
+    {
+        return this->pPrivate->ConfigFilePath;
+    }
+
+    QString ConfigManager::configFileDir()
+    {
+        return this->pPrivate->ConfigFileDir;
+    }
+
+    QString ConfigManager::getAbsolutePath(const QString &_path)
+    {
+        if (this->pPrivate->SetPathsRelativeToConfigPath && _path.startsWith("/") == false)
+            return this->configFileDir() + _path;
+        return _path;
+    }
+
+    bool ConfigManager::isNetworkManagable()
+    {
+        return this->pPrivate->isNetworkBased();
+    }
+
+    void ConfigManager::startAdminServer()
+    {
+        this->pPrivate->startNetworkListening();
+    }
+
+    /***********************************************************************************************/
+    namespace Private {
+
+    clsConfigManagerPrivate::clsConfigManagerPrivate(ConfigManager &_parent) :
+        Parent(_parent),
+        ConfigNetServer(new clsConfigNetworkServer(*this))
+    {}
+
+    clsConfigManagerPrivate::~clsConfigManagerPrivate()
+    {
+        //Just to supress compiler error on QScopped Pointer
+    }
+
+    void clsConfigManagerPrivate::printHelp(const QString& _license, bool _minimal)
+    {
+        QString LastModule = "ConfigManager";
+        std::cout<<_license.toUtf8().constData()<<std::endl;
+        std::cout<<"Usage:"<<std::endl;
+        std::cout<<"\t-h|--help \n\t\t Print this help"<<std::endl;
+        if (_minimal == false){
+            std::cout<<"\n**** "<<LastModule.toLatin1().constData()<<" ****\n";
+            std::cout<<"\t-c|--config FILE_PATH\n\t\t Path to config file"<<std::endl;
+            std::cout<<"\t--config-save:\n\t\t Saves new configuration file based on old configs and input arguments"<<std::endl;
+        }
+        std::cout<<"\t--config-print:\n\t\t Prints all configurations"<<std::endl;
+        QStringList Keys = this->Configs.keys();
+        Keys.sort();
+        foreach(const QString& Key, Keys){
+            QString Module= Key.mid(0, Key.indexOf("/"));
+            if (_minimal && (
+                        Module == ConfigManager::moduleName() ||
+                        Module == CmdIO::moduleName() ||
+                        Module == Logger::moduleName()))
+                continue;
+            intfConfigurable* Item = this->Configs.value(Key);
+            if (Item && (Item->shortSwitch().size() || Item->longSwitch().size())){
+                if (Module != LastModule){
+                    std::cout<<"\n**** "<<Module.toLatin1().constData()<<" ****";
+                    LastModule = Module;
+                }
+                std::cout<<"\n\t";
+                if(Item->shortSwitch().size())
+                    std::cout<<("-" + Item->shortSwitch()).toUtf8().constData();
+                if (Item->longSwitch().size()){
+                    if (Item->shortSwitch().size())
+                        std::cout<<"|";
+                    std::cout<<"--"<<Item->longSwitch().toUtf8().constData();
+                }
+                if (Item->shortHelp().size())
+                    std::cout<<"\t"<<Item->shortHelp().toUtf8().constData();
+                std::cout<<"\n\t\t"<<Item->description().toUtf8().constData()<<std::endl;
             }
         }
     }
 
-    return RetVal;
-}
+    QList<intfConfigurable *> clsConfigManagerPrivate::configItems(const QString &_parent, bool _isRegEX, bool _reportRemote)
+    {
+        QList<intfConfigurable *> RetVal;
+        foreach(intfConfigurable* Item, this->Configs.values())
+        {
+            if(_isRegEX){
+                if (Item->configPath().contains(QRegExp("^"+ _parent))) {
+                    if (_reportRemote == false && Item->remoteView() == false)
+                        continue;
+                    RetVal.append(Item);
+                }
+            } else {
+                if (Item->configPath().startsWith(_parent)) {
+                    if (_reportRemote == false && Item->remoteView() == false)
+                        continue;
+                    RetVal.append(Item);
+                }
+            }
+        }
 
-void clsConfigManagerPrivate::prepareServer()
-{
-  this->ConfigNetServer->check();
-}
+        return RetVal;
+    }
 
-bool clsConfigManagerPrivate::isNetworkBased()
-{
-    return this->ConfigNetServer->isActive();
-}
+    void clsConfigManagerPrivate::prepareServer()
+    {
+        this->ConfigNetServer->check();
+    }
 
-void clsConfigManagerPrivate::startNetworkListening()
-{
-    this->ConfigNetServer->start();
-}
+    bool clsConfigManagerPrivate::isNetworkBased()
+    {
+        return this->ConfigNetServer->isActive();
+    }
 
-class intfConfigurablePrivate{
-public:
-    /**
+    void clsConfigManagerPrivate::startNetworkListening()
+    {
+        this->ConfigNetServer->start();
+    }
+
+    class intfConfigurablePrivate{
+    public:
+        /**
      * @brief  updateConfig Finds location which _old configurable pointer is located in Configs hash map and changes its value with _new configurable pointer.
      * @param _old          old configurable pointer.
      * @param _new          new configurable pointer.
      */
-    void updateConfig(const intfConfigurable* _old, intfConfigurable* _new){
-        ConfigManager::instance().pPrivate->Configs[
-                ConfigManager::instance().pPrivate->Configs.key((intfConfigurable*)_old)] = _new;
-    }
-};
-}
+        void updateConfig(const intfConfigurable* _old, intfConfigurable* _new){
+            ConfigManager::instance().pPrivate->Configs[
+                    ConfigManager::instance().pPrivate->Configs.key((intfConfigurable*)_old)] = _new;
+        }
 
-/***********************************************************************************************/
-/**
+        std::function<void(const intfConfigurable& _item)> Finalizer;
+    };
+    }
+
+    /***********************************************************************************************/
+    /**
  * @brief constructor of intfConfigurable. this is where each configurable inserts itself to Configs hash map of pPrivate member of ConfigManager class.
  */
-intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
-                                   const QString &_configPath,
-                                   const QString &_description,
-                                   const QString &_shortSwitch,
-                                   const QString &_shortHelp,
-                                   const QString &_longSwitch,
-                                   enuConfigSource::Type _configSources,
-                                   bool _remoteView) :
-    pPrivate(new Private::intfConfigurablePrivate)
-{
-    try{
-        this->ConfigType  = _configType;
-        this->Description = _description;
-        this->ShortSwitch = _shortSwitch;
-        this->LongSwitch = _longSwitch.toLower();
-        this->ShortHelp = _shortHelp;
-        if (_configPath.startsWith('/'))
-            this->ConfigPath = _configPath.mid(1);
-        else
-            this->ConfigPath = _configPath;
+    intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
+                                       const QString &_configPath,
+                                       const QString &_description,
+                                       const QString &_shortSwitch,
+                                       const QString &_shortHelp,
+                                       const QString &_longSwitch,
+                                       enuConfigSource::Type _configSources,
+                                       bool _remoteView,
+                                       const std::function<void(const intfConfigurable& _item)> &_finalizer) :
+        pPrivate(new Private::intfConfigurablePrivate)
+    {
+        try{
+            this->ConfigType  = _configType;
+            this->Description = _description;
+            this->ShortSwitch = _shortSwitch;
+            this->LongSwitch = _longSwitch.toLower();
+            this->ShortHelp = _shortHelp;
+            this->pPrivate->Finalizer = _finalizer;
+            if (_configPath.startsWith('/'))
+                this->ConfigPath = _configPath.mid(1);
+            else
+                this->ConfigPath = _configPath;
 
-        if (_configType == enuConfigType::Array ||
-            _configType == enuConfigType::FileBased)
-            if (this->ConfigPath.endsWith("/") == false)
-                this->ConfigPath.append("/");
-        this->ArgCount = this->shortHelp().size() ? this->ShortHelp.split(" ").size() : 0;
-        this->WasConfigured = false;
-        this->ConfigSources = _configSources;
-        this->RemoteViewAllowed = _remoteView;
+            if (_configType == enuConfigType::Array ||
+                    _configType == enuConfigType::FileBased)
+                if (this->ConfigPath.endsWith("/") == false)
+                    this->ConfigPath.append("/");
+            this->ArgCount = this->shortHelp().size() ? this->ShortHelp.split(" ").size() : 0;
+            this->WasConfigured = false;
+            this->ConfigSources = _configSources;
+            this->RemoteViewAllowed = _remoteView;
 
-        ConfigManager::instance().addConfig(this->ConfigPath, this);
-    }catch(exTargomanBase &e){
-        TargomanError(e.what());
-        throw;
+            ConfigManager::instance().addConfig(this->ConfigPath, this);
+        }catch(exTargomanBase &e){
+            TargomanError(e.what());
+            throw;
+        }
     }
-}
 
-/**
+    /**
  * @brief intfConfigurable::intfConfigurable Copy constructor of intfConfigurable class.
  *
  * This function is defined to call updateConfig function of #pPrivate.
@@ -607,43 +641,48 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
  * When a temporary configurable is instantiated to be inserted into QList, its pointer will be added into Configs hash map, but that pointer will be deleted soon because it is temporary.
  * This copy constructor will be called when the temporary configurable is inserted into QList.
  * Calling updateConfig in this copy constructor, helps us to change the deleted pointer with the valid pointer of configurable which is in the QList.
- *
  */
-intfConfigurable::intfConfigurable(const intfConfigurable &_other):
-    pPrivate(new Private::intfConfigurablePrivate)
-{
-    this->Description = _other.Description;
-    this->ShortSwitch = _other.ShortSwitch;
-    this->LongSwitch = _other.LongSwitch;
-    this->ShortHelp = _other.ShortHelp;
-    this->ConfigPath = _other.ConfigPath;
-    this->WasConfigured  = _other.WasConfigured;
-    this->ConfigSources = _other.ConfigSources;
-    this->ArgCount = _other.ArgCount;
-    this->ConfigType = _other.ConfigType;
-    this->RemoteViewAllowed = _other.RemoteViewAllowed;
+    intfConfigurable::intfConfigurable(const intfConfigurable &_other):
+        pPrivate(new Private::intfConfigurablePrivate)
+    {
+        this->Description = _other.Description;
+        this->ShortSwitch = _other.ShortSwitch;
+        this->LongSwitch = _other.LongSwitch;
+        this->ShortHelp = _other.ShortHelp;
+        this->ConfigPath = _other.ConfigPath;
+        this->WasConfigured  = _other.WasConfigured;
+        this->ConfigSources = _other.ConfigSources;
+        this->ArgCount = _other.ArgCount;
+        this->ConfigType = _other.ConfigType;
+        this->RemoteViewAllowed = _other.RemoteViewAllowed;
 
-    //To replace pointer of old registered config with the new copied config
-    this->pPrivate->updateConfig(&_other, this);
-}
+        //To replace pointer of old registered config with the new copied config
+        this->pPrivate->updateConfig(&_other, this);
+        this->pPrivate->Finalizer = _other.pPrivate->Finalizer;
+    }
 
-intfConfigurable::~intfConfigurable()
-{
-    //Just to suppress compiler error on QSopedPointer
-}
+    intfConfigurable::~intfConfigurable()
+    {
+        //Just to suppress compiler error on QSopedPointer
+    }
 
-/***********************************************************************************************/
-/**
+    void intfConfigurable::finalizeConfig()
+    {
+        this->pPrivate->Finalizer(*this);
+    }
+
+    /***********************************************************************************************/
+    /**
  * @brief constructor of clsModuleRegistrar. This is where each module inserts its instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
  */
-clsModuleRegistrar::clsModuleRegistrar(const QString &_name, stuInstantiator _instantiatior){
-    ConfigManager::instance().addModuleInstantiaor(_name, _instantiatior);
-}
-/***********************************************************************************************/
-void intfRPCExporter::exportMyRPCs(){
-    for (int i=0; i<this->metaObject()->methodCount(); i++)
-        Private::RPCRegistry::instance().registerRPC(this,this->metaObject()->method(i));
-}
+    clsModuleRegistrar::clsModuleRegistrar(const QString &_name, stuInstantiator _instantiatior){
+        ConfigManager::instance().addModuleInstantiaor(_name, _instantiatior);
+    }
+    /***********************************************************************************************/
+    void intfRPCExporter::exportMyRPCs(){
+        for (int i=0; i<this->metaObject()->methodCount(); i++)
+            Private::RPCRegistry::instance().registerRPC(this,this->metaObject()->method(i));
+    }
 
 }
 }

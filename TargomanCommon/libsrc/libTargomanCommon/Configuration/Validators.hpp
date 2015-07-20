@@ -53,11 +53,11 @@ template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required 
         QFileInfo PathInfo(Path);
 
         if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Dir) &&
-                PathInfo.exists() && PathInfo.isDir() == false){
+                (PathInfo.exists() == false || PathInfo.isDir() == false)){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be a directory";
             return false;
         }else if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::File) &&
-                  PathInfo.exists() && PathInfo.isFile() == false){
+                  (PathInfo.exists() == false || PathInfo.isFile() == false)){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be a file";
             return false;
         }

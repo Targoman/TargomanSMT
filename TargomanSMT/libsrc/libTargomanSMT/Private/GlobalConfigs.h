@@ -61,12 +61,8 @@ extern stuGlobalConfigs gConfigs;
 
 }
 }
-
-namespace Common {
-namespace Configuration {
-ENUM_CONFIGURABLE(SMT::Private::enuWorkingModes);
-}
 }
 
-}
+ENUM_CONFIGURABLE(SMT::Private::enuWorkingModes)
+
 #endif // TARGOMAN_CORE_PRIVATE_GLOBALCONFIGS_H

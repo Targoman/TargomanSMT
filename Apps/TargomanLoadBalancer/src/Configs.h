@@ -25,6 +25,7 @@ namespace Apps {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanLoadBalancer, Common::exTargomanBase);
 
+extern QString ActorUUID;
 class gConfigs{
 public:
     struct stuServer{

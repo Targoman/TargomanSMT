@@ -32,7 +32,7 @@ using namespace Targoman::Apps;
 int main(int _argc, char *_argv[])
 {
     try{
-        Targoman::Common::printLoadedLibs();
+        qsrand(QDateTime::currentDateTime().toTime_t());
         QCoreApplication App(_argc, _argv);
 
         Configuration::ConfigManager::instance().init(
@@ -41,9 +41,7 @@ int main(int _argc, char *_argv[])
                     );
 
 
-        Modules::TSMonitor::instance().start();
         QTimer::singleShot(10, new appTargomanLoadBalancer, SLOT(slotExecute()));
-        qDebug()<<"App started: ";
         return App.exec();
     }catch(exTargomanBase& e){
         TargomanError(e.what());

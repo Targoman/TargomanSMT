@@ -100,8 +100,9 @@ gConfigs::stuServer::stuStatistics::stuStatistics(const QString &_basePath) :
 
 tmplConfigurableArray<gConfigs::stuServer> gConfigs::TranslationServers(
         "TranslationServers",
-        "List of valid translation servers to connect to them");
+        "List of valid translation servers to connect to them",
+        1);
 
-
+QString ActorUUID;
 }
 }

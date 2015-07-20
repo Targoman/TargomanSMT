@@ -60,9 +60,7 @@ protected:
     };
 
 public:
-    intfSpellCorrector();
     virtual ~intfSpellCorrector(){}
-
     inline bool active() const {return this->Active;}
     inline const QHash<QString, QString>&  autoCorrectTerms(){return this->AutoCorrectTerms;}
     inline int maxAutoCorrectTokens(){return this->MaxAutoCorrectTokens;}
@@ -90,6 +88,7 @@ public:
     }
 
 protected:
+    intfSpellCorrector(const char _code[2]);
     virtual bool postInit(const QVariantHash _settings) = 0;
 
 protected:
@@ -100,13 +99,16 @@ protected:
     bool Active;                                        /**< Does spell corrector for this language is active or not.  */
     QString Lang;                                       /**< Name of Language.  */
 
-    Normalizer& NormalizerInstance;                     /**< An instance of Normalizer class for faster access to normalizer class */
+    Normalizer& refNormalizerInstance;                  /**< An instance of Normalizer class for faster access to normalizer class */
 };
 
 class SpellCorrector
 {
 public:
-    static SpellCorrector& instance() {return Q_LIKELY(Instance) ? *Instance : *(Instance = new SpellCorrector);}
+    static SpellCorrector& instance() {
+        static SpellCorrector* Instance = NULL;
+        return Q_LIKELY(Instance) ? *Instance : *(Instance = new SpellCorrector);
+    }
 
     QString process(const QString& _lang, const QString& _inputStr, INOUT bool& _changed, bool _interactive);
     void init(const QString& _baseConfigPath, const QHash<QString, QVariantHash> &_settings);
@@ -114,11 +116,15 @@ public:
 private:
     SpellCorrector();
     Q_DISABLE_COPY(SpellCorrector)
+    inline void registerProcessor(const char _code[2], intfSpellCorrector* _instance){
+        this->Processors.insert(_code, _instance);
+    }
 
 private:
     QHash<QString, intfSpellCorrector*> Processors;     /**< A HashMap that key is language name and value is its respective language based spell corrector. */
-    static SpellCorrector* Instance;                    /**< Static instnace of spellCorrector class. */
-    Normalizer& NormalizerInstance;                     /**< An instance of Normalizer class for faster access to normalizer class. */
+    Normalizer& refNormalizerInstance;                  /**< An instance of Normalizer class for faster access to normalizer class. */
+
+    friend class intfSpellCorrector;
 };
 
 }

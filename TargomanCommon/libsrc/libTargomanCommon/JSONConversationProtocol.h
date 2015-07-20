@@ -60,6 +60,16 @@ public:
         QString      CallUID;
         QVariant     Result;
         QVariantMap  Args;
+
+        stuResponse(enuResponseTypes    _type = Error,
+                    const QVariant&     _result = QVariant(),
+                    const QVariantMap&  _args = QVariantMap(),
+                    const QString&      _callUID = ""){
+            this->Type = _type;
+            this->CallUID = _callUID;
+            this->Result = _result;
+            this->Args = _args;
+        }
     };
 
     static QString prepareResult(const QString& _callBack,

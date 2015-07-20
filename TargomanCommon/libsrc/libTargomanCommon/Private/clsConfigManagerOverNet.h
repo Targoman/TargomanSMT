@@ -45,7 +45,7 @@ private:
 
 private:
     clsConfigManagerPrivate&          ConfigManagerPrivate;
-    QString&                            ActorUUID;
+    QString&                          ActorUUID;
  //   QHash<QString,
 private:
     static tmplConfigurable<int>      ListenPort;
@@ -54,7 +54,6 @@ private:
     static tmplConfigurable<int>      MaxSessionTime;
     static tmplConfigurable<int>      MaxIdleTime;
     static tmplConfigurable<quint16>  MaxConnections;
-
 };
 
 /******************************************************************************/
