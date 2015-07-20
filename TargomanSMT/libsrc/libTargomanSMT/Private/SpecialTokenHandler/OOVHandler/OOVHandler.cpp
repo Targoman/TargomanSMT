@@ -64,6 +64,18 @@ void OOVHandler::initialize()
 
 }
 
+TargetRulesContainer_t OOVHandler::gatherTargetRules(const QString &_token, QVariantMap &_attrs)
+{
+    TargetRulesContainer_t TargetRules;
+    foreach(intfOOVHandlerModule* pOOVHandler, this->ActiveOOVHandlers){
+        const clsTargetRule&  OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
+        if (OOVHandlerTargetRule.isInvalid() == false){
+            TargetRules.append(OOVHandlerTargetRule);
+        }
+    }
+    return TargetRules;
+}
+
 /**
  * @brief OOVHandler::getWordIndex  This function stores types of used special OOV Handler in _attrs and returns a word index for it.
  * @param[in] _token                input OOV word string.
@@ -77,13 +89,8 @@ QList<Common::WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token
             SpecialTokensRegistry::instance().getExpirableSpecialToken(_token);
 
     if (ExpirableSpecialToken.Data->NotSet){
-        TargetRulesContainer_t TargetRules;
-        foreach(intfOOVHandlerModule* pOOVHandler, this->ActiveOOVHandlers){
-            const clsTargetRule&  OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
-            if (OOVHandlerTargetRule.isInvalid() == false){
-                TargetRules.append(OOVHandlerTargetRule);
-            }
-        }
+        TargetRulesContainer_t TargetRules = this->gatherTargetRules(_token, _attrs);
+
         if (TargetRules.isEmpty()){
             SpecialTokensRegistry::instance().insertExpirableSpecialToken(_token, SpecialTokensRegistry::clsExpirableSpecialToken(Constants::SrcVocabUnkWordIndex, _attrs));
             return (QList<Common::WordIndex_t>() << Constants::SrcVocabUnkWordIndex); // There are no new handlers so keep it as unknown and cache result
@@ -109,6 +116,12 @@ QList<Common::WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token
 
     return ExpirableSpecialToken.Data->WordIndexes;
 
+}
+
+TargetRulesContainer_t OOVHandler::generateTargetRules(const QString &_token)
+{
+    QVariantMap Dummy;
+    return this->gatherTargetRules(_token, Dummy);
 }
 
 

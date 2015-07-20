@@ -29,7 +29,6 @@ public:
     static stuTranslationOutput translate(const QString& _inputStr,
                                           bool _justTranslationString = false,
                                           bool _isIXML = false);
-    static QStringList break2Sentences(const QString& _inputStr);
 };
 
 }

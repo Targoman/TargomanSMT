@@ -91,7 +91,7 @@ public:
         }
     }
 
-    virtual RuleTable::RulesPrefixTree_t& getPrefixTree(){
+    virtual RuleTable::RulesPrefixTree_t& prefixTree(){
         return *this->PrefixTree;
     }
 

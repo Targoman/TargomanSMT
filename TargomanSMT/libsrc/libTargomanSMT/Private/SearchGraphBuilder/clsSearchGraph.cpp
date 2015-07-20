@@ -17,6 +17,7 @@
 #include "../GlobalConfigs.h"
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
 #include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
+#include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include <iostream>
 #include <sstream>
 
@@ -37,6 +38,7 @@ using namespace RuleTable;
 using namespace Proxies;
 using namespace InputDecomposer;
 using namespace SpecialTokenHandler;
+using namespace SpecialTokenHandler::OOV;
 
 tmplConfigurable<quint8> clsSearchGraph::HardReorderingJumpLimit(
         clsSearchGraph::moduleBaseconfig() + "/HardReorderingJumpLimit",
@@ -102,7 +104,7 @@ void clsSearchGraph::init(const QString& _configFilePath)
     clsSearchGraph::pRuleTable->loadTableData();
     clsSearchGraph::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 
-    RulesPrefixTree_t::Node_t* Node = &clsSearchGraph::pRuleTable->getPrefixTree().rootNode();
+    RulesPrefixTree_t::Node_t* Node = &clsSearchGraph::pRuleTable->prefixTree().rootNode();
     if(Node->isInvalid())
         throw exSearchGraph("Invalid empty Rule Table");
 
@@ -111,6 +113,23 @@ void clsSearchGraph::init(const QString& _configFilePath)
         throw exSearchGraph("No Rule defined for UNKNOWN word");
 
     clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData(), true);
+
+    /// @note As a result of aligning some words to NULL by general word aligners, we need to take care of
+    ///       tokens that have a word index but only contribute to multi-word phrases. These will cause
+    ///       malfunction of OOV handler module as it will assume these words have translations by themselves
+    for(auto TokenIter = gConfigs.SourceVocab.begin(); TokenIter != gConfigs.SourceVocab.end(); ++TokenIter) {
+        clsRuleNode& SingleWordRuleNode =
+                clsSearchGraph::pRuleTable->prefixTree().getOrCreateNode(
+                    QList<WordIndex_t>() << TokenIter.value()
+                    ).getData();
+        if(SingleWordRuleNode.isInvalid())
+            SingleWordRuleNode.detachInvalidData();
+        if(SingleWordRuleNode.targetRules().isEmpty())
+            SingleWordRuleNode.targetRules().append(
+                        OOVHandler::instance().generateTargetRules(TokenIter.key())
+                        );
+    }
+
 }
 
 void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,  INOUT QList<RulesPrefixTree_t::Node_t*>& _prevNodes, QList<clsRuleNode>& _ruleNodes)
@@ -140,7 +159,7 @@ void clsSearchGraph::collectPhraseCandidates()
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseCandidateCollections.append(QVector<clsPhraseCandidateCollection>(this->Data->Sentence.size() - FirstPosition));
         QList<RulesPrefixTree_t::Node_t*> PrevNodes =
-                QList<RulesPrefixTree_t::Node_t*>() << &this->pRuleTable->getPrefixTree().rootNode();
+                QList<RulesPrefixTree_t::Node_t*>() << &this->pRuleTable->prefixTree().rootNode();
 
         if(true /* On 1-grams */)
         {
@@ -177,6 +196,13 @@ void clsSearchGraph::collectPhraseCandidates()
                                                                       (int)(LastPosition - FirstPosition + 1));
         }
     }
+
+    for(int i = 0; i < this->Data->PhraseCandidateCollections.size(); ++i) {
+        if(this->Data->PhraseCandidateCollections[i][0].targetRules().size() == 0) {
+            int a =0;a++;
+        }
+    }
+
 }
 
 

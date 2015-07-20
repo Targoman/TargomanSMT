@@ -45,11 +45,13 @@ class OOVHandler : public Targoman::Common::Configuration::intfModule
 public:
     OOVHandler(): intfModule(this->moduleName()) {}
     QList<WordIndex_t> getWordIndexOptions(const QString& _token, QVariantMap& _attrs);
+    RuleTable::TargetRulesContainer_t generateTargetRules(const QString& _token);
     void initialize();
 
+private:
+    RuleTable::TargetRulesContainer_t gatherTargetRules(const QString& _token, QVariantMap& _attrs);
 
 private:
-
     TARGOMAN_DEFINE_SINGLETONMODULE("OOVHandler", OOVHandler);
 
 private:
