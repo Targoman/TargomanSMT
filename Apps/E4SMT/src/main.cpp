@@ -10,10 +10,12 @@
  @author S. Mohammad M. Ziabary <smm@ziabary.com>
  */
 
+#include <QCoreApplication>
 #include <QTimer>
-#include "appITagger.h"
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
+
+#include "appE4SMT.h"
 
 const char* LicenseStr =
 "%1 Ver: %2 Build %3\n"
@@ -21,20 +23,31 @@ const char* LicenseStr =
 "%1 [Arguments]\n"
 "Arguments: \n";
 
+using namespace Targoman;
+using namespace Targoman::Common;
+using namespace Targoman::Apps;
+
 int main(int _argc, char *_argv[])
 {
-    Targoman::Common::printLoadedLibs();
+    try{
+        QCoreApplication App(_argc, _argv);
 
-    Targoman::appITagger App(_argc, _argv);
+        Configuration::ConfigManager::instance().init(
+                    QString(LicenseStr).arg(TARGOMAN_M2STR(PROJ_VERSION)).arg(__DATE__),
+                    App.arguments().mid(1)
+                    );
 
-    Targoman::Common::Configuration::ConfigManager::instance().init(
-                QString(LicenseStr).arg(TARGOMAN_M2STR(PROJ_VERSION)).arg(__DATE__),
-                App.arguments()
-            );
+        QTimer::singleShot(10, new appE4SMT, SLOT(slotExecute()));
 
-    QTimer::singleShot(10, &App, SLOT(slotExecute()));
-
-    return App.exec();
+        return App.exec();
+    }catch(exTargomanBase& e){
+        TargomanError(e.what());
+    }catch (std::exception &e){
+        TargomanError(e.what());
+    }catch(...){
+        TargomanError("FATAL Unrecognized exception");
+    }
+    return -1;
 }
 
 

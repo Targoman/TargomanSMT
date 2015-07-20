@@ -10,14 +10,16 @@ BasePath = "."
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 HEADERS += \
-    src/appITagger.h \
-    src/Configs.h
+    src/appE4SMT.h \
+    src/Configs.h \
+    src/XMLReader.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
     src/main.cpp \
-    src/appITagger.cpp \
-    src/Configs.cpp
+    src/appE4SMT.cpp \
+    src/Configs.cpp \
+    src/XMLReader.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

@@ -6,12 +6,13 @@
 # download it from http://targoman.com/License.txt
 #
 ################################################################################
-ProjectName="iTagger"
+ProjectName="E4SMT"
 VERSION=0.1.0
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+=TargomanCommon \
-                     TargomanTextProcessor
+                     TargomanTextProcessor \
+                     xml2
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
