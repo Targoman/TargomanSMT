@@ -10,6 +10,8 @@ if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
 	fi
 fi
 
+echo Using $QMAKE_COMMAND ...
+
 Projects="TargomanCommon 
           NLPLibs/TargomanLM/ 
 	  NLPLibs/TargomanTextProcessor/
