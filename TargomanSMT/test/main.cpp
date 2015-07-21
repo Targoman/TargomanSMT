@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         Translator::init(ConfigManager::instance().configFilePath());
         printMemoryUsage("after load all");
 
-//        Translator::saveBinaryRuleTable("phrase-table.BIG.kenlm.bin");
+//        Translator::saveBinaryRuleTable("phrase-table.dev.kenlm.bin");
 //        return 0;
 
         QFile File(argv[1]);

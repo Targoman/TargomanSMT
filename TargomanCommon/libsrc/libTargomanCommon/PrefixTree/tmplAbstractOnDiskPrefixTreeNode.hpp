@@ -30,6 +30,7 @@
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTreeNode.hpp"
 #include "libTargomanCommon/tmplBoundedCache.hpp"
 #include "libTargomanCommon/FStreamExtended.h"
+#include <functional>
 
 namespace Targoman {
 namespace Common {
@@ -128,7 +129,12 @@ protected:
         throw exTargomanNotImplemented("loadChildFromDisk()");
     }
 
-    pNode_t loadChildFromDisk(itmplKey_t _key, bool _updateCache)
+    typedef tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t> LocalNode_t;
+    typedef QExplicitlySharedDataPointer<LocalNode_t> pLocalNode_t;
+
+    pNode_t loadChildFromDisk(
+            itmplKey_t _key, bool _updateCache,
+            std::function<LocalNode_t*(clsIFStreamExtended&, quint32)> _instantiator)
     {
         auto PositonIterator = this->Data->ChildPositionInStream.find(_key);
         if(PositonIterator == this->Data->ChildPositionInStream.end())
@@ -136,11 +142,7 @@ protected:
         this->Data->InputStream.lock();
         this->Data->InputStream.seekg(*PositonIterator, std::ios_base::beg);
 
-        typedef tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t> LocalNode_t;
-        typedef QExplicitlySharedDataPointer<LocalNode_t> pLocalNode_t;
-
-        pLocalNode_t Node = pLocalNode_t(
-                    new LocalNode_t(this->Data->InputStream, this->Data->Children.maxItems()));
+        pLocalNode_t Node = pLocalNode_t(_instantiator(this->Data->InputStream, this->Data->Children.maxItems()));
 
         if (_updateCache)
             this->Data->Children.insert(_key, Node);

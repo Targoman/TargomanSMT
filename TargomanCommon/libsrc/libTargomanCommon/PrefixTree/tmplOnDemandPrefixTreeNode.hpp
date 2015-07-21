@@ -51,7 +51,12 @@ public:
 
 protected:
     inline pNode_t loadChildFromDisk(itmplKey_t _key) {
-        return tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t>::loadChildFromDisk(_key, true);
+        return tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t>::loadChildFromDisk(
+                    _key,
+                    true,
+                    [] (clsIFStreamExtended& _fstream, quint32 _maxItems) {
+            return new tmplOnDemandPrefixTreeNode(_fstream, _maxItems);
+        });
     }
 
 };

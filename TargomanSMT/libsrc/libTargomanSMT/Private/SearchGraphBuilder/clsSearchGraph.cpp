@@ -151,10 +151,19 @@ void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,
     QList<RulesPrefixTree_t::pNode_t> NextNodes;
     foreach(RulesPrefixTree_t::pNode_t PrevNode, _prevNodes) {
         foreach(WordIndex_t WordIndex, _wordIndexes) {
+            if(dynamic_cast<Common::PrefixTree::tmplNoCachePrefixTreeNode<WordIndex_t, clsRuleNode>*>(PrevNode.data()) == NULL) {
+                int a = 1;
+                ++a;
+            }
             RulesPrefixTree_t::pNode_t NextNode = PrevNode->follow(WordIndex);
             if(NextNode->isInvalid() == false) {
                 _ruleNodes.append(NextNode->getData());
                 NextNodes.append(NextNode);
+                if (dynamic_cast<Common::PrefixTree::tmplNoCachePrefixTreeNode<WordIndex_t, clsRuleNode>*>(NextNode.data()) == NULL){
+                    int a = 1;
+                    ++a;
+                }
+
             }
         }
     }
@@ -215,9 +224,13 @@ void clsSearchGraph::collectPhraseCandidates()
     }
 
     // Vedadian
+    qDebug() << " ========================================== ";
     for(int i = 0; i < this->Data->PhraseCandidateCollections.size(); ++i) {
         clsPhraseCandidateCollection Collection = this->Data->PhraseCandidateCollections[i][0];
-        qDebug() << i << Collection.targetRules().size();
+        QStringList A;
+        foreach(const clsTargetRule& TR, Collection.targetRules())
+            A.append(QString::number(TR.at(0)) + ":" + TR.toStr());
+        qDebug() << i << Collection.targetRules().size()<<A.join(" | ");
     }
 
     int a =0;

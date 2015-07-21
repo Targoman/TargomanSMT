@@ -57,7 +57,13 @@ protected:
     }
 
     inline pNode_t loadChildFromDisk(itmplKey_t _key) {
-        return tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t>::loadChildFromDisk(_key, false);
+        return tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t>::loadChildFromDisk(
+                    _key,
+                    true,
+                    [] (clsIFStreamExtended& _fstream, quint32 _maxItems) {
+            Q_UNUSED(_maxItems);
+            return new tmplNoCachePrefixTreeNode(_fstream);
+        });
     }
 
 };

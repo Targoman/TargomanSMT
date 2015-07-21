@@ -83,8 +83,7 @@ public:
         this->Data->NodeData.readBinary(_inputStream);
         for(auto ChildPosIter = ChildPositions.begin(); ChildPosIter != ChildPositions.end(); ++ChildPosIter)
             this->Data->Children[ChildPosIter.key()] =
-                QExplicitlySharedDataPointer<tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>>(
-                    new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream));
+                    new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream);
         this->IsInvalid = false;
     }
 
