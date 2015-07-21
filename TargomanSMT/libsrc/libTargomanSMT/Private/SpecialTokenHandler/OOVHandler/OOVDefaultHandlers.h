@@ -116,6 +116,9 @@ public:
         Q_UNUSED(_attrs);
         QList<WordIndex_t> TargetPhrase;
         TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(_token));
+        _attrs.insert(
+                    InputDecomposer::enuDefaultAttrs::toStr(InputDecomposer::enuDefaultAttrs::ShowSource),
+                    true);
         return clsTargetRule::createZeroCostTargetRule(TargetPhrase, true);
     }
 
