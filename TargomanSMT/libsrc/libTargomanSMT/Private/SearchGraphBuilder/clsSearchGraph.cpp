@@ -21,9 +21,6 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef TARGOMAN_SHOW_DEBUG
-#include <iomanip>
-#endif
 
 #define PBT_MAXIMUM_COST 1e200
 
@@ -104,13 +101,17 @@ void clsSearchGraph::init(const QString& _configFilePath)
     clsSearchGraph::pRuleTable->loadTableData();
     clsSearchGraph::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 
-    RulesPrefixTree_t::Node_t* Node = &clsSearchGraph::pRuleTable->prefixTree().rootNode();
+    // Torabzadeh
+    exit(0);
+
+    RulesPrefixTree_t::pNode_t Node = clsSearchGraph::pRuleTable->prefixTree().rootNode();
     if(Node->isInvalid())
         throw exSearchGraph("Invalid empty Rule Table");
 
-    Node = &Node->follow(Constants::SrcVocabUnkWordIndex); //Search for UNKNOWN word Index
+    Node = Node->follow(Constants::SrcVocabUnkWordIndex); //Search for UNKNOWN word Index
     if (Node->isInvalid())
         throw exSearchGraph("No Rule defined for UNKNOWN word");
+
 
     clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData(), true);
 
@@ -121,7 +122,7 @@ void clsSearchGraph::init(const QString& _configFilePath)
         clsRuleNode& SingleWordRuleNode =
                 clsSearchGraph::pRuleTable->prefixTree().getOrCreateNode(
                     QList<WordIndex_t>() << TokenIter.value()
-                    ).getData();
+                    )->getData();
         if(SingleWordRuleNode.isInvalid())
             SingleWordRuleNode.detachInvalidData();
         if(SingleWordRuleNode.targetRules().isEmpty())
@@ -132,12 +133,14 @@ void clsSearchGraph::init(const QString& _configFilePath)
 
 }
 
-void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,  INOUT QList<RulesPrefixTree_t::Node_t*>& _prevNodes, QList<clsRuleNode>& _ruleNodes)
+void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,
+                                        INOUT QList<RulesPrefixTree_t::pNode_t>& _prevNodes,
+                                        QList<clsRuleNode>& _ruleNodes)
 {
-    QList<RulesPrefixTree_t::Node_t*> NextNodes;
-    foreach(RulesPrefixTree_t::Node_t* PrevNode, _prevNodes) {
+    QList<RulesPrefixTree_t::pNode_t> NextNodes;
+    foreach(RulesPrefixTree_t::pNode_t PrevNode, _prevNodes) {
         foreach(WordIndex_t WordIndex, _wordIndexes) {
-            RulesPrefixTree_t::Node_t* NextNode = &PrevNode->follow(WordIndex);
+            RulesPrefixTree_t::pNode_t NextNode = PrevNode->follow(WordIndex);
             if(NextNode->isInvalid() == false) {
                 _ruleNodes.append(NextNode->getData());
                 NextNodes.append(NextNode);
@@ -158,8 +161,8 @@ void clsSearchGraph::collectPhraseCandidates()
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         this->Data->PhraseCandidateCollections.append(QVector<clsPhraseCandidateCollection>(this->Data->Sentence.size() - FirstPosition));
-        QList<RulesPrefixTree_t::Node_t*> PrevNodes =
-                QList<RulesPrefixTree_t::Node_t*>() << &this->pRuleTable->prefixTree().rootNode();
+        QList<RulesPrefixTree_t::pNode_t> PrevNodes =
+                QList<RulesPrefixTree_t::pNode_t>() << this->pRuleTable->prefixTree().rootNode();
 
         if(true /* On 1-grams */)
         {
@@ -180,6 +183,9 @@ void clsSearchGraph::collectPhraseCandidates()
             this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality, 1);
 
             this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, RuleNodes);
+
+            // Vedadian
+            qDebug() << FirstPosition << this->Data->PhraseCandidateCollections[FirstPosition][0].targetRules().size();
         }
 
         //Max PhraseTable order will be implicitly checked by follow
@@ -197,11 +203,14 @@ void clsSearchGraph::collectPhraseCandidates()
         }
     }
 
+    // Vedadian
     for(int i = 0; i < this->Data->PhraseCandidateCollections.size(); ++i) {
-        if(this->Data->PhraseCandidateCollections[i][0].targetRules().size() == 0) {
-            int a =0;a++;
-        }
+        clsPhraseCandidateCollection Collection = this->Data->PhraseCandidateCollections[i][0];
+        qDebug() << i << Collection.targetRules().size();
     }
+
+    int a =0;
+    a++;
 
 }
 
@@ -364,6 +373,7 @@ bool clsSearchGraph::decode()
 
                             const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
 
+
                             clsSearchGraphNode NewHypoNode(PrevLexHypoNode,
                                                            NewPhraseBeginPos,
                                                            NewPhraseEndPos,
@@ -371,6 +381,23 @@ bool clsSearchGraph::decode()
                                                            CurrentPhraseCandidate,
                                                            IsFinal,
                                                            RestCost);
+#ifdef TARGOMAN_SHOW_DEBUG
+                            // Torabzadeh
+                            if(NewHypoNode.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
+                               NewHypoNode.targetRule().toStr() == QStringLiteral("که") &&
+                               NewCardinality == 13 &&
+                               NewCoverage == "11111111101111000000000000"){
+                                   int a = 2;
+                                   a++;
+                            }
+                            if(NewHypoNode.prevNode().targetRule().toStr() == QStringLiteral("فلسطین در") &&
+                               NewHypoNode.targetRule().toStr() == QStringLiteral("آن") &&
+                               NewCardinality == 13 &&
+                               NewCoverage == "11111111101111000000000000"){
+                                   int a = 5;
+                                   a++;
+                            }
+#endif
 
                             // If current NewHypoNode is worse than worst stored node ignore it
                             if (clsSearchGraph::DoPrunePreInsertion.value() &&
@@ -379,13 +406,10 @@ bool clsSearchGraph::decode()
                                 continue;
                             }
 
-
-
                             if(CurrCardHypoContainer.insertNewHypothesis(NewHypoNode)) {
                                 // Log insertion of hypothesis here if it is needed
                             }
                         }
-
                     }//foreach PrevLexHypoNode
                 }//for NewPhraseBeginPos
             }//for PrevCoverageIter
@@ -395,23 +419,22 @@ bool clsSearchGraph::decode()
 #ifdef TARGOMAN_SHOW_DEBUG
         // Vedadian
         //*
-
-        if(true) {
-            auto car2str = [] (int _cardinality) {
-                QString result;
-                for(int i = 0; i < 5; ++i) {
-                    result = ('0' + _cardinality % 10) + result;
-                    _cardinality /= 10;
-                }
-                return result;
-            };
-            auto cov2str = [] (const Coverage_t _coverage) {
-                QString result;
-                QTextStream stream;
-                stream.setString(&result);
-                stream << _coverage;
-                return result;
-            };
+        auto car2str = [] (int _cardinality) {
+            QString result;
+            for(int i = 0; i < 5; ++i) {
+                result = ('0' + _cardinality % 10) + result;
+                _cardinality /= 10;
+            }
+            return result;
+        };
+        auto cov2str = [] (const Coverage_t _coverage) {
+            QString result;
+            QTextStream stream;
+            stream.setString(&result);
+            stream << _coverage;
+            return result;
+        };
+        if(CurrCardHypoContainer.lexicalHypotheses().size() != 0) {
             for(auto Iterator = CurrCardHypoContainer.lexicalHypotheses().end() - 1;
                 true;
                 --Iterator) {
@@ -431,8 +454,8 @@ bool clsSearchGraph::decode()
                 if(Iterator == CurrCardHypoContainer.lexicalHypotheses().begin())
                     break;
             }
-            TargomanDebug(9,"\n\n\n");
         }
+        TargomanDebug(9,"\n\n\n");
         //*/
 #endif
     }//for NewCardinality

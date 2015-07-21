@@ -37,12 +37,12 @@ private:
         virtual ~clsVocabEnumerator() { }
         void Add(lm::WordIndex _index, const StringPiece &_str) {
             this->DirectVocab.insert(
-                        QString::fromUtf8(_str.data()),
+                        QString::fromUtf8(_str.data(), _str.length()),
                         _index
                         );
             this->ReverseVocab.insert(
                         _index,
-                        QString::fromUtf8(_str.data())
+                        QString::fromUtf8(_str.data(), _str.length())
                         );
         }
 

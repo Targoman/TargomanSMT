@@ -17,10 +17,19 @@
 
 #include "libTargomanCommon/PrefixTree/tmplOnMemoryPrefixTreeNode.hpp"
 #include "libTargomanCommon/PrefixTree/tmplOnDemandPrefixTreeNode.hpp"
+#include "libTargomanCommon/PrefixTree/tmplFullCachePrefixTreeNode.hpp"
+#include "libTargomanCommon/PrefixTree/tmplNoCachePrefixTreeNode.hpp"
 
 namespace Targoman {
 namespace Common {
 namespace PrefixTree {
+
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuBinaryLoadMode,
+                              OnMemory,
+                              OnDemand,
+                              FullCache,
+                              NoCache);
+
 /**
  * @brief the tmplPrefixTree class is a template data structure to hold data in prefix tree.
  *
@@ -39,7 +48,8 @@ namespace PrefixTree {
  */
 template <class itmplKey_t, class itmplData_t> class tmplPrefixTree {
 public:
-    typedef tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> Node_t;
+    typedef typename tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::Node_t Node_t;
+    typedef typename tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::pNode_t pNode_t;
 
 public:
     /**
@@ -63,11 +73,23 @@ public:
      *                      tmplOnMemoryPrefixTreeNode and if not it will be of type
      *                      tmplOnDemandPrefixTreeNode
      */
-    void readBinary(clsIFStreamExtended& _file, bool _loadAll = false){
-        if (_loadAll)
-            this->RootNode.reset(new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_file));
-        else
-            this->RootNode.reset(new tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>(_file));
+    void readBinary(clsIFStreamExtended& _file, enuBinaryLoadMode::Type _binLoadMode, quint32 _maxCachedItems){
+        switch(_binLoadMode){
+        case enuBinaryLoadMode::OnMemory:
+            this->RootNode = new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_file);
+            break;
+        case enuBinaryLoadMode::OnDemand:
+            this->RootNode = new tmplOnDemandPrefixTreeNode<itmplKey_t, itmplData_t>(_file, _maxCachedItems);
+            break;
+        case enuBinaryLoadMode::FullCache:
+            this->RootNode = new tmplFullCachePrefixTreeNode<itmplKey_t, itmplData_t>(_file);
+            break;
+        case enuBinaryLoadMode::NoCache:
+            this->RootNode = new tmplNoCachePrefixTreeNode<itmplKey_t, itmplData_t>(_file);
+            break;
+        default:
+            throw exPrefixTree("Invalid Binary Load Mode");
+        }
     }
 
     /**
@@ -89,21 +111,21 @@ public:
      *                          list of word indices of a sentence.
      * @return                  returns created or founded node.
      */
-    inline Node_t& getOrCreateNode(const QList<itmplKey_t>& _path) {
-        Node_t* Result = this->RootNode.data();
+    inline pNode_t getOrCreateNode(const QList<itmplKey_t>& _path) {
+        pNode_t Result = this->RootNode;
         foreach(itmplKey_t Key, _path)
-            Result = &Result->getOrCreateChildByKey(Key);
-        return *Result;
+            Result = Result->getOrCreateChildByKey(Key);
+        return Result;
     }
     /**
      * @brief returns root node of prefix tree.
      */
-    inline Node_t& rootNode() {
-        return *this->RootNode;
+    inline pNode_t rootNode() {
+        return this->RootNode;
     }
 
 private:
-    QScopedPointer<Node_t> RootNode;        /** A pointer to root node of this preefix data. */
+    pNode_t RootNode;        /** A pointer to root node of this preefix data. */
 };
 
 }

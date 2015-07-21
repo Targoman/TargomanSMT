@@ -15,7 +15,6 @@
 #define TARGOMAN_COMMON_PREFIXTREE_TMPLONMEMORYPREFIXTREENODE_H
 
 #include "libTargomanCommon/PrefixTree/tmplAbstractPrefixTreeNode.hpp"
-#include "libTargomanCommon/tmplExpirableCache.hpp"
 #include <QDataStream>
 
 namespace Targoman {
@@ -37,7 +36,7 @@ public:
 
 public:
     itmplData_t NodeData;
-    QMap<itmplKey_t, tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>> Children;
+    QMap<itmplKey_t, QExplicitlySharedDataPointer<tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>>> Children;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -49,12 +48,15 @@ public:
 template <class itmplKey_t, class itmplData_t> class tmplOnMemoryPrefixTreeNode :
         public tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> {
 public:
+    typedef typename tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::Node_t Node_t;
+    typedef typename tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::pNode_t pNode_t;
+
+public:
     tmplOnMemoryPrefixTreeNode() :
         Data(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>()) {
         this->IsInvalid = false;
     }
 
-    // TODO: This will be super-slow, make it run in a normal duration
     tmplOnMemoryPrefixTreeNode(clsIFStreamExtended& _inputStream) :
         Data(new tmplOnMemoryPrefixTreeNodeData<itmplKey_t, itmplData_t>())
     {
@@ -68,21 +70,25 @@ public:
         this->Data->NodeData.readBinary(_inputStream);
         for(auto ChildPosIter = ChildPositions.begin(); ChildPosIter != ChildPositions.end(); ++ChildPosIter)
             this->Data->Children[ChildPosIter.key()] =
-                tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream);
+                QExplicitlySharedDataPointer<tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>>(
+                    new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream));
         this->IsInvalid = false;
     }
 
-    virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
+    virtual pNode_t follow(itmplKey_t _key) {
         auto Iter = this->Data->Children.find(_key);
         if(Iter == this->Data->Children.end())
-            return tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance();
+            return pNode_t(&tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>::invalidInstance());
         else
             return *Iter;
     }
 
-    virtual tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getOrCreateChildByKey(const itmplKey_t _key) {
-        return this->Data->Children[_key];
-    }
+    virtual pNode_t getOrCreateChildByKey(const itmplKey_t _key) {
+        QExplicitlySharedDataPointer<
+                tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>>& Result = this->Data->Children[_key];
+        if(Result.data() == NULL)
+            Result = new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>();
+        return Result;    }
 
     void writeBinary(clsOFStreamExtended& _outStream) const {
         PosType_t StartPosition = _outStream.tellp();
@@ -100,7 +106,7 @@ public:
             Iterator != this->Data->Children.end();
             ++Iterator) {
             ChildPositions[Iterator.key()] = _outStream.tellp();
-            Iterator->writeBinary(_outStream);
+            (*Iterator)->writeBinary(_outStream);
         }
         PosType_t EndPosition = _outStream.tellp();
         _outStream.seekp(StartPosition + sizeof(int), std::ios_base::beg);

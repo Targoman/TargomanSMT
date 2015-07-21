@@ -71,6 +71,15 @@ bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
                     --NewHypoNodePosition;
                 }
                 this->Data->Nodes[NewHypoNodePosition] = HypoNode;
+
+                // Torabzadeh
+                if(HypoNode.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
+                   HypoNode.targetRule().toStr() == QStringLiteral("که") &&
+                   HypoNode.coverage() == "11111111101111000000000000"){
+                       int a = 10;
+                       a++;
+                }
+
                 return false;
             }else{
                 if(HypoNode.getTotalCost() > _node.getTotalCost()){
@@ -88,6 +97,15 @@ bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
     }
 
     this->Data->Nodes.insert(InsertionPos,_node);
+
+    // Torabzadeh
+    if(_node.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
+       _node.targetRule().toStr() == QStringLiteral("که") &&
+       _node.coverage() == "11111111101111000000000000"){
+           int a = 10;
+           a++;
+    }
+
     return true;
 }
 

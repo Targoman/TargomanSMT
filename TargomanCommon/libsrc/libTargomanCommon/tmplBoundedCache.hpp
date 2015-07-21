@@ -21,28 +21,35 @@
 namespace Targoman {
 namespace Common {
 
-template <template <class itmplKey, class itmplVal> class BaseContainer_t, class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000, qint32 itmplTTL = 10000>
+template <template <class itmplKey, class itmplVal> class BaseContainer_t, class itmplKey, class itmplVal, quint32 itmplMaxItems = 10000>
     /**
-     * @brief The tmplExpirableCache class is a derivation of Map class and it is augmented with QHash for AccessDate.
+     * @brief The tmplBoundedCache template is a derivation of Map or Hash class (depending on BaseContainer_t) and
+     *        it is augmented with QHash for AccessDate.
      *
-     * This class removes old items of Cache and updates access date of recently used items .
+     * This class removes old items of Cache when itmlMaxItems is reached except when itmplMaxItems is set to zero.
      */
-    class tmplExpirableCache : public BaseContainer_t <itmplKey, itmplVal>
+    class tmplBoundedCache : public BaseContainer_t <itmplKey, itmplVal>
     {
     public:
 
-        tmplExpirableCache(){
+        tmplBoundedCache(){
             if (itmplMaxItems == 0)
                 throw exTargomanInvalidParameter("Max cache Items must be greater than zero");
             this->MaxItems = itmplMaxItems;
-            this->TTL = itmplTTL;
         }
+
+        tmplBoundedCache(const tmplBoundedCache& _other):
+            BaseContainer_t<itmplKey, itmplVal>(_other),
+            Lock(_other.Lock),
+            KeyAccessDateTime(_other.KeyAccessDateTime),
+            MaxItems(_other.MaxItems)
+        {}
 
         typedef typename BaseContainer_t<itmplKey, itmplVal>::iterator   Iterator_t;
 
         inline Iterator_t insert(itmplKey _key, itmplVal _val){
             QMutexLocker Locker(&this->Lock);
-            if(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
+            if(this->MaxItems && BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
                 QList<QTime> Values = this->KeyAccessDateTime.values();
                 QTime Oldest = Values.first();
                 for(int i = 0; i < Values.size(); ++i)
@@ -60,11 +67,8 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         }
 
         inline Iterator_t insertMulti(itmplKey _key, itmplVal _val){
-            //while(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
-            if(BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
+            if(this->MaxItems && BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
                 QList<QTime> Values = this->KeyAccessDateTime.values();
-//                qStableSort(Values);
-//                QList<itmplKey> ExpiredKeys = this->KeyAccessDateTime.keys(Values.first());
                 QTime Oldest = Values.first();
                 for(int i = 0; i < Values.size(); ++i)
                     if(Values.at(i) < Oldest)
@@ -134,17 +138,14 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
         }
 
         void setMaxItems(quint32 _maxItems){ this->MaxItems = _maxItems; }
-        void setTTL(quint32 _ttl){ this->TTL = _ttl; }
 
         quint32 maxItems(){ return this->MaxItems; }
-        quint32 ttl(){ return this->TTL; }
 
     private:
         QMutex                       Lock;
         QHash<itmplKey, QTime >      KeyAccessDateTime;
 
         quint32 MaxItems;
-        quint32 TTL;
     };
 }
 }

@@ -19,7 +19,7 @@
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
-#include "libTargomanCommon/tmplExpirableCache.hpp"
+#include "libTargomanCommon/tmplBoundedCache.hpp"
 #include "libTargomanCommon/FStreamExtended.h"
 #include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
 #include "libTargomanCommon/Configuration/tmplConfigurableArray.hpp"
@@ -157,6 +157,10 @@ int main(int argc, char *argv[])
 {
     try{
     Targoman::Common::printLoadedLibs();
+
+/*    tmplExpirableCache<QMap,  QString, int> FF;
+    tmplExpirableCache<QMap,  QString, int> DD(FF);
+*/
 
     QCoreApplication App(argc, argv);
 

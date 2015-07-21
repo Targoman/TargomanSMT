@@ -20,7 +20,6 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Types.h \
     libTargomanCommon/clsCmdProgressBar.h \
     libTargomanCommon/HashFunctions.hpp \
-    libTargomanCommon/tmplExpirableCache.hpp \
     libTargomanCommon/Configuration/intfConfigurable.hpp \
     libTargomanCommon/Configuration/clsFileBasedConfig.hpp \
     libTargomanCommon/Configuration/tmplConfigurable.h \
@@ -43,7 +42,11 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/SimpleAuthentication.h \
     libTargomanCommon/Private/RPCRegistry.hpp \
     libTargomanCommon/Configuration/intfRPCExporter.hpp \
-    libTargomanCommon/Helpers.hpp
+    libTargomanCommon/Helpers.hpp \
+    libTargomanCommon/PrefixTree/tmplAbstractOnDiskPrefixTreeNode.hpp \
+    libTargomanCommon/PrefixTree/tmplFullCachePrefixTreeNode.hpp \
+    libTargomanCommon/PrefixTree/tmplNoCachePrefixTreeNode.hpp \
+    libTargomanCommon/tmplBoundedCache.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

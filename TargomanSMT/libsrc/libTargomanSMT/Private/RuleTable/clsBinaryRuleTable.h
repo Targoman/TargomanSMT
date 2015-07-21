@@ -43,13 +43,19 @@ private:
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   FilePath;            /**< File name of phrase table. */
-    static Targoman::Common::Configuration::tmplConfigurable<bool>   LoadOnDemand;
+    static Common::Configuration::tmplConfigurable<Common::PrefixTree::enuBinaryLoadMode::Type>  LoadMode;
+    static Common::Configuration::tmplConfigurable<quint32>  MaxCachedItems;
 
     TARGOMAN_DEFINE_MODULE("BinaryRuleTable", clsBinaryRuleTable);
 };
 
+
+
 }
 }
 }
 }
+
+ENUM_CONFIGURABLE(Targoman::Common::PrefixTree::enuBinaryLoadMode);
+
 #endif // TARGOMAN_CORE_PRIVATE_RULETABLE_CLSBINARYRULETABLE_H

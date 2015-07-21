@@ -28,9 +28,15 @@ namespace PrefixTree {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exPrefixTree, exTargomanBase);
 
-template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode {
+template <class itmplKey_t, class itmplData_t> class tmplAbstractPrefixTreeNode : public QSharedData {
 public:
-    tmplAbstractPrefixTreeNode(const tmplAbstractPrefixTreeNode& _other) {
+    typedef tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> Node_t;
+    typedef QExplicitlySharedDataPointer<Node_t> pNode_t;
+
+public:
+    tmplAbstractPrefixTreeNode(const tmplAbstractPrefixTreeNode& _other) :
+        QSharedData(_other)
+    {
         this->IsInvalid = _other.IsInvalid;
     }
 
@@ -42,7 +48,7 @@ public:
         throw exTargomanNotImplemented("writeBinary()");
     }
 
-    virtual tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>& getOrCreateChildByKey(const itmplKey_t _key) {
+    virtual pNode_t getOrCreateChildByKey(const itmplKey_t _key) {
         Q_UNUSED(_key);
         throw exTargomanNotImplemented("getOrCreateChildByKey()");
     }
@@ -59,9 +65,9 @@ public:
         return InvalidNodeData;
     }
 
-    virtual tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& follow(itmplKey_t _key) {
+    virtual pNode_t follow(itmplKey_t _key) {
         Q_UNUSED(_key);
-        return tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>::invalidInstance();
+        return pNode_t(&tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>::invalidInstance());
     }
 
 
@@ -74,8 +80,10 @@ protected:
     bool IsInvalid;
 
 protected:
-    static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t>& invalidInstance() {
-        static tmplAbstractPrefixTreeNode<itmplKey_t, itmplData_t> InvalidInstance;
+    static Node_t& invalidInstance() {
+        static Node_t InvalidInstance;
+        if(Q_UNLIKELY(InvalidInstance.ref == 0))
+            InvalidInstance.ref.ref();
         return InvalidInstance;
     }
 

@@ -34,7 +34,7 @@ public:
     {
         RuleTable::clsTargetRule TargetRule(_targetPhrase, _costs);
 
-        clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(_sourcePhrase).getData();
+        clsRuleNode& RuleNode = this->PrefixTree->getOrCreateNode(_sourcePhrase)->getData();
         if (RuleNode.isInvalid()) {
             RuleNode.detachInvalidData();
         }

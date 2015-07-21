@@ -24,9 +24,9 @@ Projects="TargomanCommon
           
 BasePath=`pwd`
 if [ "$2" != "release" ] ; then
-  $QMAKE_CONFIG="CONFIG+=debug"
+  QMAKE_CONFIG="CONFIG+=debug"
 else
-  $QMAKE_CONFIG=""
+  QMAKE_CONFIG=""
 fi
 
 if [ "$1" == "full" ]; then

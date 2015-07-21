@@ -227,7 +227,7 @@ private:
     Q_DISABLE_COPY(clsSearchGraph)
 
     void extendSourcePhrase(const QList<Common::WordIndex_t>& _wordIndexes,
-                            INOUT QList<RuleTable::RulesPrefixTree_t::Node_t*>& _prevNodes,
+                            INOUT QList<RuleTable::RulesPrefixTree_t::pNode_t>& _prevNodes,
                             QList<RuleTable::clsRuleNode>& _ruleNodes);
     void collectPhraseCandidates();
     bool decode();

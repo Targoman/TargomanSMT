@@ -17,7 +17,7 @@
 #include "libTargomanCommon/clsCmdProgressBar.h"
 #include "libTargomanCommon/HashFunctions.hpp"
 #include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
-#include "libTargomanCommon/tmplExpirableCache.hpp"
+#include "libTargomanCommon/tmplBoundedCache.hpp"
 //Above files are included to be checked by compiler
 
 //Macro used to export Library information

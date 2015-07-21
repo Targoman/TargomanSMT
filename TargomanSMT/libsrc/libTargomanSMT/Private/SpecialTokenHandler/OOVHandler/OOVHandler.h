@@ -14,7 +14,7 @@
 #ifndef TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_OOVHANDLER_H
 #define TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_OOVHANDLER_H
 
-#include "libTargomanCommon/tmplExpirableCache.hpp"
+#include "libTargomanCommon/tmplBoundedCache.hpp"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "Private/RuleTable/clsRuleNode.h"
 #include "Private/GlobalConfigs.h"

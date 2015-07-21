@@ -215,6 +215,22 @@ void clsCardinalityHypothesisContainer::prune()
             if(NextCoverageNodeIndex >= HypoContainerIter->nodes().size())
                 continue;
             const clsSearchGraphNode& Node = HypoContainerIter->nodes().at(NextCoverageNodeIndex);
+
+            // Torabzadeh
+            if(Node.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
+               Node.targetRule().toStr() == QStringLiteral("که") &&
+               Node.coverage() == "11111111101111000000000000"){
+                   int a = 2;
+                   a++;
+
+                   for(int i = 0; i < HypoContainerIter->nodes().size(); ++i)
+                   {
+                       const clsSearchGraphNode& Node = HypoContainerIter->nodes().at(i);
+                       qDebug() << "(" << Node.prevNode().targetRule().toStr() << ")" << Node.targetRule().toStr() << Node.getTotalCost() - Node.getCost();
+                   }
+                   exit(0);
+            }
+
             if(Node.getTotalCost() < ChosenNodeTotalCost) {
                 ChosenCoverage = HypoContainerIter.key();
                 ChosenNodeTotalCost = Node.getTotalCost();
@@ -233,6 +249,17 @@ void clsCardinalityHypothesisContainer::prune()
             this->Data->LexicalHypothesisContainer.remove(CoverageIter.key());
         else if (*CoverageIter < this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes().size()){
             QList<clsSearchGraphNode>& Nodes =  this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes();
+
+            // Torabzadeh
+            for(int i = *CoverageIter; i < Nodes.size(); ++i){
+                if(Nodes.at(i).prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
+                   Nodes.at(i).targetRule().toStr() == QStringLiteral("که") &&
+                   Nodes.at(i).coverage() == "11111111101111000000000000"){
+                       int a = 3;
+                       a++;
+                }
+            }
+
             Nodes.erase(Nodes.begin() + *CoverageIter, Nodes.end());
         }
     }

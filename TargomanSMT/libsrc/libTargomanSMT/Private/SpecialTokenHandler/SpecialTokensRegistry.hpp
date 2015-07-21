@@ -1,7 +1,7 @@
 #ifndef INTFSPECIALTOKENHANDLER_HPP
 #define INTFSPECIALTOKENHANDLER_HPP
 
-#include "libTargomanCommon/tmplExpirableCache.hpp"
+#include "libTargomanCommon/tmplBoundedCache.hpp"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "Private/RuleTable/clsRuleNode.h"
 #include "Private/GlobalConfigs.h"
@@ -89,13 +89,13 @@ public:
 
     inline clsExpirableSpecialToken getExpirableSpecialToken(const QString& _token) {
         QMutexLocker Locker(&this->Lock);
-        clsExpirableSpecialToken ExpirableSpecialToken = this->specialTokens.value(_token);
+        clsExpirableSpecialToken ExpirableSpecialToken = this->SpecialTokens.value(_token);
         return ExpirableSpecialToken;
     }
 
     inline void insertExpirableSpecialToken(const QString& _token, const clsExpirableSpecialToken& _specialToken) {
         QMutexLocker Locker(&this->Lock);
-        this->specialTokens.insert(_token, _specialToken);
+        this->SpecialTokens.insert(_token, _specialToken);
     }
 
     inline Common::WordIndex_t obtainWordIndex() {
@@ -104,7 +104,7 @@ public:
         if (this->AvailableWordIndexes.size())
             WordIndex = this->AvailableWordIndexes.takeFirst();
         else
-            WordIndex = this->WordIndexOffset + this->specialTokens.keys().size();
+            WordIndex = this->WordIndexOffset + this->SpecialTokens.keys().size();
         Locker.unlock();
         return WordIndex;
     }
@@ -138,7 +138,7 @@ private:
 
 
     QHash<Common::WordIndex_t, RuleTable::clsRuleNode>                      HandledSpecialTokens;     /**< This hash, caches calculated rule nodes for each word index*/
-    Common::tmplExpirableCache<QHash, QString, clsExpirableSpecialToken>    specialTokens;            /**< This expirable map, cashes calculated word indices and attributes for OOV words.*/
+    Common::tmplBoundedCache<QHash, QString, clsExpirableSpecialToken>      SpecialTokens;            /**< This expirable map, cashes calculated word indices and attributes for OOV words.*/
     Common::WordIndex_t                                                     WordIndexOffset;          /**< OOV word indices should be start from this number which is size of source vocab */
     QList<Common::WordIndex_t>                                              AvailableWordIndexes;     /**< #OOVWords removes not recently seen chashed OOVs, indices of those deleted OOVs will be stored in this variable to reuse them.*/
     QMutex                                                                  Lock;                     /**< Used to prevent simultaneous access of threads to some part of code. */

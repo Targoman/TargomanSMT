@@ -24,6 +24,7 @@ namespace RuleTable {
 
 using namespace Common;
 using namespace Common::Configuration;
+using namespace Common::PrefixTree;
 using namespace FeatureFunction;
 
 tmplConfigurable<FilePath_t> clsBinaryRuleTable::FilePath(
@@ -35,11 +36,17 @@ tmplConfigurable<FilePath_t> clsBinaryRuleTable::FilePath(
             enuPathAccess::File | enuPathAccess::Readable)
         );
 
-tmplConfigurable<bool> clsBinaryRuleTable::LoadOnDemand(
-        clsBinaryRuleTable::baseConfigPath() + "/LoadOnDemand",
-        "TODO Desc",
-        true
-        );
+tmplConfigurable<enuBinaryLoadMode::Type> clsBinaryRuleTable::LoadMode(
+        clsBinaryRuleTable::baseConfigPath() + "/LoadMode",
+        "Binary file load mode. Can be [" + enuBinaryLoadMode::options().join("|")+"]",
+        enuBinaryLoadMode::OnDemand,
+        ReturnTrueCrossValidator);
+
+tmplConfigurable<quint32> clsBinaryRuleTable::MaxCachedItems(
+        clsBinaryRuleTable::baseConfigPath() + "/MaxCachedItems",
+        "Maximum items to be cached",
+        100000,
+        ReturnTrueCrossValidator);
 
 TARGOMAN_REGISTER_MODULE(clsBinaryRuleTable);
 
@@ -55,8 +62,9 @@ clsBinaryRuleTable::~clsBinaryRuleTable()
 
 void clsBinaryRuleTable::initializeSchema()
 {
-    this->InputStream.reset(new clsIFStreamExtended(clsBinaryRuleTable::FilePath.value(),
-                                                    clsBinaryRuleTable::LoadOnDemand.value() == false));
+    this->InputStream.reset(new clsIFStreamExtended(
+                                clsBinaryRuleTable::FilePath.value(),
+                                clsBinaryRuleTable::LoadMode.value() == enuBinaryLoadMode::OnMemory));
     if (this->InputStream->is_open() == false)
         throw exRuleTable("Unable to open " + clsBinaryRuleTable::FilePath.value());
     try{
@@ -100,7 +108,9 @@ void clsBinaryRuleTable::loadTableData()
     TargomanLogInfo(5, "Loading binary rule table from: " + this->FilePath.value());
 
     this->PrefixTree.reset(new RulesPrefixTree_t());
-    this->PrefixTree->readBinary(*this->InputStream, clsBinaryRuleTable::LoadOnDemand.value() == false);
+    this->PrefixTree->readBinary(*this->InputStream,
+                                 clsBinaryRuleTable::LoadMode.value(),
+                                 clsBinaryRuleTable::MaxCachedItems.value());
     TargomanLogInfo(5, "Binary rule table loaded. ");
 }
 
@@ -109,3 +119,5 @@ void clsBinaryRuleTable::loadTableData()
 }
 }
 }
+
+ENUM_CONFIGURABLE_IMPL(Targoman::Common::PrefixTree::enuBinaryLoadMode)
