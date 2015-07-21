@@ -103,7 +103,6 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
                 return Token.attrs().value(
                             enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
         }
-        return Token.string();
     }
 
     if(_target.size() == 0)

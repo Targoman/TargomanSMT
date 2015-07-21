@@ -114,8 +114,6 @@ void clsSearchGraph::init(const QString& _configFilePath)
     clsSearchGraph::pRuleTable->loadTableData();
     clsSearchGraph::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 
-    // Torabzadeh
-    exit(0);
 
     RulesPrefixTree_t::pNode_t Node = clsSearchGraph::pRuleTable->prefixTree().rootNode();
     if(Node->isInvalid())
@@ -169,6 +167,36 @@ void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,
  */
 void clsSearchGraph::collectPhraseCandidates()
 {
+
+    // Vedadian
+    clsRuleNode DummyNode;
+    static QList<Cost_t> DummyCosts;
+    if(DummyCosts.size() == 0) {
+        for(int i = 0; i < clsTargetRule::columnNames().size(); ++i)
+            DummyCosts.append(0);
+    }
+    DummyNode.detachInvalidData();
+    DummyNode.targetRules().append(
+                clsTargetRule(QList<WordIndex_t>() << 2, DummyCosts, true)
+                );
+
+    this->Data->MaxMatchingSourcePhraseCardinality = 1;
+    for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
+        this->Data->PhraseCandidateCollections.append(QVector<clsPhraseCandidateCollection>(this->Data->Sentence.size() - FirstPosition));
+        this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, DummyNode);
+    }
+
+    // Vedadian
+    for(int i = 0; i < this->Data->PhraseCandidateCollections.size(); ++i) {
+        clsPhraseCandidateCollection Collection = this->Data->PhraseCandidateCollections[i][0];
+        qDebug() << i << Collection.targetRules().size();
+    }
+
+    int b =0;
+    b++;
+
+    return;
+
     // TODO: When looking for phrases containing IXML tags, search both for the tagged version
     // and surface form version, e.g. "I ate <num>3</num>" => search for "I ate <num/>" and "I ate 3"
     this->Data->MaxMatchingSourcePhraseCardinality = 0;
