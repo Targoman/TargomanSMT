@@ -1,13 +1,25 @@
 ################################################################################
-# Copyright © 2012-2015, Targoman.com
+#   Targoman: A robust Statistical Machine Translation framework
 #
-# Published under the terms of TCRL(Targoman Community Research License)
-# You can find a copy of the license file with distributed source or
-# download it from http://targoman.com/License.txt
+#   Copyright 2014-2015 by ITRC <http://itrc.ac.ir>
 #
+#   This file is part of Targoman.
+#
+#   Targoman is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   Targoman is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Lesser General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public License
+#   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 ProjectName="KenLM"
-VERSION=0.0.1
+VERSION=0.1.0
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+=
@@ -66,6 +78,6 @@ for(Library, ProjectDependencies):LIBS += -l$$Library
 INCLUDEPATH+=$$BaseLibraryIncludeFolder
 
 ## KenLM does not support to be compiled with c++11 flag set so we must remove flag
-## Do not move this line to head because flag is added by project.ini
+## Do not move this line to head because flags are added by project.ini
 QMAKE_CXXFLAGS -= -std=c++11
 

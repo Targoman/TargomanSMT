@@ -1,13 +1,25 @@
 ################################################################################
-# Copyright © 2012-2015, Targoman.com
+#   Targoman: A robust Statistical Machine Translation framework
 #
-# Published under the terms of TCRL(Targoman Community Research License)
-# You can find a copy of the license file with distributed source or
-# download it from http://targoman.com/License.txt
+#   Copyright 2014-2015 by ITRC <http://itrc.ac.ir>
 #
+#   This file is part of Targoman.
+#
+#   Targoman is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   Targoman is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Lesser General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public License
+#   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 ProjectName="E4SMT"
-VERSION=0.1.0
+VERSION=1.0.0
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+=TargomanCommon \
@@ -32,7 +44,7 @@ DependencySearchPaths +=$$BaseOutput/out/lib
 INCLUDEPATH+=$$BaseOutput/out/include
 
 !exists($$ProjectConfig){
-error("***** $$ProjectName: Unable to find Configuration file $$ProjectConfig ***** ")
+error("** $$ProjectName: Unable to find Configuration file $$ProjectConfig ** ")
 }
 
 include ($$ProjectConfig)
@@ -48,9 +60,9 @@ for(Project, ProjectDependencies) {
       message("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-")
   }
   isEmpty( Found ) {
-    message("***********************************************************************************************")
+    message("*****************************************************************")
     message("!!!!!! $$ProjectName Depends on $$Project but not found ")
-    message("***********************************************************************************************")
+    message("*****************************************************************")
     error("")
   }
   Found = ""

@@ -1,9 +1,59 @@
+/*******************************************************************************
+ * Targoman: A robust Statistical Machine Translation framework                *
+ *                                                                             *
+ * Copyright 2014-2015 by ITRC <http://itrc.ac.ir>                             *
+ *                                                                             *
+ * This file is part of Targoman.                                              *
+ *                                                                             *
+ * Targoman is free software: you can redistribute it and/or modify            *
+ * it under the terms of the GNU Lesser General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or           *
+ * (at your option) any later version.                                         *
+ *                                                                             *
+ * Targoman is distributed in the hope that it will be useful,                 *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               *
+ * GNU Lesser General Public License for more details.                         *
+ * You should have received a copy of the GNU Lesser General Public License    *
+ * along with Targoman. If not, see <http://www.gnu.org/licenses/>.            *
+ *                                                                             *
+ *******************************************************************************/
 
 Here is a brief guide on how to build Targoman SMTCore, tools and associated
 libraries.
 
-1 - Unpack.  This should give a top-level directory with the subdirectories
+1 - Unpack:  This should give a top-level directory with the subdirectories
     listed in README, as well as a few documentation files and a buildAndTest
     script. For an overview of Targoman, see the documentation in Docs folder.
 
-2 - You need Qt v5.3 and above
+2 - Requirements:
+    * Linux x86 64bit machine
+    * Following Qt development packages version 5.4 or above:
+            - Qt5Core
+            - Qt5Concurrent
+            - Qt5Network
+            - Qt5WebSocket
+            - Qt5JSON
+            - Qt5Sql-mysql
+            - Qt5Test
+            - Qt5Xml
+    * g++: v4.8.3 or above
+    * cmake: v3.0 or bove
+    * GNU make: v4.0 or above
+    * libxml2 development v2.9 
+3 - run buildAndTest.sh script on Targoman top level directory to build 
+    everything. Options are:
+    * full: cleans up and rebuilds everything in Debug mode
+    * full release: cleans up and rebuilds everything in Release mode
+    * NO_OPTION: builds changes made to code
+
+4 - All Targoman outputs will be stored in 'out' subdirectories will be:
+    * bin:      Targoman applications and tools. 
+    * build:    Build process object files
+    * conf:     Dictionaries and static configurations off all apps and tools
+    * include:  APIs and essential include files for further development
+    * lib:      Targoman libraries 
+    * test:     Test binaries
+    * unitTest  UnitTest binaries
+
+See more information in Targoman docs and http://blog.targoman.com/en/?cat=3
