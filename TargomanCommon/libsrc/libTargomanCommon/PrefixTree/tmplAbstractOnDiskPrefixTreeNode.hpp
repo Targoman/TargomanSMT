@@ -95,7 +95,6 @@ public:
         this->Data->NodeData.readBinary(_inputStream);
         this->IsInvalid = false;
     }
-
     /**
      * @brief follow  Goes directly from this node to child node.
      * @param _key    key of child
@@ -113,8 +112,16 @@ public:
         return this->Data->NodeData;
     }
 
-
 protected:
+    tmplAbstractOnDiskPrefixTreeNode() { }
+
+    void setDefaultData(clsIFStreamExtended& _fstream, quint32 _maxItems)
+    {
+        this->Data = new tmplAbstractOnDiskPrefixTreeNodeData<itmplKey_t, itmplData_t>(
+                    _fstream, _maxItems);
+        this->IsInvalid = false;
+    }
+
     /** @brief loadChildFromDisk Loads a child data from disk.
      *
      * This function gets position of this child from #ChildPositionInStream map. If it is not existed

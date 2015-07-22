@@ -229,6 +229,7 @@ void clsCardinalityHypothesisContainer::prune()
                 continue;
             const clsSearchGraphNode& Node = HypoContainerIter->nodes().at(NextCoverageNodeIndex);
 
+            #ifdef TARGOMAN_SHOW_DEBUG
             // Torabzadeh
             if(Node.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
                Node.targetRule().toStr() == QStringLiteral("که") &&
@@ -241,8 +242,9 @@ void clsCardinalityHypothesisContainer::prune()
                        const clsSearchGraphNode& Node = HypoContainerIter->nodes().at(i);
                        qDebug() << "(" << Node.prevNode().targetRule().toStr() << ")" << Node.targetRule().toStr() << Node.getTotalCost() - Node.getCost();
                    }
-                   exit(0);
+//                   exit(0);
             }
+            #endif
 
             if(Node.getTotalCost() < ChosenNodeTotalCost) {
                 ChosenCoverage = HypoContainerIter.key();
@@ -263,6 +265,7 @@ void clsCardinalityHypothesisContainer::prune()
         else if (*CoverageIter < this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes().size()){
             QList<clsSearchGraphNode>& Nodes =  this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes();
 
+            #ifdef TARGOMAN_SHOW_DEBUG
             // Torabzadeh
             for(int i = *CoverageIter; i < Nodes.size(); ++i){
                 if(Nodes.at(i).prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
@@ -272,6 +275,7 @@ void clsCardinalityHypothesisContainer::prune()
                        a++;
                 }
             }
+            #endif
 
             Nodes.erase(Nodes.begin() + *CoverageIter, Nodes.end());
         }

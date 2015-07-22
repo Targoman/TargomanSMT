@@ -251,12 +251,20 @@ void clsMosesPlainRuleTable::loadTableData()
                                 _second.precomputedValue(this->PrecomputedValueIndex);
                     }
         );
+
         // Prune the unnecessary rules
         if(NumberOfRulesToKeep < TargetRuleList.size())
             TargetRuleList.erase(
                     TargetRuleList.begin() + NumberOfRulesToKeep,
                     TargetRuleList.end()
                     );
+
+        qStableSort(TargetRuleList.begin(), TargetRuleList.end(),
+                    [&] (const clsTargetRule& _first, const clsTargetRule& _second) {
+                        return _first.precomputedValue(this->PrecomputedValueIndex) <
+                        _second.precomputedValue(this->PrecomputedValueIndex);
+                    }
+        );
     }
     TargomanLogInfo(5, "Moses plain text rule set loaded. ");
 }

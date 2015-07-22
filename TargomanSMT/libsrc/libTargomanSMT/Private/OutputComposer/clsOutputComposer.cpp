@@ -103,6 +103,10 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
                 return Token.attrs().value(
                             enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
         }
+        // Absolutely just a fall-back for when the translation can not be shown using
+        // a target language word
+        if(_target.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex())
+            return Token.string();
     }
 
     if(_target.size() == 0)

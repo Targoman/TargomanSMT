@@ -66,10 +66,12 @@ bool clsRuleNode::isInvalid() const
 
 void clsRuleNode::readBinary(std::istream &_input)
 {
-    if(this->isInvalid())
-        this->detachInvalidData();
     clsIFStreamExtended& InStream = (clsIFStreamExtended&)(_input);
     int TargetRuleCount = InStream.read<int>();
+    if (TargetRuleCount == 0)
+        return;
+    if(this->isInvalid())
+        this->detachInvalidData();
     this->Data->TargetRules.reserve(TargetRuleCount);
     for(int i = 0; i < TargetRuleCount; ++i) {
         clsTargetRule TargetRule;
@@ -81,6 +83,7 @@ void clsRuleNode::readBinary(std::istream &_input)
 void clsRuleNode::writeBinary(std::ostream &_output) const
 {
     clsOFStreamExtended& OutStream = (clsOFStreamExtended&)(_output);
+    if (this->Data->TargetRules.size() == 0)
     OutStream.write(this->Data->TargetRules.size());
     foreach(const clsTargetRule& TargetRule, this->Data->TargetRules)
         TargetRule.writeBinary(OutStream);

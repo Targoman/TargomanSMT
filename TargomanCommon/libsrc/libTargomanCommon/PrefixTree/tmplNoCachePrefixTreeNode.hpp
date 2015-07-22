@@ -47,12 +47,18 @@ public:
                  tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream, 0)
     {}
 
+private:
+    tmplNoCachePrefixTreeNode() { }
+
 protected:
     virtual pNode_t getOrCreateChildByKey(const itmplKey_t _key) {
-        QExplicitlySharedDataPointer<
-                tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t>>& Result = this->Data->Children[_key];
-        if(Result.data() == NULL)
-            Result = new tmplNoCachePrefixTreeNode<itmplKey_t, itmplData_t>(this->Data->InputStream);
+        pNode_t Result = this->follow(_key);
+        if(Result->isInvalid()) {
+            tmplNoCachePrefixTreeNode* NewNode = new tmplNoCachePrefixTreeNode();
+            NewNode->setDefaultData(this->Data->InputStream, this->Data->Children.maxItems());
+            this->Data->Children[_key] = NewNode;
+            Result = NewNode;
+        }
         return Result;
     }
 

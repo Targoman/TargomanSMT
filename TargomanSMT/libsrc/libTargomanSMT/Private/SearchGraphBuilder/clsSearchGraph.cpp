@@ -129,18 +129,20 @@ void clsSearchGraph::init(const QString& _configFilePath)
     /// @note As a result of aligning some words to NULL by general word aligners, we need to take care of
     ///       tokens that have a word index but only contribute to multi-word phrases. These will cause
     ///       malfunction of OOV handler module as it will assume these words have translations by themselves
-//    for(auto TokenIter = gConfigs.SourceVocab.begin(); TokenIter != gConfigs.SourceVocab.end(); ++TokenIter) {
-//        clsRuleNode& SingleWordRuleNode =
-//                clsSearchGraph::pRuleTable->prefixTree().getOrCreateNode(
-//                    QList<WordIndex_t>() << TokenIter.value()
-//                    )->getData();
-//        if(SingleWordRuleNode.isInvalid())
-//            SingleWordRuleNode.detachInvalidData();
-//        if(SingleWordRuleNode.targetRules().isEmpty())
-//            SingleWordRuleNode.targetRules().append(
-//                        OOVHandler::instance().generateTargetRules(TokenIter.key())
-//                        );
-//    }
+    for(auto TokenIter = gConfigs.SourceVocab.begin(); TokenIter != gConfigs.SourceVocab.end(); ++TokenIter) {
+//    for(auto TokenIter = gConfigs.SourceVocab.find("Tape"); TokenIter != gConfigs.SourceVocab.end(); ++TokenIter) {
+        clsRuleNode& SingleWordRuleNode =
+                clsSearchGraph::pRuleTable->prefixTree().getOrCreateNode(
+                    QList<WordIndex_t>() << TokenIter.value()
+                    )->getData();
+        if(SingleWordRuleNode.isInvalid())
+            SingleWordRuleNode.detachInvalidData();
+        if(SingleWordRuleNode.targetRules().isEmpty())
+            SingleWordRuleNode.targetRules().append(
+                        OOVHandler::instance().generateTargetRules(TokenIter.key())
+                        );
+//        break;
+   }
 
 }
 
@@ -151,19 +153,10 @@ void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,
     QList<RulesPrefixTree_t::pNode_t> NextNodes;
     foreach(RulesPrefixTree_t::pNode_t PrevNode, _prevNodes) {
         foreach(WordIndex_t WordIndex, _wordIndexes) {
-            if(dynamic_cast<Common::PrefixTree::tmplNoCachePrefixTreeNode<WordIndex_t, clsRuleNode>*>(PrevNode.data()) == NULL) {
-                int a = 1;
-                ++a;
-            }
             RulesPrefixTree_t::pNode_t NextNode = PrevNode->follow(WordIndex);
             if(NextNode->isInvalid() == false) {
                 _ruleNodes.append(NextNode->getData());
                 NextNodes.append(NextNode);
-                if (dynamic_cast<Common::PrefixTree::tmplNoCachePrefixTreeNode<WordIndex_t, clsRuleNode>*>(NextNode.data()) == NULL){
-                    int a = 1;
-                    ++a;
-                }
-
             }
         }
     }
@@ -204,8 +197,6 @@ void clsSearchGraph::collectPhraseCandidates()
 
             this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, RuleNodes);
 
-            // Vedadian
-            qDebug() << FirstPosition << this->Data->PhraseCandidateCollections[FirstPosition][0].targetRules().size();
         }
 
         //Max PhraseTable order will be implicitly checked by follow
@@ -223,18 +214,20 @@ void clsSearchGraph::collectPhraseCandidates()
         }
     }
 
-    // Vedadian
-    qDebug() << " ========================================== ";
-    for(int i = 0; i < this->Data->PhraseCandidateCollections.size(); ++i) {
-        clsPhraseCandidateCollection Collection = this->Data->PhraseCandidateCollections[i][0];
-        QStringList A;
-        foreach(const clsTargetRule& TR, Collection.targetRules())
-            A.append(QString::number(TR.at(0)) + ":" + TR.toStr());
-        qDebug() << i << Collection.targetRules().size()<<A.join(" | ");
+    // Torabzadeh
+    for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
+        for (size_t LastPosition = FirstPosition ; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition) {
+            for(int i = 0; i < this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].targetRules().size(); ++i) {
+                std::cout << "BEGIN- " << this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].targetRules().at(i).toStr().toUtf8().constData()
+                          << " IDX[" << FirstPosition << ", " << LastPosition-FirstPosition << "] "
+                          << " -END" << std::endl;
+            }
+        }
+        std::cout << std::endl;
+        std::cout << std::endl;
+        std::cout << std::endl;
     }
-
-    int a =0;
-    a++;
+    exit(0);
 
 }
 
@@ -407,10 +400,13 @@ bool clsSearchGraph::decode()
                                                            RestCost);
 #ifdef TARGOMAN_SHOW_DEBUG
                             // Torabzadeh
-                            if(NewHypoNode.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
-                               NewHypoNode.targetRule().toStr() == QStringLiteral("که") &&
-                               NewCardinality == 13 &&
-                               NewCoverage == "11111111101111000000000000"){
+                            if(//NewHypoNode.prevNode().targetRule().toStr() == QStringLiteral("") &&
+                               NewHypoNode.targetRule().toStr() == QStringLiteral("به یک") /*&&
+                               NewCardinality == 1 &&
+                               NewCoverage == "000001000000"*/){
+                                   for(int i = 0; i < PhraseCandidates.targetRules().size(); ++i) {
+                                       std::cout << PhraseCandidates.targetRules().at(i).toStr().toUtf8().constData() << std::endl;
+                                   }
                                    int a = 2;
                                    a++;
                             }
@@ -473,13 +469,15 @@ bool clsSearchGraph::decode()
                            << " , RestCost: " << SelectedNode.getTotalCost() - SelectedNode.getCost()
                            << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
                            << ")" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
-                    TargomanDebug(9,QString::fromUtf8(Stream.str().c_str()));
+                    std::cout << Stream.str().c_str();
+                    //TargomanDebug(5, QString::fromUtf8(Stream.str().c_str()));
                 }
                 if(Iterator == CurrCardHypoContainer.lexicalHypotheses().begin())
                     break;
             }
         }
-        TargomanDebug(9,"\n\n\n");
+        std::cout << "\n\n\n";
+        //TargomanDebug(5,"\n\n\n");
         //*/
 #endif
     }//for NewCardinality
@@ -584,6 +582,7 @@ clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _begin
                 (int)clsPhraseCandidateCollectionData::MaxTargetPhraseCount.value(),
                 this->TargetRules.size()
                 );
+
     // TODO: Maybe sorting can be added here
     this->BestApproximateCost = INFINITY;
     // _observationHistogramSize must be taken care of to not exceed this->TargetRules.size()

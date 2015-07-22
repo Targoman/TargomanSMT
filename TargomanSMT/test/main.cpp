@@ -83,25 +83,26 @@ void printMemoryUsage(const QString& _stepString){
 int main(int argc, char *argv[])
 {
     //TARGOMAN_IO_SETTINGS.setDefault();
-    //TARGOMAN_IO_SETTINGS.setDefault(7);
-    //TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
-    TARGOMAN_IO_SETTINGS.setSilent();
-    Logger::instance().setActive(false);
+    TARGOMAN_IO_SETTINGS.setDefault(9);
+    TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
+    //TARGOMAN_IO_SETTINGS.setSilent();
+    //Logger::instance().setActive(false);
 
     try{
         clsSafeCoreApplication App(argc, argv);
 
         printMemoryUsage("@first");
         ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf");
-
+        TARGOMAN_IO_SETTINGS.setDefault(8);
+        TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
         //Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
 
         printMemoryUsage("after init");
         Translator::init(ConfigManager::instance().configFilePath());
         printMemoryUsage("after load all");
 
-//        Translator::saveBinaryRuleTable("phrase-table.dev.kenlm.bin");
-//        return 0;
+        //Translator::saveBinaryRuleTable("phrase-table.dev.kenlm.bin");
+        //return 0;
 
         QFile File(argv[1]);
         QTextStream Stream(&File);

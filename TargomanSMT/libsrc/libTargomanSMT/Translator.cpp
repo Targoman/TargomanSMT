@@ -59,9 +59,9 @@ void Translator::init(const QString _configFilePath)
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());
     gConfigs.EmptyLMScorer->init(false);
 
-    SearchGraphBuilder::clsSearchGraph::init(_configFilePath);
     OOVHandler::instance().initialize();
     IXMLTagHandler::instance().initialize();
+    SearchGraphBuilder::clsSearchGraph::init(_configFilePath);
 
     TranslatorInitialized = true;
 }
