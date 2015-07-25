@@ -214,6 +214,7 @@ void clsSearchGraph::collectPhraseCandidates()
         }
     }
 
+#ifdef TARGOMAN_SHOW_DEBUG
     // Torabzadeh
     for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
         for (size_t LastPosition = FirstPosition ; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition) {
@@ -228,6 +229,7 @@ void clsSearchGraph::collectPhraseCandidates()
         std::cout << std::endl;
     }
     exit(0);
+#endif
 
 }
 
