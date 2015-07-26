@@ -46,6 +46,8 @@ public:
 
 public slots:
     void slotExecute();
+
+private slots:
     void slotValidateAgent(INOUT QString&        _user,
                           const QString&        _pass,
                           const QString&        _ip,

@@ -19,40 +19,28 @@
  *                                                                            *
  ******************************************************************************/
 /**
- * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author 
  */
 
-#ifndef TARGOMAN_APPS_APPTARGOMANLOADBALANCER_H
-#define TARGOMAN_APPS_APPTARGOMANLOADBALANCER_H
-
-#include "libTargomanCommon/Configuration/intfRPCExporter.hpp"
-#include "libTargomanCommon/Types.h"
-
+#ifndef TARGOMAN_APPS_APPTARGOMANSMTCONSOLE_H
+#define TARGOMAN_APPS_APPTARGOMANSMTCONSOLE_H
 
 namespace Targoman {
 namespace Apps{
 
-class appTargomanLoadBalancer : public Common::Configuration::intfRPCExporter
+class appAPP_NAME : public QObject
 {
     Q_OBJECT
 public:
-    appTargomanLoadBalancer() {
-        this->exportMyRPCs();
-        }
+    appAPP_NAME() {}
 
 public slots:
     void slotExecute();
 
-public slots:
-    Common::Configuration::stuRPCOutput rpcTTS(const QVariantMap& _args);
-
-private slots:
-    void slotValidateAgent(QString &_user, const QString &_pass, const QString &_ip, bool &_canView, bool &_canChange);
-    void slotPong(Targoman::Common::stuPong &_pong);
-
+private:
 };
 
 }
 }
 
-#endif // TARGOMAN_APPS_APPTARGOMANLOADBALANCER_H
+#endif // TARGOMAN_APPS_APPTARGOMANSMTCONSOLE_H

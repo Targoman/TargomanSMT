@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 
     QCoreApplication App(argc, argv);
 
-    qDebug()<<TestE.value();
+/*    qDebug()<<TestE.value();
     WildPattern.setFromVariant("*.xml");
     qDebug()<<WildPattern.value();
     RegexPattern.setFromVariant("^[a-z]*");
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 
     qDebug()<<SimpleAuthentication::hashPass("mehran", "1234");
     exit(0);
-
+*/
 
 
     /*Targoman::Common::tmplExpirableCache<QHash,int,QString> A;

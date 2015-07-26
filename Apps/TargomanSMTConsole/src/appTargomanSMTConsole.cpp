@@ -41,30 +41,43 @@ using namespace Common;
 void appTargomanSMTConsole::slotExecute()
 {
     try{
-        TranslationWriter::instance(); //Just to initialize first instance in order to suppress multithreaded instantiation
-
-        if(gConfigs::InputText.value().size()){
+        switch(gConfigs::Mode.value()){
+        case enuAppMode::MakeBinary:
             Translator::init(Configuration::ConfigManager::instance().configFilePath());
-            TranslationWriter::instance().writeTranslation(1,
-                                                           Translator::translate(gConfigs::InputText.value(), true).Translation);
-        } else if (gConfigs::InputFile.value().size()) {
-            QFile InFile(gConfigs::InputFile.value());
-            if (InFile.open(QFile::ReadOnly) == false)
-                throw exTargomanSMTConsole("Unable to open <" + InFile.fileName() + "> for reading.");
+            Translator::saveBinaryRuleTable(gConfigs::OutputFile.value());
+            break;
+        case enuAppMode::Training:
+            //TODO Implement training
+            break;
+        case enuAppMode::Translation:
+            TranslationWriter::instance(); //Just to initialize first instance in order to suppress multithreaded instantiation
 
-            QTextStream InStream(&InFile);
-            InStream.setCodec("UTF-8");
-            QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
-            Translator::init(Configuration::ConfigManager::instance().configFilePath());
-            int Index = 0;
-            while(InStream.atEnd() == false){
-                QThreadPool::globalInstance()->start(new clsTranslationJob(++Index, InStream.readLine()));
+            if(gConfigs::InputText.value().size()){
+                Translator::init(Configuration::ConfigManager::instance().configFilePath());
+                TranslationWriter::instance().writeTranslation(1,
+                                                               Translator::translate(gConfigs::InputText.value(), true).Translation);
+            } else if (gConfigs::InputFile.value().size()) {
+                QFile InFile(gConfigs::InputFile.value());
+                if (InFile.open(QFile::ReadOnly) == false)
+                    throw exTargomanSMTConsole("Unable to open <" + InFile.fileName() + "> for reading.");
+
+                QTextStream InStream(&InFile);
+                InStream.setCodec("UTF-8");
+                QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
+                Translator::init(Configuration::ConfigManager::instance().configFilePath());
+                int Index = 0;
+                while(InStream.atEnd() == false){
+                    QThreadPool::globalInstance()->start(new clsTranslationJob(++Index, InStream.readLine()));
+                }
+                QThreadPool::globalInstance()->waitForDone();
+                TranslationWriter::instance().finialize();
+            }else{
+                TargomanWarn(1,"No job to be done!!!");
             }
-            QThreadPool::globalInstance()->waitForDone();
-            TranslationWriter::instance().finialize();
-        }else{
-            TargomanWarn(1,"No job to be done!!!");
-        }
+            break;
+        default:
+            break;
+       }
 
         QCoreApplication::exit(0);
         return;

@@ -30,6 +30,36 @@ namespace Apps {
 using namespace Common;
 using namespace Common::Configuration;
 
+tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
+        gConfigs::appConfig("Mode"),
+        "Working Mode of the application. Can be [" + enuAppMode::options().join("|")+"]",
+        enuAppMode::Translation,
+        [] (const intfConfigurable& _item, QString& _errorMessage) {
+            switch(enuAppMode::toEnum(_item.toVariant().toString().toLatin1().constData())){
+            case enuAppMode::Translation:
+                return true;
+            case enuAppMode::Training:
+                _errorMessage = "Targoman training is not implemented yet!!!";
+                return false;
+            case enuAppMode::MakeBinary:
+                if (gConfigs::OutputFile.value().isEmpty()){
+                    _errorMessage = "No output file defined to save binary file";return false;
+                }else if (ConfigManager::instance().getConfig("/Modules/RuleTable").toString().contains("Binary")){
+                    _errorMessage = "Binary rule table table can not be saved again";return false;
+                }else
+                    return true;
+                break;
+            default:
+                break;
+            }
+        },
+        "m",
+        "APP_MODE",
+        "mode",
+        (enuConfigSource::Type)(
+            enuConfigSource::Arg  |
+            enuConfigSource::File));
+
 tmplConfigurable<QString>     gConfigs::InputFile(
         gConfigs::appConfig("InputFile"),
         "Input file path to convert",
@@ -72,3 +102,5 @@ tmplConfigurable<quint8>     gConfigs::MaxThreads(
 
 }
 }
+
+ENUM_CONFIGURABLE_IMPL(Targoman::Apps::enuAppMode);

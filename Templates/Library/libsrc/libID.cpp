@@ -19,7 +19,7 @@
  *                                                                            *
  ******************************************************************************/
 /**
- * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author 
  */
 
 #include "libTargomanCommon/Macros.h"

@@ -19,48 +19,36 @@
  *                                                                            *
  ******************************************************************************/
 /**
- * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author 
  */
 
-#ifndef TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H
-#define TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H
-
-#include <QtNetwork/QHostAddress>
-#include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/tmplConfigurableMultiMap.hpp"
-#include "libTargomanCommon/Configuration/Validators.hpp"
-#include "libTargomanCommon/Macros.h"
-#include "libTargomanCommon/exTargomanBase.h"
+#include "appAPP_NAME.h"
+#include "libTargomanCommon/Configuration/ConfigManager.h"
+#include "Configs.h"
 
 namespace Targoman {
 namespace Apps {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanLoadBalancer, Common::exTargomanBase);
+using namespace SMT;
+using namespace Common;
 
-extern QString ActorUUID;
-class gConfigs{
-public:
-    struct stuServer{
-        stuServer(const QString& _basePath);
-        Common::Configuration::tmplConfigurable<QString> Host;
-        Common::Configuration::tmplConfigurable<quint16> Port;
-        Common::Configuration::tmplConfigurable<quint8>  AbsoluteScore;
-        Common::Configuration::tmplConfigurable<bool>    Active;
-        Common::Configuration::tmplConfigurable<QString> UserName;
-        Common::Configuration::tmplConfigurable<QString> Password;
-        struct stuStatistics{
-            stuStatistics(const QString& _basePath);
-            Common::Configuration::tmplConfigurable<qint8> Load1MinPercent;
-            Common::Configuration::tmplConfigurable<qint8> Load15MinPercent;
-            Common::Configuration::tmplConfigurable<qint8> FreeMemoryPercent;
-            Common::Configuration::tmplConfigurable<qint8> TranslationQueuePercent;
-        }Statistics;
-    };
+void appAPP_NAME::slotExecute()
+{
+    try{
+        //DO job here
+        QCoreApplication::exit(0);
+        return;
+    }catch(exTargomanBase& e){
+        TargomanError(e.what());
+    }catch (std::exception &e){
+        TargomanError(e.what());
+    }catch(...){
+        TargomanError("FATAL Unrecognized exception");
+    }
 
-public:
-    static Common::Configuration::tmplConfigurableMultiMap<stuServer> TranslationServers;
-};
+    QCoreApplication::exit(-1);
+}
 
 }
+
 }
-#endif // TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H

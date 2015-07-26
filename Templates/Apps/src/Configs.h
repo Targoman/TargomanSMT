@@ -19,15 +19,13 @@
  *                                                                            *
  ******************************************************************************/
 /**
- * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author 
  */
 
-#ifndef TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H
-#define TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H
+#ifndef TARGOMAN_APPS_APPNAMESPACE_CONFIGS_H
+#define TARGOMAN_APPS_APPNAMESPACE_CONFIGS_H
 
-#include <QtNetwork/QHostAddress>
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/tmplConfigurableMultiMap.hpp"
 #include "libTargomanCommon/Configuration/Validators.hpp"
 #include "libTargomanCommon/Macros.h"
 #include "libTargomanCommon/exTargomanBase.h"
@@ -35,32 +33,19 @@
 namespace Targoman {
 namespace Apps {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanLoadBalancer, Common::exTargomanBase);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exAPP_NAME, Common::exTargomanBase);
 
-extern QString ActorUUID;
 class gConfigs{
 public:
-    struct stuServer{
-        stuServer(const QString& _basePath);
-        Common::Configuration::tmplConfigurable<QString> Host;
-        Common::Configuration::tmplConfigurable<quint16> Port;
-        Common::Configuration::tmplConfigurable<quint8>  AbsoluteScore;
-        Common::Configuration::tmplConfigurable<bool>    Active;
-        Common::Configuration::tmplConfigurable<QString> UserName;
-        Common::Configuration::tmplConfigurable<QString> Password;
-        struct stuStatistics{
-            stuStatistics(const QString& _basePath);
-            Common::Configuration::tmplConfigurable<qint8> Load1MinPercent;
-            Common::Configuration::tmplConfigurable<qint8> Load15MinPercent;
-            Common::Configuration::tmplConfigurable<qint8> FreeMemoryPercent;
-            Common::Configuration::tmplConfigurable<qint8> TranslationQueuePercent;
-        }Statistics;
-    };
+    static inline QString appConfig(const QString& _name){
+        return "App/" + _name;
+    }
 
-public:
-    static Common::Configuration::tmplConfigurableMultiMap<stuServer> TranslationServers;
+    static Common::Configuration::tmplConfigurable<TYPE>          CONFIG_VAR_1;
+    static Common::Configuration::tmplConfigurable<TYPE>          CONFIG_VAR_2;
+    static Common::Configuration::tmplConfigurable<TYPE>          CONFIG_VAR_n;
 };
 
 }
 }
-#endif // TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H
+#endif // TARGOMAN_APPS_APPNAMESPACE_CONFIGS_H

@@ -30,6 +30,9 @@
 #include "libTargomanCommon/HashFunctions.hpp"
 #include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
 #include "libTargomanCommon/tmplBoundedCache.hpp"
+#include "libTargomanCommon/Configuration/tmplConfigurableArray.hpp"
+#include "libTargomanCommon/Configuration/tmplConfigurableMultiMap.hpp"
+
 //Above files are included to be checked by compiler
 
 //Macro used to export Library information

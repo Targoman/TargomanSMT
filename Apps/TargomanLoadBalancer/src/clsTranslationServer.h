@@ -37,13 +37,14 @@ class clsTranslationServer : public QObject
     Q_OBJECT
 public:
 
-    clsTranslationServer(size_t _configIndex = 0);
+    clsTranslationServer(const QString& _dir, size_t _configIndex = 0);
     void connect();
     bool isConnected();
 
     qint64 sendRequest(const QString& _name = "", const QVariantMap& _args = QVariantMap());
 
     inline quint32 configIndex(){return this->ConfigIndex;}
+    inline const QString& dir(){return this->Dir;}
 
 signals:
     void sigNextRequest();
@@ -66,6 +67,7 @@ private:
     QString    LastRequestUUID;
     QTcpSocket Socket;
     quint32    ConfigIndex;
+    QString    Dir;
     bool       LoggedIn;
 };
 

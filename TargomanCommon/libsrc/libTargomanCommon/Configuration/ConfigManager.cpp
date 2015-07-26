@@ -34,6 +34,7 @@
 #include "Private/clsConfigManager_p.h"
 #include "Private/clsConfigManagerOverNet.h"
 #include "tmplConfigurableArray.hpp"
+#include "tmplConfigurableMultiMap.hpp"
 #include "intfRPCExporter.hpp"
 #include "Private/RPCRegistry.hpp"
 
@@ -161,6 +162,19 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
                                 if (!ConfArray)
                                     throw exConfiguration("Invalid use of array flag on non array configuration");
                                 ConfArray->reserve(ConfigFile.childGroups().size());
+                                Generated = true;
+                                ConfigFile.endGroup();
+                            }else if (ConfigItem->configType() == enuConfigType::MultiMap){
+                                ConfigFile.beginGroup(ParentPath);
+                                intfConfigurableMultiMap* ConfMap =
+                                        dynamic_cast<intfConfigurableMultiMap*>(ConfigItem);
+                                if (!ConfMap)
+                                    throw exConfiguration("Invalid use of multimap flag on non multimap configuration");
+                                foreach(const QString& Key, ConfigFile.childGroups()){
+                                    ConfigFile.beginGroup(Key);
+                                    ConfMap->reserve(Key, ConfigFile.childGroups().size());
+                                    ConfigFile.endGroup();
+                                }
                                 Generated = true;
                                 ConfigFile.endGroup();
                             }
@@ -657,6 +671,11 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
     intfConfigurable::intfConfigurable(const intfConfigurable &_other):
         pPrivate(new Private::intfConfigurablePrivate)
     {
+        *this = _other;
+    }
+
+    intfConfigurable &intfConfigurable::operator =(const intfConfigurable &_other)
+    {
         this->Description = _other.Description;
         this->ShortSwitch = _other.ShortSwitch;
         this->LongSwitch = _other.LongSwitch;
@@ -671,6 +690,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
         //To replace pointer of old registered config with the new copied config
         this->pPrivate->updateConfig(&_other, this);
         this->pPrivate->Finalizer = _other.pPrivate->Finalizer;
+        return *this;
     }
 
     intfConfigurable::~intfConfigurable()

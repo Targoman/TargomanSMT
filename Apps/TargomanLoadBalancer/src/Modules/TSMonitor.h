@@ -53,15 +53,16 @@ public:
     bool                           InfoUpdated;
     size_t                         ConnectedServers;
     QMutex                         ListLock;
-    QList<clsTranslationServer*>    Servers;
+    QMultiMap<QString, clsTranslationServer*>    Servers;
 };
 
 class TSMonitor : public QThread, public Common::Configuration::intfModule
 {
     Q_OBJECT
 public:
-    quint16 bestServerIndex();
+    quint16 bestServerIndex(const QString& _dir);
     size_t connectedServers(){return this->pPrivate->ConnectedServers; }
+    void wait4AtLeastOneServerAvailable();
 
 private:
     void run();

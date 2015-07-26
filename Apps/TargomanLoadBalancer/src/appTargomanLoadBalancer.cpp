@@ -52,16 +52,9 @@ void appTargomanLoadBalancer::slotExecute()
                 Qt::DirectConnection);
 
         Modules::TSMonitor::instance().start();
-        while(true){
-            try{
-                sleep(1);
-                Modules::TSMonitor::instance().bestServerIndex();
-                Configuration::ConfigManager::instance().startAdminServer();
-                break;
-            }catch(exTargomanLoadBalancer &e){
-                TargomanInfo(1,"Waiting for at least one server to be available");
-            }
-        }
+        sleep(1);
+        Modules::TSMonitor::instance().wait4AtLeastOneServerAvailable();
+        Configuration::ConfigManager::instance().startAdminServer();
     }catch(exTargomanBase& e){
         TargomanError(e.what());
     }catch (std::exception &e){
@@ -69,6 +62,12 @@ void appTargomanLoadBalancer::slotExecute()
     }catch(...){
         TargomanError("FATAL Unrecognized exception");
     }
+}
+
+Configuration::stuRPCOutput appTargomanLoadBalancer::rpcTTS(const QVariantMap &_args)
+{
+    Q_UNUSED(_args)
+    throw exTargomanMustBeImplemented("rpcTTS is not implemented yet!");
 }
 
 void appTargomanLoadBalancer::slotValidateAgent(QString &_user, const QString &_pass, const QString &_ip, bool &_canView, bool &_canChange)
@@ -90,7 +89,8 @@ void appTargomanLoadBalancer::slotPong(stuPong &_pong)
 {
     //TODO complete me to be more verbose on status reporting
     _pong.Status = enuStatus::Ok;
-    _pong.Message = QString("%1/%2").arg(TSMonitor::instance().connectedServers()).arg(gConfigs::TranslationServers.size());
+    _pong.Message = QString("%1/%2").arg(
+                TSMonitor::instance().connectedServers()).arg(gConfigs::TranslationServers.size());
 }
 
 }

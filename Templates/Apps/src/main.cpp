@@ -19,40 +19,49 @@
  *                                                                            *
  ******************************************************************************/
 /**
- * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author 
  */
 
-#ifndef TARGOMAN_APPS_APPTARGOMANLOADBALANCER_H
-#define TARGOMAN_APPS_APPTARGOMANLOADBALANCER_H
 
-#include "libTargomanCommon/Configuration/intfRPCExporter.hpp"
-#include "libTargomanCommon/Types.h"
+#include <QCoreApplication>
+#include <QTimer>
+#include "libTargomanCommon/Macros.h"
+#include "libTargomanCommon/Configuration/ConfigManager.h"
 
+#include "appAPP_NAME.h"
 
-namespace Targoman {
-namespace Apps{
+const char* LicenseStr =
+        "%1 Ver: %2 Build %3\n"
+        "Published under the terms of GNU Lesser General Public License version 3\n\n"
+        "%1 [Arguments]\n"
+        "Arguments: \n";
 
-class appTargomanLoadBalancer : public Common::Configuration::intfRPCExporter
+using namespace Targoman;
+using namespace Targoman::Common;
+using namespace Targoman::Apps;
+
+int main(int _argc, char *_argv[])
 {
-    Q_OBJECT
-public:
-    appTargomanLoadBalancer() {
-        this->exportMyRPCs();
-        }
+    try{
+        QCoreApplication App(_argc, _argv);
 
-public slots:
-    void slotExecute();
 
-public slots:
-    Common::Configuration::stuRPCOutput rpcTTS(const QVariantMap& _args);
+        Configuration::ConfigManager::instance().init(
+                    QString(LicenseStr).arg(TARGOMAN_M2STR(PROJ_VERSION)).arg(__DATE__),
+                    App.arguments().mid(1)
+                    );
 
-private slots:
-    void slotValidateAgent(QString &_user, const QString &_pass, const QString &_ip, bool &_canView, bool &_canChange);
-    void slotPong(Targoman::Common::stuPong &_pong);
+        QTimer::singleShot(10, new appAPP_NAME, SLOT(slotExecute()));
 
-};
-
+        return App.exec();
+    }catch(exTargomanBase& e){
+        TargomanError(e.what());
+    }catch (std::exception &e){
+        TargomanError(e.what());
+    }catch(...){
+        TargomanError("FATAL Unrecognized exception");
+    }
+    return -1;
 }
-}
 
-#endif // TARGOMAN_APPS_APPTARGOMANLOADBALANCER_H
+

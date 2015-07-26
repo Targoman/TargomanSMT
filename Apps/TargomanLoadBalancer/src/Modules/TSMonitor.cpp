@@ -61,9 +61,13 @@ void TSMonitor::run()
 {
     try{
         this->pPrivate.reset(new TSMonitorPrivate);
-        for(size_t i=0; i<gConfigs::TranslationServers.size(); ++i)
-            if (gConfigs::TranslationServers.at(i).constData().Active.value() == true)
-                this->pPrivate->Servers.append(new clsTranslationServer(i));
+        foreach (const QString& Key,gConfigs::TranslationServers.keys()){
+            const tmplConfigurableArray<gConfigs::stuServer>& ServersConfig =
+                    gConfigs::TranslationServers.values(Key);
+            for(size_t i=0; i<ServersConfig.size(); ++i)
+                    this->pPrivate->Servers.insertMulti(Key,new clsTranslationServer(Key,i));
+        }
+
         this->exec();
     }catch(exTargomanBase &e){
         TargomanError(e.what());
@@ -72,7 +76,7 @@ void TSMonitor::run()
     }
 }
 
-quint16 TSMonitor::bestServerIndex()
+quint16 TSMonitor::bestServerIndex(const QString &_dir)
 {
     if (this->pPrivate.isNull())
         throw exTSMonitor("Not initialized yet.");
@@ -80,7 +84,7 @@ quint16 TSMonitor::bestServerIndex()
     qint16 BestServerScore = 0;
     qint16 BestServerIndex;
 
-    foreach (clsTranslationServer* Server, this->pPrivate->Servers){
+    foreach (clsTranslationServer* Server, this->pPrivate->Servers.values(_dir)){
         QReadLocker Locker(&Server->RWLock);
         if (Server->TotalScore > BestServerScore){
             BestServerIndex = Server->configIndex();
@@ -92,6 +96,20 @@ quint16 TSMonitor::bestServerIndex()
         throw exTSMonitor("No server available.");
 
     return BestServerIndex;
+}
+
+void TSMonitor::wait4AtLeastOneServerAvailable()
+{
+    bool IsReady = false;
+    while(IsReady == false){
+        foreach (clsTranslationServer* Server, this->pPrivate->Servers){
+            QReadLocker Locker(&Server->RWLock);
+            if (Server->TotalScore > 0){
+                IsReady = true;
+                break;
+            }
+        }
+    }
 }
 
 void TSMonitorPrivate::slotUpdateInfo()
@@ -125,7 +143,7 @@ void TSMonitorPrivate::slotServerDisconnected()
     clsTranslationServer* Server = dynamic_cast<clsTranslationServer*>(sender());
     if(Server){
         QMutexLocker Locker(&this->ListLock);
-        this->Servers[Server->configIndex()] = new clsTranslationServer(Server->configIndex());
+        this->Servers.insertMulti(Server->dir(),new clsTranslationServer(Server->dir(), Server->configIndex()));
         Server->deleteLater();
     }
 }
@@ -159,14 +177,14 @@ void TSMonitorPrivate::slotProcessResponse(Common::JSONConversationProtocol::stu
             quint32 Load15min = _response.Args.value("L15", 100).toInt();
             quint32 FreeMem = _response.Args.value("FM", 0).toInt();
             quint32 TranslationQueue = _response.Args.value("TQ", 100).toInt();
-            quint16 Score = (gConfigs::TranslationServers.at(
+            quint16 Score = (gConfigs::TranslationServers.values(Server->dir()).at(
                                  Server->configIndex()).constData().AbsoluteScore.value() * 10L) +
                     ((100 - Load1min) * 8) +
                     ((100 - TranslationQueue) * (Load15min < 70 ? 6 : 4)) +
                     FreeMem;
 
             gConfigs::stuServer& ServerConfigs =
-                    *((gConfigs::stuServer*)&gConfigs::TranslationServers[Server->configIndex()]);
+                    *((gConfigs::stuServer*)&(gConfigs::TranslationServers[Server->dir()][Server->configIndex()]));
             QWriteLocker Locker(&Server->RWLock);
             ServerConfigs.Statistics.Load1MinPercent.setFromVariant(Load1min);
             ServerConfigs.Statistics.Load15MinPercent.setFromVariant(Load15min);

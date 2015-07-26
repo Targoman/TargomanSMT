@@ -30,10 +30,11 @@ namespace Apps{
 
 using namespace Common;
 
-clsTranslationServer::clsTranslationServer(size_t _configIndex):
+clsTranslationServer::clsTranslationServer(const QString &_dir, size_t _configIndex):
     TotalScore(0),
-    Configs(gConfigs::TranslationServers.at(_configIndex).constData()),
+    Configs(gConfigs::TranslationServers.values(_dir).at(_configIndex).constData()),
     ConfigIndex(_configIndex),
+    Dir(_dir),
     LoggedIn(false)
 { }
 

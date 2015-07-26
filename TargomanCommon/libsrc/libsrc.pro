@@ -58,7 +58,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplAbstractOnDiskPrefixTreeNode.hpp \
     libTargomanCommon/PrefixTree/tmplFullCachePrefixTreeNode.hpp \
     libTargomanCommon/PrefixTree/tmplNoCachePrefixTreeNode.hpp \
-    libTargomanCommon/tmplBoundedCache.hpp
+    libTargomanCommon/tmplBoundedCache.hpp \
+    libTargomanCommon/Configuration/tmplConfigurableMultiMap.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

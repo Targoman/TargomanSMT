@@ -35,16 +35,30 @@ namespace Apps {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTConsole, Common::exTargomanBase);
 
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuAppMode,
+                              Translation,
+                              Training,
+                              MakeBinary
+                              );
+}
+}
+
+ENUM_CONFIGURABLE(Targoman::Apps::enuAppMode);
+
+namespace Targoman {
+namespace Apps {
+
 class gConfigs{
 public:
     static inline QString appConfig(const QString& _name){
         return "App/" + _name;
     }
 
-    static Common::Configuration::tmplConfigurable<QString>          InputFile;
-    static Common::Configuration::tmplConfigurable<QString>          InputText;
-    static Common::Configuration::tmplConfigurable<QString>          OutputFile;
-    static Common::Configuration::tmplConfigurable<quint8>           MaxThreads;
+    static Common::Configuration::tmplConfigurable<enuAppMode::Type>    Mode;
+    static Common::Configuration::tmplConfigurable<QString>             InputFile;
+    static Common::Configuration::tmplConfigurable<QString>             InputText;
+    static Common::Configuration::tmplConfigurable<QString>             OutputFile;
+    static Common::Configuration::tmplConfigurable<quint8>              MaxThreads;
 };
 
 }

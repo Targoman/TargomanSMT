@@ -77,9 +77,13 @@ void TSManager::slotServerDisconnected()
 
 stuRPCOutput TSManager::rpcTranslate(const QVariantMap &_args)
 {
+    QString UUID = _args.value("UUID").toString();
+    QString Dir  = _args.value("Dir").toString();
     for(int i=0; i<TSManager::MaxRetries.value(); ++i){
         try{
-            clsTranslationServer* BestServer = new clsTranslationServer(TSMonitor::instance().bestServerIndex());
+            clsTranslationServer* BestServer = new clsTranslationServer(
+                        Dir,
+                        Modules::TSMonitor::instance().bestServerIndex(Dir));
             BestServer->connect();
             connect(BestServer,SIGNAL(sigResponse(Common::JSONConversationProtocol::stuResponse)),
                     this, SLOT(slotProcessResponse(Common::JSONConversationProtocol::stuResponse)),
@@ -114,6 +118,12 @@ stuRPCOutput TSManager::rpcTranslate(const QVariantMap &_args)
             throw exTSManager("No resources available");
         }
     }
+    throw exTSManager("Unable to translate because max tries failed");
+}
+
+stuRPCOutput TSManager::rpcArrayTranslate(const QVariantMap &_args)
+{
+    Q_UNUSED(_args)
     throw exTSManager("Unable to translate because max tries failed");
 }
 

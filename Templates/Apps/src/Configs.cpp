@@ -19,48 +19,52 @@
  *                                                                            *
  ******************************************************************************/
 /**
- * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author 
  */
 
-#ifndef TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H
-#define TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H
-
-#include <QtNetwork/QHostAddress>
-#include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/tmplConfigurableMultiMap.hpp"
-#include "libTargomanCommon/Configuration/Validators.hpp"
-#include "libTargomanCommon/Macros.h"
-#include "libTargomanCommon/exTargomanBase.h"
+#include "Configs.h"
 
 namespace Targoman {
 namespace Apps {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanLoadBalancer, Common::exTargomanBase);
+using namespace Common;
+using namespace Common::Configuration;
 
-extern QString ActorUUID;
-class gConfigs{
-public:
-    struct stuServer{
-        stuServer(const QString& _basePath);
-        Common::Configuration::tmplConfigurable<QString> Host;
-        Common::Configuration::tmplConfigurable<quint16> Port;
-        Common::Configuration::tmplConfigurable<quint8>  AbsoluteScore;
-        Common::Configuration::tmplConfigurable<bool>    Active;
-        Common::Configuration::tmplConfigurable<QString> UserName;
-        Common::Configuration::tmplConfigurable<QString> Password;
-        struct stuStatistics{
-            stuStatistics(const QString& _basePath);
-            Common::Configuration::tmplConfigurable<qint8> Load1MinPercent;
-            Common::Configuration::tmplConfigurable<qint8> Load15MinPercent;
-            Common::Configuration::tmplConfigurable<qint8> FreeMemoryPercent;
-            Common::Configuration::tmplConfigurable<qint8> TranslationQueuePercent;
-        }Statistics;
-    };
+tmplConfigurable<TYPE>     gConfigs::CONFIG_VAR_1(
+        gConfigs::appConfig("CONFIG_VAR_1"),
+        "CONFIG_VAR_1 description",
+        "CONFIG_VAR_1 default value",
+        CONFIG_VAR_1 Validator lambda,
+        "CONFIG_VAR_1 Short switch",
+        "CONFIG_VAR_1 PARAMNAME",
+        "CONFIG_VAR_1 Long switch",
+        CONFIG_VAR_1 configuration sources,
+        CONFIG_VAR_1 can be remote viewed,
+        CONFIG_VAR_1 finalization lambda);
 
-public:
-    static Common::Configuration::tmplConfigurableMultiMap<stuServer> TranslationServers;
-};
+tmplConfigurable<TYPE>     gConfigs::CONFIG_VAR_2(
+        gConfigs::appConfig("CONFIG_VAR_2"),
+        "CONFIG_VAR_2 description",
+        "CONFIG_VAR_2 default value",
+        CONFIG_VAR_2 Validator lambda,
+        "CONFIG_VAR_2 Short switch",
+        "CONFIG_VAR_2 PARAMNAME",
+        "CONFIG_VAR_2 Long switch",
+        CONFIG_VAR_2 configuration sources,
+        CONFIG_VAR_2 can be remote viewed,
+        CONFIG_VAR_2 finalization lambda);
+
+tmplConfigurable<TYPE>     gConfigs::CONFIG_VAR_n(
+        gConfigs::appConfig("CONFIG_VAR_n"),
+        "CONFIG_VAR_n description",
+        "CONFIG_VAR_n default value",
+        CONFIG_VAR_n Validator lambda,
+        "CONFIG_VAR_n Short switch",
+        "CONFIG_VAR_n PARAMNAME",
+        "CONFIG_VAR_n Long switch",
+        CONFIG_VAR_n configuration sources,
+        CONFIG_VAR_n can be remote viewed,
+        CONFIG_VAR_n finalization lambda);
 
 }
 }
-#endif // TARGOMAN_APPS_TARGOMANLOADBALANACER_CONFIGS_H

@@ -46,10 +46,8 @@ public:
     { }
 
     tmplConfigurableArrayItem(const tmplConfigurableArrayItem& _other) :
-        itmplType_t(_other){
-        int a=2;
-        ++a;
-    }
+        itmplType_t(_other)
+    { }
 
     const itmplType_t& constData() const{
         return *this;
@@ -69,9 +67,18 @@ template <class itmplType_t>
 class tmplConfigurableArray : public intfConfigurable, public intfConfigurableArray
 {
 public:
+    tmplConfigurableArray(const QString&  _configPath  = "",
+                          const QString&  _description = ""):
+        intfConfigurable(enuConfigType::Unknown,
+                         _configPath,
+                         _description) {
+        Q_ASSERT_X(false, "tmplConfigurableArray", "Default constructor must never be called");
+        throw exTargomanNotImplemented("Default tmplConfigurableArray constructor must never be called");
+    }
+
     tmplConfigurableArray(const QString&  _configPath,
                           const QString&  _description,
-                          size_t _minItemsCount = 0,
+                           size_t _minItemsCount,
                           int    _maxItemsCount = -1) :
         intfConfigurable(enuConfigType::Array,
                          _configPath,
@@ -86,6 +93,20 @@ public:
         if (_minItemsCount)
             this->reserve(_minItemsCount);
     }
+
+    tmplConfigurableArray(const tmplConfigurableArray& _other) :
+        intfConfigurable(_other),
+        Items(_other.Items),
+        MaxItems(_other.MaxItems)
+    { }
+
+    tmplConfigurableArray& operator = (const tmplConfigurableArray& _other) {
+        intfConfigurable::operator =(_other);
+        Items = _other.Items;
+        MaxItems = _other.MaxItems;
+        return *this;
+    }
+
 
     virtual inline void setFromVariant(const QVariant& ){
         throw exTargomanNotImplemented(this->ConfigPath + " is Abstract");
@@ -120,7 +141,7 @@ public:
             this->Items.append(tmplConfigurableArrayItem<itmplType_t>(this->configPath(), i));
     }
 
-    const tmplConfigurableArrayItem<itmplType_t>& at(size_t _index){
+    const tmplConfigurableArrayItem<itmplType_t>& at(size_t _index) const{
         return this->Items.at(_index);
     }
 
@@ -128,7 +149,7 @@ public:
         return this->Items[_index];
     }
 
-    size_t size(){
+    size_t size() const{
         return this->Items.size();
     }
 

@@ -52,6 +52,7 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuConfigType,
                               Normal,
                               FileBased,
                               Array,
+                              MultiMap,
                               Module);
 
 class intfConfigurable;
@@ -92,6 +93,8 @@ public:
                      );
 
     intfConfigurable(const intfConfigurable& _other);
+
+    intfConfigurable& operator = (const intfConfigurable &_other);
 
     virtual ~intfConfigurable();
 

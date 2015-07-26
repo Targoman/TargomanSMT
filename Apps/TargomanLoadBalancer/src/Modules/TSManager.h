@@ -44,6 +44,7 @@ public slots:
 
 public slots:
     Common::Configuration::stuRPCOutput rpcTranslate(const QVariantMap& _args);
+    Common::Configuration::stuRPCOutput rpcArrayTranslate(const QVariantMap& _args);
 
 private:
     TSManager() : intfModule(this->moduleName()) {}
