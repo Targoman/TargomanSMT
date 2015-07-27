@@ -32,6 +32,8 @@
 #include "libTargomanCommon/PrefixTree/tmplFullCachePrefixTreeNode.hpp"
 #include "libTargomanCommon/PrefixTree/tmplNoCachePrefixTreeNode.hpp"
 
+#include <functional>
+
 namespace Targoman {
 namespace Common {
 namespace PrefixTree {

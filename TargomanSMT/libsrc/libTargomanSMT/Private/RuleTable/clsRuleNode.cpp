@@ -83,7 +83,6 @@ void clsRuleNode::readBinary(std::istream &_input)
 void clsRuleNode::writeBinary(std::ostream &_output) const
 {
     clsOFStreamExtended& OutStream = (clsOFStreamExtended&)(_output);
-    if (this->Data->TargetRules.size() == 0)
     OutStream.write(this->Data->TargetRules.size());
     foreach(const clsTargetRule& TargetRule, this->Data->TargetRules)
         TargetRule.writeBinary(OutStream);

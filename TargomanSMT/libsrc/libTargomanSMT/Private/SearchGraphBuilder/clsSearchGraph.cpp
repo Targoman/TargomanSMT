@@ -141,6 +141,7 @@ void clsSearchGraph::init(const QString& _configFilePath)
             SingleWordRuleNode.targetRules().append(
                         OOVHandler::instance().generateTargetRules(TokenIter.key())
                         );
+
 //        break;
    }
 

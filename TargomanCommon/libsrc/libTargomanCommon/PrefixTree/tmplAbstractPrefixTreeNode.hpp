@@ -83,7 +83,6 @@ public:
         return pNode_t(&tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>::invalidInstance());
     }
 
-
 protected:
     tmplAbstractPrefixTreeNode()
     {

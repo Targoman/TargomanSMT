@@ -100,12 +100,13 @@ public:
                 tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>>& Result = this->Data->Children[_key];
         if(Result.data() == NULL)
             Result = new tmplOnMemoryPrefixTreeNode<itmplKey_t, itmplData_t>();
-        return Result;    }
+        return Result;
+    }
 
     void writeBinary(clsOFStreamExtended& _outStream) const {
-        PosType_t StartPosition = _outStream.tellp();
         PosType_t NullPosition = 0;
         _outStream.write(this->Data->Children.size());
+        PosType_t StartPosition = _outStream.tellp();
         for(auto Iterator = this->Data->Children.begin();
             Iterator != this->Data->Children.end();
             ++Iterator) {
@@ -121,7 +122,7 @@ public:
             (*Iterator)->writeBinary(_outStream);
         }
         PosType_t EndPosition = _outStream.tellp();
-        _outStream.seekp(StartPosition + sizeof(int), std::ios_base::beg);
+        _outStream.seekp(StartPosition, std::ios_base::beg);
         for(auto Iterator = this->Data->Children.begin();
             Iterator != this->Data->Children.end();
             ++Iterator) {

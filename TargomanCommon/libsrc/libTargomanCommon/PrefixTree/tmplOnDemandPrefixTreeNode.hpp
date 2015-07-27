@@ -49,6 +49,13 @@ public:
                  tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t>(_inputStream, _maxCachedItems)
     {}
 
+    virtual pNode_t getOrCreateChildByKey(itmplKey_t _key) {
+        pNode_t Result = this->follow(_key);
+        if(Result->isInvalid())
+            throw exTargomanNotImplemented("loadChildFromDisk()");
+        return Result;
+    }
+
 protected:
     inline pNode_t loadChildFromDisk(itmplKey_t _key) {
         return tmplAbstractOnDiskPrefixTreeNode<itmplKey_t, itmplData_t>::loadChildFromDisk(
