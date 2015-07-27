@@ -37,10 +37,10 @@ Projects="TargomanCommon
     NLPLibs/TargomanTextProcessor/
     Apps/E4SMT 
     ExternalToolsAndLibs/KenLM
-    TargomanSMT 
+    TargomanSMT
     Apps/TargomanSMTConsole 
     Apps/TargomanSMTServer 
-          Apps/TargomanLoadBalancer"
+    Apps/TargomanLoadBalancer"
           
 BasePath=`pwd`
 if [ "$2" != "release" ] ; then
