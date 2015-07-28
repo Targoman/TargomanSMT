@@ -215,23 +215,6 @@ void clsSearchGraph::collectPhraseCandidates()
         }
     }
 
-#ifdef TARGOMAN_SHOW_DEBUG
-    // Torabzadeh
-    for (size_t FirstPosition = 0; FirstPosition < (size_t)this->Data->Sentence.size(); ++FirstPosition) {
-        for (size_t LastPosition = FirstPosition ; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition) {
-            for(int i = 0; i < this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].targetRules().size(); ++i) {
-                std::cout << "BEGIN- " << this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].targetRules().at(i).toStr().toUtf8().constData()
-                          << " IDX[" << FirstPosition << ", " << LastPosition-FirstPosition << "] "
-                          << " -END" << std::endl;
-            }
-        }
-        std::cout << std::endl;
-        std::cout << std::endl;
-        std::cout << std::endl;
-    }
-    exit(0);
-#endif
-
 }
 
 
@@ -403,10 +386,10 @@ bool clsSearchGraph::decode()
                                                            RestCost);
 #ifdef TARGOMAN_SHOW_DEBUG
                             // Torabzadeh
+                            /*
+
                             if(//NewHypoNode.prevNode().targetRule().toStr() == QStringLiteral("") &&
-                               NewHypoNode.targetRule().toStr() == QStringLiteral("به یک") /*&&
-                               NewCardinality == 1 &&
-                               NewCoverage == "000001000000"*/){
+                               NewHypoNode.targetRule().toStr() == QStringLiteral("به یک") ){
                                    for(int i = 0; i < PhraseCandidates.targetRules().size(); ++i) {
                                        std::cout << PhraseCandidates.targetRules().at(i).toStr().toUtf8().constData() << std::endl;
                                    }
@@ -420,6 +403,7 @@ bool clsSearchGraph::decode()
                                    int a = 5;
                                    a++;
                             }
+                            //*/
 #endif
 
                             // If current NewHypoNode is worse than worst stored node ignore it
@@ -441,7 +425,7 @@ bool clsSearchGraph::decode()
 
 #ifdef TARGOMAN_SHOW_DEBUG
         // Vedadian
-        //*
+        /*
         auto car2str = [] (int _cardinality) {
             QString result;
             for(int i = 0; i < 5; ++i) {

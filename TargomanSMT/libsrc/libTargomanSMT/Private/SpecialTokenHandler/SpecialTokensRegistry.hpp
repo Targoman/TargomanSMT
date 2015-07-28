@@ -151,7 +151,9 @@ private:
      * @param _wordIndex input word index.
      */
     inline void removeWordIndexes(QList<Common::WordIndex_t> _wordIndexes) {
-        QMutexLocker Locker(&this->Lock);
+        // NOTE: This mutex is not needed as the only caller of this function is the clsSpecialTokenData's
+        // destructor and if you put this mutex here, it will cause DEADLOCK! Do not do it!
+        //QMutexLocker Locker(&this->Lock);
         for(int i = 0; i < _wordIndexes.size(); ++i)
         {
             this->HandledSpecialTokens.remove(_wordIndexes[i]);
