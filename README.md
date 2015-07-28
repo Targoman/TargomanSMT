@@ -40,6 +40,7 @@ See INSTALL for build instructions.
     │   ├── TargomanTextProcessor
     │   └── TargomanTransliterate (Not yet published)
     ├── Scripts 
+    ├── Samples
     ├── TargomanCommon 
     ├── TargomanSMT  
     ├── Templates                 
@@ -57,8 +58,9 @@ See INSTALL for build instructions.
 > - **TargomanStem**: Targoman Stemmer Library  (Not yet published) 
 > - **TargomanTextProcessor**: Targoman TextProcessor Library. Used to  normalize characters, tokenize text, tag special tokens and vice versa
 > - **TargomanTransliterate**: Targoman Transliteration Library (Not yet published) 
-> - **Scripts**: Train, Tune, and other usefull scripts 
-> - **TargomanCommon**: Usefull and common tools as a compact library 
+> - **Scripts**: Train, Tune, and other usefull scripts (Not yet published)
+> - **Samples**: Sample config file and corpora to test Targoman. 
+> - **TargomanCommon**: Usefull and common tools as a compact library
 > - **TargomanSMT**: Core Targoman SMT Library 
 > - **Templates**: Templates used to generate subprojects 
 > - **Tests**: BlackBox Tests 
