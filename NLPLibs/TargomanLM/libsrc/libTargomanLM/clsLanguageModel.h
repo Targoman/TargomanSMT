@@ -66,8 +66,8 @@ private:
     QScopedPointer<Private::clsLanguageModelPrivate> pPrivate;
 
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> FilePath;
-    static Targoman::Common::Configuration::tmplConfigurable<double>  DeafultUnknownProb;
-    static Targoman::Common::Configuration::tmplConfigurable<double>  DeafultUnknownBackoff;
+    static Targoman::Common::Configuration::tmplConfigurable<double>  DefaultUnknownProb;
+    static Targoman::Common::Configuration::tmplConfigurable<double>  DefaultUnknownBackoff;
     static Targoman::Common::Configuration::tmplConfigurable<bool>    UseIndexBasedModel;
     static Targoman::Common::Configuration::tmplConfigurable<bool>    VerifyBinaryChecksum;
 };

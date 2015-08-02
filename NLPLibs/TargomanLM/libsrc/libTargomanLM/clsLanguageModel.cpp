@@ -48,16 +48,14 @@ using namespace Targoman::Common::Configuration;
 tmplConfigurable<FilePath_t> clsLanguageModel::FilePath(
         "/TargomanLM/FilePath",
         "File path of ARPA or binary models",
-        "",
-        Validators::tmplPathAccessValidator<
-        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>);
+        "");
 
-tmplConfigurable<double>  clsLanguageModel::DeafultUnknownProb(
-        "/TargomanLM/DeafultUnknownProb",
+tmplConfigurable<double>  clsLanguageModel::DefaultUnknownProb(
+        "/TargomanLM/DefaultUnknownProb",
         "Default value for unknown words probability when not defined in model file",
         -100);
-tmplConfigurable<double>  clsLanguageModel::DeafultUnknownBackoff(
-        "/TargomanLM/DeafultUnknownBackoff",
+tmplConfigurable<double>  clsLanguageModel::DefaultUnknownBackoff(
+        "/TargomanLM/DefaultUnknownBackoff",
         "Default value for unknown words backoff when not defined in model file",
         0);
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::UseIndexBasedModel(
@@ -81,10 +79,14 @@ clsLanguageModel::~clsLanguageModel()
 
 quint8 clsLanguageModel::init(bool _justVocab)
 {
+    QString ErrorMessage;
+    if(Validators::tmplPathAccessValidator<(enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>(clsLanguageModel::FilePath, ErrorMessage) == false)
+        throw exConfiguration(ErrorMessage, __LINE__);
+
     return this->init(clsLanguageModel::FilePath.value(),
                       stuLMConfigs(
-                          clsLanguageModel::DeafultUnknownProb.value(),
-                          clsLanguageModel::DeafultUnknownBackoff.value(),
+                          clsLanguageModel::DefaultUnknownProb.value(),
+                          clsLanguageModel::DefaultUnknownBackoff.value(),
                           clsLanguageModel::UseIndexBasedModel.value(),
                           clsLanguageModel::VerifyBinaryChecksum.value()),
                       _justVocab);

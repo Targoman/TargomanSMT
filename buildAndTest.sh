@@ -37,17 +37,20 @@ Projects="TargomanCommon
     NLPLibs/TargomanTextProcessor/
     Apps/E4SMT 
     ExternalToolsAndLibs/KenLM
-    TargomanSMT
+    TargomanSMT 
     Apps/TargomanSMTConsole 
     Apps/TargomanSMTServer 
-    Apps/TargomanLoadBalancer"
+          Apps/TargomanLoadBalancer"
           
 BasePath=`pwd`
+export LD_LIBRARY_PATH="$BasePath/out/lib"
 if [ "$2" != "release" ] ; then
   QMAKE_CONFIG="CONFIG+=debug"
 else
   QMAKE_CONFIG=""
 fi
+
+
 
 if [ "$1" == "full" ]; then
   rm -rf out
@@ -79,6 +82,16 @@ else
       exit 1;
     else
       echo -e "\n\e[32m Module $Proj Compiled Successfully\e[39m\n"
+      TestProgram=$(echo $BasePath/out/test/test_$(basename $Proj))
+      if [ -f  "$TestProgram" ]; then
+	eval "$TestProgram"
+	if [ $? -ne 0 ]; then
+	  echo -e "\n\e[31m!!!!!!!!!!!!!!!!Testing $Proj Failed!!!!!!!!!!!!!!!! \e[39m\n"
+	  exit 0
+	else
+	  echo -e "\e[0;34m Testing $Proj Finished Successfully :) \e[39m\n"
+	fi
+      fi
     fi
   done
 

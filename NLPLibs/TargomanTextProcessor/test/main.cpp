@@ -210,6 +210,7 @@ int main(int _argc, char *_argv[])
 
     }catch(Targoman::Common::exTargomanBase &e){
         qDebug()<<e.what();
+        return 1;
     }
     return 0;
 }

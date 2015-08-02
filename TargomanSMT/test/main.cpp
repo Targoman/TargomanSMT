@@ -120,7 +120,9 @@ int main(int argc, char *argv[])
     }catch(exTargomanBase& e){
         qDebug()<<e.what();
         TargomanError(e.what());
+        return 1;
     }
+    return 0;
 }
 
 

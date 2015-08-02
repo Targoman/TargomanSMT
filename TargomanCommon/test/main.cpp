@@ -299,9 +299,10 @@ int main(int argc, char *argv[])
 
     }catch(exTargomanBase &e){
         TargomanError(e.what());
+        return 1;
     }
 
-
+    return 0;
 }
 
 

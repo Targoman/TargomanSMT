@@ -154,7 +154,9 @@ exit(0);
     }
     catch(Targoman::Common::exTargomanBase& e) {
         qDebug() << e.what();
+        return 1;
     }
+    return 0;
 }
 
 

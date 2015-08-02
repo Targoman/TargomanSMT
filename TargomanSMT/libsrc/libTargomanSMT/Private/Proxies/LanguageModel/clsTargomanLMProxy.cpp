@@ -25,6 +25,11 @@
  */
 
 #include "clsTargomanLMProxy.h"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
+#include "libTargomanCommon/Configuration/Validators.hpp"
+
+using namespace Targoman::Common;
+using namespace Targoman::Common::Configuration;
 
 namespace Targoman {
 namespace SMT {
@@ -54,3 +59,20 @@ clsTargomanLMProxy::~clsTargomanLMProxy()
 }
 }
 }
+
+//namespace Targoman {
+//namespace NLPLibs {
+//namespace TargomanLM {
+
+//tmplConfigurable<FilePath_t> clsLanguageModel::FilePath(
+//        "/TargomanLM/FilePath",
+//        "File path of ARPA or binary models",
+//        "",
+//        ConditionalPathValidator(
+//            Targoman::SMT::Private::gConfigs.LM.toVariant().toString() ==
+//                Targoman::SMT::Private::Proxies::LanguageModel::clsTargomanLMProxy::moduleName(),
+//            enuPathAccess::File | enuPathAccess::Readable)
+//        );
+//}
+//}
+//}
