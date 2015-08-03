@@ -48,3 +48,6 @@ MOC_DIR = $$BaseBuildFolder/moc
 INCLUDEPATH += $$BasePath/libsrc
 QMAKE_LIBDIR += $$BaseLibraryFolder
 LIBS += -l$$ProjectName
+
+
+QMAKE_POST_LINK += ln -s $$PWD/TargomanLM_assets/ $$BaseUnitTestBinFolder || :
