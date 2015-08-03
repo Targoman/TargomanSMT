@@ -113,14 +113,12 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
         return QString();
 
     QString String;
-    for(size_t i=0; i< _target.size(); ++i)
-    {
-        int Alignment = _target.wordLevelAlignment(i);
-        if(Alignment > 0)
-        {
+    for(size_t i=0; i< _target.size(); ++i) {
+        QList<int> Alignments = _target.wordLevelAlignment(i);
+        if(Alignments.size() == 1) {
+            int Alignment = Alignments.at(0);
             clsToken Token = this->InputDecomposerRef.tokens().at(Alignment + _sourcePhrasePos.start());
-            if(Token.tagStr().size())
-            {
+            if(Token.tagStr().size()) {
                 if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)))
                     String += Token.attrs().value(
                                 enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)).toString();

@@ -65,7 +65,9 @@ public:
     clsTargetRule();
 
     clsTargetRule(const QList<Common::WordIndex_t>& _targetPhrase,
-                  const QList<Common::Cost_t>& _fields, bool _hasNoRuleTableRecord = false);
+                  const QList<Common::Cost_t>& _fields,
+                  const QMap<int, int>& _alignments = QMap<int, int>(),
+                  bool _hasNoRuleTableRecord = false);
 
     /**
      * @brief clsTargetRule copy constructor.
@@ -90,7 +92,7 @@ public:
     inline bool isSame(const clsTargetRule& _other) const;
 
     inline Common::WordIndex_t at(int _index) const;
-    inline int wordLevelAlignment(int _index) const;
+    inline QList<int> wordLevelAlignment(int _index) const;
     inline size_t size() const;
     inline bool isUnknownWord() const;
     inline void setIsUnknownWord(bool);
@@ -150,7 +152,8 @@ public:
             for(int i = 0; i < clsTargetRule::columnNames().size(); ++i)
                 ZeroCost.append(0);
         }
-        return clsTargetRule(_targetPhrase, ZeroCost, _isUnknownWord);
+        QMap<int, int> Alignments;
+        return clsTargetRule(_targetPhrase, ZeroCost, Alignments, _isUnknownWord);
     }
 
     static clsTargetRule createMinCostTargetRule(const QList<Common::WordIndex_t>& _targetPhrase, bool _isUnknownWord) {
@@ -160,7 +163,8 @@ public:
             for(int i = 0; i < clsTargetRule::columnNames().size(); ++i)
                 ZeroCost.append(0);
         }
-        return clsTargetRule(_targetPhrase, ZeroCost, _isUnknownWord);
+        QMap<int, int> Alignments;
+        return clsTargetRule(_targetPhrase, ZeroCost, Alignments, _isUnknownWord);
     }
 
 #ifdef TARGOMAN_SHOW_DEBUG
@@ -188,10 +192,12 @@ class clsTargetRuleData : public QSharedData
 public:
     clsTargetRuleData(const QList<Common::WordIndex_t>& _targetPhrase,
                       const QList<Common::Cost_t>& _fields,
+                      const QMap<int, int>& _alignment,
                       size_t _precomputedValueSize,
                       bool _hasNoRuleTableRecord):
         TargetPhrase(_targetPhrase),
         Fields(_fields),
+        Alignment(_alignment),
         PrecomputedValues(_precomputedValueSize,-INFINITY),
         IsUnknownWord(_hasNoRuleTableRecord)
     {}
@@ -225,8 +231,8 @@ public:
 
 public:
     QList<Common::WordIndex_t>                      TargetPhrase;            /**< Translation (target language phrase) */
-    QMap<int, int>                                  Alignment;               /**< word level alignment */
     QList<Common::Cost_t>                           Fields;                  /**< Feature values */
+    QMap<int, int>                                  Alignment;               /**< word level alignment */
     QVector<Common::Cost_t>                         PrecomputedValues;       /**< It is used for caching */
     bool                                            IsUnknownWord;
 };
@@ -242,8 +248,8 @@ inline Common::WordIndex_t clsTargetRule::at(int _index) const{
     return this->Data->TargetPhrase.at(_index);
 }
 
-inline int clsTargetRule::wordLevelAlignment(int _index) const{
-    return this->Data->Alignment.value(_index, -1);
+inline QList<int> clsTargetRule::wordLevelAlignment(int _index) const{
+    return this->Data->Alignment.values(_index);
 }
 
 /**

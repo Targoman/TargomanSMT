@@ -54,11 +54,12 @@ private:
     void addRule(QList<clsRuleNode>& _ruleNodeList,
                  const QList<Common::WordIndex_t> _sourcePhrase,
                  const QList<Common::WordIndex_t> _targetPhrase,
-                 const QList<Targoman::Common::Cost_t> _costs);
+                 const QList<Targoman::Common::Cost_t> _costs, const QMap<int, int> _alignment);
     void addRule(QList<clsRuleNode>& _ruleNodeList,
                  const QString& _sourcePhrase,
                  const QString& _targetPhrase,
                  const QStringList &_costs,
+                 const QStringList &_wordAlignments,
                  size_t _ruleNumber);
     void addUnkToUnkRule(QList<clsRuleNode>& _ruleNodeList);
 
@@ -70,7 +71,7 @@ private:
 private:
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   PhraseTableFilePath;            /**< File name of phrase table. */
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   ReorderingTableFilePath;        /**< File name of reordering table. */
-    //static Targoman::Common::Configuration::tmplConfigurable<QString>   WordAlignmentFilePath;        /**< File name of word level alignment of phrases. */
+    static Targoman::Common::Configuration::tmplConfigurable<QString>   WordAlignmentFilePath;        /**< File name of word level alignment of phrases. */
     static Targoman::Common::Configuration::tmplConfigurable<int>       MaxRuleNodeTargetRuleCount;     /**< Maximum number of target rules kept for each rule node. */
 
     TARGOMAN_DEFINE_MODULE("MosesPTPlain", clsMosesPlainRuleTable);

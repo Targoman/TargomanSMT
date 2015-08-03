@@ -57,8 +57,8 @@ clsTargetRule::clsTargetRule():
  * @param _targetPhrase target language translation phrase.
  * @param _fields   fields of different feature functions for this translation phrase.
  */
-clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields, bool _hasNoRuleTableRecord):
-    Data(new clsTargetRuleData(_targetPhrase, _fields, clsTargetRule::PrecomputedValuesSize, _hasNoRuleTableRecord))
+clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields, const QMap<int, int> &_alignments, bool _hasNoRuleTableRecord):
+    Data(new clsTargetRuleData(_targetPhrase, _fields, _alignments, clsTargetRule::PrecomputedValuesSize, _hasNoRuleTableRecord))
 {
     if(_targetPhrase.size() == 1 && _targetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex())
         this->Data->IsUnknownWord = true;
