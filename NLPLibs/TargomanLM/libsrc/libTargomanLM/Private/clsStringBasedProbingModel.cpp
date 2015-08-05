@@ -57,17 +57,17 @@ LogP_t clsStringBasedProbingModel::lookupNGram(const QStringList& _ngram, quint8
     Q_ASSERT(_ngram.size());
 
     stuProbAndBackoffWeights PB;
-    LogP_t      Backoff = Constants::LogP_One;
-    LogP_t      Prob = Constants::LogP_Zero;
-    QString     NGram = _ngram.last();
-    QString     NGram2 = _ngram.last();
-    quint8      CurrGram = 0;
+    LogP_t          Backoff = Constants::LogP_One;
+    LogP_t          Prob = Constants::LogP_Zero;
+    QStringList     NGram = {_ngram.last()};
+    QStringList     NGram2 = {_ngram.last()};
+    quint8          CurrGram = 0;
     _foundedGram = 1;
 
     while (true){
-        PB = this->getNGramWeights(NGram.toUtf8().constData());
+        PB = this->getNGramWeights(NGram.join(" ").toUtf8().constData());
         /// NOTE : There is BUG here that should be resolved soon.
-        if (PB.ID > 0){ 
+        if (PB.ID > 0 || (NGram.size() == 1 && NGram.first() == LM_UNKNOWN_WORD)){
             Prob = PB.Prob;
             Backoff = Constants::LogP_One;
             _foundedGram = CurrGram+1;
@@ -76,9 +76,9 @@ LogP_t clsStringBasedProbingModel::lookupNGram(const QStringList& _ngram, quint8
         if (++CurrGram >= _ngram.size()){
             break;
         }
-        NGram = ((QStringList)_ngram.mid(_ngram.size() - CurrGram - 1)).join(" ");
-        NGram2 = ((QStringList)_ngram.mid(_ngram.size() - CurrGram - 1, CurrGram)).join(" ");
-        PB = this->getNGramWeights(NGram2.toUtf8().constData());
+        NGram = ((QStringList)_ngram.mid(_ngram.size() - CurrGram - 1));
+        NGram2 = ((QStringList)_ngram.mid(_ngram.size() - CurrGram - 1, CurrGram));
+        PB = this->getNGramWeights(NGram2.join(" ").toUtf8().constData());
         if (PB.ID > 0){
             Backoff += PB.Backoff;
         }

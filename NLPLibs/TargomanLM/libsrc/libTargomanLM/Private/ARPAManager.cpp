@@ -126,6 +126,7 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel& _model, bool _just
 
     const char* StartOfNGram, *EndOfNGram, *StartOfBackoff;
     Common::clsCmdProgressBar ProgressBar;
+    bool UnkExists = false;
 
     while (std::getline(File, LineString)) {
         ++LineNo;
@@ -218,7 +219,10 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel& _model, bool _just
                         throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
                                                 NGramOrder).arg(NGramCounts.value(NGramOrder)));
                     TargomanLogInfo(5, "@end ARPA File Loaded. " + _model.getStatsStr());
+                    if (UnkExists == false)
+                        throw exARPAManager(QString("There is no <unk> item in language model"));
                     return MaxGram;
+
                 }else
                     throw exARPAManager(QString("Invalid Tag at Line: %1").arg(LineNo));
             }else{
@@ -261,6 +265,8 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel& _model, bool _just
                     throw exARPAManager(QString("Invalid Positive backoff at line: %1").arg(LineNo));
 
                 _model.insert(StartOfNGram, NGramOrder, Prob, Backoff);
+                if(NGramOrder == 1 && strcmp(StartOfNGram, LM_UNKNOWN_WORD) == 0)
+                    UnkExists = true;
                 ++Count;
                 ProgressBar.setValue(Count);
             }
@@ -269,9 +275,13 @@ quint8 ARPAManager::load(const QString &_file, intfBaseModel& _model, bool _just
         }
     }
 
+
     if (Count < NGramCounts.value(NGramOrder))
         throw exARPAManager(QString("There are less Items specified for Ngram=%1 than specified: %2").arg(
                                 NGramOrder).arg(NGramCounts.value(NGramOrder)));
+
+    if (UnkExists == false)
+        throw exARPAManager(QString("There is no <unk> item in language model"));
 
     std::cout<<std::endl;
     TargomanLogInfo(5, "ARPA File Loaded. " + _model.getStatsStr());

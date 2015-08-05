@@ -27,6 +27,7 @@
 
 using namespace Targoman::NLPLibs::TargomanLM;
 
+/*
 void UnitTest::testStringBased()
 {
     clsLanguageModel LM;
@@ -231,3 +232,4 @@ void UnitTest::testStringBased()
 
 }
 
+*/

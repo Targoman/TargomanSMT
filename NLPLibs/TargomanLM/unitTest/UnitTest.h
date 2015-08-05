@@ -37,7 +37,7 @@ class UnitTest: public QObject
 
 private slots:
 void testIndexBased();
-void testStringBased();
+//void testStringBased();
 };
 
 #endif // UNITTEST_H

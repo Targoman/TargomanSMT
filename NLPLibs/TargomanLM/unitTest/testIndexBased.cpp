@@ -41,209 +41,32 @@ void UnitTest::testIndexBased()
     quint8 order = LM.init(AbsoluteFilePath, languageModelConfig);
     QVERIFY(order == 4);
     clsLMSentenceScorer SS(LM);
-    QString Word;
     quint8 Gram;
+    QString Sentence = QStringLiteral("این استخوان‌ها شامل یک استخوان فک بالا و دو استخوان فک پایین با دندان‌های سالم , بخشی از استخوان استخوان انگشت پا و استخوانهای سالم انگشت دست است . بهرام قاسمی افزود : ");
+    QStringList Words = Sentence.split(" ",QString::SkipEmptyParts);
 
-    Word = "این";
-    Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 2);
-    QVERIFY(qFuzzyCompare(Prob, -1.97194f));
+    QList<int> FoundGrams = {
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1
+    };
 
-    Word = "استخوان‌ها";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
+    QList<float> FoundProbs = {
+        -1.97194,-2.26817,-2.25566,-2.76081,-2.35332,-2.25566,-2.25566,-1.39908,-3.41515,-2.2596,-2.25566,-3.15875,-1.94521,-2.27029,-2.25566,-1.59055,-3.45461,-1.08925,-2.30768,-2.25566,-2.25566,-2.25566,-1.39908,-2.21103,-2.25566,-2.25566,-3.45978,-1.94554,-0.425969,-3.32043,-2.25566,-2.25566,-1.99738
+    };
 
-    Word = "شامل";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-
-    Word = "یک";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -2.72819f));
-
-    Word = "استخوان";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-
-    Word = "فک";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "بالا";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-
-    Word = "و";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -1.36646f));
-
-    Word = "دو";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -3.41515f));
-
-    Word = "استخوان";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "فک";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "پایین";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -3.12613f));
-
-
-    Word = "با";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -1.94521f));
-
-
-    Word = "دندان‌های";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "سالم";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = ",";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -1.55793f));
-
-    Word = "بخشی";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -3.45461f));
-
-    Word = "از";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 2);
-    QVERIFY(qFuzzyCompare(Prob, -1.08925f));
-
-    Word = "استخوان";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "استخوان";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "انگشت";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "پا";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "و";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -1.36646f));
-
-
-    Word = "استخوانهای";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-
-    Word = "سالم";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "انگشت";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "دست";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -3.42716f));
-
-    Word = "است";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -1.94554f));
-
-    Word = ".";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 2);
-    QVERIFY(qFuzzyCompare(Prob, -0.425969f));
-
-//    Word =  LM_END_SENTENCE;
-//    Prob = SS.wordProb(Word, Gram);
-//    QVERIFY(Gram == 3);
-//    QVERIFY(qFuzzyCompare(Prob, -0.0347621f));
+    for(int i = 0; i < Words.size(); ++i) {
+        Targoman::Common::LogP_t Prob = SS.wordProb(Words[i], Gram);
+        QVERIFY(Gram == FoundGrams[i]);
+        QVERIFY(qFuzzyCompare(Prob, FoundProbs[i]));
+    }
 
     SS.reset();
 
-    Word = "بهرام";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
+    for(int i = 0; i < Words.size(); ++i) {
+        Targoman::Common::LogP_t Prob = SS.wordProb(Words[i], Gram);
+        QVERIFY(Gram == FoundGrams[i]);
+        QVERIFY(qFuzzyCompare(Prob, FoundProbs[i]));
+    }
 
-    Word = "قاسمی";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = "افزود";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(Prob == -FLT_MAX);
-
-    Word = ":";
-    Prob = SS.wordProb(Word, Gram);
-    QVERIFY(Gram == 1);
-    QVERIFY(qFuzzyCompare(Prob, -1.96476f));
-
-//    Word =  LM_END_SENTENCE;
-//    Prob = SS.wordProb(Word, Gram);
-//    QVERIFY(Gram == 2);
-//    QVERIFY(qFuzzyCompare(Prob, -0.961127f));
-
-
-
-
-//    QCOMPARE(Prob, -1.97194);
-
-
-
-
-//    QString Sentence =
-//            QStringLiteral("ارتباط او با سپاه پاسسسداران انقلالللب اسلاملللللی اووووو را در مرکز زنجیققرهای از ترور و جنایت قرار داده که دنیا را در برگرفته است .");
-
-//    quint8 Gram;
-//    foreach (const QString& Word, Sentence.split(" ")){
-//        Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
-//        qDebug()<<"Prob ["<<Word<<"]:Prob = "<<Prob<<" NGram = "<<Gram;
-//    }
 
 }
 
