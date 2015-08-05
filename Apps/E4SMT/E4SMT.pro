@@ -33,6 +33,8 @@ SOURCES += \
     src/Configs.cpp \
     src/XMLReader.cpp
 
+DependencySearchPaths+=/usr/lib/x86_64-linux-gnu/ # to fix buggy installation location of libxml2 on ubunut and mint
+INCLUDEPATH+=/usr/include/libxml2/ # to fix buggy installation location of libxml2 on ubunut and mint
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 ################################################################################

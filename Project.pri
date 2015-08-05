@@ -21,7 +21,7 @@
 
 DependencyIncludePaths+=
 DependencyLibPaths+=
-Dependencies +=
+ProjectDependencies += z
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-
 CONFIG(debug, debug|release): DEFINES += TARGOMAN_SHOW_DEBUG=1

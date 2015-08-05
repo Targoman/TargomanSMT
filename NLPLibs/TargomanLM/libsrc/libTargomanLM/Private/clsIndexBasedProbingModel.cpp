@@ -108,7 +108,8 @@ LogP_t clsIndexBasedProbingModel::lookupNGram(const QList<WordIndex_t> &_ngram, 
 
     while (true){
         PB = this->getNGramWeights(NGram);
-        if (PB.ID > 0 || (NGram.size() == 1 && NGram.first() == LM_UNKNOWN_WINDEX)){
+        /// NOTE : There is BUG here that should be resolved soon.
+        if (PB.ID > 0 /*|| (NGram.size() == 1 && NGram.first() == LM_UNKNOWN_WINDEX)*/){
             Prob = PB.Prob;
             Backoff = Constants::LogP_One; // backoff weight of higher order NGram is needed, so previously calculated backoffs should be reset to zero.
             _foundedGram = CurrGram+1;

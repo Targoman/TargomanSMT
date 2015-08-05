@@ -65,7 +65,7 @@ PersianSpellCorrector::PersianSpellCorrector() :
     this->ConfigTypes.append(stuConfigType("VerbStemPresent",&this->VerbStemPresent));
     this->ConfigTypes.append(stuConfigType("VerbStemPast",&this->VerbStemPast));
     this->ConfigTypes.append(stuConfigType("HamzeOrMadAllowed",&this->HamzeAllowed));
-//    this->ConfigTypes.append(stuConfigType("AdverbsEndWithFathatan",&this->AdverbsEndWithFathatan));
+    this->ConfigTypes.append(stuConfigType("AdverbsEndWithFathatan",&this->AdverbsEndWithFathatan));
 }
 
 /**

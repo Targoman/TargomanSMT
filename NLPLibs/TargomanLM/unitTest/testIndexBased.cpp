@@ -36,8 +36,9 @@ void UnitTest::testIndexBased()
 
     stuLMConfigs languageModelConfig( UnkProb, UnkBackoff, UseIdexBasedModel);
 
-    //quint8 order = LM.init("./test.arpa", languageModelConfig);
-    quint8 order = LM.init("TargomanLM_assets/testLM.arpa", languageModelConfig);
+    QDir ApplicationDir(QCoreApplication::applicationDirPath());
+    QString AbsoluteFilePath = ApplicationDir.absoluteFilePath("TargomanLM_assets/testLM.arpa");
+    quint8 order = LM.init(AbsoluteFilePath, languageModelConfig);
     QVERIFY(order == 4);
     clsLMSentenceScorer SS(LM);
     QString Word;
@@ -50,7 +51,6 @@ void UnitTest::testIndexBased()
 
     Word = "استخوان‌ها";
     Prob = SS.wordProb(Word, Gram);
-    qDebug() << Prob;
     QVERIFY(Gram == 1);
     QVERIFY(Prob == -FLT_MAX);
 

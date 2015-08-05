@@ -36,9 +36,10 @@ void UnitTest::initTestCase(){
     Targoman::Common::Logger::instance().setActive(false);
 
     Targoman::NLPLibs::TargomanTextProcessor::stuConfigs Configs;
-    Configs.NormalizationFile = "../conf/Normalization.conf";
-    Configs.AbbreviationsFile = "../conf/Abbreviations.tbl";
-    Configs.SpellCorrectorBaseConfigPath = "../conf/SpellCorrectors";
+    QDir ApplicationDir(QCoreApplication::applicationDirPath());
+    Configs.NormalizationFile = ApplicationDir.absoluteFilePath("../conf/Normalization.conf");
+    Configs.AbbreviationsFile = ApplicationDir.absoluteFilePath("../conf/Abbreviations.tbl");
+    Configs.SpellCorrectorBaseConfigPath = ApplicationDir.absoluteFilePath("../conf/SpellCorrectors");
     QVariantHash PersianSpellCorrector;
     PersianSpellCorrector.insert("Active", true);
     Configs.SpellCorrectorLanguageBasedConfigs.insert("fa", PersianSpellCorrector);

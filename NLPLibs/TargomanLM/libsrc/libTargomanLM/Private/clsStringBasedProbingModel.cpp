@@ -66,6 +66,7 @@ LogP_t clsStringBasedProbingModel::lookupNGram(const QStringList& _ngram, quint8
 
     while (true){
         PB = this->getNGramWeights(NGram.toUtf8().constData());
+        /// NOTE : There is BUG here that should be resolved soon.
         if (PB.ID > 0){ 
             Prob = PB.Prob;
             Backoff = Constants::LogP_One;
