@@ -40,7 +40,7 @@ void clsUnitTest::test_clsInputDecomposer_init()
     clsInput::init("");
 
     foreach(const QString& tag, userDefinedTags) {
-        QVERIFY(gConfigs.SourceVocab.find(tag) != gConfigs.SourceVocab.end());
+        QVERIFY(gConfigs.SourceVocab.find(tag) == gConfigs.SourceVocab.end());
         QVERIFY(clsInput::SpecialTags.find(tag) !=
                 clsInput::SpecialTags.end());
     }
@@ -48,7 +48,7 @@ void clsUnitTest::test_clsInputDecomposer_init()
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
     {
         QString tag = Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i);
-        QVERIFY(gConfigs.SourceVocab.find(tag) != gConfigs.SourceVocab.end());
+        QVERIFY(gConfigs.SourceVocab.find(tag) == gConfigs.SourceVocab.end());
         QVERIFY(clsInput::SpecialTags.find(tag) !=
                 clsInput::SpecialTags.end());
     }
