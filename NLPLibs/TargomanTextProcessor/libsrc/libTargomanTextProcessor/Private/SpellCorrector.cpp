@@ -103,6 +103,7 @@ QString SpellCorrector::process(const QString& _lang,
     do{
         Phrase = Output;
         Output.clear();
+        // TODO: Why the phrase have to be trimmed before splitting, we will be ignoring empty parts anyways?
         Tokens = Phrase.trimmed().replace(DUAL_SPACE," ").replace(DUAL_SPACE," ").split(" ", QString::SkipEmptyParts);
         foreach(const QString& Token, Tokens){
             Normalized =  Processor->process(Token); // process each token by language based spell corrector.
@@ -169,11 +170,19 @@ QString SpellCorrector::process(const QString& _lang,
                     Normalized = Processor->process(MultiWordBuffer); // if it is unable to unify multi tokens, returns empty string.
                     if (Normalized.size()){
                         Output += Normalized + " ";
-                        if (Normalized.split(" ").size() >= MaxTokens){
-                            Tokens.removeAt(FromTokenIndex);
-                            foreach(const QString& MidTokens, Normalized.split(" ", QString::SkipEmptyParts))
-                                Tokens.insert(FromTokenIndex,MidTokens);
-                            FromTokenIndex--; // As Token at FromTokenIndex has changed so reprocess it. We decrease one, because we will add one in for loop.
+                        QStringList NormalizedTokens = Normalized.split(" ");
+                        if (NormalizedTokens.size() >= MaxTokens){
+                            int TokensToRemove = MaxTokens;
+                            while(TokensToRemove > 0) {
+                                Tokens.removeAt(FromTokenIndex);
+                                --TokensToRemove;
+                            }
+                            for(int NormalizedTokenIndex = NormalizedTokens.size() - 1; NormalizedTokenIndex >= 0; --NormalizedTokenIndex)
+                                Tokens.insert(FromTokenIndex,NormalizedTokens.at(NormalizedTokenIndex));
+                            // TODO: This causes bug as we have already added the normalized version to the output
+                            //FromTokenIndex--; // As Token at FromTokenIndex has changed so reprocess it. We decrease one, because we will add one in for loop.
+                            FromTokenIndex+=MaxTokens - 1; // increased FromTokenIndex for MaxTokens to pass unified token and decrease one, because we will add one in for loop.
+                            HasRemaining = false;
                         }else{
                             FromTokenIndex+=MaxTokens - 1; // increased FromTokenIndex for MaxTokens to pass unified token and decrease one, because we will add one in for loop.
                             if(FromTokenIndex + 1 == Tokens.size())

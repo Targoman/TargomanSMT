@@ -81,7 +81,7 @@ bool PersianSpellCorrector::postInit(const QVariantHash _settings)
     this->RxVerbPerfect         = QRegExp(QStringLiteral("(ام|ای|است|ایم|اید|اند)$"));
     this->RxHa                  = QRegExp(QStringLiteral("ها‌?(یی?|یم|یت|یش|یمان|یتان|یشان)?$"));
     this->RxAn                  = QRegExp(QStringLiteral("ی?ان(ی|م|ت|ش|مان|تان|شان)?$"));
-    this->RxPossesive           = QRegExp(QStringLiteral("[ای]?(م|ت|ش|مان|تان|شان)$"));
+    this->RxPossesive           = QRegExp(QStringLiteral("(م|ت|ش|مان|تان|شان|ام|ات|اش|یم|یت|یش|یمان|یتان|یشان)$"));
     this->RxEndWithHa           = QRegExp(".*" + this->RxHa.pattern());
     this->RxEndWithAn           = QRegExp(".*" + this->RxAn.pattern());
     this->RxEndPresentImperfect = QRegExp(".*" + this->RxPresentImperfect.pattern());
@@ -97,22 +97,35 @@ bool PersianSpellCorrector::postInit(const QVariantHash _settings)
  * @param _tokens list of tokens.
  * @return returns a unified normalized string or an empty string.
  */
-
 QString PersianSpellCorrector::process(const QStringList &_tokens)
 {
     QString Buffer, Prefix, Postfix;
 
-    Buffer = this->AutoCorrectTerms.value(_tokens.join(" "));
+    QStringList Tokens = _tokens;
+    for(int i = 0; i < Tokens.size(); ++i)
+        Tokens[i] = Normalizer::fullTrim(Tokens[i]);
+
+    bool TokensUpdated = false;
+    // TODO: Put "شده" in a string constant
+    if( Tokens.size() > 1 &&
+        (this->RxVerbPerfect.exactMatch(Tokens.last()) || this->RxPastPerfect.exactMatch(Tokens.last())) &&
+        Tokens.at(Tokens.size() - 2).endsWith(ARABIC_ZWNJ + QStringLiteral("شده")) ) {
+        Tokens[Tokens.size() - 1] = QStringLiteral("شده") + ARABIC_ZWNJ + Tokens.last();
+        Tokens[Tokens.size() - 2].truncate(Tokens[Tokens.size() - 2].size() - 4);
+        TokensUpdated = true;
+    }
+
+    Buffer = this->AutoCorrectTerms.value(Tokens.join(" "));
     if (Buffer.size())
         return Normalizer::fullTrim(Buffer);
 
-    if (this->Space2ZWNJ.contains(_tokens.join(" ")))
-        return Normalizer::fullTrim(_tokens.join(ARABIC_ZWNJ));
+    if (this->Space2ZWNJ.contains(Tokens.join(" ")))
+        return Normalizer::fullTrim(Tokens.join(ARABIC_ZWNJ));
 
     QString ComplexWord;
 
-    for (int i=0; i<_tokens.size(); i++){
-        ComplexWord += _tokens.at(i) + ARABIC_ZWNJ;
+    for (int i=0; i<Tokens.size(); i++){
+        ComplexWord += Tokens.at(i) + ARABIC_ZWNJ;
     }
 
     ComplexWord.truncate(ComplexWord.size() - 1); // to remove last extra ZWNJ.
@@ -127,17 +140,20 @@ QString PersianSpellCorrector::process(const QStringList &_tokens)
             return Buffer;
     }
 
+
     if(ComplexWord.endsWith(PERSIAN_HeYe))
-        return ComplexWord.mid(0, ComplexWord.length() - 2); //zhnDebug: why do we do this?
+        // Remove the ZWNJ along with additional "Ye"
+        return ComplexWord.mid(0, ComplexWord.length() - 2);
+
     if (ComplexWord.startsWith(PERSIAN_Mi)){
-        //جداسازی «می» چسبیده به فعل
+        // Separate the "Mi" that is sticked to the verb
         Buffer = this->processVerbs(ComplexWord.mid(0,2), ComplexWord.mid(2));
         if (Buffer.size())
             return Buffer;
     }
 
     if (ComplexWord.startsWith(PERSIAN_Nemi)){
-        //جداسازی «نمی» چسبیده به فعل
+        // Separate the "NeMi" that is sticked to the verb
         Buffer = this->processVerbs(ComplexWord.mid(0,3), ComplexWord.mid(3));
         if (Buffer.size())
             return Buffer;
@@ -146,7 +162,7 @@ QString PersianSpellCorrector::process(const QStringList &_tokens)
     if(ComplexWord.startsWith(PERSIAN_Bi) ||
        ComplexWord.startsWith(PERSIAN_Ba) ||
        ComplexWord.startsWith(PERSIAN_Na)){
-        //جداسازی «بی،با،نا» چسبیده به صفت
+        // Separate the "Bi", "Ba", or "Na" that is sticked to the adjective
         Buffer = ComplexWord;
         Prefix = Buffer.mid(0,2);
         Buffer.remove(0,2); //Remove Bi
@@ -199,7 +215,7 @@ QString PersianSpellCorrector::process(const QStringList &_tokens)
     Postfix.remove(0, Buffer.length());
     Buffer = Normalizer::sidesTrim(Buffer);
     if(Postfix.size()){
-        //جداسازی ضمیر مالکیت مفرد
+        // Separate possessive pronouns
         if (Buffer.endsWith(PERSIAN_He) &&
              (this->Nouns.contains(Buffer) ||
             this->Adjectives.contains(Buffer))&&
@@ -219,7 +235,14 @@ QString PersianSpellCorrector::process(const QStringList &_tokens)
     if (Buffer.size())
         return Buffer;
 
-    return this->processTar_Tarin(this->Adjectives, "", ComplexWord, "");
+    Buffer = this->processTar_Tarin(this->Adjectives, "", ComplexWord, "");
+    if (Buffer.size())
+        return Buffer;
+
+    if(TokensUpdated)
+        return Normalizer::fullTrim(Tokens.join(" "));
+
+    return QString();
 }
 
 /**
@@ -258,74 +281,77 @@ QString PersianSpellCorrector::processStartingWithBi_Ba_Na(const QSet<QString>& 
     QString Buffer = Normalizer::sidesTrim(_postfix);
     if (Buffer.isEmpty())
         return "";
-    QString Postfix = Buffer;
+    QStringList Postfixes;
+    QString Remainder = Buffer;
+
+    if (this->RxEndWithPossesive.exactMatch(Remainder)){
+        Buffer = Remainder;
+        Remainder.remove(this->RxPossesive); //Remove combinations of Possesive
+        Buffer.remove(0,  Remainder.length());
+        Remainder = Normalizer::sidesTrim(Remainder);
+        if (Buffer.size() &&
+                _set.contains(Remainder))
+            return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Remainder + ARABIC_ZWNJ + Buffer);
+        QString Corrected = this->processTar_Tarin(_set, _prefix + ARABIC_ZWNJ, Remainder, Buffer, false);
+        if(Corrected.size())
+            return Corrected;
+
+        Postfixes.prepend(Buffer);
+    }
+
     bool EndsWithHa = false;
-    if (this->RxEndWithHa.exactMatch(Buffer) /*||
-        this->RxEndWithAn.exactMatch(Buffer)*/){
-        Buffer.remove(this->RxHa); //Remove combinations of Ha
-        Postfix.remove(0,  Buffer.length());
-        Buffer = Normalizer::sidesTrim(Buffer);
-//        if(Postfix.isEmpty()){
-//            Buffer = Normalizer::sidesTrim(_postfix);
-//            Postfix = Buffer;
-//            Buffer = Buffer.remove(this->RxAn); //Remove combinations of An
-//            Postfix.remove(0, Buffer.length());
-//            Buffer = Normalizer::sidesTrim(Buffer);
-//        }else
-//            EndsWithHa = true;
+    if (this->RxEndWithHa.exactMatch(Remainder)) {
+        Buffer = Remainder;
+        Remainder.remove(this->RxHa); //Remove combinations of Ha
+        Buffer.remove(0, Remainder.length());
+        Remainder = Normalizer::sidesTrim(Remainder);
+        // TODO: Make this "ها" a constant string
+        Postfixes.prepend(ARABIC_ZWNJ + Buffer);
 
-        if(!Postfix.isEmpty())
+        if(!Remainder.isEmpty())
             EndsWithHa = true;
+    }
 
-        Buffer = Normalizer::sidesTrim(Buffer);
-        if (Postfix.size() &&
-                _set.contains(Buffer)) //zhnDebug: ye nakareh should be removed first. has bug with بی شعوریهایشان
-                                       //zhnDebug: why just match with _set? makes bugs for نامردهایشان
-            return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_ZWNJ + Postfix);
+    Buffer = Normalizer::sidesTrim(Remainder);
+    if (Buffer.endsWith(ARABIC_YE)){
+        // Indefinite adjective "Ye"
+        Buffer.truncate(Buffer.size() - 1);
+        if (this->CanStartWithBi_Ba.contains(Buffer))
+            return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_YE + Postfixes.join(""));
+
+        // TODO: Make this "ی" a constant string
+        Postfixes.prepend("ی");
+        Remainder = Buffer;
+    }
+
+    if(true) {
+        Buffer = Normalizer::sidesTrim(Remainder);
+        if (_set.contains(Buffer)) // zhnDebug: ye nakareh should be removed first. has bug with بی شعوریهایشان
+                                   //zhnDebug: why just match with _set? makes bugs for نامردهایشان
+            return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_ZWNJ + Postfixes.join(""));
 
         QString OldBuffer = Buffer;
-        Buffer = this->processTar_Tarin(_set, _prefix + ARABIC_ZWNJ, Buffer, Postfix, false);
+        Buffer = this->processTar_Tarin(_set, _prefix + ARABIC_ZWNJ, Buffer, Postfixes.join(""), false);
         if(Buffer.size())
             return Buffer;
         else{
             if (EndsWithHa && OldBuffer.endsWith(ARABIC_YE)){
                 Buffer = Normalizer::sidesTrim(OldBuffer.mid(0, OldBuffer.length() - 1));
-                if (Postfix.size() &&
+                if (Remainder.size() &&
                         _set.contains(Buffer))
-                    return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_YE + ARABIC_ZWNJ + Postfix);
-            }
-            Buffer = Normalizer::sidesTrim(_postfix);
-            Postfix = Buffer;
-            if (this->RxEndWithPossesive.exactMatch(Buffer)){
-                Buffer.remove(this->RxPossesive); //Remove combinations of Possesive
-                Postfix.remove(0,  Buffer.length());
-                Buffer = Normalizer::sidesTrim(Buffer);
-                if (Postfix.size() &&
-                        _set.contains(Buffer))
-                    return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_ZWNJ + Postfix);
-                Buffer = this->processTar_Tarin(_set, _prefix + ARABIC_ZWNJ, Buffer, Postfix, false);
-                if(Buffer.size())
-                    return Buffer;
+                    return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_YE + ARABIC_ZWNJ + Postfixes.join(""));
             }
         }
 
     }
 
-    Buffer = this->processTar_Tarin(_set, _prefix + ARABIC_ZWNJ, _postfix, "", false);
+    Buffer = this->processTar_Tarin(_set, _prefix + ARABIC_ZWNJ, Remainder, "", false);
     if(Buffer.size())
-        return Buffer;
+        return Normalizer::fullTrim(Buffer + ARABIC_ZWNJ + Postfixes.join(""));
 
-    Buffer = Normalizer::sidesTrim(_postfix);
-    if (Buffer.endsWith(ARABIC_YE)){
-        //نکره صفت
-        Buffer.truncate(Buffer.size() - 1);
-        if (this->CanStartWithBi_Ba.contains(Buffer))
-            return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Buffer + ARABIC_YE);
-    }
-
-    Buffer = Normalizer::sidesTrim(_postfix);
+    Buffer = Normalizer::sidesTrim(Remainder);
     if(_set.contains(Buffer))
-        return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + _postfix);
+        return Normalizer::fullTrim(_prefix + ARABIC_ZWNJ + Postfixes.join(""));
 
     return "";
 }

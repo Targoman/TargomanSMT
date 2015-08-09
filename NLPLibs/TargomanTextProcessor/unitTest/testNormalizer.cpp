@@ -29,8 +29,25 @@
 #include "libTargomanTextProcessor/TextProcessor.h"
 using namespace Targoman::NLPLibs;
 
+#define DO_NORMALIZE(_lang, _check) \
+    Targoman::NLPLibs::TargomanTextProcessor::instance().normalizeText(QStringLiteral(_check), false, _lang)
+
 #define VERIFY_NORMALIZE(_lang, _check, _desired) \
-    Targoman::NLPLibs::TargomanTextProcessor::instance().normalizeText(QStringLiteral(_check), false, _lang) == QStringLiteral(_desired)
+     DO_NORMALIZE(_lang, _check) == QStringLiteral(_desired)
+
+namespace Targoman {
+namespace NLPLibs {
+namespace TargomanTP{
+namespace Private {
+namespace SpellCorrectors {
+extern bool doDebug;
+}
+}
+}
+}
+}
+
+using namespace Targoman::NLPLibs::TargomanTP::Private::SpellCorrectors;
 
 void UnitTest::normalizeText()
 {
@@ -58,6 +75,7 @@ void UnitTest::normalizeText()
     "می خورده‌بودم",
     "می‌خورده‌بودم"
     ));
+
     QVERIFY(VERIFY_NORMALIZE("fa",
     "نا مردهایشان",
     "نامردهایشان"
@@ -66,10 +84,11 @@ void UnitTest::normalizeText()
     "نامردهایشان",
     "نامردهایشان"
     ));
-//    QVERIFY(VERIFY_NORMALIZE("fa",
-//    "نا مردترینشان",
-//    "نامردترین‌شان"
-//    ));
+
+    QVERIFY(VERIFY_NORMALIZE("fa",
+    "نا مردترینشان",
+    "نامردترین‌شان"
+    ));
     QVERIFY(VERIFY_NORMALIZE("fa",
     "نا مردیهایشان",
     "نامردی‌هایشان"
@@ -135,6 +154,7 @@ void UnitTest::normalizeText()
                             "صرفاً",
                             "صرفا"
                             ));
+
     QVERIFY(VERIFY_NORMALIZE("fa",
                             "صرفا\"",
                             "صرفا"
@@ -151,15 +171,16 @@ void UnitTest::normalizeText()
                             "می کند و",
                             "می‌کند و"
                             ));
-//    QVERIFY(VERIFY_NORMALIZE("fa",
-//                            "کشته شده اند",
-//                            "کشته شده‌اند"
-//                            ));
 
-//    QVERIFY(VERIFY_NORMALIZE("fa",
-//                            "اشغال",
-//                            "اشغال"
-//                            ));
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "کشته شده اند",
+                            "کشته شده‌اند"
+                            ));
+
+    QVERIFY(VERIFY_NORMALIZE("fa",
+                            "اشغال",
+                            "اشغال"
+                            ));
 
 //    QVERIFY(VERIFY_NORMALIZE("fa",
 //                            "از تاثیر مثبت این خاطره هم کاری برنیامده است",
