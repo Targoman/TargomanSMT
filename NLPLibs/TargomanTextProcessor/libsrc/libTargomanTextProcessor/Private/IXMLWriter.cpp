@@ -43,6 +43,13 @@ IXMLWriter::IXMLWriter() :
     // Email detection
     this->RxEmail = QRegExp("([A-Za-z0-9._%+-][A-Za-z0-9._%+-]*@[A-Za-z0-9.-][A-Za-z0-9.-]*\\.[A-Za-z]{2,4})");
 
+    QStringList AllowedFarsiDomainNames = {
+        QStringLiteral("کام"),
+        QStringLiteral("نت"),
+        QStringLiteral("ارگ"),
+        QStringLiteral("آی‌آر")
+    };
+
     this->RxURL = QRegExp(QStringLiteral("(?:(?:https?|ftp)://)?"
                                             "(?:(?!10(?:\\.\\d{1,3}){3})"
                                             //      "(?!127(?:\\.\\d{1,3}){3})"
@@ -54,8 +61,11 @@ IXMLWriter::IXMLWriter() :
                                             "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))"
                                             "|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)"
                                             "(?:\\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*"
-                                            "(?:\\.(?:[a-z\u00a1-\uffff]{2,4})))(?::\\d{2,5})?(?:/[^\\s]*)?"),
+                                            "(?:\\.(?:[a-z]{2,4}|") +
+                          AllowedFarsiDomainNames.join("|") +
+                          QStringLiteral(")))(?::\\d{2,5})?(?:/[^\\s]*)?"),
                           Qt::CaseInsensitive);
+
     this->RxURLValidator = QRegExp("^" + this->RxURL.pattern() + "$");
 
     // Abbreviations
