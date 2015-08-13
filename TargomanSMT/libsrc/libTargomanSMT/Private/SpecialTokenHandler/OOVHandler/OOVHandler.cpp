@@ -81,7 +81,7 @@ TargetRulesContainer_t OOVHandler::gatherTargetRules(const QString &_token, QVar
 {
     TargetRulesContainer_t TargetRules;
     foreach(intfOOVHandlerModule* pOOVHandler, this->ActiveOOVHandlers){
-        const clsTargetRule&  OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
+        const clsTargetRule OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
         if (OOVHandlerTargetRule.isInvalid() == false){
             TargetRules.append(OOVHandlerTargetRule);
         }

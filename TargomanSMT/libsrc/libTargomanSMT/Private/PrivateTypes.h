@@ -29,15 +29,22 @@
 
 #include <QBitArray>
 #include "Types.h"
-#ifdef TARGOMAN_SHOW_DEBUG
 #include <QTextStream>
-#endif
 
 namespace Targoman {
 namespace SMT {
 namespace Private {
 
 typedef QBitArray Coverage_t;
+
+inline QTextStream& operator << (QTextStream& _outputStream, const Coverage_t& _coverage)
+{
+    if(_coverage.size() == 0)
+        return _outputStream;
+    for(int i = 0; i < _coverage.size(); ++i)
+        _outputStream << (_coverage.testBit(i) ? "1" : "0");
+    return _outputStream;
+}
 
 #ifdef TARGOMAN_SHOW_DEBUG
 inline bool operator == (const Coverage_t& _coverage, const char* value)
@@ -53,15 +60,6 @@ inline bool operator == (const Coverage_t& _coverage, const char* value)
 inline bool operator == (const char* value, const Coverage_t& _coverage)
 {
     return _coverage == value;
-}
-
-inline QTextStream& operator << (QTextStream& _outputStream, const Coverage_t& _coverage)
-{
-    if(_coverage.size() == 0)
-        return _outputStream;
-    for(int i = 0; i < _coverage.size(); ++i)
-        _outputStream << (_coverage.testBit(i) ? "1" : "0");
-    return _outputStream;
 }
 
 inline QString bitArray2Str(const Coverage_t& _bits){

@@ -55,7 +55,7 @@ void UnitTest::text2IXML()
     QVERIFY(VERIFY_TXT2IXML("fa"," یا49راتحقق می‌بخشد", "یا <Number>49</Number> راتحقق می‌بخشد"));
     QVERIFY(VERIFY_TXT2IXML("fa","و 1.6155فرانک سوییس در مقابل 1.5960", "و <Number>1.6155</Number> فرانک سوییس در مقابل <Number>1.5960</Number>"));
     QVERIFY(VERIFY_TXT2IXML("en"," to_1967_lines", "to _ <Number>1967</Number> _ lines"));
-//    QVERIFY(VERIFY_TXT2IXML("گفت.مریم", "گفت . مریم"));
+    QVERIFY(VERIFY_TXT2IXML("fa", "گفت.مریم", "گفت . مریم"));
 
 
     QVERIFY(VERIFY_TXT2IXML("en","1st", "<Ordinals>1st</Ordinals>"));
@@ -85,7 +85,7 @@ void UnitTest::text2IXML()
 
     //abbr
     QVERIFY(VERIFY_TXT2IXML("en","a U.S. A.B.C.D A.B.C.D. ", "a <Abbreviation>U.S.</Abbreviation> <Abbreviation>A.B.C.D</Abbreviation> <Abbreviation>A.B.C.D.</Abbreviation>"));
-    //  /QVERIFY(E4SMT_VERIFY("آ.ام.پی", "<Abbreviation>آ.ام.پی</Abbreviation>"));
+//    QVERIFY(VERIFY_TXT2IXML("fa", "آ.ام.پی", "<Abbreviation>آ.ام.پی</Abbreviation>"));
 
     //separator
     QVERIFY(VERIFY_TXT2IXML("en","thisسلام", "this سلام"));
@@ -120,18 +120,12 @@ void UnitTest::text2IXML()
 //                            "Wi-Fi . "
 //                            "هر روز"));
 
-//    QVERIFY(VERIFY_TXT2IXML("fa",
-//                            "* ایران",
-//                            "<OrderedListItem>*</OrderedListItem> ایران"));
-//    QVERIFY(VERIFY_TXT2IXML("en",
-//                            "__kook@bbc.co.uk",
-//                            "_ _ <Email>kook@bbc.co.uk</Email>"));
-//    QVERIFY(VERIFY_TXT2IXML("en",
-//                            "__http://bit.ly/BBCKookFB",
-//                            "_ _ <URL>http://bit.ly/BBCKookFB</URL>"));
-//    QVERIFY(VERIFY_TXT2IXML("fa",
-//                            "o صفحات_ویژه",
-//                            "<OrderedListItem>o</OrderedListItem> صفحات _ ویژه"));
+    QVERIFY(VERIFY_TXT2IXML("en",
+                            "__kook@bbc.co.uk",
+                            "<Email>__kook@bbc.co.uk</Email>"));
+    QVERIFY(VERIFY_TXT2IXML("en",
+                            "__http://bit.ly/BBCKookFB",
+                            "_ _ <URL>http://bit.ly/BBCKookFB</URL>"));
 
     QVERIFY(VERIFY_TXT2IXML("fa",
                             "می گفت \"پاتک\"",

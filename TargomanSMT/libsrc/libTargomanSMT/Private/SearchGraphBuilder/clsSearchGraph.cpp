@@ -32,6 +32,7 @@
 #include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
 #include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 
 
@@ -259,6 +260,7 @@ float roundDouble(double inputNumber)
 #endif
 
 
+
 /**
  * @brief This is the main function that performs the decoding process.
  *
@@ -319,11 +321,8 @@ bool clsSearchGraph::decode()
 
                 // This can be removed if training has been done properly and we have a sane phrase table
                 if (PrevLexHypoContainer.nodes().isEmpty()){
-                    //TODO: We must have this warning log in release mode also
-#ifdef TARGOMAN_SHOW_DEBUG
                     TargomanLogWarn(1, "PrevLexHypoContainer is empty. PrevCard: " << PrevCardinality
                                   << "PrevCov: " << PrevCoverage);
-#endif
                     continue;
                 }
 
@@ -384,27 +383,6 @@ bool clsSearchGraph::decode()
                                                            CurrentPhraseCandidate,
                                                            IsFinal,
                                                            RestCost);
-#ifdef TARGOMAN_SHOW_DEBUG
-                            // Torabzadeh
-                            /*
-
-                            if(//NewHypoNode.prevNode().targetRule().toStr() == QStringLiteral("") &&
-                               NewHypoNode.targetRule().toStr() == QStringLiteral("به یک") ){
-                                   for(int i = 0; i < PhraseCandidates.targetRules().size(); ++i) {
-                                       std::cout << PhraseCandidates.targetRules().at(i).toStr().toUtf8().constData() << std::endl;
-                                   }
-                                   int a = 2;
-                                   a++;
-                            }
-                            if(NewHypoNode.prevNode().targetRule().toStr() == QStringLiteral("فلسطین در") &&
-                               NewHypoNode.targetRule().toStr() == QStringLiteral("آن") &&
-                               NewCardinality == 13 &&
-                               NewCoverage == "11111111101111000000000000"){
-                                   int a = 5;
-                                   a++;
-                            }
-                            //*/
-#endif
 
                             // If current NewHypoNode is worse than worst stored node ignore it
                             if (clsSearchGraph::DoPrunePreInsertion.value() &&
@@ -448,12 +426,12 @@ bool clsSearchGraph::decode()
                 const QList<clsSearchGraphNode>& Nodes = Iterator->nodes();
                 foreach(const clsSearchGraphNode& SelectedNode, Nodes) {
                     std::stringstream Stream;
-                    Stream << SelectedNode.getTotalCost() << "\t";
+                    Stream << std::fixed << std::setprecision(3) << SelectedNode.getTotalCost() << "\t";
                     Stream << "Cardinality:  ";
                     Stream << car2str(NewCardinality).toUtf8().constData();
                     Stream << "  Coverage:  " << cov2str(SelectedNode.coverage()).toUtf8().constData();
-                    Stream << "  Cost:  " << SelectedNode.getCost()
-                           << " , RestCost: " << SelectedNode.getTotalCost() - SelectedNode.getCost()
+                    Stream << "  Cost:  " << std::setprecision(3) << SelectedNode.getCost()
+                           << " , RestCost: " << std::setprecision(3) << (SelectedNode.getTotalCost() - SelectedNode.getCost())
                            << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
                            << ")" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
                     std::cout << Stream.str().c_str();
@@ -481,10 +459,7 @@ bool clsSearchGraph::decode()
     } else {
         static clsSearchGraphNode InvalidGoalNode;
         this->Data->GoalNode = &InvalidGoalNode;
-        // TODO: We need to have this log in release mode also
-#ifdef TARGOMAN_SHOW_DEBUG
         TargomanLogWarn(1, "No translation option for: " << this->Data->Sentence);
-#endif
         return false;
     }
 }

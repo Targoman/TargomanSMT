@@ -110,7 +110,6 @@ private:
 }
 }
 
-#ifdef TARGOMAN_SHOW_DEBUG
 inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::SMT::Private::InputDecomposer::Sentence_t& _sentence)
 {
     if(_sentence.size() == 0)
@@ -120,6 +119,5 @@ inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::SMT
         _outputStream << " " << _sentence.at(i);
     return _outputStream;
 }
-#endif
 
 #endif // TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSINPUT_H

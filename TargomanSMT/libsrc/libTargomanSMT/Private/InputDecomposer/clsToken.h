@@ -83,13 +83,10 @@ private:
 }
 }
 
-#ifdef TARGOMAN_SHOW_DEBUG
 inline QTextStream& operator << (QTextStream& _outputStream, const Targoman::SMT::Private::InputDecomposer::clsToken& _token)
 {
     _outputStream << _token.string();
     return _outputStream;
 }
-#endif
-
 
 #endif // TARGOMAN_CORE_PRIVATE_INPUTDECOMPOSER_CLSTOKEN_H

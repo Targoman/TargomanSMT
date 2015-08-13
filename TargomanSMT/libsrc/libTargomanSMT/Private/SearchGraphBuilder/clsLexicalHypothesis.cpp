@@ -113,16 +113,6 @@ bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 
     this->Data->Nodes.insert(InsertionPos,_node);
 
-    // Torabzadeh
-    #ifdef TARGOMAN_SHOW_DEBUG
-    if(_node.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
-       _node.targetRule().toStr() == QStringLiteral("که") &&
-       _node.coverage() == "11111111101111000000000000"){
-           int a = 10;
-           a++;
-    }
-    #endif
-
     return true;
 }
 
