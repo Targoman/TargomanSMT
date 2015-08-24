@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     clsLanguageModel LM;
     try {
         Targoman::Common::TARGOMAN_IO_SETTINGS.setDefault();
+        Targoman::Common::TARGOMAN_IO_SETTINGS.setSilent();
         Targoman::Common::Logger::instance().setVisible();
         Targoman::Common::Logger::instance().setActive();
 
@@ -55,7 +56,72 @@ int main(int argc, char *argv[])
         stuLMConfigs languageModelConfig( UnkProb, UnkBackoff, UseIdexBasedModel);
         languageModelConfig.VerifyBinaryCheckSum = true;
 
+        QStringList EnglishSentences = {
+            "Izzet Ibrahim Meets Saudi Trade Official in Baghdad ",
+            "Baghdad 1-1 ( AFP - Iraq's official news agency reported that the Deputy Chairman of the Iraqi Revolutionary Command Council , Izzet Ibrahim , today met with Abdul Rahman al-Zamil , Managing Director of the Saudi Center for Export Development . ",
+            "The agency said Ibrahim welcomed this occasion for trade exchange and cooperation between Iraq and Saudi Arabia . ",
+            "The agency also reported that the Iraqi Minister of Trade , Mohamed Mehdi Salih , took part in the meeting . ",
+            "Baghdad and Riyadh , who broke diplomatic relations during the Gulf War in 1991 , began to improve their relations over the course of the Beirut Summit last March . "
+        };
 
+        clsLanguageModel* ALM = new clsLanguageModel();
+
+        ALM->init("/Share/local/torabzadeh/Targoman/lm/Final.en.arpa", languageModelConfig);
+
+        for(int i = 0; i < EnglishSentences.size(); ++i) {
+            QString& Sentence = EnglishSentences[i];
+            clsLMSentenceScorer SS(*ALM);
+            qDebug() << Sentence;
+            quint8 Gram;
+            float SumLM = 0;
+            int TokenCount = 1;
+            foreach (const QString& Word, Sentence.split(" ")){
+                Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+                qDebug()<<"Prob [" << Word << "]:Prob = " << Prob << " NGram = " << Gram;
+                SumLM-=Prob;
+                ++TokenCount;
+            }
+            ++TokenCount;
+            qDebug()<<"Sum:" << SumLM;
+            SumLM -=  SS.endOfSentenceProb(Gram);
+            qDebug()<<"Sum after finalize:"<< SumLM;
+            qDebug()<<"Perplexity:" << pow(2, SumLM / TokenCount);
+        }
+
+        QStringList PersianSentences = {
+            "ایزت ابراهیم مامور تجاری عبرستانی را در بغداد ملاقات کرد ",
+            "بغداد 1-1 ( AFP اژانس خبری رسمی عراق گزارش داد که امروز نایب رییس هییت فرماندهی انقلابی عراق با عبدالرحمان الزملی مدیر عامل مرکز صعودی برای توسعه ی صادرات ملاقات کرد . ",
+            "این اژانس گزارش داد که ابراهیم از این موقعیت برای مبادله ی تجاری و همکاری بین عراق و عربستان صعودی استقبال کرد . ",
+            "این اژانس همچنین گزارش داد که مهدی صالح در این جلسه شرکت کرده است ",
+            "بغداد و ریاض که هنگام جنگ خلیج در سال 1991 روابط دیپلماتیک خود را با هم قطع کرده بودند , بهبود روابط خود را در جریان جلسه ی بیروت در مارچ گذشته اغاز کردند . "
+        };
+
+        delete ALM;
+        ALM = new clsLanguageModel();
+
+        ALM->init("/Share/local/torabzadeh/Targoman/lm/Final.fa.arpa", languageModelConfig);
+
+        for(int i = 0; i < PersianSentences.size(); ++i) {
+            QString& Sentence = PersianSentences[i];
+            clsLMSentenceScorer SS(*ALM);
+            qDebug() << Sentence;
+            quint8 Gram;
+            float SumLM = 0;
+            int TokenCount = 1;
+            foreach (const QString& Word, Sentence.split(" ")){
+                Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
+                qDebug()<<"Prob [" << Word << "]:Prob = " << Prob << " NGram = " << Gram;
+                SumLM-=Prob;
+                ++TokenCount;
+            }
+            ++TokenCount;
+            qDebug()<<"Sum:" << SumLM;
+            SumLM -=  SS.endOfSentenceProb(Gram);
+            qDebug()<<"Sum after finalize:"<< SumLM;
+            qDebug()<<"Perplexity:" << pow(2, SumLM / TokenCount);
+        }
+
+        exit(0);
 //        Word = "این";
 //        Targoman::Common::LogP_t Prob = SS.wordProb(Word, Gram);
 //        QVERIFY(Gram == 2);
@@ -66,7 +132,7 @@ int main(int argc, char *argv[])
 
 //        qDebug()<<"Order = "<<LM.init(argc > 2 ? argv[1] : "/Share/local/vedadian/Experiments/Targoman/lm/Fa-En_BaseLine_2014-Mar-5_v0.1.4g.arpa", languageModelConfig);
 //        LM.convertBinary("/Share/local/vedadian/Experiments/Targoman/lm/Fa-En_BaseLine_2014-Mar-5_v0.1.4g.bin");
-        LM.init("/Share/local/vedadian/Experiments/Targoman/lm/Fa-En_BaseLine_2014-Mar-5_v0.1.4g.bin", languageModelConfig);
+        LM.init("/Share/local/torabzadeh/Targoman/lm/Final.fa.arpa", languageModelConfig);
 
 //        QString Sentence = QStringLiteral("the reactor required for it produces atom plutonium bomb .");
         QString Sentence = QStringLiteral("iiiiiiiiiiiiiiiiiiii King");

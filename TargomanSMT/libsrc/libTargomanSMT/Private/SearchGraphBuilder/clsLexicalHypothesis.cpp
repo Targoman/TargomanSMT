@@ -84,17 +84,6 @@ bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
                     --NewHypoNodePosition;
                 }
                 this->Data->Nodes[NewHypoNodePosition] = HypoNode;
-
-                #ifdef TARGOMAN_SHOW_DEBUG
-                // Torabzadeh
-                if(HypoNode.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
-                   HypoNode.targetRule().toStr() == QStringLiteral("که") &&
-                   HypoNode.coverage() == "11111111101111000000000000"){
-                       int a = 10;
-                       a++;
-                }
-                #endif
-
                 return false;
             }else{
                 if(HypoNode.getTotalCost() > _node.getTotalCost()){

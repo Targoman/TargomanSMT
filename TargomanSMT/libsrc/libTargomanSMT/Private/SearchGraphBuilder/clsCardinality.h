@@ -48,7 +48,9 @@ typedef QMap<Coverage_t, clsLexicalHypothesisContainer> CoverageLexicalHypothesi
 class clsCardinalityHypothesisContainerData : public QSharedData
 {
 public:
-    clsCardinalityHypothesisContainerData(){
+    clsCardinalityHypothesisContainerData()
+    {
+        this->SelectedLexicalHypothesis = NULL;
         this->WorstLexicalHypothesis = NULL;
         this->BestLexicalHypothesis = NULL;
         this->TotalSearchGraphNodeCount = 0;
@@ -58,6 +60,8 @@ public:
     clsCardinalityHypothesisContainerData(const clsCardinalityHypothesisContainerData& _other) :
         QSharedData(_other),
         LexicalHypothesisContainer(_other.LexicalHypothesisContainer),
+        SelectedCoverage(_other.SelectedCoverage),
+        SelectedLexicalHypothesis(_other.SelectedLexicalHypothesis),
         TotalSearchGraphNodeCount(_other.TotalSearchGraphNodeCount),
         BestCoverage(_other.BestCoverage),
         BestLexicalHypothesis(_other.BestLexicalHypothesis),
@@ -70,6 +74,8 @@ public:
 
 public:
     CoverageLexicalHypothesisMap_t  LexicalHypothesisContainer;
+    Coverage_t                      SelectedCoverage;
+    clsLexicalHypothesisContainer*  SelectedLexicalHypothesis;
     size_t                          TotalSearchGraphNodeCount;
     Coverage_t                      BestCoverage;
     clsLexicalHypothesisContainer*  BestLexicalHypothesis;
@@ -142,6 +148,17 @@ public:
             this->updateWorstNode();
         }
     }
+
+    /**
+     * @brief setLexicalHypothesis   selects the lexical hypothesis targetted for hypothesis insertion
+     * @param _coverage              coverage of the targetted hypothesis
+     */
+    void setLexicalHypothesis(const Coverage_t& _coverage);
+
+    /**
+     * @brief removeSelectedLexicalHypothesisIfEmpty   Removes the selected lexical hypothesis if it is empty and unset the selection
+     */
+    void removeSelectedLexicalHypothesisIfEmpty();
 
     /**
      * @brief insertNewHypothesis   inserts the new hypothesis into its corresponding lexical hypothesis container and updates its internal parameters (worst node, total number of hypothesis and etc)

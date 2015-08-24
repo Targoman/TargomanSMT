@@ -26,6 +26,7 @@
 
 #include "OOVHandler.h"
 #include "intfOOVHandlerModule.hpp"
+#include <iostream>
 
 namespace Targoman{
 namespace SMT {
@@ -55,6 +56,11 @@ tmplConfigurable<QString> OOVHandler::OOVHandlerModules(
     }
     return true;
 });
+
+tmplConfigurable<bool> OOVHandler::CheckDifferentLetterCases(
+        OOVHandler::moduleName() + "/CheckDifferentLetterCases",
+        "Check upper, lower and Pascal forms of unknown words",
+        true);
 
 QMap<QString, intfOOVHandlerModule*>                       OOVHandler::AvailableOOVHandlers;
 
@@ -95,9 +101,30 @@ TargetRulesContainer_t OOVHandler::gatherTargetRules(const QString &_token, QVar
  * @param[in,out] _attrs            Types of special OOV handlers will be set in this argument.
  * @return                          Word index of input OOV word.
  */
-
-QList<Common::WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token, QVariantMap &_attrs)
+QList<WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token, QVariantMap &_attrs)
 {
+    if(OOVHandler::CheckDifferentLetterCases.value()) {
+        auto toPascalCase = [] (const QString& _token) {
+            QString Result = _token.toLower();
+            Result[0] = Result[0].toUpper();
+            return Result;
+        };
+
+        QList<WordIndex_t> TrivialWordIndexes = {
+            gConfigs.SourceVocab.value(_token.toLower(), Constants::SrcVocabUnkWordIndex),
+            gConfigs.SourceVocab.value(_token.toUpper(), Constants::SrcVocabUnkWordIndex),
+            gConfigs.SourceVocab.value(toPascalCase(_token), Constants::SrcVocabUnkWordIndex)
+        };
+
+        for(int i = TrivialWordIndexes.size() - 1; i >= 0; --i) {
+            if(TrivialWordIndexes.at(i) == Constants::SrcVocabUnkWordIndex)
+                TrivialWordIndexes.removeAt(i);
+        }
+
+        if(TrivialWordIndexes.size() != 0)
+            return TrivialWordIndexes;
+    }
+
     SpecialTokensRegistry::clsExpirableSpecialToken ExpirableSpecialToken =
             SpecialTokensRegistry::instance().getExpirableSpecialToken(_token);
 

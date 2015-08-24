@@ -85,6 +85,7 @@ void UnitTest::text2IXML()
 
     //abbr
     QVERIFY(VERIFY_TXT2IXML("en","a U.S. A.B.C.D A.B.C.D. ", "a <Abbreviation>U.S.</Abbreviation> <Abbreviation>A.B.C.D</Abbreviation> <Abbreviation>A.B.C.D.</Abbreviation>"));
+    QVERIFY(VERIFY_TXT2IXML("en","I.B.M ", "<Abbreviation>I.B.M</Abbreviation>"));
 //    QVERIFY(VERIFY_TXT2IXML("fa", "آ.ام.پی", "<Abbreviation>آ.ام.پی</Abbreviation>"));
 
     //separator

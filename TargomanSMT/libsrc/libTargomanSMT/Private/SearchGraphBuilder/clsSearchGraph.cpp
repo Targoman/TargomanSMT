@@ -23,7 +23,6 @@
  * @author Behrooz Vedadian <vedadian@targoman.com>
  * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
  */
-
 #include <functional>
 
 #include "clsSearchGraph.h"
@@ -34,6 +33,18 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+
+
+// Torabzadeh
+namespace Targoman {
+namespace SMT {
+namespace Private {
+namespace RuleTable {
+Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule);
+}
+}
+}
+}
 
 
 #define PBT_MAXIMUM_COST 1e200
@@ -131,7 +142,6 @@ void clsSearchGraph::init(const QString& _configFilePath)
     ///       tokens that have a word index but only contribute to multi-word phrases. These will cause
     ///       malfunction of OOV handler module as it will assume these words have translations by themselves
     for(auto TokenIter = gConfigs.SourceVocab.begin(); TokenIter != gConfigs.SourceVocab.end(); ++TokenIter) {
-//    for(auto TokenIter = gConfigs.SourceVocab.find("Tape"); TokenIter != gConfigs.SourceVocab.end(); ++TokenIter) {
         clsRuleNode& SingleWordRuleNode =
                 clsSearchGraph::pRuleTable->prefixTree().getOrCreateNode(
                     QList<WordIndex_t>() << TokenIter.value()
@@ -142,8 +152,6 @@ void clsSearchGraph::init(const QString& _configFilePath)
             SingleWordRuleNode.targetRules().append(
                         OOVHandler::instance().generateTargetRules(TokenIter.key())
                         );
-
-//        break;
    }
 
 }
@@ -201,21 +209,19 @@ void clsSearchGraph::collectPhraseCandidates()
 
         }
 
-        //Max PhraseTable order will be implicitly checked by follow
         for (size_t LastPosition = FirstPosition + 1; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
 
             QList<clsRuleNode> RuleNodes;
             extendSourcePhrase(this->Data->Sentence.at(LastPosition).wordIndexes(), PrevNodes, RuleNodes);
 
             if (RuleNodes.isEmpty())
-                break; // appending next word breaks phrase lookup
+                break; // Appending next word breaks phrase lookup
 
             this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, RuleNodes);
             this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                       (int)(LastPosition - FirstPosition + 1));
         }
     }
-
 }
 
 
@@ -322,7 +328,7 @@ bool clsSearchGraph::decode()
                 // This can be removed if training has been done properly and we have a sane phrase table
                 if (PrevLexHypoContainer.nodes().isEmpty()){
                     TargomanLogWarn(1, "PrevLexHypoContainer is empty. PrevCard: " << PrevCardinality
-                                  << "PrevCov: " << PrevCoverage);
+                                  << " PrevCov: " << PrevCoverage);
                     continue;
                 }
 
@@ -366,6 +372,8 @@ bool clsSearchGraph::decode()
 
                     Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseBeginPos, NewPhraseEndPos);
 
+                    CurrCardHypoContainer.setLexicalHypothesis(NewCoverage);
+
                     foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
 
 
@@ -396,6 +404,9 @@ bool clsSearchGraph::decode()
                             }
                         }
                     }//foreach PrevLexHypoNode
+
+                    CurrCardHypoContainer.removeSelectedLexicalHypothesisIfEmpty();
+
                 }//for NewPhraseBeginPos
             }//for PrevCoverageIter
         }//for PrevCardinality

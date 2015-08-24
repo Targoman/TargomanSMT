@@ -24,7 +24,9 @@ DependencyLibPaths+=
 ProjectDependencies += z
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-
+
 CONFIG(debug, debug|release): DEFINES += TARGOMAN_SHOW_DEBUG=1
+
 CONFIG(release){
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE += -O3

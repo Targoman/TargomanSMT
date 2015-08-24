@@ -158,7 +158,7 @@ public:
 
     static clsTargetRule createMinCostTargetRule(const QList<Common::WordIndex_t>& _targetPhrase, bool _isUnknownWord) {
         // TODO:  Set minimum cost instead of Zero cost!!!!!
-        static QList<Common::Cost_t> ZeroCost;
+        static thread_local QList<Common::Cost_t> ZeroCost;
         if(Q_UNLIKELY(ZeroCost.size() == 0)) {
             for(int i = 0; i < clsTargetRule::columnNames().size(); ++i)
                 ZeroCost.append(0);

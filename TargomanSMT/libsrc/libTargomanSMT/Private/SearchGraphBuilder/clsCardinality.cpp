@@ -59,6 +59,20 @@ clsCardinalityHypothesisContainer::clsCardinalityHypothesisContainer() :
     Data(new clsCardinalityHypothesisContainerData)
 { }
 
+void clsCardinalityHypothesisContainer::setLexicalHypothesis(const Coverage_t &_coverage)
+{
+    this->Data->SelectedCoverage = _coverage;
+    this->Data->SelectedLexicalHypothesis = &this->Data->LexicalHypothesisContainer[_coverage];
+}
+
+void clsCardinalityHypothesisContainer::removeSelectedLexicalHypothesisIfEmpty()
+{
+    if(this->Data->SelectedLexicalHypothesis->nodes().isEmpty()) {
+        this->Data->LexicalHypothesisContainer.remove(this->Data->SelectedCoverage);
+        this->Data->SelectedLexicalHypothesis = NULL;
+    }
+}
+
 bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &_node)
 {
     if(_node.getTotalCost() +
@@ -69,8 +83,10 @@ bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &
                 clsCardinalityHypothesisContainer::SearchBeamWidth.value();
     }
 
+    // To speed up things, the lexical hypothesis is preselected by another function
     const Coverage_t& Coverage = _node.coverage();
-    clsLexicalHypothesisContainer& Container = this->Data->LexicalHypothesisContainer[Coverage];
+//    clsLexicalHypothesisContainer& Container = this->Data->LexicalHypothesisContainer[Coverage];
+    clsLexicalHypothesisContainer& Container = *this->Data->SelectedLexicalHypothesis;
 
     size_t OldContainerSize = Container.nodes().size();
 
@@ -228,24 +244,6 @@ void clsCardinalityHypothesisContainer::prune()
             if(NextCoverageNodeIndex >= HypoContainerIter->nodes().size())
                 continue;
             const clsSearchGraphNode& Node = HypoContainerIter->nodes().at(NextCoverageNodeIndex);
-
-            #ifdef TARGOMAN_SHOW_DEBUG
-            // Torabzadeh
-            if(Node.prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
-               Node.targetRule().toStr() == QStringLiteral("که") &&
-               Node.coverage() == "11111111101111000000000000"){
-                   int a = 2;
-                   a++;
-
-                   for(int i = 0; i < HypoContainerIter->nodes().size(); ++i)
-                   {
-                       const clsSearchGraphNode& Node = HypoContainerIter->nodes().at(i);
-                       qDebug() << "(" << Node.prevNode().targetRule().toStr() << ")" << Node.targetRule().toStr() << Node.getTotalCost() - Node.getCost();
-                   }
-//                   exit(0);
-            }
-            #endif
-
             if(Node.getTotalCost() < ChosenNodeTotalCost) {
                 ChosenCoverage = HypoContainerIter.key();
                 ChosenNodeTotalCost = Node.getTotalCost();
@@ -260,23 +258,13 @@ void clsCardinalityHypothesisContainer::prune()
     for(auto CoverageIter = PickedHypothesisCount.begin();
         CoverageIter != PickedHypothesisCount.end();
         ++CoverageIter) {
-        if(*CoverageIter == 0)
-            this->Data->LexicalHypothesisContainer.remove(CoverageIter.key());
+        if(*CoverageIter == 0) {
+            // Avoid deleting the selected coverage
+            if(this->Data->SelectedLexicalHypothesis != &this->Data->LexicalHypothesisContainer[CoverageIter.key()])
+                this->Data->LexicalHypothesisContainer.remove(CoverageIter.key());
+        }
         else if (*CoverageIter < this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes().size()){
             QList<clsSearchGraphNode>& Nodes =  this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes();
-
-            #ifdef TARGOMAN_SHOW_DEBUG
-            // Torabzadeh
-            for(int i = *CoverageIter; i < Nodes.size(); ++i){
-                if(Nodes.at(i).prevNode().targetRule().toStr() == QStringLiteral("فلسطین است") &&
-                   Nodes.at(i).targetRule().toStr() == QStringLiteral("که") &&
-                   Nodes.at(i).coverage() == "11111111101111000000000000"){
-                       int a = 3;
-                       a++;
-                }
-            }
-            #endif
-
             Nodes.erase(Nodes.begin() + *CoverageIter, Nodes.end());
         }
     }

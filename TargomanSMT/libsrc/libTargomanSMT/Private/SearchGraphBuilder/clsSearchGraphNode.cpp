@@ -136,12 +136,12 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
 {
     if (this->sourceRangeEnd() != _node.sourceRangeEnd())
         return false;
-
-    foreach(FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions.values())
-        if (FF->nodesHaveSameState(*this, _node) == false)
-            return false;
     if (Q_UNLIKELY(_node.coverage() != this->coverage()))
         return false;
+    for(auto FeatureFunctionIter = gConfigs.ActiveFeatureFunctions.constBegin();
+        FeatureFunctionIter != gConfigs.ActiveFeatureFunctions.constEnd();  ++FeatureFunctionIter)
+        if (FeatureFunctionIter.value()->nodesHaveSameState(*this, _node) == false)
+            return false;
 
     return true;
 }

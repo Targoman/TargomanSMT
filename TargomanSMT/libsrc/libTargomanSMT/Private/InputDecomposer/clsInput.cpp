@@ -105,7 +105,7 @@ void clsInput::parsePlain(const QString &_inputStr)
     this->parseRichIXML(
                 TargomanTextProcessor::instance().text2IXML(_inputStr,
                                                             SpellCorrectorChanges,
-                                                            gConfigs.SourceLanguage.value()), false);
+                                                            gConfigs.SourceLanguage.value(), 0, false), false);
 }
 
 

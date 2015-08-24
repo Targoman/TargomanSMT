@@ -72,6 +72,7 @@ private:
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<QString>   OOVHandlerModules;
+    static Targoman::Common::Configuration::tmplConfigurable<bool>      CheckDifferentLetterCases;
     static QMap<QString, intfOOVHandlerModule*>                         AvailableOOVHandlers; /**< List of available special OOV handlers*/
     friend class intfOOVHandlerModule;
 };

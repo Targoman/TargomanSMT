@@ -63,6 +63,7 @@ void Translator::init(const QString _configFilePath)
     IXMLTagHandler::instance().initialize();
     SearchGraphBuilder::clsSearchGraph::init(_configFilePath);
 
+
     TranslatorInitialized = true;
 }
 
@@ -73,6 +74,8 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     if (TranslatorInitialized == false)
         throw exTargomanCore("Translator is not initialized");
 
+    QTime start = QTime::currentTime();
+
     InputDecomposer::clsInput Input(_inputStr, _isIXML);
     SearchGraphBuilder::clsSearchGraph  SearchGraph(Input.tokens());
     OutputComposer::clsOutputComposer   OutputComposer(Input, SearchGraph);
@@ -80,6 +83,7 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     if (_justTranslationString){
         stuTranslationOutput Output;
         Output.Translation = OutputComposer.translationString();
+        qDebug() << start.elapsed();
         return Output;
     }else
         return OutputComposer.translationOutput();

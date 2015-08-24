@@ -99,6 +99,9 @@ int main(int argc, char *argv[])
 
         printMemoryUsage("after init");
         Translator::init(ConfigManager::instance().configFilePath());
+
+
+
         printMemoryUsage("after load all");
 
 //        Translator::saveBinaryRuleTable("phrase-table.dev.kenlm.bin");
@@ -113,7 +116,8 @@ int main(int argc, char *argv[])
 
         while(Stream.atEnd() == false)
         {
-            std::cout << Translator::translate(Stream.readLine(), true).Translation.toStdString() << std::endl;
+
+            std::cout << Translator::translate(Stream.readLine(), false).Translation.toStdString() << std::endl;
             //printMemoryUsage(QString::number(++LineNumber) + ": after translate");
         }
 

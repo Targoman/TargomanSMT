@@ -304,7 +304,7 @@ void clsMosesPlainRuleTable::loadTableData()
  * @param _targetRule                   input target rule for which the cost is computed
  * @return                              the computed cost
  */
-inline Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule)
+/*inline */Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule)
 {
     PhraseTable& PhraseCostFeature = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
     LanguageModel& LanguageModelFeature = *static_cast<LanguageModel*>(LanguageModel::moduleInstance());
