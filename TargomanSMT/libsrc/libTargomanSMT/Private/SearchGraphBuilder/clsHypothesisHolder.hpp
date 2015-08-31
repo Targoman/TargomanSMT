@@ -77,7 +77,7 @@ public:
     }
 
     inline const clsSearchGraphNode& getRootNode(){
-        return this->Data->CardinalityHypotheses[0][this->Data->EmptyCoverage].nodes().at(0);
+        return this->Data->CardinalityHypotheses[0][this->Data->EmptyCoverage].nodes().first();
     }
 
     inline clsCardinalityHypothesisContainer& operator [](size_t _index){

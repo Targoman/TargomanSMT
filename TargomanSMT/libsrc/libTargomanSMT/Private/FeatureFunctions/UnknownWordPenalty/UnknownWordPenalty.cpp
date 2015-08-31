@@ -68,9 +68,8 @@ public:
  * length of target phrase.
  * @return Returns score of ReorderingJumpfor this search graph node.
  */
-Common::Cost_t UnknownWordPenalty::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
+Common::Cost_t UnknownWordPenalty::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
-    Q_UNUSED(_hash);
     clsUnknownWordPenaltyFeatureData* Data = new clsUnknownWordPenaltyFeatureData;
     _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
 

@@ -128,9 +128,8 @@ void clsCardinalityHypothesisContainer::updateWorstNode()
         //TODO Why may we have empty container
         Q_ASSERT(LexIter->nodes().size());
 
-        if (LexIter->nodes().isEmpty() == false
-                && WorstCost < LexIter->getWorstCost()){
-            WorstCost = LexIter->getWorstCost();
+        if (LexIter->nodes().size()  && WorstCost < LexIter->nodes().last().getTotalCost()){
+            WorstCost = LexIter->nodes().last().getTotalCost();
             WorstLexIter = LexIter;
         }
     }
@@ -157,12 +156,12 @@ void clsCardinalityHypothesisContainer::updateBestAndWorstNodes()
         Q_ASSERT(LexIter->nodes().size());
 
         if (LexIter->nodes().size()) {
-            if(BestCost > LexIter->getBestCost()){
-                BestCost = LexIter->getBestCost();
+            if(BestCost > LexIter->nodes().first().getTotalCost()){
+                BestCost = LexIter->nodes().first().getTotalCost();
                 BestLexIter = LexIter;
             }
-            if(WorstCost < LexIter->getWorstCost()){
-                WorstCost = LexIter->getWorstCost();
+            if(WorstCost < LexIter->nodes().last().getTotalCost()){
+                WorstCost = LexIter->nodes().last().getTotalCost();
                 WorstLexIter = LexIter;
             }
         }
@@ -191,12 +190,12 @@ void clsCardinalityHypothesisContainer::localUpdateBestAndWorstNodes(const Cover
 
     if (/* this->Data->BestLexicalHypothesis != NULL && */
             _node.getTotalCost() <
-                this->Data->BestLexicalHypothesis->getBestCost()) {
+                this->Data->BestLexicalHypothesis->nodes().first().getTotalCost()) {
         this->Data->BestLexicalHypothesis = &_container;
         this->Data->BestCoverage = _coverage;
     }
 
-    if (_node.getTotalCost() > this->Data->WorstLexicalHypothesis->getWorstCost()){
+    if (_node.getTotalCost() > this->Data->WorstLexicalHypothesis->nodes().last().getTotalCost()){
         this->Data->WorstLexicalHypothesis = &_container;
         this->Data->WorstCoverage = _coverage;
     }
@@ -208,7 +207,6 @@ void clsCardinalityHypothesisContainer::prune()
         updateBestAndWorstNodes();
         return;
     }
-
     QHash<Coverage_t, int> PickedHypothesisCount;
     int TotalSearchGraphNodeCount = 0;
     // First perform pruning respecting the primal share of each coverage if needed
@@ -237,7 +235,7 @@ void clsCardinalityHypothesisContainer::prune()
             clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value()) {
         Coverage_t ChosenCoverage;
         Cost_t ChosenNodeTotalCost =
-                this->Data->BestLexicalHypothesis->getBestCost() +
+                this->Data->BestLexicalHypothesis->nodes().first().getTotalCost() +
                 clsCardinalityHypothesisContainer::SearchBeamWidth.value();
         for(auto HypoContainerIter = this->Data->LexicalHypothesisContainer.begin();
             HypoContainerIter != this->Data->LexicalHypothesisContainer.end();
@@ -266,7 +264,7 @@ void clsCardinalityHypothesisContainer::prune()
                 this->Data->LexicalHypothesisContainer.remove(CoverageIter.key());
         }
         else if (*CoverageIter < this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes().size()){
-            clsLexicalHypoNodeSet& Nodes =  this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes();
+            QList<clsSearchGraphNode>& Nodes =  this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes();
             Nodes.erase(Nodes.begin() + *CoverageIter, Nodes.end());
         }
     }
@@ -274,7 +272,7 @@ void clsCardinalityHypothesisContainer::prune()
     this->Data->TotalSearchGraphNodeCount = TotalSearchGraphNodeCount;
     updateBestAndWorstNodes();
     if(this->Data->TotalSearchGraphNodeCount > 0)
-        this->Data->CostLimit = this->Data->WorstLexicalHypothesis->getWorstCost();
+        this->Data->CostLimit = this->Data->WorstLexicalHypothesis->nodes().last().getTotalCost();
 }
 
 }

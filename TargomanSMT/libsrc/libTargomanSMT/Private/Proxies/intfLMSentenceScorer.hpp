@@ -61,8 +61,7 @@ public:
     virtual Common::LogP_t endOfSentenceProb() = 0;
     virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
     virtual QString getWordByIndex(Common::WordIndex_t _wordIndex) = 0;
-    virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const = 0;
-    virtual void updateFutureStateHash(QCryptographicHash& _hash) const = 0;
+    virtual bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const = 0;
 
 protected:
     Common::WordIndex_t UnknownWordIndex;

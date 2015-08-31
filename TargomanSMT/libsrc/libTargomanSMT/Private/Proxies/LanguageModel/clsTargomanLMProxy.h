@@ -113,16 +113,11 @@ public:
      * @param _oldScorer input sentence scorer.
      */
 
-    int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const{
-        // TODO: This is buggy, fix this to return comparison result not equality check
+    bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const{
         return this->LMSentenceScorer->haveSameHistoryAs(
-                    *(dynamic_cast<const clsTargomanLMProxy&>(_otherScorer).LMSentenceScorer)) ? 0 : 1;
+                    *(dynamic_cast<const clsTargomanLMProxy&>(_otherScorer).LMSentenceScorer));
     }
 
-    void updateFutureStateHash(QCryptographicHash& _hash) const {
-        // TODO: really update the hash!
-        Q_UNUSED(_hash);
-    }
 
 private:
     static Targoman::NLPLibs::TargomanLM::clsLanguageModel LM;                  /** < static data member of clsLanguageModel. */

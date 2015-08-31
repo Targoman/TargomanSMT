@@ -77,7 +77,7 @@ public:
  * @brief This function computes cost of language model with the help of previous node LM history.
  * @return Returns score of language model for this search graph node.
  */
-Common::Cost_t LanguageModel::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
+Common::Cost_t LanguageModel::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
 {
     const clsLanguageModelFeatureData* PrevNodeData =
             static_cast<const clsLanguageModelFeatureData*>
@@ -93,8 +93,6 @@ Common::Cost_t LanguageModel::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchG
 
     if (_newHypothesisNode.isFinal())
         Cost -= Data->SentenceScorer->endOfSentenceProb();
-
-    Data->SentenceScorer->updateFutureStateHash(_hash);
 
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode)
         Data->CostElements[0] = Cost;
@@ -132,13 +130,13 @@ Cost_t LanguageModel::getLanguageModelCost(const RuleTable::clsTargetRule &_targ
  * @param _second Second node.
  * @return returns true if both of nodes have same state.
  */
-int LanguageModel::compareStates(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
+bool LanguageModel::nodesHaveSameState(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
 {
     const clsLanguageModelFeatureData* FirstNodeData =
             static_cast<const clsLanguageModelFeatureData*>(_first.featureFunctionDataAt(this->DataIndex));
     const clsLanguageModelFeatureData* SecondNodeData =
             static_cast<const clsLanguageModelFeatureData*>(_second.featureFunctionDataAt(this->DataIndex));
-    return FirstNodeData->SentenceScorer->compareHistoryWith(*SecondNodeData->SentenceScorer);
+    return FirstNodeData->SentenceScorer->haveSameHistoryAs(*SecondNodeData->SentenceScorer);
 }
 
 /**

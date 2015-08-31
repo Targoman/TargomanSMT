@@ -38,8 +38,7 @@ public:
     virtual LogP_t endOfSentenceProb() { return 1;}
     virtual WordIndex_t getWordIndex(const QString& _word) { Q_UNUSED(_word); return 1;}
     virtual QString getWordByIndex(WordIndex_t _wordIndex) {Q_UNUSED(_wordIndex); return ""; }
-    virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return 0;}
-    virtual void updateFutureStateHash(QCryptographicHash& _hash) const { Q_UNUSED(_hash); }
+    virtual bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return true;}
 
     clsDummyScorerProxyForRestCost(int x) : Proxies::intfLMSentenceScorer(this->moduleName(), x) { }
 
@@ -56,7 +55,7 @@ public:
 
     void initialize(const QString &){}
 
-    Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode&, QCryptographicHash&) const { return 0; }
+    Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode&) const { return 0; }
 
     Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage)

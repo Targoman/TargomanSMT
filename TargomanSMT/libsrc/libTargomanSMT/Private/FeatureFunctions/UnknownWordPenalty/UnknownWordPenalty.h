@@ -44,9 +44,7 @@ public:
 
     void initialize(const QString &){}
 
-    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(
-            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,
-            QCryptographicHash& _hash) const;
+    Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
 
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage)

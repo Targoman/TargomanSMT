@@ -86,7 +86,7 @@ inline QTextStream& operator << (QTextStream& _outputStream, const QList<Type_t>
 }
 }
 
-inline bool operator < (const Targoman::SMT::Private::Coverage_t &_a, const Targoman::SMT::Private::Coverage_t &_b)
+inline bool operator<(const Targoman::SMT::Private::Coverage_t &_a, const Targoman::SMT::Private::Coverage_t &_b)
 {
     Q_ASSERT(_a.size() == _b.size());
     for(int i = 0; i < _a.size(); ++i)
@@ -95,11 +95,6 @@ inline bool operator < (const Targoman::SMT::Private::Coverage_t &_a, const Targ
         else if(_b[i] < _a[i])
             return true;
     return false;
-}
-
-inline bool operator > (const Targoman::SMT::Private::Coverage_t &_a, const Targoman::SMT::Private::Coverage_t &_b)
-{
-    return _b < _a;
 }
 
 #endif // TYPES_H
