@@ -243,18 +243,31 @@ bool clsSearchGraph::conformsIBM1Constraint(const Coverage_t& _newCoverage)
     return true;
 }
 
-bool clsSearchGraph::conformsHardReorderingJumpLimit(const Coverage_t &_coverage,
-                                                            size_t _endPos)
+bool clsSearchGraph::conformsHardReorderingJumpLimit(const Coverage_t& _prevCoverage, size_t _prevStart, size_t _prevEnd,
+                                                     size_t _startPos, size_t _endPos)
 {
-    int FirstEmptyPosition = _coverage.size();
-    for(int i = 0; i < _coverage.size(); ++i)
-        if(_coverage.testBit(i) == false) {
+    // For empty previous coverage
+    if(_prevStart == _prevEnd) {
+        // No need to check _startPos as it must be less than or equal to _endPos
+//        if(_startPos > clsSearchGraph::HardReorderingJumpLimit.value())
+//            return false;
+        if(_endPos > clsSearchGraph::HardReorderingJumpLimit.value())
+            return false;
+        return true;
+    }
+
+    int JumpWidth = abs(_prevEnd - _startPos);
+    if(JumpWidth > clsSearchGraph::HardReorderingJumpLimit.value())
+        return false;
+
+    int FirstEmptyPosition = _prevCoverage.size();
+    for(int i = 0; i < _prevCoverage.size(); ++i)
+        if(_prevCoverage.testBit(i) == false) {
             FirstEmptyPosition = i;
             break;
         }
-    if(FirstEmptyPosition == _coverage.size())
-        return true;
-    size_t JumpWidth = qAbs((int)_endPos - FirstEmptyPosition);
+
+    JumpWidth = qAbs((int)_endPos - FirstEmptyPosition);
     return JumpWidth <= clsSearchGraph::HardReorderingJumpLimit.value();
 }
 
@@ -286,11 +299,12 @@ bool clsSearchGraph::decode()
 
     this->initializeRestCostsMatrix();
 
+    int PrunedByHardReorderingJumpLimit = 0;
 
     for (int NewCardinality = 1; NewCardinality <= this->Data->Sentence.size(); ++NewCardinality){
 
-        //int PrunedByIBMConstraint = 0;
-        int PrunedByHardReorderingJumpLimit = 0;
+//        int PrunedByIBMConstraint = 0;
+//        int PrunedByHardReorderingJumpLimit = 0;
         int PrunedPreInsertion = 0;
 
         bool IsFinal = (NewCardinality == this->Data->Sentence.size());
@@ -327,8 +341,8 @@ bool clsSearchGraph::decode()
 
                 // This can be removed if training has been done properly and we have a sane phrase table
                 if (PrevLexHypoContainer.nodes().isEmpty()){
-                    TargomanLogWarn(1, "PrevLexHypoContainer is empty. PrevCard: " << PrevCardinality
-                                  << " PrevCov: " << PrevCoverage);
+                    TargomanLogWarn(1, "PrevLexHypoContainer is empty. (PrevCard: " << PrevCardinality
+                                  << " PrevCov: " << PrevCoverage << ")");
                     continue;
                 }
 
@@ -358,10 +372,10 @@ bool clsSearchGraph::decode()
                     }
                     */
 
-                    if (this->conformsHardReorderingJumpLimit(NewCoverage, NewPhraseEndPos) == false){
-                        ++PrunedByHardReorderingJumpLimit;
-                        continue;
-                    }
+//                    if (this->conformsHardReorderingJumpLimit(NewCoverage, NewPhraseEndPos) == false){
+//                        ++PrunedByHardReorderingJumpLimit;
+//                        continue;
+//                    }
 
                     clsPhraseCandidateCollection& PhraseCandidates =
                             this->Data->PhraseCandidateCollections[NewPhraseBeginPos][NewPhraseCardinality - 1];
@@ -376,9 +390,19 @@ bool clsSearchGraph::decode()
 
                     foreach (const clsSearchGraphNode& PrevLexHypoNode, PrevLexHypoContainer.nodes()) {
 
+                        if (this->conformsHardReorderingJumpLimit(
+                                    PrevLexHypoNode.coverage(),
+                                    PrevLexHypoNode.sourceRangeBegin(),
+                                    PrevLexHypoNode.sourceRangeEnd(),
+                                    NewPhraseBeginPos,
+                                    NewPhraseEndPos
+                                  ) == false){
+                            ++PrunedByHardReorderingJumpLimit;
+                            continue;
+                        }
 
-                        size_t MaxCandidates = qMin((int)PhraseCandidates.usableTargetRuleCount(),
-                                                    PhraseCandidates.targetRules().size());
+                        size_t MaxCandidates = PhraseCandidates.usableTargetRuleCount();
+
                         for(size_t i = 0; i<MaxCandidates; ++i){
 
                             const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
@@ -391,7 +415,6 @@ bool clsSearchGraph::decode()
                                                            CurrentPhraseCandidate,
                                                            IsFinal,
                                                            RestCost);
-
                             // If current NewHypoNode is worse than worst stored node ignore it
                             if (clsSearchGraph::DoPrunePreInsertion.value() &&
                                 CurrCardHypoContainer.mustBePruned(NewHypoNode.getTotalCost())){
@@ -464,7 +487,7 @@ bool clsSearchGraph::decode()
     if(this->Data->HypothesisHolder[this->Data->Sentence.size()].lexicalHypotheses().size() > 0 &&
             this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().isEmpty() == false)
     {
-        this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().first();
+        this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().bestNode();
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
         return true;
     } else {

@@ -46,8 +46,9 @@ public:
 
     void initialize(const QString &_configFile);
 
-    Common::Cost_t scoreSearchGraphNode(
-            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
+    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(
+            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,
+            QCryptographicHash& _hash) const;
     inline Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                              unsigned _sourceEnd,
                                              const RuleTable::clsTargetRule& _targetRule) const{

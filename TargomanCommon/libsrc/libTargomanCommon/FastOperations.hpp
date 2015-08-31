@@ -170,17 +170,69 @@ inline const char* fastSkip2Space(const char*& _str){
     return _str;
 }
 
+template<typename Container_t, typename Type_t, typename Comparator_t>
 /**
- *
+ * @brief  findInsertionPosEx finds correct place to insert _element in the _container using _comparator to have a sorted
+ *         list and whether the container already contains this element or not
+ * @return Returns a pair of bool and int which indicates whether the element was found in the container or not and where
+ *         to insert new element for the list to retain its sorted structure
  */
-template<class Class_t, class Container_t, typename Functor_t>
-    size_t findInsertionPos(const Container_t& _sortedConatiner, const Class_t& _element, Functor_t _comparator){
-        for(size_t i = 0; i< _sortedConatiner.size(); ++i){
-            if (_comparator(_element, _sortedConatiner.at(i)) > 0)
-                return i;
-        }
-        return _sortedConatiner.size();
+QPair<bool, int> findInsertionPosEx(Container_t _sortedContainer, const Type_t& _element, Comparator_t _comparator)
+{
+    int Begin = 0;
+    int End = _sortedContainer.size();
+    while(Begin < End) {
+        int Mid = (Begin + End) / 2;
+        int ComparisonResult = _comparator(_element, _sortedContainer.at(Mid));
+        if(ComparisonResult == 0)
+            return QPair<int, bool>(Mid, true);
+        else if(ComparisonResult > 0)
+            Begin = Mid + 1;
+        else
+            End = Mid;
     }
+    return QPair<int, bool>(Begin, false);
+}
+
+template<typename Container_t, typename Type_t, typename Comparator_t>
+/**
+ * @brief  findInsertionPosEx finds correct place to insert _element in the _container using _comparator to have a sorted
+ *         list and whether the container already contains this element or not
+ * @return Returns a pair of bool and int which indicates whether the element was found in the container or not and where
+ *         to insert new element for the list to retain its sorted structure
+ */
+QPair<int, bool> findInsertionPosEx(const QList<int>& _index, Container_t _container, const Type_t& _element, Comparator_t _comparator)
+{
+    Q_ASSERT(_index.size() == _container.size());
+
+    int Begin = 0;
+    int End = _container.size();
+    while(Begin < End) {
+        int Mid = (Begin + End) / 2;
+        int ComparisonResult = _comparator(_element, _container.at(_index.at(Mid)));
+        if(ComparisonResult == 0)
+            return QPair<int, bool>(Mid, true);
+        else if(ComparisonResult > 0)
+            Begin = Mid + 1;
+        else
+            End = Mid;
+    }
+    return QPair<int, bool>(Begin, false);
+}
+
+template<class Class_t, class Container_t, typename Functor_t>
+/**
+ * @brief findInsertionPos finds correct place to insert _element in the _container using _comperator to have a sorted list.
+ * @return Returns correct place of insertion.
+ */
+size_t findInsertionPos(const Container_t& _sortedConatiner, const Class_t& _element, Functor_t _comparator){
+    for(size_t i = 0; i< _sortedConatiner.size(); ++i){
+        if (_comparator(_element, _sortedConatiner.at(i)) > 0)
+            return i;
+    }
+    return _sortedConatiner.size();
+}
+
 
 
 

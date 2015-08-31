@@ -39,7 +39,8 @@ public:
     virtual LogP_t endOfSentenceProb() { return 1;}
     virtual WordIndex_t getWordIndex(const QString& _word) { Q_UNUSED(_word); return 1;}
     virtual QString getWordByIndex(WordIndex_t _wordIndex) {Q_UNUSED(_wordIndex); return ""; }
-    virtual bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return true;}
+    virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return 0;}
+    virtual void updateFutureStateHash(QCryptographicHash& _hash) const { Q_UNUSED(_hash); }
 
     clsDummyScorerProxy(int x) : Proxies::intfLMSentenceScorer(this->moduleName(), x) { }
 

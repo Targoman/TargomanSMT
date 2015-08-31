@@ -71,11 +71,11 @@ public:
      * @param _second Second node.
      * @return returns true if both of nodes have same state.
      */
-    virtual bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode& _first,
+    virtual int compareStates(const SearchGraphBuilder::clsSearchGraphNode& _first,
                                     const SearchGraphBuilder::clsSearchGraphNode& _second) const {
         Q_UNUSED(_first)
         Q_UNUSED(_second)
-        return true;
+        return 0;
     }
 
     /**
@@ -90,7 +90,7 @@ public:
      * The first secondary model will encounter an uninitialized hypothesis state, thus don't forget to call
      * newHypothesisNode.getHypothesisState()->initializeSecondaryModelStatesIfNecessary();
      */
-    virtual Common::Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const =0 ;
+    virtual Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, QCryptographicHash& _hash) const = 0;
 
     /**
      * @brief Returns wethere this feature function can compute node specific rest costs or not. If it can,

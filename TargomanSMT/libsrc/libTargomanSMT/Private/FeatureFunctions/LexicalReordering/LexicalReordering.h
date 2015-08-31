@@ -57,8 +57,9 @@ public:
 
     void newSentence(const InputDecomposer::Sentence_t &inputSentence);
 
-    Common::Cost_t scoreSearchGraphNode(
-            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode) const;
+    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(
+            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,
+            QCryptographicHash& _hash) const;
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage);
         Q_UNUSED(_beginPos);
@@ -69,7 +70,7 @@ public:
                                       unsigned _sourceEnd,
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
-    bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode &_first, const SearchGraphBuilder::clsSearchGraphNode &_second) const;
+    int compareStates(const SearchGraphBuilder::clsSearchGraphNode &_first, const SearchGraphBuilder::clsSearchGraphNode &_second) const;
 
 private:
     LexicalReordering():
