@@ -26,6 +26,8 @@
 
 #include "clsLexicalHypothesis.h"
 #include "clsSearchGraph.h"
+#include "libTargomanCommon/FastOperations.hpp"
+#include <functional>
 
 namespace Targoman{
 namespace SMT {
@@ -44,8 +46,9 @@ Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesisCont
         );
 
 clsLexicalHypothesisContainer::clsLexicalHypothesisContainer() :
-    Data(new clsLexicalHypothesisContainerData(clsLexicalHypothesisContainer::KeepRecombined.value()))
+    Data(new clsLexicalHypothesisContainerData())
 {}
+
 
 /**
  * @brief returns cost of best node.
@@ -54,10 +57,18 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
 {
     if (this->Data->Nodes.isEmpty())
         return PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST;
-
-    return this->nodes().first().getCost();
+    return this->Data->Nodes.bestNode().getTotalCost();
 }
 
+/**
+ * @brief returns cost of worst node.
+ */
+Cost_t clsLexicalHypothesisContainer::getWorstCost() const
+{
+    if (this->Data->Nodes.isEmpty())
+        return PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST;
+    return this->Data->Nodes.worstNode().getTotalCost();
+}
 
 /**
  * @brief first checks whether input node should be recombined with another existing node,
@@ -69,7 +80,15 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
  */
 bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
-    return this->Data->Nodes.insert(_node);
+    QPair<clsSearchGraphNode, bool> InsertionResult = this->Data->Nodes.insert(_node);
+    if(InsertionResult.second == false) {
+        if(clsLexicalHypothesisContainer::KeepRecombined.value())
+            InsertionResult.first.recombine(_node);
+        else if(InsertionResult.first.getTotalCost() > _node.getTotalCost())
+            InsertionResult.first.swap(_node);
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -82,15 +101,20 @@ void clsLexicalHypothesisContainer::finalizeRecombination()
     if(clsLexicalHypothesisContainer::KeepRecombined.value() == false)
         return;
 
-    this->Data->Nodes.finalizeRecombination();
+    clsLexicalHypoNodeSet::iterator BestNodeIter = this->Data->Nodes.begin();
+    clsLexicalHypoNodeSet::iterator NodeIter = this->Data->Nodes.begin() + 1;
+    while(NodeIter != this->Data->Nodes.end()) {
+        BestNodeIter->recombine(*NodeIter);
+        NodeIter = this->Data->Nodes.erase(NodeIter);
+    }
 }
 
 #ifdef TARGOMAN_SHOW_DEBUG
 const clsSearchGraphNode &clsLexicalHypothesisContainer::FindNode(const char *_targetRuleStr, const char *_prevTargetRuleStr, const char *_coverage) const
 {
-    for(int i = 0; i < this->Data->Nodes.size(); ++i) {
-        if(isDesiredNode(this->Data->Nodes.at(i), _targetRuleStr, _prevTargetRuleStr, _coverage))
-            return this->Data->Nodes.at(i);
+    for(auto NodeIter = this->Data->Nodes.begin(); NodeIter != this->Data->Nodes.end(); ++NodeIter) {
+        if(isDesiredNode(*NodeIter, _targetRuleStr, _prevTargetRuleStr, _coverage))
+            return *NodeIter;
     }
     static clsSearchGraphNode InvalidSearchGraphNode;
     return InvalidSearchGraphNode;

@@ -60,7 +60,7 @@ tmplConfigurable<QString> OOVHandler::OOVHandlerModules(
 tmplConfigurable<bool> OOVHandler::CheckDifferentLetterCases(
         OOVHandler::moduleName() + "/CheckDifferentLetterCases",
         "Check upper, lower and Pascal forms of unknown words",
-        true);
+        false);
 
 QMap<QString, intfOOVHandlerModule*>                       OOVHandler::AvailableOOVHandlers;
 

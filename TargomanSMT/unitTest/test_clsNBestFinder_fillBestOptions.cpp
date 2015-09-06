@@ -132,37 +132,37 @@ void clsUnitTest::test_clsNBestFinder_fillBestOptions()
 
     clsLexicalHypothesisContainer lexicalHypoContainer;
 
-    lexicalHypoContainer.Data->Nodes.push_back(RootNode);
+    lexicalHypoContainer.Data->Nodes.insert(RootNode);
     SearchGraph.Data->HypothesisHolder[0][makeCoverageByString("00000")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
-    lexicalHypoContainer.Data->Nodes.push_back(Best1st);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[0]);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[1]);
+    lexicalHypoContainer.Data->Nodes.insert(Best1st);
+    lexicalHypoContainer.Data->Nodes.insert(Node[0]);
+    lexicalHypoContainer.Data->Nodes.insert(Node[1]);
     SearchGraph.Data->HypothesisHolder[1][makeCoverageByString("10000")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
-    lexicalHypoContainer.Data->Nodes.push_back(Best2nd);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[2]);
-    //lexicalHypoContainer.Data->Nodes.push_back(Node[3]);
+    lexicalHypoContainer.Data->Nodes.insert(Best2nd);
+    lexicalHypoContainer.Data->Nodes.insert(Node[2]);
+    //lexicalHypoContainer.Data->Nodes.insert(Node[3]);
     SearchGraph.Data->HypothesisHolder[2][makeCoverageByString("11000")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
-    lexicalHypoContainer.Data->Nodes.push_back(Best3rd);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[4]);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[5]);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[6]);
+    lexicalHypoContainer.Data->Nodes.insert(Best3rd);
+    lexicalHypoContainer.Data->Nodes.insert(Node[4]);
+    lexicalHypoContainer.Data->Nodes.insert(Node[5]);
+    lexicalHypoContainer.Data->Nodes.insert(Node[6]);
     SearchGraph.Data->HypothesisHolder[3][makeCoverageByString("11100")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
-    lexicalHypoContainer.Data->Nodes.push_back(Best4th);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[7]);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[8]);
-    lexicalHypoContainer.Data->Nodes.push_back(Node[9]);
+    lexicalHypoContainer.Data->Nodes.insert(Best4th);
+    lexicalHypoContainer.Data->Nodes.insert(Node[7]);
+    lexicalHypoContainer.Data->Nodes.insert(Node[8]);
+    lexicalHypoContainer.Data->Nodes.insert(Node[9]);
     SearchGraph.Data->HypothesisHolder[4][makeCoverageByString("11110")] = lexicalHypoContainer;
 
     lexicalHypoContainer = clsLexicalHypothesisContainer();
-    lexicalHypoContainer.Data->Nodes.push_back(Best5th);
+    lexicalHypoContainer.Data->Nodes.insert(Best5th);
     SearchGraph.Data->HypothesisHolder[5][makeCoverageByString("11111")] = lexicalHypoContainer;
 
     NBestFinder::NBestSuggestions::MaxSuggestions.setFromVariant(3);

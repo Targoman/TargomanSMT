@@ -73,8 +73,10 @@ public:
  * range of source phrase words of this node and previous node.
  * @return Returns score of ReorderingJumpfor this search graph node.
  */
-Common::Cost_t ReorderingJump::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
+Common::Cost_t ReorderingJump::scoreSearchGraphNodeAndUpdateFutureHash(
+        clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
 {
+    Q_UNUSED(_hash);
     clsReorderingJumpFeatureData* Data = new clsReorderingJumpFeatureData;
     _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
 

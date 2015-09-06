@@ -79,13 +79,17 @@ public:
                        Common::Cost_t _restCost);
     clsSearchGraphNode(const clsSearchGraphNode& _other) : Data(_other.Data) {}
 
-    ~clsSearchGraphNode();
+    ~clsSearchGraphNode(){}
 
     inline Common::Cost_t getTotalCost() const;
     inline Common::Cost_t getCost() const;
-    void swap(clsSearchGraphNode& _node);
+
+    void swap(clsSearchGraphNode& _other);
+
     void recombine(clsSearchGraphNode& _node);
-    bool haveSameFuture(const clsSearchGraphNode& _node) const;
+
+    QByteArray futureStateHash() const;
+
     inline size_t sourceRangeBegin() const;
     inline size_t sourceRangeEnd() const;
     inline const clsSearchGraphNode&  prevNode() const;
@@ -106,15 +110,20 @@ public:
 public:
     static size_t allocateFeatureFunctionData();
 
+public:
+    friend int compareSearchGraphNodeStates(const clsSearchGraphNode& _first, const clsSearchGraphNode& _second);
+
+public:
+    bool operator == (const clsSearchGraphNode& _other) const {
+        return this->Data == _other.Data;
+    }
+
 private:
     QExplicitlySharedDataPointer<clsSearchGraphNodeData>     Data;
     friend class clsDummyFeatureFunctionForInsertion;
     friend class UnitTestNameSpace::clsUnitTest;
-    friend bool operator < (const clsSearchGraphNode &_first, const clsSearchGraphNode &_second);
 };
 
-
-bool operator < (const clsSearchGraphNode &_first, const clsSearchGraphNode &_second);
 
 /**
  * @brief The clsSearchGraphNodeData class is responsible for storing and managing data member of clsSearchGraphNode class.
@@ -175,6 +184,7 @@ public:
      */
     clsSearchGraphNodeData(clsSearchGraphNodeData& _other) :
         QSharedData(_other),
+        FutureStateHash(_other.FutureStateHash),
         IsFinal(_other.IsFinal),
         Cost(_other.Cost),
         RestCost(_other.RestCost),
@@ -199,6 +209,7 @@ public:
     }
 
 public:
+    QByteArray                          FutureStateHash;
     bool                                IsFinal;                        /**< Has this node covered translation for all word of input sentence.*/
     Common::Cost_t                      Cost;                           /**< Cost of translation up to now.*/
     Common::Cost_t                      RestCost;                       /**< Approximated cost of rest of translation.*/
@@ -216,6 +227,9 @@ public:
 
 };
 
+inline QByteArray clsSearchGraphNode::futureStateHash() const {
+    return this->Data->FutureStateHash;
+}
 
 /**
  * @brief Sum of cost and rest cost of this node.
@@ -275,6 +289,8 @@ inline void clsSearchGraphNode::setFeatureFunctionData(size_t _index, intfFeatur
 const intfFeatureFunctionData *clsSearchGraphNode::featureFunctionDataAt(size_t _index) const {
     return this->Data->FeatureFunctionsData.at(_index);
 }
+
+int compareSearchGraphNodeStates(const clsSearchGraphNode& _first, const clsSearchGraphNode& _second);
 
 #ifdef TARGOMAN_SHOW_DEBUG
 inline bool isDesiredNode(const clsSearchGraphNode& n, const char* s1, const char* s2, const char* s3)

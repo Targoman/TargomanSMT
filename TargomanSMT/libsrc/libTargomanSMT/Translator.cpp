@@ -83,7 +83,7 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     if (_justTranslationString){
         stuTranslationOutput Output;
         Output.Translation = OutputComposer.translationString();
-        qDebug() << start.elapsed();
+        qDebug() << "Translation took " << start.elapsed() / 1000.0 << " miliseconds";
         return Output;
     }else
         return OutputComposer.translationOutput();

@@ -152,20 +152,21 @@ public:
      * @param _oldScorer input sentence scorer.
      */
 
-    bool haveSameHistoryAs(const intfLMSentenceScorer& _otherScorer) const{
-        const clsKenLMProxy& OtherScorer = dynamic_cast<const clsKenLMProxy&>(_otherScorer);
-        if(this->State.length != OtherScorer.State.length)
-            return false;
-        return std::memcmp(this->State.words, OtherScorer.State.words, sizeof(lm::WordIndex) * this->State.length) == 0;
+    int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const{
+        // Dynamic cast costs! a lot
+//        const clsKenLMProxy& OtherScorer = dynamic_cast<const clsKenLMProxy&>(_otherScorer);
+        const clsKenLMProxy& OtherScorer = (const clsKenLMProxy&)_otherScorer;
+        int delta = this->State.length - OtherScorer.State.length;
+        if(delta == 0)
+            return std::memcmp(this->State.words, OtherScorer.State.words, sizeof(lm::WordIndex) * this->State.length);
+        else if(delta > 0)
+            return 1;
+        else
+            return -1;
     }
 
-    int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const{
-        const clsKenLMProxy& OtherScorer = dynamic_cast<const clsKenLMProxy&>(_otherScorer);
-        if(this->State.length > OtherScorer.State.length)
-            return 1;
-        if (this->State.length < OtherScorer.State.length)
-            return -1;
-        return std::memcmp(this->State.words, OtherScorer.State.words, sizeof(lm::WordIndex) * this->State.length);
+    void updateFutureStateHash(QCryptographicHash& _hash) const {
+        _hash.addData((char*)this->State.words, sizeof(lm::WordIndex) * this->State.length);
     }
 
 private:

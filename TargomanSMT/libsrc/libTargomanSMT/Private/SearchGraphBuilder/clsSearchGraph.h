@@ -219,7 +219,7 @@ public:
      * @brief Returns a list of search graph node that has similar coverage of translation.
      * @param[in] _coverage Covered translated words.
      */
-    inline const clsSearchGraphNodeContainer& getSameCoverageNodes(Coverage_t _coverage) const {
+    inline const clsLexicalHypoNodeSet& getSameCoverageNodes(Coverage_t _coverage) const {
         return this->Data->HypothesisHolder[_coverage.count(true)].lexicalHypotheses().value(_coverage).nodes();
     }
 
@@ -250,7 +250,7 @@ private:
     Common::Cost_t computeReorderingRestCosts(const Coverage_t& _coverage, quint16 _lastPos) const;
     void initializeRestCostsMatrix();
     bool conformsIBM1Constraint(const Coverage_t& _newCoverage);
-    bool conformsHardReorderingJumpLimit(const Coverage_t &_coverage, size_t _endPos);
+    bool conformsHardReorderingJumpLimit(const Coverage_t &_prevCoverage, size_t _prevStart, size_t _prevEnd, size_t _startPos, size_t _endPos);
     Common::Cost_t calculateRestCost(const Coverage_t &_coverage, size_t _beginPos, size_t _endPos) const;
 
 private:

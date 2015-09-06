@@ -26,6 +26,7 @@
 
 #include "clsSearchGraphNode.h"
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
+#include "libTargomanCommon/FastOperations.hpp"
 
 namespace Targoman{
 namespace SMT {
@@ -79,31 +80,17 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
              _isFinal,
              _restCost))
 {
+    QCryptographicHash Hash(QCryptographicHash::Md5);
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions) {
-        Cost_t Cost = FF->scoreSearchGraphNode(*this);
+        Cost_t Cost = FF->scoreSearchGraphNodeAndUpdateFutureHash(*this, Hash);
         this->Data->Cost += Cost;
     }
+    this->Data->FutureStateHash = Hash.result();
 }
 
-clsSearchGraphNode::~clsSearchGraphNode()
-{ }
-
-void clsSearchGraphNode::swap(clsSearchGraphNode &_node)
+void clsSearchGraphNode::swap(clsSearchGraphNode &_other)
 {
-    this->Data.swap(_node.Data);
-}
-
-template<class Class_t, class Container_t, typename Functor_t>
-/**
- * @brief findInsertionPos finds correct place to insert _element in the _container using _comperator to have a sorted list.
- * @return Returns correct place of insertion.
- */
-size_t findInsertionPos(const Container_t& _conatiner, const Class_t& _element, Functor_t _comparator){
-    for(size_t i = 0; i< _conatiner.size(); ++i){
-        if (_comparator(_element, _conatiner.at(i)) > 0)
-            return i;
-    }
-    return _conatiner.size();
+    this->Data.swap(_other.Data);
 }
 
 /**
@@ -137,41 +124,6 @@ void clsSearchGraphNode::recombine(clsSearchGraphNode &_node)
 }
 
 /**
- * @brief determines whether this node and input _node expands same future nodes or not.
- * @param _node input node.
- */
-bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
-{
-    if (this->sourceRangeEnd() != _node.sourceRangeEnd())
-        return false;
-    if (Q_UNLIKELY(_node.coverage() != this->coverage()))
-        return false;
-    for(auto FeatureFunctionIter = gConfigs.ActiveFeatureFunctions.constBegin();
-        FeatureFunctionIter != gConfigs.ActiveFeatureFunctions.constEnd();  ++FeatureFunctionIter)
-        if (FeatureFunctionIter.value()->nodesHaveSameState(*this, _node) == false)
-            return false;
-
-    return true;
-}
-
-bool operator < (const clsSearchGraphNode &_first, const clsSearchGraphNode &_second)
-{
-    if(_first.sourceRangeEnd() < _second.sourceRangeEnd())
-        return true;
-    else if(_first.sourceRangeEnd() > _second.sourceRangeEnd())
-        return false;
-    for(auto FeatureIter = gConfigs.ActiveFeatureFunctions.constBegin();
-        FeatureIter != gConfigs.ActiveFeatureFunctions.constEnd(); ++FeatureIter) {
-        int ComparisonResult = FeatureIter.value()->compareStates(_first, _second);
-        if(ComparisonResult < 0)
-            return true;
-        else if(ComparisonResult > 0)
-            return false;
-    }
-    return false;
-}
-
-/**
  * @brief allocates an index for feature functions.
  * @return Returns allocated index.
  */
@@ -181,6 +133,18 @@ size_t clsSearchGraphNode::allocateFeatureFunctionData()
     ++clsSearchGraphNodeData::RegisteredFeatureFunctionCount;
     return AllocatedIndex;
 
+}
+
+int compareSearchGraphNodeStates(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second)
+{
+    for(auto FeatureFunctionIter = gConfigs.ActiveFeatureFunctions.constBegin();
+        FeatureFunctionIter != gConfigs.ActiveFeatureFunctions.constEnd();
+        ++FeatureFunctionIter) {
+        int ComparisonResult = FeatureFunctionIter.value()->compareStates(_first, _second);
+        if(ComparisonResult != 0)
+            return ComparisonResult;
+    }
+    return 0;
 }
 
 

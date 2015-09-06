@@ -38,7 +38,7 @@ public:
 
     void initialize(const QString &){}
 
-    Cost_t scoreSearchGraphNode(SearchGraphBuilder::clsSearchGraphNode&) const { return 0; }
+    Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode&, QCryptographicHash&) const { return 0; }
 
     Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage)
@@ -55,12 +55,12 @@ public:
         return (2 *_targetRule.field(0) + 3 * _targetRule.field(1));
     }
 
-    bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode& _first,
+    int compareStates(const SearchGraphBuilder::clsSearchGraphNode& _first,
                                         const SearchGraphBuilder::clsSearchGraphNode& _second) const {
         Q_UNUSED(_second);
         if(_first.targetRule().at(0)  == 1)
-            return false;
-        return true;
+            return 1;
+        return 0;
     }
 
     inline QStringList columnNames() const{return QStringList();}

@@ -52,6 +52,7 @@ tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
             default:
                 break;
             }
+            return false;
         },
         "m",
         "APP_MODE",

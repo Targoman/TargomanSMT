@@ -122,7 +122,8 @@ void LexicalReordering::newSentence(const Sentence_t &_inputSentence)
  * @return Returns score of lexical reordering search graph node.
  */
 
-Common::Cost_t LexicalReordering::scoreSearchGraphNode(clsSearchGraphNode &_newHypothesisNode) const
+Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
+        clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
 {
     clsLexicalReorderingFeatureData* Data =
             new clsLexicalReorderingFeatureData(this->IsBidirectional.value() ? 6 : 3);
@@ -148,6 +149,38 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNode(clsSearchGraphNode &_newH
                     _newHypothesisNode.targetRule().field(this->FieldIndexes.at(Orientation));
         }
     }
+
+    // Too elaborate and unnecesary!
+//    QByteArray RawData;
+//    if(this->IsBidirectional.value()) {
+//        if(_newHypothesisNode.prevNode().isInvalid() == false) {
+//            const Coverage_t& PrevCoverage = _newHypothesisNode.prevNode().coverage();
+//            RawData.resize(PrevCoverage.size() + 1);
+//            for(int i = 0; i < PrevCoverage.size(); ++i)
+//                RawData[i / 8] = RawData[i / 8] | (PrevCoverage.testBit(i) << (i % 8));
+//        }
+//    }
+//    _hash.addData(RawData);
+    if(this->IsBidirectional.value()) {
+        if(_newHypothesisNode.prevNode().isInvalid() == false) {
+            const Coverage_t& PrevCoverage = _newHypothesisNode.prevNode().coverage();
+            _hash.addData((char*)&PrevCoverage, (
+                              1 +  // Extra byte holding number of bits used from the last byte!
+                              PrevCoverage.size() / 8 + // Number of bytes actually used by this bit array
+                              (PrevCoverage.size() % 8 != 0 ? 1 : 0) // The last byte not all of which is used
+                              ));
+        }
+    }
+
+    const clsTargetRule& TargetRule = _newHypothesisNode.targetRule();
+    for(int Orientation = enuLexicalReorderingFields::ForwardMonotone;
+        Orientation <= enuLexicalReorderingFields::ForwardDiscontinous;
+        ++Orientation) {
+        double FieldValue = TargetRule.field(LexicalReordering::FieldIndexes.at(Orientation));
+        _hash.addData((char*)&FieldValue, sizeof(double));
+        //RawData.append((char*)&FieldValue, sizeof(double));
+    }
+
 
     return Cost;
 }
@@ -183,60 +216,28 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
     return 0;
 }
 
-bool LexicalReordering::nodesHaveSameState(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
-{
-    if(this->IsBidirectional.value()) {
-        if(_first.prevNode().isInvalid() == false || _second.prevNode().isInvalid() == false)
-            if(_first.prevNode().coverage() != _second.prevNode().coverage())
-                return false;
-    }
-
-    for(int Orientation = enuLexicalReorderingFields::ForwardMonotone;
-        Orientation <= enuLexicalReorderingFields::ForwardDiscontinous;
-        ++Orientation) {
-        if(_first.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation)) !=
-                _second.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation)))
-            return false;
-    }
-    return true;
-}
-
-int compare(const Coverage_t& _first, const Coverage_t& _second) {
-    int ComparisonResult = _first.size() - _second.size();
-    if (ComparisonResult != 0)
-        return ComparisonResult;
-    for(int i = 0; i < _first.size(); ++i ) {
-        ComparisonResult = _first.testBit(i) - _second.testBit(i);
-        if (ComparisonResult != 0)
-            return ComparisonResult;
-    }
-    return 0;
-//    int SizeInBytes = 1 + _first.size() / 8 + (_first.size() % 8 == 0 ? 0 : 1);
-//    return memcmp(*(const char**)&_first, *(const char**)&_second, SizeInBytes);
-}
-
 int LexicalReordering::compareStates(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
 {
     if(this->IsBidirectional.value()) {
         if(_first.prevNode().isInvalid() == false || _second.prevNode().isInvalid() == false) {
-            int ComparisonResult = compare(_first.prevNode().coverage(), _second.prevNode().coverage());
-            if(ComparisonResult != 0)
-                return ComparisonResult;
+            if(_first.prevNode().coverage() > _second.prevNode().coverage())
+                return 1;
+            else if(_first.prevNode().coverage() < _second.prevNode().coverage())
+                return -1;
         }
     }
 
     for(int Orientation = enuLexicalReorderingFields::ForwardMonotone;
         Orientation <= enuLexicalReorderingFields::ForwardDiscontinous;
         ++Orientation) {
-        double FirstRuleField = _first.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation));
-        double SecondRuleField = _second.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation));
-        if(FirstRuleField > SecondRuleField)
+        double FirstFieldValue = _first.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation));
+        double SecondFieldValue = _second.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation));
+        if(FirstFieldValue > SecondFieldValue)
             return 1;
-        if(FirstRuleField < SecondRuleField)
+        else if(FirstFieldValue < SecondFieldValue)
             return -1;
     }
     return 0;
-
 }
 
 /**
