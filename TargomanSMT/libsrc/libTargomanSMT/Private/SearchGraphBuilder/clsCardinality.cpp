@@ -264,7 +264,7 @@ void clsCardinalityHypothesisContainer::prune()
                 this->Data->LexicalHypothesisContainer.remove(CoverageIter.key());
         }
         else if (*CoverageIter < this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes().size()){
-            QList<clsSearchGraphNode>& Nodes =  this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes();
+            clsSearchGraphNodeContainer& Nodes =  this->Data->LexicalHypothesisContainer[CoverageIter.key()].nodes();
             Nodes.erase(Nodes.begin() + *CoverageIter, Nodes.end());
         }
     }

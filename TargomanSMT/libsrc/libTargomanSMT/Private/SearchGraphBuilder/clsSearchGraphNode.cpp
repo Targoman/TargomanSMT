@@ -85,6 +85,14 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
     }
 }
 
+clsSearchGraphNode::~clsSearchGraphNode()
+{ }
+
+void clsSearchGraphNode::swap(clsSearchGraphNode &_node)
+{
+    this->Data.swap(_node.Data);
+}
+
 template<class Class_t, class Container_t, typename Functor_t>
 /**
  * @brief findInsertionPos finds correct place to insert _element in the _container using _comperator to have a sorted list.
@@ -107,7 +115,7 @@ void clsSearchGraphNode::recombine(clsSearchGraphNode &_node)
     Q_ASSERT(this->Data->IsRecombined == false && _node.Data->IsRecombined == false);
     //swaps _node with this instance of node
     if (_node.getTotalCost() < this->getTotalCost()){
-        this->Data.swap(_node.Data);
+        this->swap(_node);
     }
     //now, this node is better node and _node is the worse node.
     auto NodeComparator = [](const clsSearchGraphNode& _firstNode,const clsSearchGraphNode& _secondNode){
@@ -144,6 +152,23 @@ bool clsSearchGraphNode::haveSameFuture(const clsSearchGraphNode &_node) const
             return false;
 
     return true;
+}
+
+bool operator < (const clsSearchGraphNode &_first, const clsSearchGraphNode &_second)
+{
+    if(_first.sourceRangeEnd() < _second.sourceRangeEnd())
+        return true;
+    else if(_first.sourceRangeEnd() > _second.sourceRangeEnd())
+        return false;
+    for(auto FeatureIter = gConfigs.ActiveFeatureFunctions.constBegin();
+        FeatureIter != gConfigs.ActiveFeatureFunctions.constEnd(); ++FeatureIter) {
+        int ComparisonResult = FeatureIter.value()->compareStates(_first, _second);
+        if(ComparisonResult < 0)
+            return true;
+        else if(ComparisonResult > 0)
+            return false;
+    }
+    return false;
 }
 
 /**

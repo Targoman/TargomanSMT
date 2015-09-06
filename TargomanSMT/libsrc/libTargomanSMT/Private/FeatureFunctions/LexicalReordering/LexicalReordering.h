@@ -70,6 +70,7 @@ public:
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
     bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode &_first, const SearchGraphBuilder::clsSearchGraphNode &_second) const;
+    int compareStates(const SearchGraphBuilder::clsSearchGraphNode &_first, const SearchGraphBuilder::clsSearchGraphNode &_second) const;
 
 private:
     LexicalReordering():

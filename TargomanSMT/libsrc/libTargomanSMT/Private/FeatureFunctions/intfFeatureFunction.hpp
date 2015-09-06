@@ -78,6 +78,13 @@ public:
         return true;
     }
 
+    virtual int compareStates(const SearchGraphBuilder::clsSearchGraphNode& _first,
+                              const SearchGraphBuilder::clsSearchGraphNode& _second) const {
+        Q_UNUSED(_first)
+        Q_UNUSED(_second)
+        return 0;
+    }
+
     /**
      * @brief Stores field indices of this feature function to #FieldIndexes.
      */
@@ -121,7 +128,6 @@ public:
      * @param _rootNode
      */
     virtual void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode) = 0;
-
     /**
      * @return Returns string list of features' names.
      */

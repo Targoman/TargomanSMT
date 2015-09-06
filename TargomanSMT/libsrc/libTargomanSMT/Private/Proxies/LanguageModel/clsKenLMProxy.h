@@ -159,6 +159,14 @@ public:
         return std::memcmp(this->State.words, OtherScorer.State.words, sizeof(lm::WordIndex) * this->State.length) == 0;
     }
 
+    int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const{
+        const clsKenLMProxy& OtherScorer = dynamic_cast<const clsKenLMProxy&>(_otherScorer);
+        if(this->State.length > OtherScorer.State.length)
+            return 1;
+        if (this->State.length < OtherScorer.State.length)
+            return -1;
+        return std::memcmp(this->State.words, OtherScorer.State.words, sizeof(lm::WordIndex) * this->State.length);
+    }
 
 private:
     lm::ngram::State State;

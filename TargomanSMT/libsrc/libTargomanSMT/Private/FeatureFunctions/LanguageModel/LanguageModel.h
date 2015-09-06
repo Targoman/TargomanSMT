@@ -64,6 +64,9 @@ public:
     bool nodesHaveSameState(const SearchGraphBuilder::clsSearchGraphNode &_first,
                             const SearchGraphBuilder::clsSearchGraphNode &_second) const;
 
+    int compareStates(const SearchGraphBuilder::clsSearchGraphNode& _first,
+                      const SearchGraphBuilder::clsSearchGraphNode& _second) const;
+
     inline QStringList columnNames() const{return QStringList();}
 
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);

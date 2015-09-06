@@ -201,6 +201,44 @@ bool LexicalReordering::nodesHaveSameState(const clsSearchGraphNode &_first, con
     return true;
 }
 
+int compare(const Coverage_t& _first, const Coverage_t& _second) {
+    int ComparisonResult = _first.size() - _second.size();
+    if (ComparisonResult != 0)
+        return ComparisonResult;
+    for(int i = 0; i < _first.size(); ++i ) {
+        ComparisonResult = _first.testBit(i) - _second.testBit(i);
+        if (ComparisonResult != 0)
+            return ComparisonResult;
+    }
+    return 0;
+//    int SizeInBytes = 1 + _first.size() / 8 + (_first.size() % 8 == 0 ? 0 : 1);
+//    return memcmp(*(const char**)&_first, *(const char**)&_second, SizeInBytes);
+}
+
+int LexicalReordering::compareStates(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
+{
+    if(this->IsBidirectional.value()) {
+        if(_first.prevNode().isInvalid() == false || _second.prevNode().isInvalid() == false) {
+            int ComparisonResult = compare(_first.prevNode().coverage(), _second.prevNode().coverage());
+            if(ComparisonResult != 0)
+                return ComparisonResult;
+        }
+    }
+
+    for(int Orientation = enuLexicalReorderingFields::ForwardMonotone;
+        Orientation <= enuLexicalReorderingFields::ForwardDiscontinous;
+        ++Orientation) {
+        double FirstRuleField = _first.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation));
+        double SecondRuleField = _second.targetRule().field(LexicalReordering::FieldIndexes.at(Orientation));
+        if(FirstRuleField > SecondRuleField)
+            return 1;
+        if(FirstRuleField < SecondRuleField)
+            return -1;
+    }
+    return 0;
+
+}
+
 /**
  * @brief LexicalReordering::getBackwardOreientation Checks whether orientation of input search graph node is "Backward Monotone", "Backward Swap" or "Backward Discontinous"
  * @param _newHypothesisNode input search graph node.

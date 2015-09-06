@@ -118,6 +118,12 @@ public:
                     *(dynamic_cast<const clsTargomanLMProxy&>(_otherScorer).LMSentenceScorer));
     }
 
+    // TODO: Impelement this
+    int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const{
+        Q_UNUSED(_otherScorer);
+        return 0;
+    }
+
 
 private:
     static Targoman::NLPLibs::TargomanLM::clsLanguageModel LM;                  /** < static data member of clsLanguageModel. */

@@ -139,6 +139,15 @@ bool LanguageModel::nodesHaveSameState(const clsSearchGraphNode &_first, const c
     return FirstNodeData->SentenceScorer->haveSameHistoryAs(*SecondNodeData->SentenceScorer);
 }
 
+int LanguageModel::compareStates(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
+{
+    const clsLanguageModelFeatureData* FirstNodeData =
+            static_cast<const clsLanguageModelFeatureData*>(_first.featureFunctionDataAt(this->DataIndex));
+    const clsLanguageModelFeatureData* SecondNodeData =
+            static_cast<const clsLanguageModelFeatureData*>(_second.featureFunctionDataAt(this->DataIndex));
+    return FirstNodeData->SentenceScorer->compareHistoryWith(*SecondNodeData->SentenceScorer);
+}
+
 /**
  * @brief This function will be called in the constructor of searchGraphNode
  * in order to always have a valid previous node data for feature functions in scoreSearchGraphNode function.

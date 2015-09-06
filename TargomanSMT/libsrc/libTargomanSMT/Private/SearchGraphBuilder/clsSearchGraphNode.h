@@ -79,15 +79,13 @@ public:
                        Common::Cost_t _restCost);
     clsSearchGraphNode(const clsSearchGraphNode& _other) : Data(_other.Data) {}
 
-    ~clsSearchGraphNode(){}
+    ~clsSearchGraphNode();
 
     inline Common::Cost_t getTotalCost() const;
     inline Common::Cost_t getCost() const;
-
+    void swap(clsSearchGraphNode& _node);
     void recombine(clsSearchGraphNode& _node);
-
     bool haveSameFuture(const clsSearchGraphNode& _node) const;
-
     inline size_t sourceRangeBegin() const;
     inline size_t sourceRangeEnd() const;
     inline const clsSearchGraphNode&  prevNode() const;
@@ -112,8 +110,11 @@ private:
     QExplicitlySharedDataPointer<clsSearchGraphNodeData>     Data;
     friend class clsDummyFeatureFunctionForInsertion;
     friend class UnitTestNameSpace::clsUnitTest;
+    friend bool operator < (const clsSearchGraphNode &_first, const clsSearchGraphNode &_second);
 };
 
+
+bool operator < (const clsSearchGraphNode &_first, const clsSearchGraphNode &_second);
 
 /**
  * @brief The clsSearchGraphNodeData class is responsible for storing and managing data member of clsSearchGraphNode class.

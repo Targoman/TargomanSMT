@@ -70,15 +70,15 @@ if [ "$1" == "full" ]; then
     else
       echo -e "\n\e[32m Module $Proj Compiled Successfully\e[39m\n"
       TestProgram=$(echo $BasePath/out/unitTest/unitTest_$(basename $Proj))
-      if [ -f  "$TestProgram" ]; then
-        eval "$TestProgram"
-        if [ $? -ne 0 ]; then
-          echo -e "\n\e[31m!!!!!!!!!!!!!!!!Testing $Proj Failed!!!!!!!!!!!!!!!! \e[39m\n"
-          exit 0
-        else
-          echo -e "\e[0;34m Testing $Proj Finished Successfully :) \e[39m\n"
-        fi
-      fi
+      #if [ -f  "$TestProgram" ]; then
+      #  eval "$TestProgram"
+      #  if [ $? -ne 0 ]; then
+      #    echo -e "\n\e[31m!!!!!!!!!!!!!!!!Testing $Proj Failed!!!!!!!!!!!!!!!! \e[39m\n"
+      #    exit 0
+      #  else
+      #    echo -e "\e[0;34m Testing $Proj Finished Successfully :) \e[39m\n"
+      #  fi
+      #fi
     fi
   done
 else
@@ -93,15 +93,15 @@ else
     else
       echo -e "\n\e[32m Module $Proj Compiled Successfully\e[39m\n"
       TestProgram=$(echo $BasePath/out/unitTest/unitTest_$(basename $Proj))
-      if [ -f  "$TestProgram" ]; then
-	eval "$TestProgram"
-	if [ $? -ne 0 ]; then
-	  echo -e "\n\e[31m!!!!!!!!!!!!!!!!Testing $Proj Failed!!!!!!!!!!!!!!!! \e[39m\n"
-	  exit 0
-	else
-	  echo -e "\e[0;34m Testing $Proj Finished Successfully :) \e[39m\n"
-	fi
-      fi
+      #if [ -f  "$TestProgram" ]; then
+#	eval "$TestProgram"
+#	if [ $? -ne 0 ]; then
+#	  echo -e "\n\e[31m!!!!!!!!!!!!!!!!Testing $Proj Failed!!!!!!!!!!!!!!!! \e[39m\n"
+#	  exit 0
+#	else
+#	  echo -e "\e[0;34m Testing $Proj Finished Successfully :) \e[39m\n"
+#	fi
+#      fi
     fi
   done
 

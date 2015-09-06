@@ -219,7 +219,7 @@ public:
      * @brief Returns a list of search graph node that has similar coverage of translation.
      * @param[in] _coverage Covered translated words.
      */
-    inline const QList<clsSearchGraphNode>& getSameCoverageNodes(Coverage_t _coverage) const {
+    inline const clsSearchGraphNodeContainer& getSameCoverageNodes(Coverage_t _coverage) const {
         return this->Data->HypothesisHolder[_coverage.count(true)].lexicalHypotheses().value(_coverage).nodes();
     }
 

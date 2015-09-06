@@ -44,7 +44,7 @@ Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesisCont
         );
 
 clsLexicalHypothesisContainer::clsLexicalHypothesisContainer() :
-    Data(new clsLexicalHypothesisContainerData)
+    Data(new clsLexicalHypothesisContainerData(clsLexicalHypothesisContainer::KeepRecombined.value()))
 {}
 
 /**
@@ -69,40 +69,7 @@ Cost_t clsLexicalHypothesisContainer::getBestCost() const
  */
 bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
-    size_t InsertionPos = this->Data->Nodes.size();
-    for (size_t i=0; i<(size_t)this->Data->Nodes.size(); ++i) {
-        // NOTE: Do not change this to get by reference, it will break the algorithm
-        clsSearchGraphNode HypoNode = this->Data->Nodes[i];
-        if (HypoNode.haveSameFuture(_node)){
-            if (clsLexicalHypothesisContainer::KeepRecombined.value()){
-                HypoNode.recombine(_node);
-                // Find the new position for possibly changed HypoNode
-                int NewHypoNodePosition = i;
-                while(NewHypoNodePosition > 0 && HypoNode.getTotalCost() <
-                      this->Data->Nodes.at(NewHypoNodePosition - 1).getTotalCost()) {
-                    this->Data->Nodes[NewHypoNodePosition] = this->Data->Nodes[NewHypoNodePosition - 1];
-                    --NewHypoNodePosition;
-                }
-                this->Data->Nodes[NewHypoNodePosition] = HypoNode;
-                return false;
-            }else{
-                if(HypoNode.getTotalCost() > _node.getTotalCost()){
-                    this->Data->Nodes.removeAt(i);
-                    InsertionPos = i;
-                    while(InsertionPos > 0 && _node.getTotalCost() < this->Data->Nodes.at(InsertionPos - 1).getTotalCost())
-                        InsertionPos--;
-                    break;
-                }else
-                    return false;
-            }
-        } else if ((int)InsertionPos == this->Data->Nodes.size() && HypoNode.getTotalCost() > _node.getTotalCost()){
-            InsertionPos = i;
-        }
-    }
-
-    this->Data->Nodes.insert(InsertionPos,_node);
-
-    return true;
+    return this->Data->Nodes.insert(_node);
 }
 
 /**
@@ -114,10 +81,8 @@ void clsLexicalHypothesisContainer::finalizeRecombination()
 {
     if(clsLexicalHypothesisContainer::KeepRecombined.value() == false)
         return;
-    while (this->nodes().size() > 1) {
-        this->Data->Nodes[0].recombine(this->Data->Nodes[1]);
-        this->Data->Nodes.removeAt(1);
-    }
+
+    this->Data->Nodes.finalizeRecombination();
 }
 
 #ifdef TARGOMAN_SHOW_DEBUG
