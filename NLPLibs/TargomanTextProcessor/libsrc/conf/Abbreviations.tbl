@@ -1,0 +1,156 @@
+################################################################################
+#   Targoman: A robust Statistical Machine Translation framework
+#
+#   Copyright 2014-2015 by ITRC <http://itrc.ac.ir>
+#
+#   This file is part of Targoman.
+#
+#   Targoman is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   Targoman is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Lesser General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public License
+#   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+# @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+# @author Behrooz Vedadian <vedadian@targoman.com>
+# @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
+
+am.
+pm.
+sq.
+cu.
+Sir.
+sir.
+Sq.
+st.
+St.
+a.m.
+p.m.
+Mr.
+mr.
+mrs.
+Mrs.
+UN.
+US.
+EU.
+MD.
+Dr.
+Ph.D.
+PhD.
+etc.
+Spc.
+Sen.
+St.
+Rep.
+REP.
+Sgt.
+Inc.
+i.e.
+Jan.
+Feb.
+Mar.
+Apr.
+May.
+Jun.
+Jul.
+Aug.
+Sep.
+Sept.
+Oct.
+Nov.
+Dec.
+No.
+Adj.
+Adm.
+Adv.
+Asst.
+Bart.
+Bldg.
+Brig.
+Bros.
+Capt.
+Cmdr.
+Col.
+Comdr.
+Con.
+Corp.
+Cpl.
+DR.
+Drs.
+Ens.
+Gen.
+Gov.
+Hon.
+Hr.
+Hosp.
+Insp.
+Lt.
+MM.
+MR.
+MRS.
+MS.
+Maj.
+Messrs.
+Mlle.
+Mme.
+Ms.
+Msgr.
+Op.
+Ord.
+Pfc.
+Ph.
+Prof.
+Pvt.
+Rep.
+Reps.
+Res.
+Rev.
+Rt.
+ret.
+Sen.
+fig.
+n.
+adv.
+verb.
+v.
+Sens.
+Sfc.
+Sgt.
+Sr.
+St.
+Supt.
+Surg.
+Shi'ite
+u.s.
+U.S.
+u.s.a
+u.k.
+uk.
+jan.
+feb.
+mar.
+apr.
+may.
+jun.
+jul.
+aug.
+sep.
+sept.
+oct.
+nov.
+dec.
+u.n.
+u.a.e.
+Co.
+e.g.
+eg.
+ex.
+No.
+

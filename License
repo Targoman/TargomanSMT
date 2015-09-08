@@ -1,0 +1,14 @@
+Targoman project is published by ITRC <http://itrc.ac.ir> under the terms on
+GNU Lesser General Public License as published by the Free Software Foundation,
+version 3 of the License.
+
+Following sub-projects are excluded from above notice:
+
+* Apps/TargomanWebUI:  Licensed by ITRC under the terms of Modified BSD License
+                       (The BSD 3-Clause License) published by MIT University
+* Apps/TargomanWebAPI: Licensed by ITRC under the terms of Modified BSD License
+                       (The BSD 3-Clause License) published by MIT University
+* ExternalToolsAndLibs/KenLM/: Originally published by Kenneth Heafield most of
+                       the code is licensed under the terms of LGPL. but there
+                       are exceptions see more info at:
+                       <raw.githubusercontent.com/kpu/kenlm/master/LICENSE>
