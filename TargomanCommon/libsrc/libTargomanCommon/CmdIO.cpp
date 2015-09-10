@@ -59,23 +59,6 @@ tmplConfigurable<bool> Silent(
         }
         );
 
-tmplConfigurable<bool> PrintLibs(
-        CmdIO::moduleName() + "/PrintLibs",
-        "Print libs loaded with current binary",
-        false,
-        ReturnTrueCrossValidator,
-        "",
-        "",
-        "out-libs",
-        enuConfigSource::Arg,
-        false,
-        [] (const intfConfigurable& _item){
-            if(_item.toVariant().toBool())
-                dl_iterate_phdr(targomanLinkedLibrariesCallback, NULL);
-            return true;
-        }
-        );
-
 tmplConfigurable<bool> Full(
         CmdIO::moduleName() + "/Full",
         "Set output to full mode",
@@ -270,7 +253,7 @@ tmplConfigurable<quint8> HappyLevel(
 
 tmplConfigurable<QStringList> NormalDetail(
         CmdIO::moduleName() + "/NormalDetail",
-        "Set Details to be shown for Normal",
+        "Set details to be shown for Normal",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");

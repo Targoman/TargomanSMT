@@ -91,7 +91,7 @@ static clsLogSettings* LogSettings = new clsLogSettings[enuLogType::getCount()];
 
 tmplConfigurable<QStringList> LogDebugDetail(
         Logger::moduleName() + "/DebugDetail",
-        "Set Details of Normal Logs",
+        "Set Details of debugging logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -112,7 +112,7 @@ tmplConfigurable<QStringList> LogDebugDetail(
 
 tmplConfigurable<quint8> LogDebugLevel(
         Logger::moduleName() + "/DebugLevel",
-        "Set Normal level",
+        "Set debug log level",
         5,
         [] (const intfConfigurable& _item, QString&){
             LogSettings[enuLogType::Debug].setLevel(_item.toVariant().toUInt());
@@ -127,7 +127,7 @@ tmplConfigurable<quint8> LogDebugLevel(
 
 tmplConfigurable<QStringList> LogWarningDetail(
         Logger::moduleName() + "/WarningDetail",
-        "Set Details of Normal Logs",
+        "Set details of warning logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -148,7 +148,7 @@ tmplConfigurable<QStringList> LogWarningDetail(
 
 tmplConfigurable<quint8> LogWarningLevel(
         Logger::moduleName() + "/WarningLevel",
-        "Set Normal level",
+        "Set warning log level",
         5,
         [] (const intfConfigurable& _item, QString&){
             LogSettings[enuLogType::Warning].setLevel(_item.toVariant().toUInt());
@@ -163,7 +163,7 @@ tmplConfigurable<quint8> LogWarningLevel(
 
 tmplConfigurable<QStringList> LogErrorDetail(
         Logger::moduleName() + "/ErrorDetail",
-        "Set Details of Normal Logs",
+        "Set details of error logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -184,7 +184,7 @@ tmplConfigurable<QStringList> LogErrorDetail(
 
 tmplConfigurable<QStringList> LogInfoDetail(
         Logger::moduleName() + "/InfoDetail",
-        "Set Details of Normal Logs",
+        "Set details of informative Logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -205,7 +205,7 @@ tmplConfigurable<QStringList> LogInfoDetail(
 
 tmplConfigurable<quint8> LogInfoLevel(
         Logger::moduleName() + "/InfoLevel",
-        "Set Normal level",
+        "Set informative log level",
         5,
         [] (const intfConfigurable& _item, QString&){
             LogSettings[enuLogType::Info].setLevel(_item.toVariant().toUInt());
@@ -220,7 +220,7 @@ tmplConfigurable<quint8> LogInfoLevel(
 
 tmplConfigurable<QStringList> LogHappyDetail(
         Logger::moduleName() + "/HappyDetail",
-        "Set Details of Normal Logs",
+        "Set Details of happy logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -241,7 +241,7 @@ tmplConfigurable<QStringList> LogHappyDetail(
 
 tmplConfigurable<quint8> LogHappyLevel(
         Logger::moduleName() + "/HappyLevel",
-        "Set Normal level",
+        "Set happy log level",
         5,
         [] (const intfConfigurable& _item, QString&){
             LogSettings[enuLogType::Happy].setLevel(_item.toVariant().toUInt());
