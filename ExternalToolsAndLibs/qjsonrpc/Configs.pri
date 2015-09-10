@@ -48,7 +48,7 @@ error("***** $$ProjectName: Unable to find Configuration file $$ProjectConfig **
 }
 
 include ($$ProjectConfig)
-
+CONFIG(debug, debug|release): DEFINES += QJSONRPC_DEBUG=1
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 
 for(Project, ProjectDependencies) {

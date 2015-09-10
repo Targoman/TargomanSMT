@@ -75,7 +75,7 @@ void TSManager::slotServerDisconnected()
     }
 }
 
-stuRPCOutput TSManager::rpcTranslate(const QVariantMap &_args)
+/*stuRPCOutput TSManager::rpcTranslate(const QVariantMap &_args)
 {
     QString UUID = _args.value("UUID").toString();
     QString Dir  = _args.value("Dir").toString();
@@ -126,7 +126,7 @@ stuRPCOutput TSManager::rpcArrayTranslate(const QVariantMap &_args)
     Q_UNUSED(_args)
     throw exTSManager("Unable to translate because max tries failed");
 }
-
+*/
 
 
 

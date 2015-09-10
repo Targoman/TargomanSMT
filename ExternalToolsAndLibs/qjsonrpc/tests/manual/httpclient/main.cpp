@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    HttpClient client("http://127.0.0.1:8332");
+    HttpClient client("http://127.0.0.1:5555");
     if (app.arguments().contains("-u")) {
         int idx = app.arguments().indexOf("-u");
         app.arguments().removeAt(idx);

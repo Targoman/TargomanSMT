@@ -1,9 +1,46 @@
 #ifndef TESTHTTPSERVER_H
 #define TESTHTTPSERVER_H
 
+#include <QTcpSocket>
 #include <QTcpServer>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
+#include "http-parser/http_parser.h"
+
+class TestHttpServerRequestHandler;
+
+class TestHttpServerPrivate
+{
+public:
+    TestHttpServerPrivate();
+    virtual ~TestHttpServerPrivate();
+
+    // http parsing
+    http_parser *httpParser;
+    http_parser_settings httpParserSettings;
+    QByteArray currentHeaderField;
+    QByteArray currentHeaderValue;
+
+    static int onMessageBegin(http_parser *parser);
+    static int onUrl(http_parser *parser, const char *at, size_t length);
+    static int onHeaderField(http_parser *parser, const char *at, size_t length);
+    static int onHeaderValue(http_parser *parser, const char *at, size_t length);
+    static int onHeadersComplete(http_parser *parser);
+    static int onBody(http_parser *parser, const char *at, size_t length);
+    static int onMessageComplete(http_parser *parser);
+
+    // private slots
+    void _q_socketReadyRead();
+    void _q_socketError(QAbstractSocket::SocketError error);
+    void _q_handleRequest();
+
+    TestHttpServerRequestHandler *requestHandler;
+    QPointer<QTcpSocket> socket;
+
+    QNetworkAccessManager::Operation operation;
+    QNetworkRequest request;
+    QByteArray body;
+};
 
 class TestHttpServerRequestHandler
 {

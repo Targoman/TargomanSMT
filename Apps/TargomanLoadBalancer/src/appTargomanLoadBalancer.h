@@ -27,7 +27,7 @@
 
 #include "libTargomanCommon/Configuration/intfRPCExporter.hpp"
 #include "libTargomanCommon/Types.h"
-
+#include "libQJsonRPC/qjsonrpchttpserver.h"
 
 namespace Targoman {
 namespace Apps{
@@ -37,19 +37,18 @@ class appTargomanLoadBalancer : public Common::Configuration::intfRPCExporter
     Q_OBJECT
 public:
     appTargomanLoadBalancer() {
-        this->exportMyRPCs();
+
         }
 
 public slots:
     void slotExecute();
 
-public slots:
-    Common::Configuration::stuRPCOutput rpcTTS(const QVariantMap& _args);
-
 private slots:
     void slotValidateAgent(QString &_user, const QString &_pass, const QString &_ip, bool &_canView, bool &_canChange);
     void slotPong(Targoman::Common::stuPong &_pong);
 
+private:
+    QJso
 };
 
 }

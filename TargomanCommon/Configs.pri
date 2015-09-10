@@ -20,6 +20,7 @@
 ################################################################################
 ProjectName="TargomanCommon"
 VERSION=0.1.0
+DEFINES += WITH_QJsonRPC
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+= QJsonRPC

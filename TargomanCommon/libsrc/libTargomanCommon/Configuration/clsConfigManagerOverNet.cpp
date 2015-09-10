@@ -48,13 +48,30 @@ clsConfigOverNetServer::~clsConfigOverNetServer()
 
 void clsConfigOverNetServer::incomingConnection(qintptr _socketDescriptor)
 {
+    if(this->ConnectedClients > intfConfigManagerOverNet::MaxConnections.value()){
+        QTcpSocket* Socket = new QTcpSocket;
+        TargomanLogWarn(1, "Ignoring connection as max connections has reached");
+        Socket->setSocketDescriptor(_socketDescriptor);
+        Socket->close();
+        Socket->deleteLater();
+        return;
+    }
+
     clsClientThread* CLT = new clsClientThread(_socketDescriptor,
                                                this->ConfigManagerPrivate,
                                                this);
 
-    connect(CLT, SIGNAL(finished()), CLT, SLOT(deleteLater()));
+    connect(CLT, SIGNAL(finished()), this, SLOT(slotClientDisconnected());
 
     CLT->start();
+    ++this->ConnectedClients;
+}
+
+void clsConfigOverNetServer::slotClientDisconnected()
+{
+    clsClientThread* CLT = qobject_cast<clsClientThread*>(q->sender());
+    CLT->deleteLater();
+    --this->ConnectedClients;
 }
 
 /******************************************************************************/

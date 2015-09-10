@@ -368,7 +368,7 @@ QJsonValue QJsonRpcServicePrivate::convertReturnValue(QVariant &returnValue)
 static inline QByteArray methodName(const QJsonRpcMessage &request)
 {
     const QString &methodPath(request.method());
-    return methodPath.midRef(methodPath.lastIndexOf('.') + 1).toLatin1();
+    return methodPath.midRef(methodPath.lastIndexOf("::") + 2).toLatin1();
 }
 
 bool QJsonRpcService::dispatch(const QJsonRpcMessage &request)

@@ -77,7 +77,7 @@ void QJsonRpcServiceProvider::processMessage(QJsonRpcAbstractSocket *socket, con
     switch (message.type()) {
         case QJsonRpcMessage::Request:
         case QJsonRpcMessage::Notification: {
-            QByteArray serviceName = message.method().section(".", 0, -2).toLatin1();
+            QByteArray serviceName = message.method().section("::", 0, -2).toLatin1();
             if (serviceName.isEmpty() || !d->services.contains(serviceName)) {
                 if (message.type() == QJsonRpcMessage::Request) {
                     QJsonRpcMessage error =

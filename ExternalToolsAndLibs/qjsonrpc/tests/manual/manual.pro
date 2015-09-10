@@ -1,11 +1,13 @@
 TEMPLATE = subdirs
-SUBDIRS += localserver \
-           localclient \
-           tcpserver \
-           tcpclient \
-           qjsonrpc \
+SUBDIRS += \
            httpclient \
+           httpserver-mt \
            httpserver \
+           tcpclient \
+           localclient \
+           localserver \
+           tcpserver \
+           qjsonrpc \
            benchmark
 
 greaterThan(QT_MAJOR_VERSION, 4) {

@@ -30,7 +30,7 @@ public:
     virtual bool addService(QJsonRpcService *service);
     virtual bool removeService(QJsonRpcService *service);
 
-protected:
+public:
     QJsonRpcServiceProvider();
     void processMessage(QJsonRpcAbstractSocket *socket, const QJsonRpcMessage &message);
 

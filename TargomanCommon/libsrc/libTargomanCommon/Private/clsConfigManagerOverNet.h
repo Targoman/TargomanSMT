@@ -50,9 +50,13 @@ public:
 private:
     void incomingConnection(qintptr _socketDescriptor);
 
+private slots:
+    void slotClientDisconnected();
+
 private:
     clsConfigManagerPrivate&          ConfigManagerPrivate;
     QString&                          ActorUUID;
+    quint16                           ConnectedClients;
 };
 
 /******************************************************************************/

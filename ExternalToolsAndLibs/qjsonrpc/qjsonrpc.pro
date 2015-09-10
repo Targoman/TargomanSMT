@@ -31,5 +31,5 @@ TEMPLATE = subdirs
 CONFIG += ordered
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 addSubdirs(libsrc)
-addSubdirs(test, libsrc)
+addSubdirs(tests, libsrc)
 

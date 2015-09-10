@@ -70,7 +70,7 @@ QString TestService::immediateResponse()
 QString TestService::longTaskWithImmediateResponse()
 {
     QEventLoop loop;
-    QTimer::singleShot(1000, &loop, SLOT(quit()));
+    QTimer::singleShot(10000, &loop, SLOT(quit()));
     loop.exec();
     return "long immediate";
 }

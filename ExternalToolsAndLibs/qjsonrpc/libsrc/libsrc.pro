@@ -38,7 +38,9 @@ HEADERS += \
     libQJsonRPC/qjsonrpcglobal.h \
     libQJsonRPC/qjsonrpcservicereply.h \
     libQJsonRPC/qjsonrpchttpclient.h \
-    libQJsonRPC/qjsonrpchttpserver.h
+    libQJsonRPC/qjsonrpchttpserver.h \
+    libQJsonRPC/qjsonrpchttpservermultithreaded.h \
+    libQJsonRPC/Private/qjsonrpchttpservermultithreaded_p.h
 
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
@@ -53,7 +55,8 @@ SOURCES += \
     libQJsonRPC/qjsonrpcservicereply.cpp \
     libQJsonRPC/qjsonrpchttpclient.cpp \
     libQJsonRPC/qjsonrpchttpserver.cpp \
-    libQJsonRPC/Private/http-parser/http_parser.c
+    libQJsonRPC/Private/http-parser/http_parser.c \
+    libQJsonRPC/qjsonrpchttpservermultithreaded.cpp
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
