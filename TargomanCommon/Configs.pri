@@ -22,7 +22,7 @@ ProjectName="TargomanCommon"
 VERSION=0.1.0
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-ProjectDependencies+=
+ProjectDependencies+= QJsonRPC
 
 QT+=network
 ################################################################################

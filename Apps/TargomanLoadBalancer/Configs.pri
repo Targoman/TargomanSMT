@@ -18,7 +18,7 @@
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
-ProjectName="TargomanloadBalancer"
+ProjectName="TargomanLoadBalancer"
 VERSION=0.1.0
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#

@@ -29,17 +29,31 @@
 #include <QHash>
 #include <QVariant>
 #include "Configuration/ConfigManager.h"
+#include "intfConfigManagerOverNet.hpp"
+#include "Configuration/tmplConfigurable.h"
+#ifdef WITH_QJsonRPC
+#include "libQJsonRPC/qjsonrpcservice.h"
+#endif
 
 namespace Targoman {
 namespace Common {
 namespace Configuration {
-/**
- *  @brief Private section of Targoman::Common module where internal functionalities needed to be obfuscated
- *  are defined
- */
 namespace Private {
 
-class clsConfigNetworkServer;
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuConfigOverNetMode,
+                              LegacyTCP,
+                              JsonRPCOverTCP,
+                              JsonRPCOverHTTP,
+                              NoNetwork
+                              );
+
+}}}}
+ENUM_CONFIGURABLE(Targoman::Common::Configuration::Private::enuConfigOverNetMode);
+
+namespace Targoman {
+namespace Common {
+namespace Configuration {
+namespace Private {
 
 class clsConfigManagerPrivate : public QObject
 {
@@ -49,9 +63,23 @@ public:
     ~clsConfigManagerPrivate();
     void printHelp(const QString &_license, bool _minimal);
     QList<intfConfigurable*> configItems(const QString& _parent, bool _isRegEX, bool _reportRemote);
+
+public:
     void prepareServer();
-    bool isNetworkBased();
-    void startNetworkListening();
+
+    inline void startNetworkListening(){
+        if(this->ConfigOverNetServer.isNull())
+            throw exConfiguration("Configuration module is configured without network support");
+        this->ConfigOverNetServer->start();
+    }
+
+    inline bool isNetworkBased(){
+        return this->ConfigOverNetServer.isNull() == false;
+    }
+
+#ifdef WITH_QJsonRPC
+    void registerJsonRPCModule(QJsonRpcService& _service);
+#endif
 
 public:
     /**
@@ -82,7 +110,9 @@ public:
     QString ActorUUID;
 
     ConfigManager& Parent;
-    QScopedPointer<clsConfigNetworkServer> ConfigNetServer;
+    QScopedPointer<intfConfigManagerOverNet> ConfigOverNetServer;
+    static Common::Configuration::tmplConfigurable<enuConfigOverNetMode::Type>    ConfigOverNetMode;
+    void printConfigsHelp(bool _include, const QStringList &_list, bool _showHeader);
 };
 
 }

@@ -155,7 +155,6 @@ int main(int _argc, char *_argv[])
 {
     try{
         TARGOMAN_IO_SETTINGS.setDefault(0,4);
-        Targoman::Common::printLoadedLibs();
         QCoreApplication App(_argc, _argv);
 
         Configuration::ConfigManager::instance().init(

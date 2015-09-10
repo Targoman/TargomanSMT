@@ -31,26 +31,21 @@
 #include <QTime>
 #include "Configuration/tmplConfigurable.h"
 #include "clsConfigManager_p.h"
+#include "intfConfigManagerOverNet.hpp"
 
 namespace Targoman {
 namespace Common {
 namespace Configuration {
 namespace Private {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exConfigurationServer, exConfiguration);
 
 /******************************************************************************/
-class clsConfigNetworkServer : private QTcpServer
+class clsConfigOverNetServer : public intfConfigManagerOverNet
 {
     Q_OBJECT
 public:
-    clsConfigNetworkServer(clsConfigManagerPrivate& _configManager);
-    ~clsConfigNetworkServer();
-    void start(bool _justCheck = false);
-    bool check();
-    bool isActive(){
-        return this->ListenPort.value() > 0;
-    }
+    clsConfigOverNetServer(clsConfigManagerPrivate& _configManager);
+    ~clsConfigOverNetServer();
 
 private:
     void incomingConnection(qintptr _socketDescriptor);
@@ -58,14 +53,6 @@ private:
 private:
     clsConfigManagerPrivate&          ConfigManagerPrivate;
     QString&                          ActorUUID;
- //   QHash<QString,
-private:
-    static tmplConfigurable<int>      ListenPort;
-    static tmplConfigurable<bool>     WaitPortReady;
-    static tmplConfigurable<bool>     AdminLocal;
-    static tmplConfigurable<int>      MaxSessionTime;
-    static tmplConfigurable<int>      MaxIdleTime;
-    static tmplConfigurable<quint16>  MaxConnections;
 };
 
 /******************************************************************************/

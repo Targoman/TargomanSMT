@@ -69,7 +69,6 @@ HEADERS += \
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
-    libID.cpp \
     libKenLM/lm/bhiksha.cc \
     libKenLM/lm/binary_format.cc \
     libKenLM/lm/build_binary.cc \

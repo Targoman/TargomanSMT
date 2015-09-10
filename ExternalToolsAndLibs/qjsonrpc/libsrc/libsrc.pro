@@ -43,7 +43,6 @@ HEADERS += \
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
-    libID.cpp \
     libQJsonRPC/qjsonrpcmessage.cpp \
     libQJsonRPC/qjsonrpcservice.cpp \
     libQJsonRPC/qjsonrpcsocket.cpp \

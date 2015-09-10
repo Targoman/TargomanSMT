@@ -35,156 +35,18 @@ namespace Common {
 namespace Configuration {
 namespace Private {
 
-tmplConfigurable<int> clsConfigNetworkServer::ListenPort(
-        ConfigManager::moduleName() + "/AdminPort",
-        "If set greater than zero Initializes a network channel to monitor and control application",
-        0,
-        [] (const intfConfigurable& _item, QString& _errorMessage){
-    if (_item.toVariant().toUInt() > 60000){
-        _errorMessage = "Invalid port to listen: " + _item.toVariant().toString();
-        return false;
-    }
-    return true;
-},
-"",
-"PORT",
-"admin-port",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
-
-tmplConfigurable<bool> clsConfigNetworkServer::AdminLocal(
-        ConfigManager::moduleName() + "/AdminLocal",
-        "If set to true it will just listen to local connections.",
-        false,
-        ReturnTrueCrossValidator,
-        "",
-        "",
-        "admin-just-local",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-        false
-        );
-
-tmplConfigurable<bool> clsConfigNetworkServer::WaitPortReady(
-        ConfigManager::moduleName() + "/WaitPortReady",
-        "If set to true it will wait till port is ready checking every 500ms.",
-        false,
-        ReturnTrueCrossValidator,
-        "",
-        "",
-        "admin-wait-port-ready",
-        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-        false
-        );
-
-tmplConfigurable<int> clsConfigNetworkServer::MaxSessionTime(
-        ConfigManager::moduleName() + "/MaxSessiontime",
-        "Max allowed time for a session. This is independent from idle time and must be greater. -1 means no limit",
-        -1,
-        [] (const intfConfigurable& _item, QString& _errorMessage){
-    int MaxIdleTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxIdleTime").toInt();
-    if (_item.toVariant().toInt() >= 0 &&
-            (MaxIdleTime <0 ||
-             _item.toVariant().toInt() < MaxIdleTime)){
-        _errorMessage = "Invalid Max Session Time. It must be greater than Max IdleTime";
-        return false;
-    }
-    return true;
-},
-"",
-"SECONDS",
-"admin-max-session-time",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
-
-tmplConfigurable<int> clsConfigNetworkServer::MaxIdleTime(
-        ConfigManager::moduleName() + "/MaxIdleTime",
-        "Max allowed time for a session. This is independent from idle time and must be greater. -1 means no limit",
-        -1,
-        [] (const intfConfigurable& _item, QString& _errorMessage){
-    int MaxSessionTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxSessiontime").toInt();
-    if (_item.toVariant().toInt() == 0 || (
-                _item.toVariant().toInt() > 0 &&
-                (MaxSessionTime > 0 ||
-                 _item.toVariant().toInt() < MaxSessionTime))){
-        _errorMessage = "Invalid Max Idle Time. It must be greater than zero but less than Max Session Time";
-        return false;
-    }
-    return true;
-},
-"",
-"SECONDS",
-"admin-max-idle-time",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
-
-tmplConfigurable<quint16> clsConfigNetworkServer::MaxConnections(
-        ConfigManager::moduleName() + "/MaxConnections",
-        "Max administration connections allowed",
-        1,
-        [] (const intfConfigurable&, QString&){
-    return true;
-},
-"",
-"MAX_ALLOWED",
-"max-connections",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
-
-clsConfigNetworkServer::clsConfigNetworkServer(clsConfigManagerPrivate &_configManager) :
+clsConfigOverNetServer::clsConfigOverNetServer(clsConfigManagerPrivate &_configManager) :
+    intfConfigManagerOverNet(new QTcpServer),
     ConfigManagerPrivate(_configManager),
     ActorUUID(_configManager.ActorUUID)
 {}
 
-clsConfigNetworkServer::~clsConfigNetworkServer()
+clsConfigOverNetServer::~clsConfigOverNetServer()
 {
-    //Just to suppress compiler erro using QScopedPointer
+    //Just to suppress compiler error using QScopedPointer
 }
 
-void clsConfigNetworkServer::start(bool _justCheck)
-{
-    bool PrintMessage = true;
-    if (this->ListenPort.value() > 0){
-        do{
-            if (!this->listen(this->AdminLocal.value() ? QHostAddress::LocalHost : QHostAddress::Any,
-                              this->ListenPort.value())){
-                if (clsConfigNetworkServer::WaitPortReady.value() == false)
-                    throw exConfigurationServer(QString("Unable to Start Server on: %1:%2").arg(
-                                                    this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
-                                                    this->ListenPort.value()));
-                else{
-                    if (PrintMessage && _justCheck == false){
-                        TargomanInfo(5, "Waiting for port %d ready...", this->ListenPort.value());
-                        PrintMessage = false;
-                    }
-                    usleep(500000);
-                }
-            }else
-                break;
-        }while(_justCheck == false);
-    }
-
-    if (_justCheck)
-        this->close();
-    else
-        TargomanInfo(5, QString("Configuration server has been started on %1:%2").arg(
-                         this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
-                         this->ListenPort.value()))
-}
-
-bool clsConfigNetworkServer::check()
-{
-    if (this->ListenPort.value() > 0){
-        this->start(true);
-        return true;
-    }else
-        return true;
-}
-
-void clsConfigNetworkServer::incomingConnection(qintptr _socketDescriptor)
+void clsConfigOverNetServer::incomingConnection(qintptr _socketDescriptor)
 {
     clsClientThread* CLT = new clsClientThread(_socketDescriptor,
                                                this->ConfigManagerPrivate,

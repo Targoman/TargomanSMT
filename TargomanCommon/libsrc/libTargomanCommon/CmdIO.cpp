@@ -338,9 +338,7 @@ int targomanLinkedLibrariesCallback(struct dl_phdr_info *_info, size_t _size, vo
  */
 void printLoadedLibs()
 {
-#if TARGOMAN_SHOW_DEBUG
     dl_iterate_phdr(targomanLinkedLibrariesCallback, NULL);
-#endif
 }
 
 clsIOSettings TARGOMAN_IO_SETTINGS;

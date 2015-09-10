@@ -31,7 +31,9 @@
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
 #include "libTargomanCommon/Types.h"
-#include "libTargomanCommon/JSONConversationProtocol.h"
+#ifdef WITH_QJsonRPC
+#include "libQJsonRPC/qjsonrpcservice.h"
+#endif
 
 namespace Targoman {
 namespace Common {
@@ -74,6 +76,9 @@ public:
     QString configFileDir();
     QString getAbsolutePath(const QString &_path);
     bool isNetworkManagable();
+#ifdef WITH_QJsonRPC
+    void registerJsonRPCModule(QJsonRpcService& _service);
+#endif
 
 public slots:
     void startAdminServer();

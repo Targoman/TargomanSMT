@@ -22,6 +22,7 @@
 DependencyIncludePaths+=
 DependencyLibPaths+=
 ProjectDependencies += z
+DEFINES += WITH_QJsonRPC
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-
 

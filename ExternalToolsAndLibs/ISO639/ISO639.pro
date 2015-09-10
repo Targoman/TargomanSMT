@@ -30,5 +30,5 @@ include ($$ConfigFile)
 TEMPLATE=lib
 DESTDIR = dummy
 
-system(cp ISO639.h $$BaseLibraryIncludeFolder)
+system(cp ISO639.h $$BaseLibraryIncludeFolder/)
 QMAKE_POST_LINK += rm -rf dummy

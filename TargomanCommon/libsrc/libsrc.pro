@@ -59,7 +59,9 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/PrefixTree/tmplFullCachePrefixTreeNode.hpp \
     libTargomanCommon/PrefixTree/tmplNoCachePrefixTreeNode.hpp \
     libTargomanCommon/tmplBoundedCache.hpp \
-    libTargomanCommon/Configuration/tmplConfigurableMultiMap.hpp
+    libTargomanCommon/Configuration/tmplConfigurableMultiMap.hpp \
+    libTargomanCommon/Private/intfConfigManagerOverNet.hpp \
+    libTargomanCommon/Private/clsConfigByJsonRPC.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -78,7 +80,9 @@ SOURCES += \
     libTargomanCommon/FStreamExtended.cpp \
     libTargomanCommon/JSONConversationProtocol.cpp \
     libTargomanCommon/Configuration/clsConfigManagerOverNet.cpp \
-    libTargomanCommon/SimpleAuthentication.cpp
+    libTargomanCommon/SimpleAuthentication.cpp \
+    libTargomanCommon/Configuration/ConfigManagerPrivate.cpp \
+    libTargomanCommon/Configuration/clsConfigByJsonRPC.cpp
 
 OTHER_FILES += \
     libTargomanCommon/Private/primeGenerator.sh
