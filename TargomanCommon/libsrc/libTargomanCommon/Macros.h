@@ -248,5 +248,7 @@ inline constexpr _name::Type operator & (const _name::Type _first, const _name::
 #define fastToUpper(c)  ((c >= 'a' && c <= 'z') ? c - 0x20 : c)
 #define BIG_CONSTANT(x) (x##LLU)
 #define MACRO_SAFE_COMMA ,
+#define OUTPUT
+#define INOUT
 
 #endif /* TARGOMAN_COMMON_MACROS_H_ */

@@ -267,8 +267,8 @@ JSONConversationProtocol::stuResponse JSONConversationProtocol::parseResponse(co
             if (Doc.array().size() < 4)
                 throw exJSONConversationProtocol("Invalid count of arguments on enhanced pong");
             Response.Result = Doc.array().at(1).toVariant().toChar();
-            Response.Args.insert("Color", Doc.array().at(1).toVariant().toChar());
-            Response.Args.insert("Message", Doc.array().at(1).toVariant().toString());
+            Response.Args.insert("Color", Doc.array().at(2).toVariant().toChar());
+            Response.Args.insert("Message", Doc.array().at(3).toVariant().toString());
             Response.Type = stuResponse::EnhancedPong;
         }
     } else if (Doc.isObject()) {
