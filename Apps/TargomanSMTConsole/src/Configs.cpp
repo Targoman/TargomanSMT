@@ -43,14 +43,15 @@ tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
                 return false;
             case enuAppMode::MakeBinary:
                 if (gConfigs::OutputFile.value().isEmpty()){
-                    _errorMessage = "No output file defined to save binary file";return false;
+                    _errorMessage = "No output file defined to save binary file";
+                    return false;
                 }else if (ConfigManager::instance().getConfig("/Modules/RuleTable").toString().contains("Binary")){
-                    _errorMessage = "Binary rule table table can not be saved again";return false;
+                    _errorMessage = "Binary rule table table can not be saved again";
+                    return false;
                 }else
                     return true;
-                break;
             default:
-                break;
+                return false;
             }
         },
         "m",
