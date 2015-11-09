@@ -54,7 +54,7 @@ private slots:
                           OUTPUT bool&          _canView,
                           OUTPUT bool&          _canChange);
 
-    void slotPong(Targoman::Common::stuPong& _pong);
+    void slotPong(QString _ssid, Targoman::Common::stuPong& _pong);
 
 public slots:
     Common::Configuration::stuRPCOutput rpcGetStatistics(const QVariantMap&);

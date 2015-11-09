@@ -46,14 +46,14 @@ void appTargomanSMTServer::slotExecute()
 {
     try{
         connect(&Configuration::ConfigManager::instance(),
-                SIGNAL(sigPing(Targoman::Common::stuPong&)),
+                &Configuration::ConfigManager::sigPing,
                 this,
-                SLOT(slotPong(Targoman::Common::stuPong&)),
+                &appTargomanSMTServer::slotPong,
                 Qt::DirectConnection);
         connect(&Configuration::ConfigManager::instance(),
-                SIGNAL(sigValidateAgent(QString&,QString,QString,bool&,bool&)),
+                &Configuration::ConfigManager::sigValidateAgent,
                 this,
-                SLOT(slotValidateAgent(QString&,QString,QString,bool&,bool&)),
+                &appTargomanSMTServer::slotValidateAgent,
                 Qt::DirectConnection);
 
         clsTranslationJob::SourceLanguage =
@@ -91,8 +91,9 @@ void appTargomanSMTServer::slotValidateAgent(QString &_user, const QString &_pas
     }
 }
 
-void appTargomanSMTServer::slotPong(stuPong &_pong)
+void appTargomanSMTServer::slotPong(QString _ssid, stuPong &_pong)
 {
+    Q_UNUSED(_ssid)
     //TODO complete me to be more verbose on status reporting
     _pong.Status = enuStatus::Ok;
     _pong.Message = "Ok";

@@ -44,9 +44,12 @@ void clsTranslationServer::connect()
                 this->Configs.Host.value(),
                 this->Configs.Port.value());
     this->Socket.setSocketOption(QTcpSocket::KeepAliveOption, true);
-    QObject::connect(&this->Socket,SIGNAL(connected()), this, SLOT(slotConnected()), Qt::DirectConnection);
-    QObject::connect(&this->Socket,SIGNAL(readyRead()), this, SLOT(slotReadyRead()), Qt::DirectConnection);
-    QObject::connect(&this->Socket,SIGNAL(disconnected()), this, SLOT(slotDisconnected()), Qt::DirectConnection);
+    QObject::connect(&this->Socket,&QTcpSocket::connected,
+                     this, &clsTranslationServer::slotConnected, Qt::DirectConnection);
+    QObject::connect(&this->Socket,&QTcpSocket::readyRead,
+                     this, &clsTranslationServer::slotReadyRead, Qt::DirectConnection);
+    QObject::connect(&this->Socket,&QTcpSocket::disconnected,
+                     this, &clsTranslationServer::slotDisconnected, Qt::DirectConnection);
 }
 
 bool clsTranslationServer::isConnected()

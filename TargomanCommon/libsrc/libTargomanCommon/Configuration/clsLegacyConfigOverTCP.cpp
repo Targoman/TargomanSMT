@@ -61,7 +61,8 @@ void clsLegacyConfigOverTCP::incomingConnection(qintptr _socketDescriptor)
                                                this->ConfigManagerPrivate,
                                                this);
 
-    connect(CLT, SIGNAL(finished()), this, SLOT(slotClientDisconnected()));
+    connect(CLT, &clsClientThread::finished,
+            this, &clsLegacyConfigOverTCP::slotClientDisconnected);
 
     CLT->start();
     ++this->ConnectedClients;
@@ -312,9 +313,10 @@ void clsClientThread::run()
         return;
     }
 
-    connect(this->Socket, SIGNAL(readyRead()),
-            this,           SLOT(slotReadyRead()), Qt::DirectConnection);
-    connect(this->Socket, SIGNAL(disconnected()), this, SLOT(slotDisconnected()));
+    connect(this->Socket, &QTcpSocket::readyRead,
+            this,         &clsClientThread::slotReadyRead, Qt::DirectConnection);
+    connect(this->Socket, &QTcpSocket::disconnected,
+            this, &clsClientThread::slotDisconnected);
 
     TargomanLogInfo(5, QString("New Configuration Admin from %1:%2 with id=%3 connected").arg(
                         this->Socket->peerAddress().toString()).arg(

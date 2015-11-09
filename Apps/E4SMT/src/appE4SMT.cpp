@@ -40,14 +40,14 @@ void appE4SMT::slotExecute()
     try{
         if (gConfigs::Mode.value() == enuAppMode::Server){
             connect(&ConfigManager::instance(),
-                    SIGNAL(sigValidateAgent(QString&,QString,QString,bool&,bool&)),
+                    &ConfigManager::sigValidateAgent,
                     this,
-                    SLOT(slotValidateAgent(QString&,QString,QString,bool&,bool&)),
+                    &appE4SMT::slotValidateAgent,
                     Qt::DirectConnection);
             connect(&ConfigManager::instance(),
-                    SIGNAL(sigPing(Targoman::Common::stuPong&)),
+                    &ConfigManager::sigPing,
                     this,
-                    SLOT(slotPong(Targoman::Common::stuPong&)),
+                    &appE4SMT::slotPong,
                     Qt::DirectConnection);
             TargomanTextProcessor::instance().init(ConfigManager::instance().configFilePath());
             ConfigManager::instance().startAdminServer();
@@ -299,8 +299,9 @@ QStringList appE4SMT::retrieveFileItems(const QString &_filePath)
     return Lines;
 }
 
-void appE4SMT::slotPong(Targoman::Common::stuPong &_pong)
+void appE4SMT::slotPong(QString _ssid, Targoman::Common::stuPong &_pong)
 {
+    Q_UNUSED(_ssid);
     _pong.Status = enuStatus::Ok;
     _pong.Message = "Ok";
 }

@@ -122,11 +122,13 @@ void TSMonitorPrivate::slotUpdateInfo()
             if (Server->isConnected() == false) {
                 ++TempConnectedServers;
                 Server->connect();
-                connect(Server,SIGNAL(sigResponse(Common::JSONConversationProtocol::stuResponse)),
-                        this, SLOT(slotProcessResponse(Common::JSONConversationProtocol::stuResponse)),
+                connect(Server,&clsTranslationServer::sigResponse,
+                        this, &TSMonitorPrivate::slotProcessResponse,
                         Qt::DirectConnection);
-                connect(Server,SIGNAL(sigDisconnected()), this, SLOT(slotServerDisconnected()));
-                connect(Server, SIGNAL(sigNextRequest()), this, SLOT(slotSendRequest()),Qt::DirectConnection);
+                connect(Server,&clsTranslationServer::sigDisconnected,
+                        this, &TSMonitorPrivate::slotServerDisconnected);
+                connect(Server, &clsTranslationServer::sigNextRequest,
+                        this, &TSMonitorPrivate::slotSendRequest,Qt::DirectConnection);
             }else
                 emit Server->sigNextRequest();
         }

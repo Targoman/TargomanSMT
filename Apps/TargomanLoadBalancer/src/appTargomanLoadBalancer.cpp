@@ -48,14 +48,14 @@ void appTargomanLoadBalancer::slotExecute()
     try{
 
         connect(&Configuration::ConfigManager::instance(),
-                SIGNAL(sigPing(Targoman::Common::stuPong&)),
+                &Configuration::ConfigManager::sigPing,
                 this,
-                SLOT(slotPong(Targoman::Common::stuPong&)),
+                &appTargomanLoadBalancer::slotPong,
                 Qt::DirectConnection);
         connect(&Configuration::ConfigManager::instance(),
-                SIGNAL(sigValidateAgent(QString&,QString,QString,bool&,bool&)),
+                &Configuration::ConfigManager::sigValidateAgent,
                 this,
-                SLOT(slotValidateAgent(QString&,QString,QString,bool&,bool&)),
+                &appTargomanLoadBalancer::slotValidateAgent,
                 Qt::DirectConnection);
 
         Modules::TSMonitor::instance().start();
@@ -92,8 +92,9 @@ void appTargomanLoadBalancer::slotValidateAgent(QString &_user, const QString &_
     }
 }
 
-void appTargomanLoadBalancer::slotPong(stuPong &_pong)
+void appTargomanLoadBalancer::slotPong(QString _ssid, stuPong &_pong)
 {
+    Q_UNUSED(_ssid)
     //TODO complete me to be more verbose on status reporting
     _pong.Status = enuStatus::Ok;
     _pong.Message = QString("%1/%2").arg(
