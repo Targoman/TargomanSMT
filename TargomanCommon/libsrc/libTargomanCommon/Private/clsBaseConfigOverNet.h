@@ -23,57 +23,44 @@
  @author Behrooz Vedadian <vedadian@targoman.com>
  */
 
-#ifndef TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGBYJSONRPC_H
-#define TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGBYJSONRPC_H
+#ifndef TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSBASECONFIGOVERNET_H
+#define TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSBASECONFIGOVERNET_H
 
-#ifdef WITH_QJsonRPC
-
-#include <QScopedPointer>
-#include <QTcpServer>
-#include "libQJsonRPC/qjsonrpcservice.h"
-#include "clsBaseConfigOverNet.h"
 #include "clsConfigManager_p.h"
-#include "intfConfigManagerOverNet.hpp"
 
 namespace Targoman {
 namespace Common {
 namespace Configuration {
 namespace Private {
 
-class clsConfigByJsonRPC : public intfConfigManagerOverNet
+TARGOMAN_ADD_EXCEPTION_HANDLER(exNoLogin, exConfigOverNet);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exInvalidAction, exConfigOverNet);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exInvalidLogin, exConfigOverNet);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exObjectNotFound, exConfigOverNet);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exInvalidUpdateSource, exConfigOverNet);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exInvalidData, exConfigOverNet);
+
+class clsBaseConfigOverNet
 {
-public:
-    enum enuType{
-        TCP,
-        HTTP
-    };
-
-public:
-    clsConfigByJsonRPC(enuType _type,clsConfigManagerPrivate& _configManager);
-    ~clsConfigByJsonRPC();
-};
-/*************************************************************************/
-
-class clsConfigurationService : public QJsonRpcService, public clsBaseConfigOverNet
-{
-    Q_OBJECT
-    Q_CLASSINFO("serviceName", "Configuration")
-public:
-    clsConfigurationService(clsConfigManagerPrivate& _configManager);
-
-public slots:
-    bool login(QString _login, QString _pass="");
+protected:
+    clsBaseConfigOverNet(clsConfigManagerPrivate& _configManager);
     QVariantList walk(bool _showDetails);
-    QVariant query(QString _path);
-    QVariantList bulkQuery(QString _parentPath,
+    QVariant query(const QString &_path);
+    QVariantList bulkQuery(const QString &_parentPath,
                           bool _isRegex,
                           bool _showDetails,
                           bool _justUpdatable,
-                          QString _justType,
-                          QString _stripString);
-    QVariant    set(QString _path, QVariant _value);
-    stuPong     ssidPing(QString _ssid);
-    quint8 simpleping();
+                          const QString &_justType,
+                          const QString &_stripString);
+    QVariant    set(const QString &_path, const QVariant& _newValue);
+    stuPong     ssidPing(const QString &_ssid);
+
+protected:
+    clsConfigManagerPrivate&   ConfigManagerPrivate;
+    QString                    ActorName;
+    bool                       AllowedToChange;
+    bool                       AllowedToView;
+    QString&                   ActorUUID;
 };
 
 }
@@ -81,5 +68,4 @@ public slots:
 }
 }
 
-#endif //WITH_QJsonRPC
-#endif // TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGBYJSONRPC_H
+#endif // TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSBASECONFIGOVERNET_H

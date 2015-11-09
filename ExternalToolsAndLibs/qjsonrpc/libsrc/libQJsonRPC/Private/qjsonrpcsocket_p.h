@@ -34,8 +34,11 @@ class QJSONRPC_EXPORT QJsonRpcAbstractSocketPrivate
 #endif
 {
 public:
-    QJsonRpcAbstractSocketPrivate() {}
+    QJsonRpcAbstractSocketPrivate()
+        : defaultRequestTimeout(DEFAULT_MSECS_REQUEST_TIMEOUT)
+    {}
 
+    int defaultRequestTimeout;
 #if !defined(USE_QT_PRIVATE_HEADERS)
     virtual ~QJsonRpcAbstractSocketPrivate() {}
 #endif

@@ -93,7 +93,8 @@ signals:
                           const QString&        _ip,
                           OUTPUT bool&          _canView,
                           OUTPUT bool&          _canChange);
-    void sigPing(Targoman::Common::stuPong& _pong);
+    void sigPing(QString _ssid,
+                 OUTPUT Targoman::Common::stuPong& _pong);
 
 private:
     QScopedPointer<Private::clsConfigManagerPrivate> pPrivate;

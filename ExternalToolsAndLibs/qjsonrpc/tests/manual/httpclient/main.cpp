@@ -76,7 +76,8 @@ int main(int argc, char **argv)
         client.setPassword(app.arguments().takeAt(idx));
     }
 
-    QJsonRpcMessage message = QJsonRpcMessage::createRequest(app.arguments().at(1));
+    QJsonRpcMessage message = QJsonRpcMessage::createRequest(app.arguments().at(1),
+                                                             "World");
     QJsonRpcMessage response = client.sendMessageBlocking(message);
     if (response.type() == QJsonRpcMessage::Error) {
         qDebug() << response.errorData();

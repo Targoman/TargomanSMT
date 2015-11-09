@@ -19,13 +19,14 @@
 #   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-DependencyIncludePaths+=
-DependencyLibPaths+=
-ProjectDependencies += z
+ProjectDependencies +=
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-
 
 CONFIG(debug, debug|release): DEFINES += TARGOMAN_SHOW_DEBUG=1
+
+CONFIG += create_prl
+CONFIG += link_prl
 
 CONFIG(release){
     QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -140,4 +141,12 @@ defineTest(addSubdirs) {
 }
 
 QMAKE_CXXFLAGS += -std=c++11
+
+# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
+WITH_QJsonRPC{
+    !IGNORE_QJsonRPC{
+        DEFINES += WITH_QJsonRPC
+        ProjectDependencies+= QJsonRPC
+    }
+}
 

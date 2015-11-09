@@ -40,7 +40,7 @@ namespace SearchGraphBuilder {
 class clsHypothesisHolderData : public QSharedData
 {
 public:
-    clsHypothesisHolderData(size_t _sentenceSize){
+    explicit clsHypothesisHolderData(size_t _sentenceSize){
         this->EmptyCoverage.resize(_sentenceSize);
         this->EmptyCoverage.fill(0);
     }
@@ -60,7 +60,7 @@ public:
 class clsHypothesisHolder
 {
 public:
-    clsHypothesisHolder(size_t _sentenceSize) :
+    explicit clsHypothesisHolder(size_t _sentenceSize) :
         Data(new clsHypothesisHolderData(_sentenceSize))
     {}
     clsHypothesisHolder(){}

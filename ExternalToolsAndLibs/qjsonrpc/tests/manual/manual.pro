@@ -2,13 +2,13 @@ TEMPLATE = subdirs
 SUBDIRS += \
            httpclient \
            httpserver-mt \
-           httpserver \
-           tcpclient \
-           localclient \
-           localserver \
-           tcpserver \
            qjsonrpc \
-           benchmark
+           tcpclient \
+           tcpserver \
+           benchmark  \
+           httpserver \
+           localclient \
+           localserver
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     qtHaveModule(script): SUBDIRS += console

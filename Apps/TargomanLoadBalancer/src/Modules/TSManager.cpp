@@ -39,7 +39,7 @@ using namespace Common::Configuration;
 tmplConfigurable<quint16> TSManager::MaxTranslationTime(
         TSManager::instance().baseConfigPath() + "/MaxTranslationTime",
         "Maximum time to wait for a translation response in seconds",
-        30,
+        120,
         Validators::tmplNumericValidator<quint32,1,5*60>,
         "","","",
         Common::Configuration::enuConfigSource::File

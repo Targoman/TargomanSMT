@@ -94,6 +94,7 @@ qint64 QJsonRpcHttpServerSocket::writeData(const char *data, qint64 maxSize)
         QByteArray responseHeader;
         responseHeader += "HTTP/1.1 " + QByteArray::number(statusCode) +" " + statusMessageForCode(statusCode) + "\r\n";
         responseHeader += "Content-Type: application/json-rpc\r\n";
+        responseHeader += "Content-Length: " + QByteArray::number(m_responseBuffer.size()) + "\r\n";
         responseHeader += "\r\n";
 
         // body

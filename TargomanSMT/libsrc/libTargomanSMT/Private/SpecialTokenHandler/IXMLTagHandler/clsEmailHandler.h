@@ -36,7 +36,7 @@ namespace IXMLTagHandler {
 class clsEmailHandler : public intfIXMLTagHandlerModule
 {
 public:
-    clsEmailHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
+    explicit clsEmailHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
     { }
     ~clsEmailHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);

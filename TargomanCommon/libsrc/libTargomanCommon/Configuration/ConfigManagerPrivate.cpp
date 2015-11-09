@@ -29,7 +29,7 @@
 #include "Private/intfConfigManagerOverNet.hpp"
 #include "Private/clsConfigByJsonRPC.h"
 #include "Private/clsConfigManager_p.h"
-#include "Private/clsConfigManagerOverNet.h"
+#include "Private/clsLegacyConfigOverTCP.h"
 #include "Validators.hpp"
 
 #ifdef WITH_QJsonRPC
@@ -249,14 +249,14 @@ void clsConfigManagerPrivate::prepareServer()
 {
     switch(clsConfigManagerPrivate::ConfigOverNetMode.value()){
     case enuConfigOverNetMode::LegacyTCP:
-        this->ConfigOverNetServer.reset(new clsConfigOverNetServer(*this));
+        this->ConfigOverNetServer.reset(new clsLegacyConfigOverTCP(*this));
         break;
 #ifdef WITH_QJsonRPC
     case enuConfigOverNetMode::JsonRPCOverTCP:
-        this->ConfigOverNetServer.reset(new clsConfigByJsonRPC(clsConfigByJsonRPC::TCP));
+        this->ConfigOverNetServer.reset(new clsConfigByJsonRPC(clsConfigByJsonRPC::TCP, *this));
         break;
     case enuConfigOverNetMode::JsonRPCOverHTTP:
-        this->ConfigOverNetServer.reset(new clsConfigByJsonRPC(clsConfigByJsonRPC::HTTP));
+        this->ConfigOverNetServer.reset(new clsConfigByJsonRPC(clsConfigByJsonRPC::HTTP, *this));
         break;
 #else
     case enuConfigOverNetMode::JsonRPCOverTCP:
@@ -273,13 +273,18 @@ void clsConfigManagerPrivate::prepareServer()
 #ifdef WITH_QJsonRPC
 void clsConfigManagerPrivate::registerJsonRPCModule(QJsonRpcService &_service)
 {
-    if (clsConfigManagerPrivate::ConfigOverNetMode.value() == enuConfigOverNetMode::JsonRPCOverTCP ||
-        clsConfigManagerPrivate::ConfigOverNetMode.value() == enuConfigOverNetMode::JsonRPCOverHTTP){
+    switch(clsConfigManagerPrivate::ConfigOverNetMode.value()){
+    case enuConfigOverNetMode::JsonRPCOverTCP:
+    case enuConfigOverNetMode::JsonRPCOverHTTP:
         if (this->ConfigOverNetServer.isNull())
             throw exConfiguration("Invalid RPC registeration on uninitializaed config manager");
         ((QJsonRpcAbstractServer*)this->ConfigOverNetServer.data())->addService(&_service);
-    }else
-        throw exConfiguration("Unable to register JSonRPCModule on Legacy TCP server");
+        break;
+    default:
+        throw exConfiguration("Unable to register JSonRPCModule on Legacy or no TCP server");
+
+
+    }
 }
 #endif
 

@@ -40,6 +40,9 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanLoadBalancer, Common::exTargomanBase);
 extern QString ActorUUID;
 class gConfigs{
 public:
+    static inline QString appConfig(const QString& _name){
+        return "App/" + _name;
+    }
     struct stuServer{
         stuServer(const QString& _basePath);
         Common::Configuration::tmplConfigurable<QString> Host;
@@ -59,6 +62,12 @@ public:
 
 public:
     static Common::Configuration::tmplConfigurableMultiMap<stuServer> TranslationServers;
+    static Common::Configuration::tmplConfigurable<quint16>           MaxConcurrentClients;
+    static Common::Configuration::tmplConfigurable<QString>           DBHost;
+    static Common::Configuration::tmplConfigurable<quint16>           DBPort;
+    static Common::Configuration::tmplConfigurable<QString>           DBUser;
+    static Common::Configuration::tmplConfigurable<QString>           DBPass;
+    static Common::Configuration::tmplConfigurable<QString>           DBSchema;
 };
 
 }

@@ -49,7 +49,7 @@ QStringList   PhraseTable::ColumnNames;
  */
 class clsPhraseTableFeatureData : public intfFeatureFunctionData{
 public:
-    clsPhraseTableFeatureData(size_t _costElementsSize):
+    explicit clsPhraseTableFeatureData(size_t _costElementsSize):
         intfFeatureFunctionData(_costElementsSize)
     {}
 

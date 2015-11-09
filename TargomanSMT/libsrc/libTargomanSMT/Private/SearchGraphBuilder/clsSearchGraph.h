@@ -168,8 +168,10 @@ public:
      * and resizes hypothesis holder with input sentence size.
      * @param _sentence input sentence.
      */
-    clsSearchGraphData(const InputDecomposer::Sentence_t& _sentence):
+    explicit clsSearchGraphData(const InputDecomposer::Sentence_t& _sentence):
         HypothesisHolder(_sentence.size()),
+        GoalNode(NULL),
+        MaxMatchingSourcePhraseCardinality(0),
         Sentence(_sentence)
     {}
     /**
@@ -178,9 +180,9 @@ public:
     clsSearchGraphData(const clsSearchGraphData& _other):
         QSharedData(_other),
         PhraseCandidateCollections(_other.PhraseCandidateCollections),
+        HypothesisHolder(_other.HypothesisHolder),
         GoalNode(_other.GoalNode),
         MaxMatchingSourcePhraseCardinality(_other.MaxMatchingSourcePhraseCardinality),
-        HypothesisHolder(_other.HypothesisHolder),
         Sentence(_other.Sentence),
         RestCostMatrix(_other.RestCostMatrix)
     {}
@@ -188,9 +190,9 @@ public:
 
 public:
     QList<QVector<clsPhraseCandidateCollection>>        PhraseCandidateCollections;             /**< Loaded phrase table will be stored in this 2D container. The first dimension is correspond to begin position of sentence and the second dimesion is for end position of sentence.*/
+    clsHypothesisHolder                                 HypothesisHolder;                       /**< A Container to hold clsCardinalityHypothesisContainer */
     const clsSearchGraphNode*                           GoalNode;                               /**< Our best founded translation*/
     int                                                 MaxMatchingSourcePhraseCardinality;     /**< Max length of source phrases loaded from phrase table.*/
-    clsHypothesisHolder                                 HypothesisHolder;                       /**< A Container to hold clsCardinalityHypothesisContainer */
     const InputDecomposer::Sentence_t&                  Sentence;                               /**< Input sentence.*/
     RestCostMatrix_t                                    RestCostMatrix;                         /**< A 2D container to store approximate rest cost of translation dim one correspond to begin pos of sentence and dim two correspond to end pos of sentence.*/
 
@@ -203,7 +205,7 @@ public:
 class clsSearchGraph
 {
 public:
-    clsSearchGraph(const InputDecomposer::Sentence_t& _sentence);
+    explicit clsSearchGraph(const InputDecomposer::Sentence_t& _sentence);
 
     static void init(const QString &_configFilePath);
 

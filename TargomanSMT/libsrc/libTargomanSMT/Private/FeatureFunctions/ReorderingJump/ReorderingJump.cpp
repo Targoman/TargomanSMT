@@ -105,7 +105,6 @@ Cost_t ReorderingJump::getRestCostForPosition(const Coverage_t& _coverage, size_
     size_t LastPos = endPos - 1;
 
     Cost_t SumJumpCost = 0.0;
-    bool LastPositionCovered = false;
     bool CurrentPositionCovered = false;
     bool NextPositionCovered = _coverage.at(0);
     size_t InputSentenceSize = _coverage.size();
@@ -114,7 +113,7 @@ Cost_t ReorderingJump::getRestCostForPosition(const Coverage_t& _coverage, size_
     size_t Position = 0;
     for(; Position < InputSentenceSize; ++Position)
     {
-        LastPositionCovered = CurrentPositionCovered;
+        bool LastPositionCovered = CurrentPositionCovered;
         CurrentPositionCovered = NextPositionCovered;
         NextPositionCovered = (Position + 1 == InputSentenceSize || _coverage.at(Position + 1));
 

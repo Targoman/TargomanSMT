@@ -25,6 +25,8 @@
 #include "libQJsonRPC/qjsonrpcmessage.h"
 #include "libQJsonRPC/qjsonrpcglobal.h"
 
+#define DEFAULT_MSECS_REQUEST_TIMEOUT (30000)
+
 class QJsonRpcServiceReply;
 class QJsonRpcAbstractSocketPrivate;
 class QJSONRPC_EXPORT QJsonRpcAbstractSocket : public QObject
@@ -35,14 +37,24 @@ public:
     ~QJsonRpcAbstractSocket();
 
     virtual bool isValid() const;
+    void setDefaultRequestTimeout(int msecs);
+    int  getDefaultRequestTimeout() const;
+
+    virtual QIODevice* device(){return NULL;}
 
 Q_SIGNALS:
     void messageReceived(const QJsonRpcMessage &message);
 
 public Q_SLOTS:
     virtual void notify(const QJsonRpcMessage &message) = 0;
-    virtual QJsonRpcMessage sendMessageBlocking(const QJsonRpcMessage &message, int msecs = 30000);
+    virtual QJsonRpcMessage sendMessageBlocking(const QJsonRpcMessage &message, int msecs = DEFAULT_MSECS_REQUEST_TIMEOUT);
     virtual QJsonRpcServiceReply *sendMessage(const QJsonRpcMessage &message);
+    virtual QJsonRpcMessage invokeRemoteMethodBlocking(const QString &method, int msecs, const QVariant &arg1 = QVariant(),
+                                               const QVariant &arg2 = QVariant(), const QVariant &arg3 = QVariant(),
+                                               const QVariant &arg4 = QVariant(), const QVariant &arg5 = QVariant(),
+                                               const QVariant &arg6 = QVariant(), const QVariant &arg7 = QVariant(),
+                                               const QVariant &arg8 = QVariant(), const QVariant &arg9 = QVariant(),
+                                               const QVariant &arg10 = QVariant());
     virtual QJsonRpcMessage invokeRemoteMethodBlocking(const QString &method, const QVariant &arg1 = QVariant(),
                                                const QVariant &arg2 = QVariant(), const QVariant &arg3 = QVariant(),
                                                const QVariant &arg4 = QVariant(), const QVariant &arg5 = QVariant(),
@@ -55,6 +67,7 @@ public Q_SLOTS:
                                              const QVariant &arg6 = QVariant(), const QVariant &arg7 = QVariant(),
                                              const QVariant &arg8 = QVariant(), const QVariant &arg9 = QVariant(),
                                              const QVariant &arg10 = QVariant());
+
 protected:
     QJsonRpcAbstractSocket(QJsonRpcAbstractSocketPrivate &dd, QObject *parent = 0);
 
@@ -77,11 +90,18 @@ public:
     ~QJsonRpcSocket();
 
     virtual bool isValid() const;
+    virtual QIODevice* device();
 
 public Q_SLOTS:
     virtual void notify(const QJsonRpcMessage &message);
-    virtual QJsonRpcMessage sendMessageBlocking(const QJsonRpcMessage &message, int msecs = 30000);
+    virtual QJsonRpcMessage sendMessageBlocking(const QJsonRpcMessage &message, int msecs = DEFAULT_MSECS_REQUEST_TIMEOUT);
     virtual QJsonRpcServiceReply *sendMessage(const QJsonRpcMessage &message);
+    QJsonRpcMessage invokeRemoteMethodBlocking(const QString &method, int msecs, const QVariant &arg1 = QVariant(),
+                                               const QVariant &arg2 = QVariant(), const QVariant &arg3 = QVariant(),
+                                               const QVariant &arg4 = QVariant(), const QVariant &arg5 = QVariant(),
+                                               const QVariant &arg6 = QVariant(), const QVariant &arg7 = QVariant(),
+                                               const QVariant &arg8 = QVariant(), const QVariant &arg9 = QVariant(),
+                                               const QVariant &arg10 = QVariant());
     QJsonRpcMessage invokeRemoteMethodBlocking(const QString &method, const QVariant &arg1 = QVariant(),
                                                const QVariant &arg2 = QVariant(), const QVariant &arg3 = QVariant(),
                                                const QVariant &arg4 = QVariant(), const QVariant &arg5 = QVariant(),
@@ -94,7 +114,6 @@ public Q_SLOTS:
                                              const QVariant &arg6 = QVariant(), const QVariant &arg7 = QVariant(),
                                              const QVariant &arg8 = QVariant(), const QVariant &arg9 = QVariant(),
                                              const QVariant &arg10 = QVariant());
-
 protected:
     QJsonRpcSocket(QJsonRpcSocketPrivate &dd, QObject *parent);
     virtual void processRequestMessage(const QJsonRpcMessage &message);

@@ -15,18 +15,20 @@ public:
 QJsonRpcLocalServer::QJsonRpcLocalServer(QObject *parent)
 #if defined(USE_QT_PRIVATE_HEADERS)
     : QLocalServer(*new QJsonRpcLocalServerPrivate, parent)
-#else
+    #else
     : QLocalServer(parent),
       d_ptr(new QJsonRpcLocalServerPrivate)
-#endif
+    #endif
 {
 }
 
 QJsonRpcLocalServer::~QJsonRpcLocalServer()
 {
     Q_D(QJsonRpcLocalServer);
-    foreach (QLocalSocket *socket, d->socketLookup.keys())
+    foreach (QLocalSocket *socket, d->socketLookup.keys()) {
+        socket->flush();
         socket->deleteLater();
+    }
     d->socketLookup.clear();
 
     foreach (QJsonRpcSocket *client, d->clients)
@@ -46,9 +48,9 @@ bool QJsonRpcLocalServer::addService(QJsonRpcService *service)
         return false;
 
     connect(service, SIGNAL(notifyConnectedClients(QJsonRpcMessage)),
-               this, SLOT(notifyConnectedClients(QJsonRpcMessage)));
+            this, SLOT(notifyConnectedClients(QJsonRpcMessage)));
     connect(service, SIGNAL(notifyConnectedClients(QString,QJsonArray)),
-               this, SLOT(notifyConnectedClients(QString,QJsonArray)));
+            this, SLOT(notifyConnectedClients(QString,QJsonArray)));
     return true;
 }
 
@@ -58,9 +60,9 @@ bool QJsonRpcLocalServer::removeService(QJsonRpcService *service)
         return false;
 
     disconnect(service, SIGNAL(notifyConnectedClients(QJsonRpcMessage)),
-                  this, SLOT(notifyConnectedClients(QJsonRpcMessage)));
+               this, SLOT(notifyConnectedClients(QJsonRpcMessage)));
     disconnect(service, SIGNAL(notifyConnectedClients(QString,QJsonArray)),
-                  this, SLOT(notifyConnectedClients(QString,QJsonArray)));
+               this, SLOT(notifyConnectedClients(QString,QJsonArray)));
     return true;
 }
 
@@ -77,7 +79,7 @@ void QJsonRpcLocalServer::incomingConnection(quintptr socketDescriptor)
     QIODevice *device = qobject_cast<QIODevice*>(localSocket);
     QJsonRpcSocket *socket = new QJsonRpcSocket(device, this);
     connect(socket, SIGNAL(messageReceived(QJsonRpcMessage)),
-              this, SLOT(_q_processMessage(QJsonRpcMessage)));
+            this, SLOT(_q_processMessage(QJsonRpcMessage)));
     d->clients.append(socket);
     connect(localSocket, SIGNAL(disconnected()), this, SLOT(_q_clientDisconnected()));
     d->socketLookup.insert(localSocket, socket);

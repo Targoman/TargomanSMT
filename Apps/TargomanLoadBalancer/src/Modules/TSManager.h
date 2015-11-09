@@ -27,7 +27,6 @@
 
 #include "libTargomanCommon/JSONConversationProtocol.h"
 #include "libTargomanCommon/Configuration/intfRPCExporter.hpp"
-#include "libQJsonRPC/qjsonrpcservice.h"
 #include "Configs.h"
 
 namespace Targoman {
@@ -36,10 +35,12 @@ namespace Modules {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTSManager, exTargomanLoadBalancer);
 
-class TSManager : public QJsonRpcService, public Common::Configuration::intfModule
+class TSManager : public QObject, public Common::Configuration::intfModule
 {
+    Q_OBJECT
+
 public slots:
-    void slotSendRequest();
+    //void slotSendRequest();
     void slotProcessResponse(const Common::JSONConversationProtocol::stuResponse &_response);
     void slotServerDisconnected();
 

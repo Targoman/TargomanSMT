@@ -85,6 +85,7 @@ struct stuPong
     }
 };
 
+
 class clsFilePath : public QString{
 public:
     clsFilePath& operator = (const QString& _str){
@@ -109,6 +110,8 @@ struct stuPos : public QPair<qint32, qint32>{
 }
 }
 
+//qRegisterMetaType<Targoman::Common::stuPong>("Targoman::Common::stuPong");
+Q_DECLARE_METATYPE(Targoman::Common::stuPong)
 typedef Targoman::Common::clsFilePath FilePath_t;
 
 #endif // TARGOMAN_COMMON_TYPES_H

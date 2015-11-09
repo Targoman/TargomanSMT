@@ -36,7 +36,7 @@ namespace IXMLTagHandler {
 class clsNumberHandler : public intfIXMLTagHandlerModule
 {
 public:
-    clsNumberHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
+    explicit clsNumberHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
     { }
     ~clsNumberHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);

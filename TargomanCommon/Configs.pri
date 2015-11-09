@@ -20,12 +20,9 @@
 ################################################################################
 ProjectName="TargomanCommon"
 VERSION=0.1.0
-DEFINES += WITH_QJsonRPC
-
-# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-ProjectDependencies+= QJsonRPC
 
 QT+=network
+
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
 # more info: http://www.qtcentre.org/wiki/index.php?title=Undocumented_qmake   #

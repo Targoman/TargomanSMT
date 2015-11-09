@@ -24,8 +24,10 @@ QJsonRpcTcpServer::QJsonRpcTcpServer(QObject *parent)
 QJsonRpcTcpServer::~QJsonRpcTcpServer()
 {
     Q_D(QJsonRpcTcpServer);
-    foreach (QTcpSocket *socket, d->socketLookup.keys())
+    foreach (QTcpSocket *socket, d->socketLookup.keys()) {
+        socket->flush();
         socket->deleteLater();
+    }
     d->socketLookup.clear();
 
     foreach (QJsonRpcSocket *client, d->clients)

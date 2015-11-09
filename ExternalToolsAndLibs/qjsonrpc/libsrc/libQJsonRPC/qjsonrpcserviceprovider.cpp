@@ -75,36 +75,38 @@ bool QJsonRpcServiceProvider::removeService(QJsonRpcService *service)
 void QJsonRpcServiceProvider::processMessage(QJsonRpcAbstractSocket *socket, const QJsonRpcMessage &message)
 {
     switch (message.type()) {
-        case QJsonRpcMessage::Request:
-        case QJsonRpcMessage::Notification: {
-            QByteArray serviceName = message.method().section("::", 0, -2).toLatin1();
-            if (serviceName.isEmpty() || !d->services.contains(serviceName)) {
-                if (message.type() == QJsonRpcMessage::Request) {
-                    QJsonRpcMessage error =
+    case QJsonRpcMessage::Request:
+    case QJsonRpcMessage::Notification: {
+        QByteArray serviceName = message.method().section("::", 0, -2).toLatin1();
+        if (serviceName.isEmpty() || !d->services.contains(serviceName)) {
+            if (message.type() == QJsonRpcMessage::Request) {
+                QJsonRpcMessage error =
                         message.createErrorResponse(QJsonRpc::MethodNotFound,
-                            QString("service '%1' not found").arg(serviceName.constData()));
-                    socket->notify(error);
-                }
-            } else {
-                QJsonRpcService *service = d->services.value(serviceName);
-                service->d_func()->currentRequest = QJsonRpcServiceRequest(message, socket);
-                if (message.type() == QJsonRpcMessage::Request)
-                    QObject::connect(service, SIGNAL(result(QJsonRpcMessage)),
-                                      socket, SLOT(notify(QJsonRpcMessage)), Qt::UniqueConnection);
-                service->dispatch(message);
+                                                    QString("service '%1' not found").arg(serviceName.constData()));
+                socket->notify(error);
             }
+        } else {
+            QJsonRpcService *service = d->services.value(serviceName);
+            service->d_func()->currentRequest = QJsonRpcServiceRequest(message, socket);
+            if (message.type() == QJsonRpcMessage::Request)
+                QObject::connect(service, SIGNAL(result(QJsonRpcMessage)),
+                                 socket, SLOT(notify(QJsonRpcMessage)), Qt::UniqueConnection);
+            QJsonRpcMessage response = service->dispatch(message);
+            if (response.isValid())
+                socket->notify(response);
         }
+    }
         break;
 
-        case QJsonRpcMessage::Response:
-            // we don't handle responses in the provider
-            break;
+    case QJsonRpcMessage::Response:
+        // we don't handle responses in the provider
+        break;
 
-        default: {
-            QJsonRpcMessage error =
+    default: {
+        QJsonRpcMessage error =
                 message.createErrorResponse(QJsonRpc::InvalidRequest, QString("invalid request"));
-            socket->notify(error);
-            break;
-        }
+        socket->notify(error);
+        break;
+    }
     };
 }

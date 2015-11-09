@@ -63,7 +63,7 @@ protected:
     void beginDelayedResponse();
 
 protected Q_SLOTS:
-    bool dispatch(const QJsonRpcMessage &request);
+    QJsonRpcMessage dispatch(const QJsonRpcMessage &request);
 
 private:
     Q_DISABLE_COPY(QJsonRpcService)

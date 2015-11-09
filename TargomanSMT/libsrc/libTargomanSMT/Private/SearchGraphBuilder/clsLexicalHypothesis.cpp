@@ -112,6 +112,7 @@ void clsLexicalHypothesisContainer::finalizeRecombination()
 #ifdef TARGOMAN_SHOW_DEBUG
 const clsSearchGraphNode &clsLexicalHypothesisContainer::FindNode(const char *_targetRuleStr, const char *_prevTargetRuleStr, const char *_coverage) const
 {
+//      Q_UNUSED(FindNode)
     for(auto NodeIter = this->Data->Nodes.begin(); NodeIter != this->Data->Nodes.end(); ++NodeIter) {
         if(isDesiredNode(*NodeIter, _targetRuleStr, _prevTargetRuleStr, _coverage))
             return *NodeIter;

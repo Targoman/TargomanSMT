@@ -18,6 +18,7 @@
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
+CONFIG+=IGNORE_QJsonRPC
 ProjectName="KenLM"
 VERSION=0.1.0
 

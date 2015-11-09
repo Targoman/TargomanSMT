@@ -32,7 +32,7 @@
 #include <iostream>
 #include "ConfigManager.h"
 #include "Private/clsConfigManager_p.h"
-#include "Private/clsConfigManagerOverNet.h"
+#include "Private/clsLegacyConfigOverTCP.h"
 #include "tmplConfigurableArray.hpp"
 #include "tmplConfigurableMultiMap.hpp"
 #include "intfRPCExporter.hpp"

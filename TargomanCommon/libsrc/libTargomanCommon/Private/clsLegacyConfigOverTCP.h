@@ -22,8 +22,8 @@
  * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
  */
 
-#ifndef TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGMANAGEROVERNET_H
-#define TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGMANAGEROVERNET_H
+#ifndef TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSLEGACYCONFIGOVERTCP_H
+#define TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSLEGACYCONFIGOVERTCP_H
 
 #include <QThread>
 #include <QtNetwork/QTcpServer>
@@ -31,6 +31,7 @@
 #include <QTime>
 #include "Configuration/tmplConfigurable.h"
 #include "clsConfigManager_p.h"
+#include "clsBaseConfigOverNet.h"
 #include "intfConfigManagerOverNet.hpp"
 
 namespace Targoman {
@@ -40,12 +41,12 @@ namespace Private {
 
 
 /******************************************************************************/
-class clsConfigOverNetServer : public intfConfigManagerOverNet
+class clsLegacyConfigOverTCP : public intfConfigManagerOverNet
 {
     Q_OBJECT
 public:
-    clsConfigOverNetServer(clsConfigManagerPrivate& _configManager);
-    ~clsConfigOverNetServer();
+    clsLegacyConfigOverTCP(clsConfigManagerPrivate& _configManager);
+    ~clsLegacyConfigOverTCP();
 
 private:
     void incomingConnection(qintptr _socketDescriptor);
@@ -60,7 +61,7 @@ private:
 };
 
 /******************************************************************************/
-class clsClientThread : public QThread
+class clsClientThread : public QThread, public clsBaseConfigOverNet
 {
   Q_OBJECT
 public:
@@ -82,11 +83,6 @@ signals:
 
 private:
   qintptr                    SocketDescriptor;
-  QString                    ActorName;
-  bool                       AllowedToChange;
-  bool                       AllowedToView;
-  clsConfigManagerPrivate&   ConfigManagerPrivate;
-  QString&                   ActorUUID;
   QTcpSocket*                Socket;
 };
 
@@ -94,4 +90,4 @@ private:
 }
 }
 }
-#endif // TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGMANAGEROVERNET_H
+#endif // TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSLEGACYCONFIGOVERTCP_H

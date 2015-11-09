@@ -27,18 +27,16 @@
 
 #include "libTargomanCommon/Configuration/intfRPCExporter.hpp"
 #include "libTargomanCommon/Types.h"
-#include "libQJsonRPC/qjsonrpchttpserver.h"
+#include "libQJsonRPC/qjsonrpchttpservermultithreaded.h"
 
 namespace Targoman {
 namespace Apps{
 
-class appTargomanLoadBalancer : public Common::Configuration::intfRPCExporter
+class appTargomanLoadBalancer : public QObject
 {
     Q_OBJECT
 public:
-    appTargomanLoadBalancer() {
-
-        }
+    appTargomanLoadBalancer();
 
 public slots:
     void slotExecute();
@@ -48,7 +46,7 @@ private slots:
     void slotPong(Targoman::Common::stuPong &_pong);
 
 private:
-    QJso
+    QScopedPointer<QJsonRpcHttpServerMultiThreaded> JsonRPCServer;
 };
 
 }

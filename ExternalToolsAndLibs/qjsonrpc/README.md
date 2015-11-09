@@ -11,7 +11,8 @@ the LGPLv2.1.
 - [JSON](http://www.json.org/) is a lightweight data interchange format.
 - [JSON-RPC](http://jsonrpc.org/) is lightweight remote procedure call protocol similar to XML-RPC.
 
-This version has been integrated into Targoman Statistical Machine Translation
+This version has been integrated into Targoman Statistical Machine Translation. It has been incorporated with a 
+Multi-Threaded HTTP Server that runs a new thread per client. It also reports connected socket information to services
 
 Help / Questions / Suggestions
 ============

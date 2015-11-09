@@ -20,66 +20,36 @@
  *******************************************************************************/
 /**
  @author S. Mohammad M. Ziabary <ziabary@targoman.com>
- @author Behrooz Vedadian <vedadian@targoman.com>
  */
 
-#ifndef TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGBYJSONRPC_H
-#define TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGBYJSONRPC_H
+#ifndef TARGOMAN_APPS_MODULES_TARGOMANWEBSERVICE_H
+#define TARGOMAN_APPS_MODULES_TARGOMANWEBSERVICE_H
 
-#ifdef WITH_QJsonRPC
-
-#include <QScopedPointer>
-#include <QTcpServer>
 #include "libQJsonRPC/qjsonrpcservice.h"
-#include "clsBaseConfigOverNet.h"
-#include "clsConfigManager_p.h"
-#include "intfConfigManagerOverNet.hpp"
 
-namespace Targoman {
-namespace Common {
-namespace Configuration {
-namespace Private {
-
-class clsConfigByJsonRPC : public intfConfigManagerOverNet
-{
-public:
-    enum enuType{
-        TCP,
-        HTTP
-    };
-
-public:
-    clsConfigByJsonRPC(enuType _type,clsConfigManagerPrivate& _configManager);
-    ~clsConfigByJsonRPC();
-};
-/*************************************************************************/
-
-class clsConfigurationService : public QJsonRpcService, public clsBaseConfigOverNet
+class TargomanWebService : public QJsonRpcService
 {
     Q_OBJECT
-    Q_CLASSINFO("serviceName", "Configuration")
+    Q_CLASSINFO("serviceName", "TargomanAPI")
+
 public:
-    clsConfigurationService(clsConfigManagerPrivate& _configManager);
+    TargomanWebService(){}
 
 public slots:
-    bool login(QString _login, QString _pass="");
-    QVariantList walk(bool _showDetails);
-    QVariant query(QString _path);
-    QVariantList bulkQuery(QString _parentPath,
-                          bool _isRegex,
-                          bool _showDetails,
-                          bool _justUpdatable,
-                          QString _justType,
-                          QString _stripString);
-    QVariant    set(QString _path, QVariant _value);
-    stuPong     ssidPing(QString _ssid);
-    quint8 simpleping();
+/*     QString     login($user, $pass, $salt);
+     QJsonObject translate($ssid, $text, $dir, $tuid = 0, $detailed = True);
+     QString     translateURL($ssid, $dir, $array, $url);
+     QString     arrayResponse($ssid, $reqID, $from);
+     bool        signUp($ssid, $login, $name, $sureName, $email, $mobile, $pass, $captcha='');
+     QSring      userLogin($ssid, $user, $pass, $salt);
+     bool        logout($ssid);
+     bool        passChange($ssid, $oldPass, $oldPassSalt, $newPassMD5);
+     bool        saveSuggestion($ssid, $dir, $sourceText, $suggestion);
+     QVariantMap loadSuggestion($ssid, $dir, $sourceText);
+     bool rankTranslation($ssid, $dir, $sourceText, $translated, $vote);
+    */
+
+
 };
 
-}
-}
-}
-}
-
-#endif //WITH_QJsonRPC
-#endif // TARGOMAN_COMMON_CONFIGURATION_PRIVATE_CLSCONFIGBYJSONRPC_H
+#endif // TARGOMAN_APPS_MODULES_TARGOMANWEBSERVICE_H

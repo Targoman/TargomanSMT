@@ -28,14 +28,21 @@
 #include "appTargomanLoadBalancer.h"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/CmdIO.h"
-#include "Modules/TSMonitor.h"
 #include "libTargomanCommon/SimpleAuthentication.h"
+#include "Modules/TSMonitor.h"
+#include "Modules/TargomanWebService.h"
 
 namespace Targoman {
 namespace Apps {
 
 using namespace Common;
 using namespace Modules;
+appTargomanLoadBalancer::appTargomanLoadBalancer() :
+    JsonRPCServer(new QJsonRpcHttpServerMultiThreaded(gConfigs::MaxConcurrentClients.value()))
+{
+    this->JsonRPCServer->addService(new TargomanWebService);
+}
+
 void appTargomanLoadBalancer::slotExecute()
 {
     try{
@@ -64,11 +71,11 @@ void appTargomanLoadBalancer::slotExecute()
     }
 }
 
-Configuration::stuRPCOutput appTargomanLoadBalancer::rpcTTS(const QVariantMap &_args)
+/*Configuration::stuRPCOutput appTargomanLoadBalancer::rpcTTS(const QVariantMap &_args)
 {
     Q_UNUSED(_args)
     throw exTargomanMustBeImplemented("rpcTTS is not implemented yet!");
-}
+}*/
 
 void appTargomanLoadBalancer::slotValidateAgent(QString &_user, const QString &_pass, const QString &_ip, bool &_canView, bool &_canChange)
 {

@@ -47,7 +47,7 @@ public:
         d->reply = reply;
         connect(d->reply, SIGNAL(finished()), this, SLOT(networkReplyFinished()));
         connect(d->reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                    this, SLOT(networkReplyError(QNetworkReply::NetworkError)));
+                this, SLOT(networkReplyError(QNetworkReply::NetworkError)));
     }
 
     virtual ~QJsonRpcHttpReply() {}
@@ -72,20 +72,20 @@ private Q_SLOTS:
             QJsonDocument doc = QJsonDocument::fromJson(data);
             if (doc.isEmpty() || doc.isNull() || !doc.isObject()) {
                 d->response =
-                    d->request.createErrorResponse(QJsonRpc::ParseError,
-                                                   "unable to process incoming JSON data",
-                                                   QString::fromUtf8(data));
+                        d->request.createErrorResponse(QJsonRpc::ParseError,
+                                                       "unable to process incoming JSON data",
+                                                       QString::fromUtf8(data));
             } else {
                 qJsonRpcDebug() << "received: " << doc.toJson();
                 QJsonRpcMessage response = QJsonRpcMessage::fromObject(doc.object());
                 Q_EMIT messageReceived(response);
 
                 if (d->request.type() == QJsonRpcMessage::Request &&
-                    d->request.id() != response.id()) {
+                        d->request.id() != response.id()) {
                     d->response =
-                        d->request.createErrorResponse(QJsonRpc::InternalError,
-                                                       "invalid response id",
-                                                       QString::fromUtf8(data));
+                            d->request.createErrorResponse(QJsonRpc::InternalError,
+                                                           "invalid response id",
+                                                           QString::fromUtf8(data));
                 } else {
                     d->response = response;
                 }
@@ -115,8 +115,8 @@ private Q_SLOTS:
             Q_EMIT messageReceived(response);
         } else {
             d->response = d->request.createErrorResponse(QJsonRpc::InternalError,
-                                           QString("error with http request: %1").arg(reply->error()),
-                                           reply->errorString());
+                                                         QString("error with http request: %1").arg(reply->error()),
+                                                         reply->errorString());
         }
 
         Q_EMIT finished();
@@ -133,9 +133,9 @@ class QJsonRpcHttpClientPrivate : public QJsonRpcAbstractSocketPrivate
 public:
     void initializeNetworkAccessManager(QJsonRpcHttpClient *client) {
         QObject::connect(networkAccessManager, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
-                client, SLOT(handleAuthenticationRequired(QNetworkReply*,QAuthenticator*)));
+                         client, SLOT(handleAuthenticationRequired(QNetworkReply*,QAuthenticator*)));
         QObject::connect(networkAccessManager, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
-                client, SLOT(handleSslErrors(QNetworkReply*,QList<QSslError>)));
+                         client, SLOT(handleSslErrors(QNetworkReply*,QList<QSslError>)));
     }
 
     QNetworkReply *writeMessage(const QJsonRpcMessage &message) {
@@ -253,7 +253,7 @@ QJsonRpcServiceReply *QJsonRpcHttpClient::sendMessage(const QJsonRpcMessage &mes
     QNetworkReply *reply = d->writeMessage(message);
     QJsonRpcHttpReply *serviceReply = new QJsonRpcHttpReply(message, reply);
     connect(serviceReply, SIGNAL(messageReceived(QJsonRpcMessage)),
-                    this, SIGNAL(messageReceived(QJsonRpcMessage)));
+            this, SIGNAL(messageReceived(QJsonRpcMessage)));
 
     return serviceReply;
 }
@@ -273,7 +273,7 @@ QJsonRpcMessage QJsonRpcHttpClient::sendMessageBlocking(const QJsonRpcMessage &m
     return reply->response();
 }
 
-QJsonRpcMessage QJsonRpcHttpClient::invokeRemoteMethodBlocking(const QString &method, const QVariant &param1,
+QJsonRpcMessage QJsonRpcHttpClient::invokeRemoteMethodBlocking(const QString &method, int msecs, const QVariant &param1,
                                                                const QVariant &param2, const QVariant &param3,
                                                                const QVariant &param4, const QVariant &param5,
                                                                const QVariant &param6, const QVariant &param7,
@@ -293,10 +293,21 @@ QJsonRpcMessage QJsonRpcHttpClient::invokeRemoteMethodBlocking(const QString &me
     if (param10.isValid()) params.append(param10);
 
     QJsonRpcMessage request =
-        QJsonRpcMessage::createRequest(method, QJsonArray::fromVariantList(params));
-    return sendMessageBlocking(request);
+            QJsonRpcMessage::createRequest(method, QJsonArray::fromVariantList(params));
+    return sendMessageBlocking(request, msecs);
 }
 
+QJsonRpcMessage QJsonRpcHttpClient::invokeRemoteMethodBlocking(const QString &method, const QVariant &param1,
+                                                               const QVariant &param2, const QVariant &param3,
+                                                               const QVariant &param4, const QVariant &param5,
+                                                               const QVariant &param6, const QVariant &param7,
+                                                               const QVariant &param8, const QVariant &param9,
+                                                               const QVariant &param10)
+{
+    Q_D(QJsonRpcHttpClient);
+
+    return invokeRemoteMethodBlocking(method, d->defaultRequestTimeout, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10);
+}
 QJsonRpcServiceReply *QJsonRpcHttpClient::invokeRemoteMethod(const QString &method, const QVariant &param1,
                                                              const QVariant &param2, const QVariant &param3,
                                                              const QVariant &param4, const QVariant &param5,
@@ -317,7 +328,7 @@ QJsonRpcServiceReply *QJsonRpcHttpClient::invokeRemoteMethod(const QString &meth
     if (param10.isValid()) params.append(param10);
 
     QJsonRpcMessage request =
-        QJsonRpcMessage::createRequest(method, QJsonArray::fromVariantList(params));
+            QJsonRpcMessage::createRequest(method, QJsonArray::fromVariantList(params));
     return sendMessage(request);
 }
 

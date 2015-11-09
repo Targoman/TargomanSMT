@@ -111,9 +111,74 @@ gConfigs::stuServer::stuStatistics::stuStatistics(const QString &_basePath) :
   {}
 
 tmplConfigurableMultiMap<gConfigs::stuServer> gConfigs::TranslationServers(
-        "TranslationServers",
+         gConfigs::appConfig("TranslationServers"),
         "List of valid translation servers to connect to them separated by their translation direction");
 
+tmplConfigurable<quint16>     gConfigs::MaxConcurrentClients(
+        gConfigs::appConfig("MaxConcurrentClients"),
+        "Maximum Concurrent Clients",
+        1000,
+        Validators::tmplNumericValidator<quint8, 1, 1000>,
+        "m",
+        "MAX_CONCURRENT",
+        "max-concurrent",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
+        );
+
+tmplConfigurable<QString>     gConfigs::DBHost(
+        gConfigs::appConfig("DB/Host"),
+        "Database host name or IP",
+        "localhost",
+        ReturnTrueCrossValidator,
+        "",
+        "DB_HOST",
+        "db-host",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
+        );
+
+tmplConfigurable<quint16>     gConfigs::DBPort(
+        gConfigs::appConfig("DB/Port"),
+        "Database connection port",
+        "3306",
+        ReturnTrueCrossValidator,
+        "",
+        "DB_PORT",
+        "db-port",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
+        );
+
+tmplConfigurable<QString>     gConfigs::DBUser(
+        gConfigs::appConfig("DB/User"),
+        "Database User Name",
+        "localuser",
+        ReturnTrueCrossValidator,
+        "",
+        "DB_USER",
+        "db-user",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
+        );
+
+tmplConfigurable<QString>     gConfigs::DBPass(
+        gConfigs::appConfig("DB/Pass"),
+        "Database connection password",
+        "localpass",
+        ReturnTrueCrossValidator,
+        "",
+        "DB_PASS",
+        "db-pass",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
+        );
+tmplConfigurable<QString>     gConfigs::DBSchema(
+        gConfigs::appConfig("DB/Schema"),
+        "Database schema ",
+        "localschema",
+        ReturnTrueCrossValidator,
+        "",
+        "DB_SCHEMA",
+        "db-schema",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
+        );
 QString ActorUUID;
+
 }
 }

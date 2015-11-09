@@ -50,7 +50,7 @@ public:
      * @brief constructor of this class resizes #CostElemnts vector with _costElementsSize and initializes those with zero.
      * @param _costElementsSize resize size.
      */
-    intfFeatureFunctionData(size_t _costElementsSize) :
+    explicit intfFeatureFunctionData(size_t _costElementsSize) :
         CostElements(_costElementsSize,0)
     {}
 

@@ -26,7 +26,8 @@ HEADERS += \
     src/Configs.h \
     src/Modules/TSMonitor.h \
     src/Modules/TSManager.h \
-    src/clsTranslationServer.h
+    src/clsTranslationServer.h \
+    src/Modules/TargomanWebService.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
@@ -35,7 +36,8 @@ SOURCES += \
     src/Configs.cpp \
     src/Modules/TSMonitor.cpp \
     src/Modules/TSManager.cpp \
-    src/clsTranslationServer.cpp
+    src/clsTranslationServer.cpp \
+    src/Modules/TargomanWebService.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 QT+= network

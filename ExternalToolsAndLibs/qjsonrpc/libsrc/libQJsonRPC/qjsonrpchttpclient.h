@@ -53,8 +53,15 @@ public:
 
 public Q_SLOTS:
     virtual void notify(const QJsonRpcMessage &message);
-    virtual QJsonRpcMessage sendMessageBlocking(const QJsonRpcMessage &message, int msecs = 30000);
+    virtual QJsonRpcMessage sendMessageBlocking(const QJsonRpcMessage &message, int msecs = DEFAULT_MSECS_REQUEST_TIMEOUT);
     virtual QJsonRpcServiceReply *sendMessage(const QJsonRpcMessage &message);
+
+    virtual QJsonRpcMessage invokeRemoteMethodBlocking(const QString &method, int msecs, const QVariant &arg1 = QVariant(),
+                                               const QVariant &arg2 = QVariant(), const QVariant &arg3 = QVariant(),
+                                               const QVariant &arg4 = QVariant(), const QVariant &arg5 = QVariant(),
+                                               const QVariant &arg6 = QVariant(), const QVariant &arg7 = QVariant(),
+                                               const QVariant &arg8 = QVariant(), const QVariant &arg9 = QVariant(),
+                                               const QVariant &arg10 = QVariant());
 
     virtual QJsonRpcMessage invokeRemoteMethodBlocking(const QString &method, const QVariant &arg1 = QVariant(),
                                                const QVariant &arg2 = QVariant(), const QVariant &arg3 = QVariant(),
@@ -62,6 +69,7 @@ public Q_SLOTS:
                                                const QVariant &arg6 = QVariant(), const QVariant &arg7 = QVariant(),
                                                const QVariant &arg8 = QVariant(), const QVariant &arg9 = QVariant(),
                                                const QVariant &arg10 = QVariant());
+
     virtual QJsonRpcServiceReply *invokeRemoteMethod(const QString &method, const QVariant &arg1 = QVariant(),
                                              const QVariant &arg2 = QVariant(), const QVariant &arg3 = QVariant(),
                                              const QVariant &arg4 = QVariant(), const QVariant &arg5 = QVariant(),

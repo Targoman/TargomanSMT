@@ -22,7 +22,7 @@ ProjectName="TargomanLoadBalancer"
 VERSION=0.1.0
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
-ProjectDependencies+=TargomanCommon 
+ProjectDependencies+=TargomanCommon
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #

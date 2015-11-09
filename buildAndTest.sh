@@ -19,7 +19,16 @@
 #   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 #!/bin/bash
-
+#while getopts ":a" opt; do
+#	  case $opt in
+#		      a)
+#			            echo "-a was triggered!" >&2
+#				          ;;
+#					      \?)
+#						            echo "Invalid option: -$OPTARG" >&2
+#							          ;;
+#								    esac
+#							    done
 
 QMAKE_COMMAND=qmake-qt5
 if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
@@ -45,7 +54,7 @@ Projects="ExternalToolsAndLibs/
 BasePath=`pwd`
 export LD_LIBRARY_PATH="$BasePath/out/lib"
 if [ "$2" != "release" ] ; then
-  QMAKE_CONFIG="CONFIG+=debug"
+  QMAKE_CONFIG="CONFIG+=debug CONFIG+=WITH_QJsonRPC"
 else
   QMAKE_CONFIG=""
 fi

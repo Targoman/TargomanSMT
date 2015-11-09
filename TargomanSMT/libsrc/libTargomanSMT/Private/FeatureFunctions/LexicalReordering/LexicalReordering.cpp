@@ -77,7 +77,7 @@ public:
      * @param _costElementsSize number of cost elements depends on whether
      * it is bidirectional or not.
      */
-    clsLexicalReorderingFeatureData(size_t _costElementsSize):
+    explicit clsLexicalReorderingFeatureData(size_t _costElementsSize):
         intfFeatureFunctionData(_costElementsSize)
     {}
 
