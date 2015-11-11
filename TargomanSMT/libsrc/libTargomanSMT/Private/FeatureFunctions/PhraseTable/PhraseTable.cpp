@@ -66,7 +66,7 @@ public:
  * @param _configFile Address of input config file.
  * @exception throws exception if phrase table loader has not initialized phrase table column names.
  */
-void PhraseTable::initialize(QPointer<QSettings> _configSettings)
+void PhraseTable::initialize(QSharedPointer<QSettings> _configSettings)
 {
     if (this->ColumnNames.isEmpty())
         throw exPhraseTable("Seems that RuleTable loader has not initialized phrase table column names.");

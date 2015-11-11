@@ -48,7 +48,7 @@ using namespace SearchGraphBuilder;
 
 static bool TranslatorInitialized = false;
 
-void Translator::init(QPointer<QSettings> _configSettings)
+void Translator::init(QSharedPointer<QSettings> _configSettings)
 {
     if (TranslatorInitialized){
         TargomanWarn(5, "Reinitialization of translator has no effect");

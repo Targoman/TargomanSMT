@@ -143,8 +143,8 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
         // ////////////////////////////////////////////////
         if (FirstTimeConfigFile == false &&
                 this->pPrivate->ConfigFilePath.size()){
-            QSettings ConfigFile(this->pPrivate->ConfigFilePath, QSettings::IniFormat);
-            foreach (const QString& Key, ConfigFile.allKeys()){
+            QSharedPointer<QSettings> ConfigFile(this->configSettings());
+            foreach (const QString& Key, ConfigFile->allKeys()){
                 QString BasePath = Key;
                 do{
                     BasePath.truncate(BasePath.lastIndexOf('/'));
@@ -162,26 +162,26 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
                         if (ConfigItem &&
                                 ConfigItem->canBemanaged() == false){
                             if (ConfigItem->configType() == enuConfigType::Array){
-                                ConfigFile.beginGroup(ParentPath);
+                                ConfigFile->beginGroup(ParentPath);
                                 intfConfigurableArray* ConfArray = dynamic_cast<intfConfigurableArray*>(ConfigItem);
                                 if (!ConfArray)
                                     throw exConfiguration("Invalid use of array flag on non array configuration");
-                                ConfArray->reserve(ConfigFile.childGroups().size());
+                                ConfArray->reserve(ConfigFile->childGroups().size());
                                 Generated = true;
-                                ConfigFile.endGroup();
+                                ConfigFile->endGroup();
                             }else if (ConfigItem->configType() == enuConfigType::MultiMap){
-                                ConfigFile.beginGroup(ParentPath);
+                                ConfigFile->beginGroup(ParentPath);
                                 intfConfigurableMultiMap* ConfMap =
                                         dynamic_cast<intfConfigurableMultiMap*>(ConfigItem);
                                 if (!ConfMap)
                                     throw exConfiguration("Invalid use of multimap flag on non multimap configuration");
-                                foreach(const QString& Key, ConfigFile.childGroups()){
-                                    ConfigFile.beginGroup(Key);
-                                    ConfMap->reserve(Key, ConfigFile.childGroups().size());
-                                    ConfigFile.endGroup();
+                                foreach(const QString& Key, ConfigFile->childGroups()){
+                                    ConfigFile->beginGroup(Key);
+                                    ConfMap->reserve(Key, ConfigFile->childGroups().size());
+                                    ConfigFile->endGroup();
                                 }
                                 Generated = true;
-                                ConfigFile.endGroup();
+                                ConfigFile->endGroup();
                             }
                             Found = true;
                             break;
@@ -200,7 +200,7 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
                 if (testFlag(ConfigItem->configSources(), enuConfigSource::File) == false)
                     throw exConfiguration("Configuration path <"+Key+"> can not be configured by file");
 
-                QVariant Value = ConfigFile.value(Key);
+                QVariant Value = ConfigFile->value(Key);
                 if (ConfigItem->validate(Value, ErrorMessage) == false)
                     throw exConfiguration(ErrorMessage);
                 else{
@@ -356,13 +356,13 @@ void ConfigManager::save2File(const QString &_fileName, bool _backup)
         if (QFile::exists(_fileName))
             QFile::copy(_fileName, _fileName + ".back-" + QDateTime::currentDateTime().toString("dd-MM-yyyy_hh:mm:ss"));
     }
-    QSettings ConfigFile(_fileName, QSettings::IniFormat);
+    QSharedPointer<QSettings> ConfigFile(this->pPrivate->configSettings(_fileName));
 
     foreach (Configuration::intfConfigurable* ConfigItem, this->pPrivate->Configs.values())
         if (testFlag(ConfigItem->configSources(), enuConfigSource::File)){
-            ConfigFile.setValue(ConfigItem->configPath(),ConfigItem->toVariant());
+            ConfigFile->setValue(ConfigItem->configPath(),ConfigItem->toVariant());
         }
-    ConfigFile.sync();
+    ConfigFile->sync();
 }
 
 /**
@@ -492,9 +492,9 @@ QString ConfigManager::configFilePath()
     return this->pPrivate->ConfigFilePath;
 }
 
-QPointer<QSettings> ConfigManager::configSettings()
+QSharedPointer<QSettings> ConfigManager::configSettings()
 {
-    return new QSettings(this->configFilePath(), QSettings::IniFormat);
+    return this->pPrivate->configSettings(this->configFilePath());
 }
 
 QString ConfigManager::configFileDir()

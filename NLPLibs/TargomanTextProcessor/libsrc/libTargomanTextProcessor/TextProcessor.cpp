@@ -71,7 +71,7 @@ bool TargomanTextProcessor::init(const stuConfigs& _configs)
  * @brief TextProcessor::init Initialization method used in combination with TargomanStyle configurations
  * @return
  */
-bool TargomanTextProcessor::init(QPointer<QSettings> _configSettings)
+bool TargomanTextProcessor::init(QSharedPointer<QSettings> _configSettings)
 {
     stuConfigs MyConfigs;
     MyConfigs.AbbreviationsFile = TargomanTP::Private::Configs.AbbreviationFile.value();

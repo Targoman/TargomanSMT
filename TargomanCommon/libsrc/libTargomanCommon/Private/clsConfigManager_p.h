@@ -113,6 +113,7 @@ public:
     QScopedPointer<intfConfigManagerOverNet> ConfigOverNetServer;
     static Common::Configuration::tmplConfigurable<enuConfigOverNetMode::Type>    ConfigOverNetMode;
     void printConfigsHelp(bool _include, const QStringList &_list, bool _showHeader);
+    QSharedPointer<QSettings> configSettings(const QString &_filePath);
 };
 
 }

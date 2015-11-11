@@ -80,7 +80,7 @@ clsInput::clsInput(const QString &_inputStr, bool _isIXML)
 /**
  * @brief clsInput::init This function inserts userdefined and default tags to #SpecialTags.
  */
-void clsInput::init(QPointer<QSettings> _configSettings)
+void clsInput::init(QSharedPointer<QSettings> _configSettings)
 {
     if (clsInput::IsIXML.value() == false || clsInput::DoNormalize.value())
         TargomanTextProcessor::instance().init(_configSettings);

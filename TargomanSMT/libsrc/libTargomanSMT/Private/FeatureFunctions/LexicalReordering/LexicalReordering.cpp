@@ -93,7 +93,7 @@ public:
  * @brief LexicalReordering::initialize Stores field indices of lexical reordering table to #FieldIndexes.
  */
 
-void LexicalReordering::initialize(QPointer<QSettings>)
+void LexicalReordering::initialize(QSharedPointer<QSettings>)
 {
     for (int i=0;
          i< (LexicalReordering::IsBidirectional.value() ?

@@ -73,7 +73,7 @@ public:
     void setValue(const QString& _path, const QVariant &_value) const;
     fpModuleInstantiator_t getInstantiator(const QString& _name) const;
     QString configFilePath();
-    QPointer<QSettings> configSettings();
+    QSharedPointer<QSettings> configSettings();
     QString configFileDir();
     QString getAbsolutePath(const QString &_path);
     bool isNetworkManagable();

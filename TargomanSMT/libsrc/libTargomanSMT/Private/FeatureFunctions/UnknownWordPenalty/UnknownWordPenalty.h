@@ -42,7 +42,7 @@ class UnknownWordPenalty : public intfFeatureFunction
 public:
     ~UnknownWordPenalty(){}
 
-    void initialize(QPointer<QSettings>){}
+    void initialize(QSharedPointer<QSettings>){}
 
     Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(
             SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,

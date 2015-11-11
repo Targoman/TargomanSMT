@@ -36,7 +36,7 @@ class clsDummyFeatureFunctionForInsertion : public FeatureFunction::intfFeatureF
 public:
     ~clsDummyFeatureFunctionForInsertion(){}
 
-    void initialize(QPointer<QSettings> ){}
+    void initialize(QSharedPointer<QSettings> ){}
 
     Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode&, QCryptographicHash&) const { return 0; }
 

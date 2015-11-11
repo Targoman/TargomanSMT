@@ -44,7 +44,7 @@ class PhraseTable : public intfFeatureFunction
 public:
     ~PhraseTable(){}
 
-    void initialize(QPointer<QSettings>);
+    void initialize(QSharedPointer<QSettings>);
 
     Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(
             SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,

@@ -72,7 +72,7 @@ public:
     }
 
     bool init(const stuConfigs &_configs);
-    bool init(QPointer<QSettings> _configSettings = NULL);
+    bool init(QSharedPointer<QSettings> _configSettings = QSharedPointer<QSettings>());
 
     QString text2IXML(const QString& _inStr,
                       INOUT bool &_spellCorrected,

@@ -42,7 +42,7 @@ class ReorderingJump : public intfFeatureFunction
 public:
     ~ReorderingJump(){}
 
-    void initialize(QPointer<QSettings>){}
+    void initialize(QSharedPointer<QSettings>){}
 
     Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(
             SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,

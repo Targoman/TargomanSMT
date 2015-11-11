@@ -81,7 +81,7 @@ public:
     /**
      * @brief Stores field indices of this feature function to #FieldIndexes.
      */
-    virtual void initialize(QPointer<QSettings> _configSettings)  = 0;
+    virtual void initialize(QSharedPointer<QSettings> _configSettings)  = 0;
 
     virtual void newSentence(const InputDecomposer::Sentence_t &_inputSentence) {Q_UNUSED(_inputSentence)}
 

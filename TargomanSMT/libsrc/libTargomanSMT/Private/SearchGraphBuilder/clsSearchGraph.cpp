@@ -106,7 +106,7 @@ clsSearchGraph::clsSearchGraph(const Sentence_t& _sentence):
  * @brief Loads rule and phrase tables, inititializes all feature functions and sets #UnknownWordRuleNode.
  * @param _configFilePath Address of config file.
  */
-void clsSearchGraph::init(QPointer<QSettings> _configSettings)
+void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
 {
     clsSearchGraph::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
 

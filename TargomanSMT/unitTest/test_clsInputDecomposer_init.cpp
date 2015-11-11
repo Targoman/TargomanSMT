@@ -37,7 +37,7 @@ void clsUnitTest::test_clsInputDecomposer_init()
                 );
     clsInput::IsIXML.setFromVariant(true);
     clsInput::DoNormalize.setFromVariant(false);
-    clsInput::init(NULL);
+    clsInput::init(QSharedPointer<QSettings>());
 
     foreach(const QString& tag, userDefinedTags) {
         QVERIFY(gConfigs.SourceVocab.find(tag) == gConfigs.SourceVocab.end());

@@ -160,6 +160,10 @@ clsConfigManagerPrivate::~clsConfigManagerPrivate()
     //Just to supress compiler error on QScopped Pointer
 }
 
+QSharedPointer<QSettings> clsConfigManagerPrivate::configSettings(const QString& _filePath){
+    return QSharedPointer<QSettings>(new QSettings(_filePath, QSettings::IniFormat));
+}
+
 void clsConfigManagerPrivate::printConfigsHelp(bool _include, const QStringList& _list, bool _showHeader)
 {
     QString LastModule;

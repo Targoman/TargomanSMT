@@ -38,7 +38,7 @@ namespace SMT {
 class Translator
 {
 public:
-    static void init(QPointer<QSettings> _configSettings);
+    static void init(QSharedPointer<QSettings> _configSettings);
     static void saveBinaryRuleTable(const QString& _filePath);
     static stuTranslationOutput translate(const QString& _inputStr,
                                           bool _justTranslationString = false,

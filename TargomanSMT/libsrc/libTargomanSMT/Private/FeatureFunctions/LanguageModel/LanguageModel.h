@@ -42,7 +42,7 @@ class LanguageModel : public intfFeatureFunction
 public:
     ~LanguageModel(){}
 
-    void initialize(QPointer<QSettings>){}
+    void initialize(QSharedPointer<QSettings>){}
 
     Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, QCryptographicHash& _hash) const;
 
