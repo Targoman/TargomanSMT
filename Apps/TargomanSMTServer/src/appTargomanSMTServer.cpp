@@ -59,8 +59,9 @@ void appTargomanSMTServer::slotExecute()
         clsTranslationJob::SourceLanguage =
                 ConfigManager::instance().getConfig("/Common/Language/Source").toString();
 
-        Targoman::SMT::Translator::init(ConfigManager::instance().configFilePath());
-        Targoman::NLPLibs::TargomanTextProcessor::instance().init(ConfigManager::instance().configFilePath());
+
+        Targoman::SMT::Translator::init(ConfigManager::instance().configSettings());
+        Targoman::NLPLibs::TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());
 
         QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
         Configuration::ConfigManager::instance().startAdminServer();

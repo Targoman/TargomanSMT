@@ -71,24 +71,24 @@ bool TargomanTextProcessor::init(const stuConfigs& _configs)
  * @brief TextProcessor::init Initialization method used in combination with TargomanStyle configurations
  * @return
  */
-bool TargomanTextProcessor::init(const QString _configFile)
+bool TargomanTextProcessor::init(QPointer<QSettings> _configSettings)
 {
     stuConfigs MyConfigs;
     MyConfigs.AbbreviationsFile = TargomanTP::Private::Configs.AbbreviationFile.value();
     MyConfigs.NormalizationFile = TargomanTP::Private::Configs.NormalizationFile.value();
     MyConfigs.SpellCorrectorBaseConfigPath = TargomanTP::Private::Configs.SpellCorrectorBaseConfigPath.value();
 
-    if (_configFile.size()){
-        QSettings ConfigFile(_configFile, QSettings::IniFormat);
-
-        ConfigFile.beginGroup(TargomanTP::Private::Configs.SpellCorrectorLanguageBasedConfigs.configPath());
-        foreach(const QString& Lang, ConfigFile.childGroups()){
-            ConfigFile.beginGroup(Lang);
-            foreach (const QString& Key, ConfigFile.allKeys())
-                MyConfigs.SpellCorrectorLanguageBasedConfigs[Lang].insert(Key, ConfigFile.value(Key));
-            ConfigFile.endGroup();
+    if (_configSettings.isNull() == false){
+        _configSettings->beginGroup(TargomanTP::Private::Configs.SpellCorrectorLanguageBasedConfigs.configPath());
+        foreach(const QString& Lang, _configSettings->childGroups()){
+            foreach (const QString& Key, _configSettings->allKeys()){
+                _configSettings->beginGroup(Lang);
+                MyConfigs.SpellCorrectorLanguageBasedConfigs[Lang].insert(
+                            Key,_configSettings->value(Key));
+                _configSettings->endGroup();
+            }
         }
-        ConfigFile.endGroup();
+        _configSettings->endGroup();
     }
     return this->init(MyConfigs);
 }

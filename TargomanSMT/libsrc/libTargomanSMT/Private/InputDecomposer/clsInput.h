@@ -69,7 +69,7 @@ public:
     clsInput(const QString& _inputStr, bool _isIXML);
     ~clsInput(){}
 
-    static void init(const QString &_configFilePath);
+    static void init(QPointer<QSettings> _configSettings);
 
     static QString moduleName(){return "Input";}
 

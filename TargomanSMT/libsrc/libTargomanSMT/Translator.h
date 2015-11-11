@@ -29,6 +29,7 @@
 
 #include <QMap>
 #include <QStringList>
+#include <QSettings>
 #include "libTargomanSMT/Types.h"
 
 namespace Targoman{
@@ -37,7 +38,7 @@ namespace SMT {
 class Translator
 {
 public:
-    static void init(const QString _configFilePath);
+    static void init(QPointer<QSettings> _configSettings);
     static void saveBinaryRuleTable(const QString& _filePath);
     static stuTranslationOutput translate(const QString& _inputStr,
                                           bool _justTranslationString = false,

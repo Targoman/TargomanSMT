@@ -207,7 +207,7 @@ class clsSearchGraph
 public:
     explicit clsSearchGraph(const InputDecomposer::Sentence_t& _sentence);
 
-    static void init(const QString &_configFilePath);
+    static void init(QPointer<QSettings> _configSettings);
 
 
     /**

@@ -359,8 +359,9 @@ void ConfigManager::save2File(const QString &_fileName, bool _backup)
     QSettings ConfigFile(_fileName, QSettings::IniFormat);
 
     foreach (Configuration::intfConfigurable* ConfigItem, this->pPrivate->Configs.values())
-        if (testFlag(ConfigItem->configSources(), enuConfigSource::File))
+        if (testFlag(ConfigItem->configSources(), enuConfigSource::File)){
             ConfigFile.setValue(ConfigItem->configPath(),ConfigItem->toVariant());
+        }
     ConfigFile.sync();
 }
 
@@ -489,6 +490,11 @@ fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) cons
 QString ConfigManager::configFilePath()
 {
     return this->pPrivate->ConfigFilePath;
+}
+
+QPointer<QSettings> ConfigManager::configSettings()
+{
+    return new QSettings(this->configFilePath(), QSettings::IniFormat);
 }
 
 QString ConfigManager::configFileDir()

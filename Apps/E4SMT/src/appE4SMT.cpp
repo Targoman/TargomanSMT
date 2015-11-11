@@ -49,13 +49,13 @@ void appE4SMT::slotExecute()
                     this,
                     &appE4SMT::slotPong,
                     Qt::DirectConnection);
-            TargomanTextProcessor::instance().init(ConfigManager::instance().configFilePath());
+            TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());
             ConfigManager::instance().startAdminServer();
             return;
         }else{
             bool SpellCorrected;
             if (gConfigs::Input.value().size()){
-                TargomanTextProcessor::instance().init(ConfigManager::instance().configFilePath());
+                TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());
                 switch(gConfigs::Mode.value()){
                 case enuAppMode::Text2IXML:
                     std::cout<<TargomanTextProcessor::instance().text2IXML(
@@ -92,7 +92,7 @@ void appE4SMT::slotExecute()
                     throw exAppE4SMT("Invalid action selected for simple input");
                 }
             }else if (gConfigs::InputFile.value().size()){
-                TargomanTextProcessor::instance().init(ConfigManager::instance().configFilePath());
+                TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());
                 QFileInfo InputFileInfo(gConfigs::InputFile.value());
                 this->processFile(gConfigs::InputFile.value(),
                                   (gConfigs::OutputDir.value().isEmpty() ?
@@ -100,7 +100,7 @@ void appE4SMT::slotExecute()
                                       gConfigs::OutputDir.value())
                                   + '/' + InputFileInfo.fileName());
             }else if (gConfigs::InputDir.value().size()){
-                TargomanTextProcessor::instance().init(ConfigManager::instance().configFilePath());
+                TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());
                 this->processDir("/./", gConfigs::InputDir.value());
             }else
                 throw exAppE4SMT("No job defined to be done");

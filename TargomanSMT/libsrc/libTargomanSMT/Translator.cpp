@@ -48,20 +48,20 @@ using namespace SearchGraphBuilder;
 
 static bool TranslatorInitialized = false;
 
-void Translator::init(const QString _configFilePath)
+void Translator::init(QPointer<QSettings> _configSettings)
 {
     if (TranslatorInitialized){
         TargomanWarn(5, "Reinitialization of translator has no effect");
         return;
     }
 
-    InputDecomposer::clsInput::init(_configFilePath);
+    InputDecomposer::clsInput::init(_configSettings);
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());
     gConfigs.EmptyLMScorer->init(false);
 
     OOVHandler::instance().initialize();
     IXMLTagHandler::instance().initialize();
-    SearchGraphBuilder::clsSearchGraph::init(_configFilePath);
+    SearchGraphBuilder::clsSearchGraph::init(_configSettings);
 
 
     TranslatorInitialized = true;

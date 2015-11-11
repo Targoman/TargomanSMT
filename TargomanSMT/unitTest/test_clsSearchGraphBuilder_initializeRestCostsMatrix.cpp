@@ -54,7 +54,7 @@ class clsDummyFeatureFunctionForRestCost : public FeatureFunction::intfFeatureFu
 public:
     ~clsDummyFeatureFunctionForRestCost(){}
 
-    void initialize(const QString &){}
+    void initialize(QPointer<QSettings>){}
 
     Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode&, QCryptographicHash&) const { return 0; }
 

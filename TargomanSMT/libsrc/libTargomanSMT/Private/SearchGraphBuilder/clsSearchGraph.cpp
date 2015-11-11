@@ -106,7 +106,7 @@ clsSearchGraph::clsSearchGraph(const Sentence_t& _sentence):
  * @brief Loads rule and phrase tables, inititializes all feature functions and sets #UnknownWordRuleNode.
  * @param _configFilePath Address of config file.
  */
-void clsSearchGraph::init(const QString& _configFilePath)
+void clsSearchGraph::init(QPointer<QSettings> _configSettings)
 {
     clsSearchGraph::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
 
@@ -122,7 +122,7 @@ void clsSearchGraph::init(const QString& _configFilePath)
     pInvalidSearchGraphNode = new clsSearchGraphNode;
 
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
-        FF->initialize(_configFilePath);
+        FF->initialize(_configSettings);
     clsSearchGraph::pRuleTable->loadTableData();
     clsSearchGraph::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
 

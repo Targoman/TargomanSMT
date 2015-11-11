@@ -66,17 +66,19 @@ public:
  * @param _configFile Address of input config file.
  * @exception throws exception if phrase table loader has not initialized phrase table column names.
  */
-void PhraseTable::initialize(const QString& _configFile)
+void PhraseTable::initialize(QPointer<QSettings> _configSettings)
 {
     if (this->ColumnNames.isEmpty())
         throw exPhraseTable("Seems that RuleTable loader has not initialized phrase table column names.");
 
-    QSettings ConfigFile(_configFile, QSettings::IniFormat);
-    ConfigFile.beginGroup(PhraseTable::ScalingFactorsConfigSection.configPath());
+    if (_configSettings.isNull())
+        throw exPhraseTable("No configuration settings provided");
+
+    _configSettings->beginGroup(PhraseTable::ScalingFactorsConfigSection.configPath());
     foreach(const QString& ColumnName, this->ColumnNames){
-        if (ConfigFile.value(ColumnName).isValid()){
+        if (_configSettings->value(ColumnName).isValid()){
             bool Ok;
-            double ScalingFactor = ConfigFile.value(ColumnName).toDouble(&Ok);
+            double ScalingFactor = _configSettings->value(ColumnName).toDouble(&Ok);
             if (!Ok)
                 throw exPhraseTable("Invalid scaling factor defined for column: "+ ColumnName);
             this->ScalingFactors.append(ScalingFactor);

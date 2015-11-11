@@ -53,7 +53,7 @@ class LexicalReordering : public intfFeatureFunction
 {
 public:
     ~LexicalReordering(){}
-    void initialize(const QString&);
+    void initialize(QPointer<QSettings>);
 
     void newSentence(const InputDecomposer::Sentence_t &inputSentence);
 
