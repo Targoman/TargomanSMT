@@ -25,27 +25,42 @@
  */
 
 #include "Configs.h"
+#include "libTargomanCommon/Configuration/Validators.hpp"
 
 namespace Targoman {
 namespace NLPLibs {
 namespace TargomanTP{
 namespace Private {
 
+using namespace Common;
+using namespace Common::Configuration;
 stuConfigs Configs;
 
-Targoman::Common::Configuration::tmplConfigurable<FilePath_t> stuConfigs::AbbreviationFile(
+tmplConfigurable<FilePath_t> stuConfigs::AbbreviationFile(
         "TextProcessor/AbbreviationFile",
         "File path where abbreviations are stored",
-        "");
-Targoman::Common::Configuration::tmplConfigurable<FilePath_t> stuConfigs::NormalizationFile(
+        "",
+        Validators::tmplPathAccessValidator<
+        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable),
+        false>
+        );
+tmplConfigurable<FilePath_t> stuConfigs::NormalizationFile(
         "TextProcessor/NormalizationFile",
         "File path where normalization rules are stored",
-        "");
-Targoman::Common::Configuration::tmplConfigurable<FilePath_t> stuConfigs::SpellCorrectorBaseConfigPath(
+        "",
+        Validators::tmplPathAccessValidator<
+        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable),
+        false>
+        );
+tmplConfigurable<FilePath_t> stuConfigs::SpellCorrectorBaseConfigPath(
         "TextProcessor/SpellCorrectorBaseConfigPath",
         "File path where spell correction dics are stored",
-        "");
-Targoman::Common::Configuration::clsFileBasedConfig       stuConfigs::SpellCorrectorLanguageBasedConfigs(
+        "",
+        Validators::tmplPathAccessValidator<
+        (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Readable),
+        false>
+        );
+clsFileBasedConfig       stuConfigs::SpellCorrectorLanguageBasedConfigs(
         "TextProcessor/SpellCorrectorLanguageBasedConfigs");
 
 }

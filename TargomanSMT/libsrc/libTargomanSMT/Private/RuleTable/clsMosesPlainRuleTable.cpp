@@ -80,7 +80,7 @@ tmplConfigurable<QString> clsMosesPlainRuleTable::WordAlignmentFilePath(
         [] (const intfConfigurable& _item, QString& _errorMessage) { \
             if(gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName())
                 return Validators::tmplPathAccessValidator<
-                        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), true>(
+                        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), false>(
                             _item, _errorMessage);
             else
                  return true;
@@ -203,7 +203,6 @@ void clsMosesPlainRuleTable::loadTableData()
     bool AlignmentFileExists = QFile::exists(clsMosesPlainRuleTable::WordAlignmentFilePath.value());
     if(AlignmentFileExists)
         AlignmentInputStream.open(clsMosesPlainRuleTable::WordAlignmentFilePath.value().toStdString(), true);
-
 
     while (PhraseTableInputStream.peek() >= 0 && ReorderingTableInputStream.peek() >= 0
            && AlignmentFileExists && AlignmentInputStream.peek() >= 0){

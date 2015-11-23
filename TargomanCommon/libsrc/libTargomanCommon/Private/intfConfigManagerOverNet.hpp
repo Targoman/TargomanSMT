@@ -76,7 +76,7 @@ public:
 protected:
     QScopedPointer<QTcpServer>        Server;
 
-protected:
+public:
     static tmplConfigurable<int>      ListenPort;
     static tmplConfigurable<bool>     WaitPortReady;
     static tmplConfigurable<bool>     AdminLocal;

@@ -133,7 +133,6 @@ public:
     /**
      * @return returns #PrecomputedValuesSize and increases its size.
      */
-
     static size_t allocatePrecomputedValue(){
         size_t AllocatedIndex = clsTargetRule::PrecomputedValuesSize;
         ++clsTargetRule::PrecomputedValuesSize;
@@ -211,6 +210,7 @@ public:
     {
         if (clsTargetRule::ColumnNames.size() == 0)
             throw exRuleTable("Invalid TargetRule must be created after initialization");
+
         for(int i = 0; i< clsTargetRule::ColumnNames.size(); ++i)
             this->Fields.append(0);
         this->IsUnknownWord = false;

@@ -36,9 +36,7 @@ namespace Configuration {
 namespace Private {
 
 clsLegacyConfigOverTCP::clsLegacyConfigOverTCP(clsConfigManagerPrivate &_configManager) :
-    intfConfigManagerOverNet(new QTcpServer),
-    ConfigManagerPrivate(_configManager),
-    ActorUUID(_configManager.ActorUUID)
+    intfConfigManagerOverNet(new clsLegacyConfigOverTCPServer(_configManager))
 {}
 
 clsLegacyConfigOverTCP::~clsLegacyConfigOverTCP()
@@ -46,14 +44,25 @@ clsLegacyConfigOverTCP::~clsLegacyConfigOverTCP()
     //Just to suppress compiler error using QScopedPointer
 }
 
-void clsLegacyConfigOverTCP::incomingConnection(qintptr _socketDescriptor)
+clsLegacyConfigOverTCPServer::clsLegacyConfigOverTCPServer(clsConfigManagerPrivate &_configManager) :
+    ConfigManagerPrivate(_configManager),
+    ActorUUID(_configManager.ActorUUID),
+    ConnectedClients(0)
+{}
+
+void clsLegacyConfigOverTCPServer::incomingConnection(qintptr _socketDescriptor)
 {
     if(this->ConnectedClients > intfConfigManagerOverNet::MaxConnections.value()){
         QTcpSocket* Socket = new QTcpSocket;
-        TargomanLogWarn(1, "Ignoring connection as max connections has reached");
         Socket->setSocketDescriptor(_socketDescriptor);
         Socket->close();
         Socket->deleteLater();
+        TargomanLogWarn(1, "Ignoring connection from "
+                        +Socket->peerAddress().toString() + ":" +
+                        QString::number(Socket->peerPort()) +
+                        " as max connections(" +
+                        QString::number(intfConfigManagerOverNet::MaxConnections.value())
+                        + ") has reached");
         return;
     }
 
@@ -62,13 +71,13 @@ void clsLegacyConfigOverTCP::incomingConnection(qintptr _socketDescriptor)
                                                this);
 
     connect(CLT, &clsClientThread::finished,
-            this, &clsLegacyConfigOverTCP::slotClientDisconnected);
+            this, &clsLegacyConfigOverTCPServer::slotClientDisconnected);
 
     CLT->start();
     ++this->ConnectedClients;
 }
 
-void clsLegacyConfigOverTCP::slotClientDisconnected()
+void clsLegacyConfigOverTCPServer::slotClientDisconnected()
 {
     clsClientThread* CLT = qobject_cast<clsClientThread*>(this->sender());
     CLT->deleteLater();
@@ -184,32 +193,32 @@ void clsClientThread::slotReadyRead()
                 }
                 /************************************************************/
                 if (Request.Name == "query") {
-                        return this->sendResult(
-                                    JSONConversationProtocol::prepareResult(
-                                        Request.CallBack,
-                                        Request.CallUID,
-                                        clsBaseConfigOverNet::query(
-                                            Request.Args.value("p").toString()).toString()));
+                    return this->sendResult(
+                                JSONConversationProtocol::prepareResult(
+                                    Request.CallBack,
+                                    Request.CallUID,
+                                    clsBaseConfigOverNet::query(
+                                        Request.Args.value("p").toString()).toString()));
                 }
                 /************************************************************/
                 if (Request.Name == "bulkQuery"){
-                        QVariantList Table = clsBaseConfigOverNet::bulkQuery(
-                                    Request.Args.value("p").toString(),
-                                    Request.Args.value("rx",false).toBool(),
-                                    Request.Args.value("dt",false).toBool(),
-                                    Request.Args.value("up", -2).toInt(),
-                                    Request.Args.value("tp").toString(),
-                                    Request.Args.value("ss").toString());
+                    QVariantList Table = clsBaseConfigOverNet::bulkQuery(
+                                Request.Args.value("p").toString(),
+                                Request.Args.value("rx",false).toBool(),
+                                Request.Args.value("dt",false).toBool(),
+                                Request.Args.value("up", -2).toInt(),
+                                Request.Args.value("tp").toString(),
+                                Request.Args.value("ss").toString());
 
-                        QVariantMap ReturnVals;
-                        ReturnVals.insert("t", Table);
+                    QVariantMap ReturnVals;
+                    ReturnVals.insert("t", Table);
 
-                        return this->sendResult(
-                                    JSONConversationProtocol::prepareResult(
-                                        Request.CallBack,
-                                        Request.CallUID,
-                                        Table.size(),
-                                        ReturnVals));
+                    return this->sendResult(
+                                JSONConversationProtocol::prepareResult(
+                                    Request.CallBack,
+                                    Request.CallUID,
+                                    Table.size(),
+                                    ReturnVals));
 
                 } //if (Request.Name == "bulkQuery")
 
@@ -220,7 +229,7 @@ void clsClientThread::slotReadyRead()
                                     Request.CallBack,
                                     Request.CallUID,
                                     clsBaseConfigOverNet::set(Request.Args.value("p").toString(),
-                                                Request.Args.value("vl")).toString()));
+                                                              Request.Args.value("vl")).toString()));
                 }// if (Request.Name == "set")
             }catch(exObjectNotFound &e){
                 return this->sendResult(

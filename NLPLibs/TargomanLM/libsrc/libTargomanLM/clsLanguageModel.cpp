@@ -48,7 +48,11 @@ using namespace Targoman::Common::Configuration;
 tmplConfigurable<FilePath_t> clsLanguageModel::FilePath(
         "/TargomanLM/FilePath",
         "File path of ARPA or binary models",
-        "");
+        ""
+        "",
+        Validators::tmplPathAccessValidator<
+        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable)>
+        );
 
 tmplConfigurable<double>  clsLanguageModel::DefaultUnknownProb(
         "/TargomanLM/DefaultUnknownProb",

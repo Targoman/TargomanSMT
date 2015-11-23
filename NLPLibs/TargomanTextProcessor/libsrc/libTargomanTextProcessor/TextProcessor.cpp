@@ -111,7 +111,7 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
 {
     if (!Initialized)
         throw exTextProcessor("Text Processor has not been initialized");
-    TargomanLogDebug(7,"ConvertToIXML Process Started");
+    TargomanDebug(7,"ConvertToIXML Process Started");
 
     const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
 
@@ -129,7 +129,7 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
                     QString("</%1>").arg(enuTextTags::toStr(Tag)));
 
     TargomanDebug(6, "[REM-TAGS] |"<<IXML<<"|");
-    TargomanLogDebug(7,"ConvertToIXML Process Finished");
+    TargomanDebug(7,"ConvertToIXML Process Finished");
     return IXML;
 }
 

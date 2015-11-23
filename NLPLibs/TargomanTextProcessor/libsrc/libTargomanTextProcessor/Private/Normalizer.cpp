@@ -637,7 +637,7 @@ void Normalizer::init(const QString &_configFile, bool _binaryMode)
     if (!IsEOF)
         throw exNormalizer("Invalid Normalization file as EOF section not found");
 
-    TargomanLogInfo(5,QString("Normalization Table has (%1 WHT/ %2 BLK/ %3 SPC/ %4 NBS/ %5 RPL)").arg(
+    TargomanLogInfo(5,QString("Normalization Table has (%1 WHT/ %2 BLK/ %3 SPC/ %4 ZWNJ/ %5 RPL)").arg(
                         this->WhiteList.size()).arg(
                         this->RemovingList.size ()).arg(
                         this->SpaceCharList.size ()).arg(

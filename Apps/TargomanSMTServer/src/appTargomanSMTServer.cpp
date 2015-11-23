@@ -114,6 +114,7 @@ stuRPCOutput appTargomanSMTServer::rpcGetStatistics(const QVariantMap &)
         Args.insert("TQ", qMin(int(double(QThreadPool::globalInstance()->activeThreadCount()) /
                                    double(QThreadPool::globalInstance()->maxThreadCount())*100.),100));
     }
+
     return stuRPCOutput(1, Args);
 }
 
@@ -123,6 +124,10 @@ stuRPCOutput appTargomanSMTServer::rpcTranslate(const QVariantMap &_args)
     if (Text.isEmpty())
         throw exTargomanSMTServer("Obligatory argument 'txt' missing");
 
+    TargomanLogDebug(7,QString("rpcTranslate(brief=%1,keep=%2,txt=%3) => Result not logged").arg(
+                         _args.value("brief",false).toBool()).arg(
+                         _args.value("keep",false).toBool()).arg(
+                         _args.value("txt").toString()));
     QVariantMap Result;
     Result.insert("t",clsTranslationJob(_args.value("brief",false).toBool(),
                                         _args.value("keep",false).toBool()).doJob(Text));

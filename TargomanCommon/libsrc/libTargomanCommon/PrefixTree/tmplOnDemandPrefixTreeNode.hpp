@@ -52,7 +52,7 @@ public:
     virtual pNode_t getOrCreateChildByKey(itmplKey_t _key) {
         pNode_t Result = this->follow(_key);
         if(Result->isInvalid())
-            throw exTargomanNotImplemented("loadChildFromDisk()");
+            throw exTargomanNotImplemented("getOrCreateChildByKey()");
         return Result;
     }
 

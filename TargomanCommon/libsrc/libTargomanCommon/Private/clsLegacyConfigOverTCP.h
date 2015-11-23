@@ -47,6 +47,14 @@ class clsLegacyConfigOverTCP : public intfConfigManagerOverNet
 public:
     clsLegacyConfigOverTCP(clsConfigManagerPrivate& _configManager);
     ~clsLegacyConfigOverTCP();
+};
+
+/******************************************************************************/
+class clsLegacyConfigOverTCPServer : public QTcpServer
+{
+    Q_OBJECT
+public:
+    clsLegacyConfigOverTCPServer(clsConfigManagerPrivate& _configManager);
 
 private:
     void incomingConnection(qintptr _socketDescriptor);

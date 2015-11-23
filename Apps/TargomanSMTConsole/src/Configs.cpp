@@ -86,7 +86,7 @@ tmplConfigurable<QString>     gConfigs::OutputFile(
         "output path to write translation",
         "",
         Validators::tmplPathAccessValidator<
-            (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Writeatble),
+            (enuPathAccess::Type)(enuPathAccess::Writeatble),
             false>,
         "o",
         "FILE_PATH",

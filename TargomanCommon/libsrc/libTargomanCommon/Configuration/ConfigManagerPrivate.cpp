@@ -208,10 +208,10 @@ void clsConfigManagerPrivate::printHelp(const QString& _license, bool _minimal)
     if (_minimal == false){
         std::cout<<"\n**** "<<ConfigManager::moduleName().toLatin1().constData()<<" ****\n";
         std::cout<<"\t-c|--config FILE_PATH\n\t\t Path to config file"<<std::endl;
-        std::cout<<"\t--config-save:\n\t\t Saves new configuration file based on old configs and input arguments"<<std::endl;
+        std::cout<<"\n\t--config-save:\n\t\t Saves new configuration file based on old configs and input arguments"<<std::endl;
         this->printConfigsHelp(true, QStringList()<<ConfigManager::moduleName(),false);
     }
-    std::cout<<"\t--config-print:\n\t\t Prints all active configurations"<<std::endl;
+    std::cout<<"\n\t--config-print:\n\t\t Prints all active configurations"<<std::endl;
     printConfigsHelp(true, QStringList()<<"App", true);
     printConfigsHelp(false,
                      QStringList()<<
