@@ -34,28 +34,41 @@ namespace Apps{
 namespace Modules {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTSManager, exTargomanLoadBalancer);
+#ifdef WITH_QJsonRPC
+class TSManagerJsonRPCService : public QJsonRpcService
+{
+public:
+    TSManagerJsonRPCService();
+    QVariantList translate(
+            quint32 _preferedServer,
+            QString _dir,
+            QString _text,
+            bool _brief,
+            bool _keep);
+};
+#endif
 
-class TSManager : public QObject, public Common::Configuration::intfModule
+class TSManager :
+        public Common::Configuration::intfRPCExporter,
+        public Common::Configuration::intfModule
 {
     Q_OBJECT
+public:
+    Common::JSONConversationProtocol::stuResponse baseTranslation(const QVariantMap &_args);
 
 public slots:
-    //void slotSendRequest();
-    void slotProcessResponse(const Common::JSONConversationProtocol::stuResponse &_response);
     void slotServerDisconnected();
 
 public slots:
-
-    //Common::Configuration::stuRPCOutput rpcTranslate(const QVariantMap& _args);
-    //Common::Configuration::stuRPCOutput rpcArrayTranslate(const QVariantMap& _args);
+    Common::Configuration::stuRPCOutput rpcTranslate(const QVariantMap& _args);
 
 private:
-    TSManager() : intfModule(this->moduleName()) {}
+    TSManager();
 
     TARGOMAN_DEFINE_SINGLETONMODULE("TSManager", TSManager)
 private:
     static Common::Configuration::tmplConfigurable<quint16> MaxTranslationTime;
-    static Common::Configuration::tmplConfigurable<quint8> MaxRetries;
+    static Common::Configuration::tmplConfigurable<quint8>  MaxRetries;
 };
 
 }

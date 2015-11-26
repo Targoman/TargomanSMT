@@ -49,11 +49,13 @@ int main(int _argc, char *_argv[])
 
         Configuration::ConfigManager::instance().init(
                     QString(LicenseStr).arg(_argv[0]).arg(TARGOMAN_M2STR(PROJ_VERSION)).arg(__DATE__),
-                    App.arguments().mid(1)
-                    );
+                    App.arguments().mid(1),
+                [](){
+            //TODO set default network mode
+        });
 
 
-        QTimer::singleShot(10, new appTargomanLoadBalancer, SLOT(slotExecute()));
+        QTimer::singleShot(0, new appTargomanLoadBalancer, SLOT(slotExecute()));
         return App.exec();
     }catch(exTargomanBase& e){
         TargomanError(e.what());

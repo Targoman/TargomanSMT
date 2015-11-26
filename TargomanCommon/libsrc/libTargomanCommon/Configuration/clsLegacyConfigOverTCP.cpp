@@ -52,17 +52,17 @@ clsLegacyConfigOverTCPServer::clsLegacyConfigOverTCPServer(clsConfigManagerPriva
 
 void clsLegacyConfigOverTCPServer::incomingConnection(qintptr _socketDescriptor)
 {
-    if(this->ConnectedClients > intfConfigManagerOverNet::MaxConnections.value()){
+    if(this->ConnectedClients >= intfConfigManagerOverNet::MaxConnections.value()){
         QTcpSocket* Socket = new QTcpSocket;
         Socket->setSocketDescriptor(_socketDescriptor);
-        Socket->close();
-        Socket->deleteLater();
         TargomanLogWarn(1, "Ignoring connection from "
                         +Socket->peerAddress().toString() + ":" +
                         QString::number(Socket->peerPort()) +
                         " as max connections(" +
                         QString::number(intfConfigManagerOverNet::MaxConnections.value())
                         + ") has reached");
+        Socket->close();
+        Socket->deleteLater();
         return;
     }
 

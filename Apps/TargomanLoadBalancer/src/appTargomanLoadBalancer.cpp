@@ -30,17 +30,14 @@
 #include "libTargomanCommon/CmdIO.h"
 #include "libTargomanCommon/SimpleAuthentication.h"
 #include "Modules/TSMonitor.h"
-#include "Modules/TargomanWebService.h"
 
 namespace Targoman {
 namespace Apps {
 
 using namespace Common;
 using namespace Modules;
-appTargomanLoadBalancer::appTargomanLoadBalancer() :
-    JsonRPCServer(new QJsonRpcHttpServerMultiThreaded(gConfigs::MaxConcurrentClients.value()))
+appTargomanLoadBalancer::appTargomanLoadBalancer()
 {
-    this->JsonRPCServer->addService(new TargomanWebService);
 }
 
 void appTargomanLoadBalancer::slotExecute()

@@ -27,7 +27,6 @@
 
 #include "libTargomanCommon/Configuration/intfRPCExporter.hpp"
 #include "libTargomanCommon/Types.h"
-#include "libQJsonRPC/qjsonrpchttpservermultithreaded.h"
 
 namespace Targoman {
 namespace Apps{
@@ -44,9 +43,6 @@ public slots:
 private slots:
     void slotValidateAgent(QString &_user, const QString &_pass, const QString &_ip, bool &_canView, bool &_canChange);
     void slotPong(QString _ssid, Targoman::Common::stuPong &_pong);
-
-private:
-    QScopedPointer<QJsonRpcHttpServerMultiThreaded> JsonRPCServer;
 };
 
 }

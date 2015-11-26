@@ -88,6 +88,10 @@ public:
                      (InvalidArray = new tmplConfigurableArray<itmplType_t>("InvalidArray","InvalidArray",1)));
     }
 
+    bool contains(const QString& _key){
+        return this->Items.contains(_key);
+    }
+
     tmplConfigurableArray<itmplType_t> values(const QString& _key){
         if (this->Items.contains(_key) == false)
             throw exConfiguration("Invalid lookup to non existent item key: " + _key);

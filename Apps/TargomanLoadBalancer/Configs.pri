@@ -21,6 +21,7 @@
 ProjectName="TargomanLoadBalancer"
 VERSION=0.1.0
 
+CONFIG+=WITH_QJsonRPC
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 ProjectDependencies+=TargomanCommon
 

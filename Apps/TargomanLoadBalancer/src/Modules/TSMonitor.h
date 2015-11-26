@@ -72,7 +72,7 @@ private:
 private:
     QScopedPointer<TSMonitorPrivate> pPrivate;
 
-    static Common::Configuration::tmplConfigurable<quint16> UpdtaeInterval;
+    static Common::Configuration::tmplConfigurable<quint16> UpdateInterval;
     static Common::Configuration::tmplConfigurable<quint16> WaitOnUpdtae;
     friend class TSMonitorPrivate;
 };

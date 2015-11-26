@@ -49,6 +49,8 @@ class intfConfigurablePrivate;
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
 
+typedef std::function<void ()> fnAppInitializer_t;
+
 /**
  * @brief The ConfigManager class is the manager class for configurables data.
  * Currently it will just manage Arguments and config file
@@ -65,7 +67,9 @@ public:
 
     static inline QString moduleName(){return "ConfigManager";}
 
-    void init(const QString &_license, const QStringList &_arguments = QStringList(), bool _minimal = false);
+    void init(const QString &_license,
+              const QStringList &_arguments = QStringList(),
+              fnAppInitializer_t _appInitializer = [](){}, bool _minimal = false);
     void save2File(const QString&  _fileName, bool _backup);
     void addConfig(const QString _path, intfConfigurable* _item);
     void addModuleInstantiaor(const QString _name, const stuInstantiator& _instantiator);

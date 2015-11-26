@@ -34,6 +34,7 @@ namespace Modules {
 
 using namespace Common;
 using namespace Common::Configuration;
+const char*  SERVER_DISCONNECTED="SERVER_DISCONNECTED";
 
 
 tmplConfigurable<quint16> TSManager::MaxTranslationTime(
@@ -54,66 +55,73 @@ tmplConfigurable<quint8> TSManager::MaxRetries(
         Common::Configuration::enuConfigSource::File
         );
 
-
-void TSManager::slotProcessResponse(const JSONConversationProtocol::stuResponse& _response)
-{
-    clsTranslationServer* Server = dynamic_cast<clsTranslationServer*>(sender());
-    if(Server){
-        Server->Response = _response;
-        Server->RWLock.unlock();
-    }
-}
-
 void TSManager::slotServerDisconnected()
 {
-    clsTranslationServer* Server = dynamic_cast<clsTranslationServer*>(sender());
+    clsTranslationServer* Server = dynamic_cast<clsTranslationServer*>(QObject::sender());
     if(Server){
         Server->Response = JSONConversationProtocol::stuResponse(
                     JSONConversationProtocol::stuResponse::Pong,
-                    "SERVER_DISCONNECTED");
+                    SERVER_DISCONNECTED);
         Server->RWLock.unlock();
     }
 }
 
-/*stuRPCOutput TSManager::rpcTranslate(const QVariantMap &_args)
+stuRPCOutput TSManager::rpcTranslate(const QVariantMap &_args){
+    Common::JSONConversationProtocol::stuResponse Response = this->baseTranslation(_args);
+    return stuRPCOutput(Response.Result, Response.Args);
+}
+
+Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const QVariantMap& _args)
 {
-    QString UUID = _args.value("UUID").toString();
-    QString Dir  = _args.value("Dir").toString();
+    QString Dir = _args.value("dir").toString();
+    qint32  PreferedServerInex = _args.value("pref", -1).toInt();
+
+    if (gConfigs::TranslationServers.contains(Dir) == false)
+        throw exTSManager("No translation server found for direction: " + Dir);
+
     for(int i=0; i<TSManager::MaxRetries.value(); ++i){
         try{
+            if (PreferedServerInex < 0 ||
+                PreferedServerInex >= (qint32)gConfigs::TranslationServers.values(Dir).size() ||
+                gConfigs::TranslationServers.values(Dir).at(
+                        PreferedServerInex).constData().Active.value() == false)
+                PreferedServerInex = Modules::TSMonitor::instance().bestServerIndex(Dir);
+
             clsTranslationServer* BestServer = new clsTranslationServer(
                         Dir,
-                        Modules::TSMonitor::instance().bestServerIndex(Dir));
-            BestServer->connect();
-            connect(BestServer,SIGNAL(sigResponse(Common::JSONConversationProtocol::stuResponse)),
-                    this, SLOT(slotProcessResponse(Common::JSONConversationProtocol::stuResponse)),
+                        PreferedServerInex,
+                        "rpcTranslate",
+                        _args);
+            connect(BestServer, &clsTranslationServer::sigDisconnected,
+                    this, &TSManager::slotServerDisconnected);
+            connect(BestServer, &clsTranslationServer::sigReadyForFirstRequest,
+                    BestServer, &clsTranslationServer::slotSendPredefinedRequest,
                     Qt::DirectConnection);
-            connect(BestServer,SIGNAL(sigDisconnected()), this, SLOT(slotServerDisconnected()));
-            connect(BestServer, SIGNAL(sigNextRequest()), this, SLOT(slotSendRequest()),Qt::DirectConnection);
+            BestServer->connect();
 
-            BestServer->RWLock.lockForWrite();
-
-            BestServer->sendRequest("rpcTranslate", _args);
             quint32 ElapsedCentiSeconds = 0;
             //Wait until response unlocks
-            while(!BestServer->RWLock.tryLockForRead()){
+            while(BestServer->isResponseReady() == false){
                 usleep(10000);
+                QCoreApplication::processEvents();
                 ++ElapsedCentiSeconds;
                 if (ElapsedCentiSeconds > TSManager::MaxTranslationTime.value() * 100){
                     BestServer->deleteLater();
-                    QVariantMap Error;
-                    Error.insert("msg","Translation Timed Out");
-                    return stuRPCOutput(-1, Error);
+                    throw exTSManager("Translation TimedOut");
                 }
             }
 
             if (BestServer->Response.Type == JSONConversationProtocol::stuResponse::Pong &&
-                    BestServer->Response.Result.toString() == "SERVER_DISCONNECTED"){
+                    BestServer->Response.Result.toString() == SERVER_DISCONNECTED){
+                BestServer->blockSignals(true);
                 BestServer->deleteLater();
+                PreferedServerInex = -1;
                 continue;
             }
+            BestServer->blockSignals(true);
+            BestServer->deleteLater();
 
-            return stuRPCOutput(BestServer->Response.Result, BestServer->Response.Args);
+            return BestServer->Response;
         }catch(exTSMonitor &e){
             throw exTSManager("No resources available");
         }
@@ -121,14 +129,36 @@ void TSManager::slotServerDisconnected()
     throw exTSManager("Unable to translate because max tries failed");
 }
 
-stuRPCOutput TSManager::rpcArrayTranslate(const QVariantMap &_args)
+TSManager::TSManager() : intfModule(this->moduleName())
 {
-    Q_UNUSED(_args)
-    throw exTSManager("Unable to translate because max tries failed");
+    this->exportMyRPCs();
 }
-*/
 
+/************************************************************/
+TSManagerJsonRPCService::TSManagerJsonRPCService()
+{
+    ConfigManager::instance().registerJsonRPCModule(*this);
+}
 
+QVariantList TSManagerJsonRPCService::translate(
+        quint32 _preferedServer,
+        QString _dir,
+        QString _text,
+        bool _brief,
+        bool _keep)
+{
+    QVariantMap Args;
+    Args.insert("txt", _text);
+    Args.insert("brief", _brief);
+    Args.insert("keep", _keep);
+    Args.insert("pref", _preferedServer);
+    Args.insert("dir", _dir);
+
+    Common::JSONConversationProtocol::stuResponse Response =
+            TSManager::instance().baseTranslation(Args);
+    return QVariantList()<<Response.Result<<Response.Args;
+
+}
 
 }
 }

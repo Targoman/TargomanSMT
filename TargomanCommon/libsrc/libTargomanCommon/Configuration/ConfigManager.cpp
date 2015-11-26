@@ -30,6 +30,7 @@
 #include <QSet>
 #include <QDir>
 #include <iostream>
+#include <functional>
 #include "ConfigManager.h"
 #include "Private/clsConfigManager_p.h"
 #include "Private/clsLegacyConfigOverTCP.h"
@@ -75,7 +76,10 @@ ConfigManager::~ConfigManager()
  * @exception throws exception if every configurable could not be cross validated
  */
 
-void ConfigManager::init(const QString& _license, const QStringList &_arguments, bool _minimal)
+void ConfigManager::init(const QString& _license,
+                         const QStringList &_arguments,
+                         fnAppInitializer_t _appInitializer,
+                         bool _minimal)
 {
     QString ErrorMessage;
 
@@ -127,9 +131,12 @@ void ConfigManager::init(const QString& _license, const QStringList &_arguments,
 
         if (this->pPrivate->ConfigFilePath.isEmpty()){
             this->pPrivate->ConfigFilePath = QCoreApplication::applicationDirPath() + QCoreApplication::applicationName() + ".ini";
-            if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false && SaveFile == false){
-                TargomanWarn(1, "No ConfigFile could be found. It is absolutely recomended to write one. Use --config-save to create one");
-                this->pPrivate->ConfigFilePath.clear();
+            if (QFileInfo(this->pPrivate->ConfigFilePath).isReadable() == false){
+                _appInitializer();
+                if(SaveFile == false){
+                    TargomanWarn(1, "No ConfigFile could be found. It is absolutely recomended to write one. Use --config-save to create one");
+                    this->pPrivate->ConfigFilePath.clear();
+                }
             }
         }
 
@@ -572,7 +579,8 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
             this->ConfigPath = _configPath;
 
         if (_configType == enuConfigType::Array ||
-                _configType == enuConfigType::FileBased)
+            _configType == enuConfigType::FileBased ||
+            _configType == enuConfigType::MultiMap)
             if (this->ConfigPath.endsWith("/") == false)
                 this->ConfigPath.append("/");
         this->ArgCount = this->shortHelp().size() ? this->ShortHelp.split(" ").size() : 0;

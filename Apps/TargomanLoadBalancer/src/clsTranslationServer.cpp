@@ -30,42 +30,63 @@ namespace Apps{
 
 using namespace Common;
 
-clsTranslationServer::clsTranslationServer(const QString &_dir, size_t _configIndex):
+clsTranslationServer::clsTranslationServer(const QString &_dir,
+                                           size_t _configIndex,
+                                           const QString &_requestRPC,
+                                           const QVariantMap &_requestArgs):
     TotalScore(0),
     Configs(gConfigs::TranslationServers.values(_dir).at(_configIndex).constData()),
+    Socket(new QTcpSocket),
     ConfigIndex(_configIndex),
     Dir(_dir),
-    LoggedIn(false)
-{ }
+    LoggedIn(false),
+    RequestRPC(_requestRPC),
+    RequestArgs(_requestArgs)
+{}
 
 void clsTranslationServer::connect()
 {
-    this->Socket.connectToHost(
+    this->Socket->connectToHost(
                 this->Configs.Host.value(),
                 this->Configs.Port.value());
-    this->Socket.setSocketOption(QTcpSocket::KeepAliveOption, true);
-    QObject::connect(&this->Socket,&QTcpSocket::connected,
+    this->Socket->setSocketOption(QTcpSocket::KeepAliveOption, true);
+    QObject::connect(this->Socket.data(),&QTcpSocket::connected,
                      this, &clsTranslationServer::slotConnected, Qt::DirectConnection);
-    QObject::connect(&this->Socket,&QTcpSocket::readyRead,
+    QObject::connect(this->Socket.data(),&QTcpSocket::readyRead,
                      this, &clsTranslationServer::slotReadyRead, Qt::DirectConnection);
-    QObject::connect(&this->Socket,&QTcpSocket::disconnected,
-                     this, &clsTranslationServer::slotDisconnected, Qt::DirectConnection);
+    QObject::connect(this->Socket.data(),&QTcpSocket::disconnected,
+                     this, &clsTranslationServer::sigDisconnected, Qt::DirectConnection);
+    this->RWLock.lockForWrite();
 }
 
 bool clsTranslationServer::isConnected()
 {
-    return this->Socket.isValid() && this->Socket.state() == QTcpSocket::ConnectedState && this->LoggedIn;
+    return this->Socket->isValid() && this->Socket->state() == QTcpSocket::ConnectedState;
 }
 
-qint64 clsTranslationServer::sendRequest(const QString& _name, const QVariantMap& _args)
-{
+qint64 clsTranslationServer::sendRequest(const QString& _rpc, const QVariantMap& _args){
     QByteArray Data = JSONConversationProtocol::prepareRequest(
                 JSONConversationProtocol::stuRequest(
-                    _name,
+                    _rpc,
                     (this->LastRequestUUID = QUuid::createUuid().toString()),
                     _args)).toUtf8();
-    TargomanDebug(8,"SendTo["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<Data);
-    return this->Socket.write(Data);
+    TargomanDebug(8,"SentTo["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<Data);
+    return this->Socket->write(Data);
+}
+
+qint64 clsTranslationServer::slotSendPredefinedRequest(){
+    return this->sendRequest(this->RequestRPC, this->RequestArgs);
+}
+
+void clsTranslationServer::resetScore() {
+    this->TotalScore = 0;
+}
+
+void clsTranslationServer::reset(){
+    this->Socket.take()->deleteLater();
+    this->Socket.reset(new QTcpSocket);
+    this->LoggedIn = false;
+    this->resetScore();
 }
 
 void clsTranslationServer::slotConnected()
@@ -79,7 +100,7 @@ void clsTranslationServer::slotConnected()
                          UserName,
                          this->Configs.Password.value(),
                          this->LastRequestUUID));
-    this->Socket.write(JSONConversationProtocol::prepareRequest(
+    this->Socket->write(JSONConversationProtocol::prepareRequest(
                            JSONConversationProtocol::stuRequest(
                                "login",
                                this->LastRequestUUID,
@@ -88,7 +109,7 @@ void clsTranslationServer::slotConnected()
 
 void clsTranslationServer::slotReadyRead()
 {
-    QByteArray ReceivedBytes = this->Socket.readLine();
+    QByteArray ReceivedBytes = this->Socket->readLine();
     if (ReceivedBytes.trimmed().isEmpty())
         return;
     TargomanDebug(8,"Received["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<ReceivedBytes);
@@ -100,17 +121,13 @@ void clsTranslationServer::slotReadyRead()
     }else if (Response.CallUID != this->LastRequestUUID){
         TargomanWarn(3, "Ignoring response with old UUID: "+ Response.CallUID);
     }else if (this->LoggedIn){
-        emit sigResponse(Response);
+        this->Response = Response;
+        this->RWLock.unlock();
+        emit sigResponse(this->Response);
     }else if (Response.Result.toUInt() >= 1){
         this->LoggedIn = true;
-        emit this->sigNextRequest();
+        emit sigReadyForFirstRequest();
     }
-}
-
-void clsTranslationServer::slotDisconnected()
-{
-    emit this->sigDisconnected();
-    this->deleteLater();
 }
 
 }

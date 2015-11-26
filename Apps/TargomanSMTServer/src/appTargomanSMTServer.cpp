@@ -59,7 +59,6 @@ void appTargomanSMTServer::slotExecute()
         clsTranslationJob::SourceLanguage =
                 ConfigManager::instance().getConfig("/Common/Language/Source").toString();
 
-
         Targoman::SMT::Translator::init(ConfigManager::instance().configSettings());
         Targoman::NLPLibs::TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());
 
@@ -127,7 +126,7 @@ stuRPCOutput appTargomanSMTServer::rpcTranslate(const QVariantMap &_args)
     TargomanLogDebug(7,QString("rpcTranslate(brief=%1,keep=%2,txt=%3) => Result not logged").arg(
                          _args.value("brief",false).toBool()).arg(
                          _args.value("keep",false).toBool()).arg(
-                         _args.value("txt").toString()));
+                         _args.value("txt").toString().replace("\n","\\n")));
     QVariantMap Result;
     Result.insert("t",clsTranslationJob(_args.value("brief",false).toBool(),
                                         _args.value("keep",false).toBool()).doJob(Text));

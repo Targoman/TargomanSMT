@@ -160,6 +160,7 @@ int main(int _argc, char *_argv[])
         Configuration::ConfigManager::instance().init(
                     QString(LicenseStr).arg(_argv[0]).arg(TARGOMAN_M2STR(PROJ_VERSION)).arg(__DATE__),
                     App.arguments().mid(1),
+                    [](){},
                     true
                     );
         TARGOMAN_IO_SETTINGS.setDefault(0,4);
