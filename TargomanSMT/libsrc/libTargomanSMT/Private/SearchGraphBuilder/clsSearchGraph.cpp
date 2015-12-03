@@ -63,7 +63,7 @@ using namespace SpecialTokenHandler;
 using namespace SpecialTokenHandler::OOV;
 
 tmplConfigurable<quint8> clsSearchGraph::HardReorderingJumpLimit(
-        clsSearchGraph::moduleBaseconfig() + "/HardReorderingJumpLimit",
+        MAKE_CONFIG_PATH("HardReorderingJumpLimit"),
         "TODO Desc",
         6,
         [] (const intfConfigurable& _item, QString&) {
@@ -74,20 +74,20 @@ tmplConfigurable<quint8> clsSearchGraph::HardReorderingJumpLimit(
 });
 
 tmplConfigurable<quint8> clsSearchGraph::ReorderingConstraintMaximumRuns(
-        clsSearchGraph::moduleBaseconfig() + "/ReorderingConstraintMaximumRuns",
+        MAKE_CONFIG_PATH("ReorderingConstraintMaximumRuns"),
         "IBM1 reordering constraint",
         2);
 tmplConfigurable<bool>   clsSearchGraph::DoComputePositionSpecificRestCosts(
-        clsSearchGraph::moduleBaseconfig() + "/DoComputePositionSpecificRestCosts",
+        MAKE_CONFIG_PATH("DoComputePositionSpecificRestCosts"),
         "TODO Desc",
         true);
 tmplConfigurable<quint8> clsPhraseCandidateCollectionData::MaxTargetPhraseCount(
-        clsSearchGraph::moduleBaseconfig() + "/MaxTargetPhraseCount",
+        MAKE_CONFIG_PATH("MaxTargetPhraseCount"),
         "TODO Desc",
         100);
 
 tmplConfigurable<bool>   clsSearchGraph::DoPrunePreInsertion(
-        clsSearchGraph::moduleBaseconfig() + "/PrunePreInsertion",
+        MAKE_CONFIG_PATH("PrunePreInsertion"),
         "TODO Desc",
         true);
 
@@ -599,6 +599,11 @@ clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _begin
             }
         this->BestApproximateCost = qMin(this->BestApproximateCost, ApproximateCost);
     }
+}
+
+QString clsPhraseCandidateCollectionData::moduleName()
+{
+    return clsSearchGraph::moduleName();
 }
 
 }

@@ -20,46 +20,47 @@
  ******************************************************************************/
 /**
  * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author Behrooz Vedadian <vedadian@targoman.com>
  */
 
-#ifndef TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
-#define TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
+// There is no transliteration for anything but Statistical Machine Translation!
+#ifndef SMT
 
-#include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/Validators.hpp"
-#include "libTargomanCommon/Macros.h"
+#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFTRANSLITRATOR_HPP
+#define TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFTRANSLITRATOR_HPP
+
+#include "libTargomanCommon/Types.h"
+#include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/exTargomanBase.h"
+#include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
+#include "Private/GlobalConfigs.h"
 
 namespace Targoman {
-namespace Apps {
+namespace SMT {
+namespace Private {
+/**
+ *  @brief Namespace surrounding all classes and interfaces to external libraries
+ */
+namespace Proxies {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTConsole, Common::exTargomanBase);
-
-TARGOMAN_DEFINE_ENHANCED_ENUM(enuAppMode,
-                              Translation,
-                              Training,
-                              MakeBinary
-                              );
-}
-}
-
-ENUM_CONFIGURABLE(Targoman::Apps::enuAppMode);
-
-namespace Targoman {
-namespace Apps {
-
-class gConfigs{
+class intfTransliterator : public Common::Configuration::intfModule
+{
 public:
-    static inline Common::Configuration::clsConfigPath appConfig(const QString& _name){
-        return Common::Configuration::clsConfigPath("App/" + _name);
-    }
-    static Common::Configuration::tmplConfigurable<enuAppMode::Type>    Mode;
-    static Common::Configuration::tmplConfigurable<QString>             InputFile;
-    static Common::Configuration::tmplConfigurable<QString>             InputText;
-    static Common::Configuration::tmplConfigurable<QString>             OutputFile;
-    static Common::Configuration::tmplConfigurable<quint8>              MaxThreads;
+    intfTransliterator(const QString& _moduleName) :
+        intfModule(_moduleName)
+    { }
+
+    virtual ~intfTransliterator() { }
+
+    virtual void init(QSharedPointer<QSettings> _configSettings) = 0;
+    virtual QString transliterate(QString _word) = 0;
+
 };
 
 }
 }
-#endif // TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
+}
+}
+#endif // TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFTRANSLITRATOR_HPP
+
+#endif

@@ -39,7 +39,7 @@ using namespace RuleTable;
 using namespace Targoman::Common::Configuration;
 
 tmplConfigurable<QString> OOVHandler::OOVHandlerModules(
-        OOVHandler::moduleName() + "/Handlers",
+        MAKE_CONFIG_PATH("Handlers"),
         "Name of OOVHandler Modules to be used. Comma Separated",
         "",
         [] (const intfConfigurable& _item, QString& _errorMessage) {
@@ -58,7 +58,7 @@ tmplConfigurable<QString> OOVHandler::OOVHandlerModules(
 });
 
 tmplConfigurable<bool> OOVHandler::CheckDifferentLetterCases(
-        OOVHandler::moduleName() + "/CheckDifferentLetterCases",
+        MAKE_CONFIG_PATH("CheckDifferentLetterCases"),
         "Check upper, lower and Pascal forms of unknown words",
         false);
 

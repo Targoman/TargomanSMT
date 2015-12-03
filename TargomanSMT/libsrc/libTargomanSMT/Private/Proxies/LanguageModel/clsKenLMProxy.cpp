@@ -40,7 +40,7 @@ using namespace Common;
 using namespace Common::Configuration;
 
 tmplConfigurable<FilePath_t> clsKenLMProxy::FilePath(
-        "KenLM/FilePath",
+        MAKE_CONFIG_PATH("FilePath"),
         "File path of ARPA or binary models",
         "",
         ConditionalPathValidator(

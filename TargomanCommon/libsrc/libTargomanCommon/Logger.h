@@ -216,8 +216,7 @@ public:
         return *(Q_LIKELY(Instance) ? Instance : (Instance = new Logger));
     }
     ~Logger();
-    static inline QString moduleName(){ return "Log";}
-
+    static inline QString moduleName(){ return "Logger";}
 
     bool init();
     /**

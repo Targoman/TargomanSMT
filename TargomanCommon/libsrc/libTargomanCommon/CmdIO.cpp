@@ -41,7 +41,7 @@ int targomanLinkedLibrariesCallback(struct dl_phdr_info *_info, size_t _size, vo
 using namespace Configuration;
 
 tmplConfigurable<bool> Silent(
-        CmdIO::moduleName() + "/Silent",
+        clsConfigPath(CmdIO::moduleName() + "/" + "Silent"),
         "Set output off",
         false,
         ReturnTrueCrossValidator,
@@ -60,7 +60,7 @@ tmplConfigurable<bool> Silent(
         );
 
 tmplConfigurable<bool> Full(
-        CmdIO::moduleName() + "/Full",
+        clsConfigPath(CmdIO::moduleName() + "/" + "Full"),
         "Set output to full mode",
         false,
         ReturnTrueCrossValidator,
@@ -77,7 +77,7 @@ tmplConfigurable<bool> Full(
         );
 
 tmplConfigurable<QStringList> DebugDetail(
-        CmdIO::moduleName() + "/DebugDetail",
+        clsConfigPath(CmdIO::moduleName() + "/" + "DebugDetail"),
         "Set Details to be shown for debug",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -100,7 +100,7 @@ tmplConfigurable<QStringList> DebugDetail(
         );
 
 tmplConfigurable<quint8> DebugLevel(
-        CmdIO::moduleName() + "/DebugLevel",
+        clsConfigPath(CmdIO::moduleName() + "/" + "DebugLevel"),
         "Set Debug level",
         0,
         [] (const intfConfigurable& _item, QString&){
@@ -115,7 +115,7 @@ tmplConfigurable<quint8> DebugLevel(
         );
 
 tmplConfigurable<QStringList> InfoDetail(
-        CmdIO::moduleName() + "/InfoDetail",
+        clsConfigPath(CmdIO::moduleName() + "/" + "InfoDetail"),
         "Set Details to be shown for Info",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -138,7 +138,7 @@ tmplConfigurable<QStringList> InfoDetail(
         );
 
 tmplConfigurable<quint8> InfoLevel(
-        CmdIO::moduleName() + "/InfoLevel",
+        clsConfigPath(CmdIO::moduleName() + "/" + "InfoLevel"),
         "Set Info level",
         5,
         [] (const intfConfigurable& _item, QString&){
@@ -153,7 +153,7 @@ tmplConfigurable<quint8> InfoLevel(
         );
 
 tmplConfigurable<QStringList> WarningDetail(
-        CmdIO::moduleName() + "/WarningDetail",
+        clsConfigPath(CmdIO::moduleName() + "/" + "WarningDetail"),
         "Set Details to be shown for Warning",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -176,7 +176,7 @@ tmplConfigurable<QStringList> WarningDetail(
         );
 
 tmplConfigurable<quint8> WarningLevel(
-        CmdIO::moduleName() + "/WarningLevel",
+        clsConfigPath(CmdIO::moduleName() + "/" + "WarningLevel"),
         "Set Warning level",
         5,
         [] (const intfConfigurable& _item, QString&){
@@ -191,7 +191,7 @@ tmplConfigurable<quint8> WarningLevel(
         );
 
 tmplConfigurable<QStringList> ErrorDetail(
-        CmdIO::moduleName() + "/ErrorDetail",
+        clsConfigPath(CmdIO::moduleName() + "/" + "ErrorDetail"),
         "Set Details to be shown for Error",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -214,7 +214,7 @@ tmplConfigurable<QStringList> ErrorDetail(
         );
 
 tmplConfigurable<QStringList> HappyDetail(
-        CmdIO::moduleName() + "/HappyDetail",
+        clsConfigPath(CmdIO::moduleName() + "/" + "HappyDetail"),
         "Set Details to be shown for Happy",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -237,7 +237,7 @@ tmplConfigurable<QStringList> HappyDetail(
         );
 
 tmplConfigurable<quint8> HappyLevel(
-        CmdIO::moduleName() + "/HappyLevel",
+        clsConfigPath(CmdIO::moduleName() + "/" + "HappyLevel"),
         "Set Happy level",
         5,
         [] (const intfConfigurable& _item, QString&){
@@ -252,7 +252,7 @@ tmplConfigurable<quint8> HappyLevel(
         );
 
 tmplConfigurable<QStringList> NormalDetail(
-        CmdIO::moduleName() + "/NormalDetail",
+        clsConfigPath(CmdIO::moduleName() + "/" + "NormalDetail"),
         "Set details to be shown for Normal",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -275,7 +275,7 @@ tmplConfigurable<QStringList> NormalDetail(
         );
 
 tmplConfigurable<quint8> NormalLevel(
-        CmdIO::moduleName() + "/NormalLevel",
+        clsConfigPath(CmdIO::moduleName() + "/" + "NormalLevel"),
         "Set Normal level",
         5,
         [] (const intfConfigurable& _item, QString&){

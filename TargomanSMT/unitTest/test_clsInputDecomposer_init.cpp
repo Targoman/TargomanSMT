@@ -31,9 +31,9 @@ void clsUnitTest::test_clsInputDecomposer_init()
     QStringList userDefinedTags;
     userDefinedTags << "tag1" << "tag2";
     gConfigs.SourceVocab.clear();
-    gConfigs.Separator.setFromVariant(",");
+    clsInput::TagSeparator.setFromVariant(",");
     clsInput::UserDefinedTags.setFromVariant(
-                userDefinedTags.join(gConfigs.Separator.value())
+                userDefinedTags.join(clsInput::TagSeparator.value())
                 );
     clsInput::IsIXML.setFromVariant(true);
     clsInput::DoNormalize.setFromVariant(false);

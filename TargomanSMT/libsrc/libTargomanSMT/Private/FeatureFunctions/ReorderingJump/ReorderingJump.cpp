@@ -39,12 +39,12 @@ using namespace RuleTable;
 TARGOMAN_REGISTER_SINGLETON_MODULE(ReorderingJump);
 
 Common::Configuration::tmplConfigurable<double>  ReorderingJump::ScalingFactor(
-        ReorderingJump::baseConfigPath() + "/ScalingFactor",
+        MAKE_CONFIG_PATH("ScalingFactor"),
         "Scaling factor for reordering jump model feature.",
         1.0);
 
 Common::Configuration::tmplConfigurable<quint8>  ReorderingJump::MaximumJumpWidth(
-        ReorderingJump::baseConfigPath() + "/MaximumJumpWidth",
+        MAKE_CONFIG_PATH("MaximumJumpWidth"),
         "Maximum jump width.",
         6);
 

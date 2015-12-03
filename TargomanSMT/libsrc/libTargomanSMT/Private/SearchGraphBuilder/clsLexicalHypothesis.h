@@ -154,6 +154,7 @@ public:
     bool insertHypothesis(clsSearchGraphNode& _node);
 
     void finalizeRecombination();
+    static QString moduleName();
 
 #ifdef TARGOMAN_SHOW_DEBUG
 private:

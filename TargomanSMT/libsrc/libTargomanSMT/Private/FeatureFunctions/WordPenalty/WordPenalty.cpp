@@ -39,7 +39,7 @@ using namespace RuleTable;
 TARGOMAN_REGISTER_SINGLETON_MODULE(WordPenalty);
 
 Common::Configuration::tmplConfigurable<double>  WordPenalty::ScalingFactor(
-        WordPenalty::baseConfigPath() + "/ScalingFactor",
+        MAKE_CONFIG_PATH("ScalingFactor"),
         "Scaling factor for word penalty feature.",
         1.0);
 

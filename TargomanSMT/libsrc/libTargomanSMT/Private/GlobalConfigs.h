@@ -44,6 +44,7 @@ class intfFeatureFunction;
 
 namespace Proxies {
 class intfLMSentenceScorer;
+class intfTransliterator;
 }
 
 // Global ActorUUID, back-off when the logging class is not a module or singlton
@@ -56,7 +57,6 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuWorkingModes,
                               DebugTrain);
 
 struct stuGlobalConfigs{
-    static Common::Configuration::tmplConfigurable<QString>                 Separator;
     static Common::Configuration::tmplConfigurable<QString>                 SourceLanguage;
     static Common::Configuration::tmplConfigurable<QString>                 TargetLanguage;
     static Common::Configuration::tmplConfigurable<enuWorkingModes::Type>   WorkingMode;
@@ -65,9 +65,14 @@ struct stuGlobalConfigs{
     static Common::Configuration::clsModuleConfig                           RuleTable;
 
     static QScopedPointer<SMT::Private::Proxies::intfLMSentenceScorer>      EmptyLMScorer;
+// There is no transliteration for anything but Statistical Machine Translation!
+#ifndef SMT
+    static Common::Configuration::clsModuleConfig                           Transliterator;
+#endif
     static QHash<QString, Common::WordIndex_t>                              SourceVocab;
 
     static QMap<QString, FeatureFunction::intfFeatureFunction*>             ActiveFeatureFunctions;
+    static QString moduleName(){return "Common";}
 };
 
 extern stuGlobalConfigs gConfigs;

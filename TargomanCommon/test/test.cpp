@@ -30,12 +30,12 @@ using namespace Targoman::Common::Configuration;
 ENUM_CONFIGURABLE_IMPL(/*Targoman::Common::Configuration::*/enuTestEnum);
 
 tmplConfigurable<enuTestEnum::Type> TestE(
-        "asds",
+        clsConfigPath("asds"),
         "sdd",
         /*Targoman::Common::Configuration::*/enuTestEnum::B);
 
 tmplConfigurable<QRegExp,true>     WildPattern(
-        "IncludePattern",
+        clsConfigPath("IncludePattern"),
         "FilePatterns to include when converting (WildCard format)",
         "",
         ReturnTrueCrossValidator,
@@ -47,7 +47,7 @@ tmplConfigurable<QRegExp,true>     WildPattern(
             enuConfigSource::File));
 
 tmplConfigurable<QRegExp,false>     RegexPattern(
-        "RegexPattern",
+        clsConfigPath("RegexPattern"),
         "FilePatterns to include when converting (WildCard format)",
         "",
         ReturnTrueCrossValidator,

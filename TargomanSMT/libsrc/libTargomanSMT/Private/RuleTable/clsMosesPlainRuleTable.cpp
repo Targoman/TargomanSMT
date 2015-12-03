@@ -56,7 +56,7 @@ TARGOMAN_REGISTER_MODULE(clsMosesPlainRuleTable);
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 
 tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::PhraseTableFilePath(
-        clsMosesPlainRuleTable::baseConfigPath() + "/PhraseTableFilePath",
+        MAKE_CONFIG_PATH("PhraseTableFilePath"),
         "Filepath where phrase table is stored",
         "",
         ConditionalPathValidator(
@@ -65,7 +65,7 @@ tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::PhraseTableFilePath(
         );
 
 tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::ReorderingTableFilePath(
-        clsMosesPlainRuleTable::baseConfigPath() + "/ReorderingTableFilePath",
+        MAKE_CONFIG_PATH("ReorderingTableFilePath"),
         "Filepath where reordering table is stored",
         "",
         ConditionalPathValidator(
@@ -74,7 +74,7 @@ tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::ReorderingTableFilePath(
         );
 
 tmplConfigurable<QString> clsMosesPlainRuleTable::WordAlignmentFilePath(
-        clsMosesPlainRuleTable::baseConfigPath() + "/WordAlignmentFilePath",
+        MAKE_CONFIG_PATH("WordAlignmentFilePath"),
         "Filepath where word alignment data of phrases is stored",
         "",
         [] (const intfConfigurable& _item, QString& _errorMessage) { \
@@ -89,7 +89,7 @@ tmplConfigurable<QString> clsMosesPlainRuleTable::WordAlignmentFilePath(
 
 
 tmplConfigurable<int> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(
-        clsMosesPlainRuleTable::baseConfigPath() + "/MaxRuleNodeTargetRuleCount",
+        MAKE_CONFIG_PATH("MaxRuleNodeTargetRuleCount"),
         "Maximum number of target rules kept for each rule node.",
         20,
         Validators::tmplNumericValidator<int, 0, 65536>

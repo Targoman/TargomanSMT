@@ -32,6 +32,8 @@
 #include "Private/OutputComposer/clsOutputComposer.h"
 #include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
+// TODO: This header must be included in OOVHandler module
+#include "Private/Proxies/intfTransliterator.h"
 
 
 namespace Targoman{
@@ -59,10 +61,15 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::intfLMSentenceScorer>());
     gConfigs.EmptyLMScorer->init(false);
 
+    // Transliteration exists just for Statistical Machine Translation
+#ifndef SMT
+    Proxies::intfTransliterator* Transliterator = gConfigs.Transliterator.getInstance<Proxies::intfTransliterator>();
+    Transliterator->init(_configSettings);
+#endif
+
     OOVHandler::instance().initialize();
     IXMLTagHandler::instance().initialize();
     SearchGraphBuilder::clsSearchGraph::init(_configSettings);
-
 
     TranslatorInitialized = true;
 }

@@ -72,6 +72,7 @@ public:
      */
     clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const QList<RuleTable::clsRuleNode>& _ruleNodes);
 
+    static QString moduleName();
 public:
     int UsableTargetRuleCount;
     QList<RuleTable::clsTargetRule> TargetRules;
@@ -231,8 +232,7 @@ public:
     }
 
 public:
-    static inline QString moduleName(){return "SearchGraphBuilder";}
-    static inline QString moduleBaseconfig(){return "/" + clsSearchGraph::moduleName();}
+    static QString moduleName(){return "SearchGraphBuilder";}
 
 private:
     clsSearchGraph(bool, const InputDecomposer::Sentence_t& _sentence) :

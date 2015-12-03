@@ -32,9 +32,10 @@ namespace Targoman {
 namespace Common {
 
 using namespace Configuration;
+#define CLASS_MODULE SimpleAuthentication
 
 tmplConfigurable<FilePath_t> SimpleAuthentication::UserInfoFile(
-        "Authentication/UserInfoFile",
+        MAKE_CONFIG_PATH("UserInfoFile"),
         "Path to file containing valid usernames and passwords",
         "",
         Validators::tmplPathAccessValidator<

@@ -535,6 +535,7 @@ void ConfigManager::startAdminServer()
 
 /***********************************************************************************************/
 namespace Private {
+
 class intfConfigurablePrivate{
 public:
     /**
@@ -556,14 +557,15 @@ public:
  * @brief constructor of intfConfigurable. this is where each configurable inserts itself to Configs hash map of pPrivate member of ConfigManager class.
  */
 intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
-                                   const QString &_configPath,
+                                   const clsConfigPath& _configPath,
                                    const QString &_description,
                                    const QString &_shortSwitch,
                                    const QString &_shortHelp,
                                    const QString &_longSwitch,
                                    enuConfigSource::Type _configSources,
                                    bool _remoteView,
-                                   const std::function<void(const intfConfigurable& _item)> &_finalizer) :
+                                   const std::function<void(const intfConfigurable& _item)> &_finalizer/*,
+                                   const QString _configRootPath*/) :
     pPrivate(new Private::intfConfigurablePrivate)
 {
     try{
@@ -573,10 +575,13 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
         this->LongSwitch = _longSwitch.toLower();
         this->ShortHelp = _shortHelp;
         this->pPrivate->Finalizer = _finalizer;
-        if (_configPath.startsWith('/'))
-            this->ConfigPath = _configPath.mid(1);
-        else
-            this->ConfigPath = _configPath;
+
+        this->ConfigPath = _configPath.Path;
+        this->ConfigPath.replace("//", "/");
+        this->ConfigPath.replace("//", "/");
+
+        if (this->ConfigPath.startsWith('/'))
+            this->ConfigPath = this->ConfigPath.mid(1);
 
         if (_configType == enuConfigType::Array ||
             _configType == enuConfigType::FileBased ||

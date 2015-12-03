@@ -40,7 +40,7 @@ using namespace RuleTable;
 TARGOMAN_REGISTER_SINGLETON_MODULE(LanguageModel);
 
 Common::Configuration::tmplConfigurable<double>  LanguageModel::ScalingFactor(
-        LanguageModel::baseConfigPath() + "/ScalingFactor",
+        MAKE_CONFIG_PATH("ScalingFactor"),
         "Scaling factor for language model feature.",
         1.0);
 

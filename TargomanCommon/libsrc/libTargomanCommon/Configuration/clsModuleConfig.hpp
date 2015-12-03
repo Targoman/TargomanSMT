@@ -39,7 +39,7 @@ namespace Configuration {
  */
 class clsModuleConfig : public intfConfigurable{
 public:
-    clsModuleConfig(const QString&  _configPath,
+    clsModuleConfig(const clsConfigPath&  _configPath,
                     const QString&  _description,
                     const QString&  _default,
                     const QString&  _shortSwitch = "",

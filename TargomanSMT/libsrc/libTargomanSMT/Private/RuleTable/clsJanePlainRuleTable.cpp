@@ -58,7 +58,7 @@ TARGOMAN_REGISTER_MODULE(clsJanePlainRuleTable);
 #define FFCONFIG_KEY_IDENTIFIER "Key"
 
 tmplConfigurable<FilePath_t> clsJanePlainRuleTable::FilePath(
-        clsJanePlainRuleTable::baseConfigPath() + "/FilePath",
+        MAKE_CONFIG_PATH("FilePath"),
         "FilePath where phrase table is stored",
         "",
         ConditionalPathValidator(
@@ -67,13 +67,13 @@ tmplConfigurable<FilePath_t> clsJanePlainRuleTable::FilePath(
         );
 
 tmplConfigurable<QString> clsJanePlainRuleTable::PhraseCostNames(
-        clsJanePlainRuleTable::baseConfigPath() + "/CostNames",
+        MAKE_CONFIG_PATH("CostNames"),
         "CostsNames as defined in Jane config File",
         "s2t,t2s,ibm1s2t,ibm1t2s,phrasePenalty,wordPenalty,s2tRatio,t2sRatio,cnt1,cnt2,cnt3");
 
 QList<tmplConfigurable<QString>> clsJanePlainRuleTable::FeatureFunctions = {
-    tmplConfigurable<QString>(clsJanePlainRuleTable::baseConfigPath() +
-    "/FeatureFunctions/" + FeatureFunction::LexicalReordering::moduleName() + FFCONFIG_KEY_IDENTIFIER,
+    tmplConfigurable<QString>(
+    MAKE_CONFIG_PATH("/FeatureFunctions/" + FFCONFIG_KEY_IDENTIFIER),
     "Abbreviation used for each Feature function in the rule table file",
     "lrm")
 };

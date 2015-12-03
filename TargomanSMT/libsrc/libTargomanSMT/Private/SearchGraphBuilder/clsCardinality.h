@@ -199,6 +199,7 @@ public:
      */
     size_t totalSearchGraphNodeCount() const{return this->Data->TotalSearchGraphNodeCount;}
 
+    static QString moduleName();
 private:
     /**
      * @brief updateWorstNode   updates the worst node cache for this cardinality

@@ -38,17 +38,17 @@ using namespace Common::Configuration;
 
 
 tmplConfigurable<quint16> clsCardinalityHypothesisContainer::MaxCardinalityContainerSize(
-        clsSearchGraph::moduleBaseconfig() + "/MaxCardinalityContainerSize",
+        MAKE_CONFIG_PATH("MaxCardinalityContainerSize"),
         "TODO Desc",
         100);
 tmplConfigurable<quint8> clsCardinalityHypothesisContainer::PrimaryCoverageShare(
-        clsSearchGraph::moduleBaseconfig() + "/PrimaryCoverageShare",
+        MAKE_CONFIG_PATH("PrimaryCoverageShare"),
         "TODO Desc",
         0
         );
 
 tmplConfigurable<double> clsCardinalityHypothesisContainer::SearchBeamWidth(
-        clsSearchGraph::moduleBaseconfig() + "/SearchBeamWidth",
+        MAKE_CONFIG_PATH("SearchBeamWidth"),
         "TODO Desc",
         5
         );
@@ -116,6 +116,11 @@ bool clsCardinalityHypothesisContainer::mustBePruned(Cost_t _cost) const
     if(_cost > this->Data->CostLimit)
         return true;
     return false;
+}
+
+QString clsCardinalityHypothesisContainer::moduleName()
+{
+    return clsSearchGraph::moduleName();
 }
 
 void clsCardinalityHypothesisContainer::updateWorstNode()

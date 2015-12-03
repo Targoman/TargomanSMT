@@ -41,27 +41,33 @@ using namespace RuleTable;
 TARGOMAN_REGISTER_SINGLETON_MODULE(LexicalReordering);
 
 tmplConfigurable<bool>      LexicalReordering::IsBidirectional(
-        LexicalReordering::baseConfigPath() + "/IsBidirectional",
+        MAKE_CONFIG_PATH("IsBidirectional"),
         "Configs lexical reordering beahviour which can be bidirectional (default) or unidirectional",
         true);
 
 tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/ForwardMonotone",
+    tmplConfigurable<double>(
+    MAKE_CONFIG_PATH("ForwardMonotone"),
     "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/ForwardSwap",
+    tmplConfigurable<double>(
+    MAKE_CONFIG_PATH("ForwardSwap"),
     "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/ForwardDiscontinous",
+    tmplConfigurable<double>(
+    MAKE_CONFIG_PATH("ForwardDiscontinous"),
     "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/BackwardMonotone",
+    tmplConfigurable<double>(
+    MAKE_CONFIG_PATH("BackwardMonotone"),
     "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/BackwardSwap",
+    tmplConfigurable<double>(
+    MAKE_CONFIG_PATH("BackwardSwap"),
     "Scaling factor for ForwardMonotone reordering score",
     1),
-    tmplConfigurable<double>(LexicalReordering::baseConfigPath() + "/BackwardDiscontinous",
+    tmplConfigurable<double>(
+    MAKE_CONFIG_PATH("BackwardDiscontinous"),
     "Scaling factor for ForwardMonotone reordering score",
     1)
 };

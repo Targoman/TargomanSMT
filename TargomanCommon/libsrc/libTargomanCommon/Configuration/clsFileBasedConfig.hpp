@@ -38,7 +38,7 @@ namespace Configuration {
  */
 class clsFileBasedConfig : public intfConfigurable{
 public:
-    clsFileBasedConfig(const QString&  _configPath) :
+    clsFileBasedConfig(const clsConfigPath&  _configPath) :
         intfConfigurable(enuConfigType::FileBased,
                          _configPath,
                          "OPTIONAL_CONFIGS_IN_FILE",

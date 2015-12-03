@@ -49,7 +49,7 @@ TARGOMAN_DEFINE_ENUM(enuAction,
 enuAction::Type SelectedAction = enuAction::Unknown;
 
 tmplConfigurable<bool> ActionAdd(
-        "Actions/Add",
+        clsConfigPath("Actions/Add"),
         "Add new user to specified file",
         false,
         [] (const intfConfigurable& _item, QString& _errorMessage) {
@@ -65,7 +65,7 @@ tmplConfigurable<bool> ActionAdd(
         },
         "a","","add",enuConfigSource::Arg);
 tmplConfigurable<bool> ActionRemove(
-        "Actions/Remove",
+        clsConfigPath("Actions/Remove"),
         "Delete user from specified file",
         false,
             [] (const intfConfigurable& _item, QString& _errorMessage) {
@@ -80,7 +80,7 @@ tmplConfigurable<bool> ActionRemove(
         },
         "r","","remove",enuConfigSource::Arg);
 tmplConfigurable<bool> ActionChangeParams(
-        "Actions/ChangeParams",
+        clsConfigPath("Actions/ChangeParams"),
         "Change Parameters or password of specified user",
         false,
         [] (const intfConfigurable& _item, QString& _errorMessage) {
@@ -96,7 +96,7 @@ tmplConfigurable<bool> ActionChangeParams(
         "g","","change",enuConfigSource::Arg);
 
 tmplConfigurable<FilePath_t> UserInfoFile(
-        "File/Path",
+        clsConfigPath("File/Path"),
         "File to where store information",
         "./tsa.ini",
         Validators::tmplPathAccessValidator<
@@ -107,7 +107,7 @@ tmplConfigurable<FilePath_t> UserInfoFile(
         "file");
 
 tmplConfigurable<QString> UserName(
-        "Arguments/User",
+        clsConfigPath("Arguments/User"),
         "Username",
         "",
         ReturnTrueCrossValidator,
@@ -116,7 +116,7 @@ tmplConfigurable<QString> UserName(
         "user",enuConfigSource::Arg);
 
 tmplConfigurable<QString> Password(
-        "Arguments/Pass",
+        clsConfigPath("Arguments/Pass"),
         "Password for specified user read from arguments set to - to read from stdin",
         "-",
         ReturnTrueCrossValidator,
@@ -125,7 +125,7 @@ tmplConfigurable<QString> Password(
         "pass");
 
 tmplConfigurable<QString> CIDR(
-        "Arguments/CIDR",
+        clsConfigPath("Arguments/CIDR"),
         "Valid IP-Range from which login is allowed in CIDR format",
         "0.0.0.0/0",
         ReturnTrueCrossValidator,
@@ -134,7 +134,7 @@ tmplConfigurable<QString> CIDR(
         "cidr",enuConfigSource::Arg);
 
 tmplConfigurable<QString> Access(
-        "/Arguments/Access",
+        clsConfigPath("Arguments/Access"),
         "Access can be r = ReadOnly or w = ReadWrite ",
         "r",
         [] (const intfConfigurable& _item, QString& _errorMessage) {

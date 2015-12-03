@@ -62,7 +62,7 @@ public:
 
 public:
     static Container_t retrieve(const SearchGraphBuilder::clsSearchGraph& _searchGraph);
-
+    static QString moduleName(){return "NBest";}
 private:
     static size_t fillBestOptions(NBestSuggestions::Container_t& _storage, const SearchGraphBuilder::clsSearchGraph &_searchGraph,
                                   const SearchGraphBuilder::clsSearchGraphNode& _currNode);

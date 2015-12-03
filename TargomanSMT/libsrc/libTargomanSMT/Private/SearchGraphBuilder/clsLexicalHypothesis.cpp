@@ -40,7 +40,7 @@ using namespace Common::Configuration;
 const Cost_t PBT_LEXICAL_HYPOTHESIS_CONTAINER_EMPTY_BEST = INFINITY;
 
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLexicalHypothesisContainer::KeepRecombined(
-        clsSearchGraph::moduleBaseconfig() + "/KeepRecombined",
+        MAKE_CONFIG_PATH("KeepRecombined"),
         "Do recombination(default) or let nodes to be separated",
         true
         );
@@ -120,6 +120,12 @@ const clsSearchGraphNode &clsLexicalHypothesisContainer::FindNode(const char *_t
     static clsSearchGraphNode InvalidSearchGraphNode;
     return InvalidSearchGraphNode;
 }
+
+QString clsLexicalHypothesisContainer::moduleName()
+{
+    return clsSearchGraph::moduleName();
+}
+
 #endif
 
 }

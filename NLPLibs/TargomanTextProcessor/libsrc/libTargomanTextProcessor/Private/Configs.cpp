@@ -37,7 +37,7 @@ using namespace Common::Configuration;
 stuConfigs Configs;
 
 tmplConfigurable<FilePath_t> stuConfigs::AbbreviationFile(
-        "TextProcessor/AbbreviationFile",
+        MAKE_CONFIG_PATH("AbbreviationFile"),
         "File path where abbreviations are stored",
         "",
         Validators::tmplPathAccessValidator<
@@ -45,7 +45,7 @@ tmplConfigurable<FilePath_t> stuConfigs::AbbreviationFile(
         false>
         );
 tmplConfigurable<FilePath_t> stuConfigs::NormalizationFile(
-        "TextProcessor/NormalizationFile",
+        MAKE_CONFIG_PATH("NormalizationFile"),
         "File path where normalization rules are stored",
         "",
         Validators::tmplPathAccessValidator<
@@ -53,7 +53,7 @@ tmplConfigurable<FilePath_t> stuConfigs::NormalizationFile(
         false>
         );
 tmplConfigurable<FilePath_t> stuConfigs::SpellCorrectorBaseConfigPath(
-        "TextProcessor/SpellCorrectorBaseConfigPath",
+        MAKE_CONFIG_PATH("SpellCorrectorBaseConfigPath"),
         "File path where spell correction dics are stored",
         "",
         Validators::tmplPathAccessValidator<
@@ -61,7 +61,8 @@ tmplConfigurable<FilePath_t> stuConfigs::SpellCorrectorBaseConfigPath(
         false>
         );
 clsFileBasedConfig       stuConfigs::SpellCorrectorLanguageBasedConfigs(
-        "TextProcessor/SpellCorrectorLanguageBasedConfigs");
+        MAKE_CONFIG_PATH("SpellCorrectorLanguageBasedConfigs")
+        );
 
 }
 }

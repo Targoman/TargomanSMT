@@ -61,6 +61,7 @@ public:
     Common::LogP_t lookupNGram(const QStringList & _ngram, quint8& _foundedGram) const;
     Common::LogP_t lookupNGram(const QList<Common::WordIndex_t> &_ngram, quint8& _foundedGram) const ;
 
+    static QString moduleName(){return "TargomanLM";}
 
 private:
     QScopedPointer<Private::clsLanguageModelPrivate> pPrivate;

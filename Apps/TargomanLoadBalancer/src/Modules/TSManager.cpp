@@ -38,7 +38,7 @@ const char*  SERVER_DISCONNECTED="SERVER_DISCONNECTED";
 
 
 tmplConfigurable<quint16> TSManager::MaxTranslationTime(
-        TSManager::instance().baseConfigPath() + "/MaxTranslationTime",
+        MAKE_CONFIG_PATH("MaxTranslationTime"),
         "Maximum time to wait for a translation response in seconds",
         120,
         Validators::tmplNumericValidator<quint32,1,5*60>,
@@ -47,7 +47,7 @@ tmplConfigurable<quint16> TSManager::MaxTranslationTime(
         );
 
 tmplConfigurable<quint8> TSManager::MaxRetries(
-        TSManager::instance().baseConfigPath() + "/MaxRetries",
+        MAKE_CONFIG_PATH("MaxRetries"),
         "Maximum tries to translate if disconnected from server",
         5,
         Validators::tmplNumericValidator<quint16,1,30>,

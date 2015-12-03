@@ -67,7 +67,7 @@ template <class itmplType_t>
 class tmplConfigurableArray : public intfConfigurable, public intfConfigurableArray
 {
 public:
-    tmplConfigurableArray(const QString&  _configPath  = "",
+    tmplConfigurableArray(const clsConfigPath&  _configPath = clsConfigPath(""),
                           const QString&  _description = ""):
         intfConfigurable(enuConfigType::Unknown,
                          _configPath,

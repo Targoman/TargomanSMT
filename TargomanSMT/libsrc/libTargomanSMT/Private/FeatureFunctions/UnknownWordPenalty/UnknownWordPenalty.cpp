@@ -39,7 +39,7 @@ using namespace RuleTable;
 TARGOMAN_REGISTER_SINGLETON_MODULE(UnknownWordPenalty);
 
 Common::Configuration::tmplConfigurable<double>  UnknownWordPenalty::ScalingFactor(
-        UnknownWordPenalty::baseConfigPath() + "/ScalingFactor",
+        MAKE_CONFIG_PATH("ScalingFactor"),
         "Scaling factor for unknown word penalty feature.",
         1.0);
 

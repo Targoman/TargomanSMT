@@ -60,6 +60,30 @@ class intfConfigurable;
 /// is no further crossvalidation condition.
 static std::function<void(const intfConfigurable&)> VoidFinalizer = [] (const intfConfigurable&) {};
 
+#ifndef CONFIG_ROOT_PATH
+#define CONFIG_ROOT_PATH /
+#endif
+
+/**
+ * @brief The clsConfigPath class is used to define a new config path and set it's base path
+ */
+class clsConfigPath{
+public:
+    clsConfigPath(const QString& _name,
+                  const QString& _base = "",
+                  const QString& _info = ""){
+        Q_UNUSED(_base)
+        Q_UNUSED(_info)
+        //qDebug()<<_base<<_info;
+        Path = QString(_base + "/" + _name);
+    }
+public:
+    QString Path;
+};
+
+#define MAKE_CONFIG_PATH(_name) \
+    Targoman::Common::Configuration::clsConfigPath(moduleName() + "/" + _name, TARGOMAN_M2STR(CONFIG_ROOT_PATH), Q_FUNC_INFO)
+
 /**
  * @brief This class is an interface for all kinds of configurables. Configurables are options and configurations of programs.
  *
@@ -78,7 +102,7 @@ public:
      * @param _longSwitch (Optional) Long switch to be used to configure item via program arguments
      */
     intfConfigurable(enuConfigType::Type _configType,
-                     const QString&  _configPath,
+                     const clsConfigPath&  _configPath,
                      const QString&  _description,
                      const QString&  _shortSwitch = "",
                      const QString&  _shortHelp = "",
@@ -91,6 +115,7 @@ public:
                      bool _remoteView = true,
                      const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer
                      );
+
 
     intfConfigurable(const intfConfigurable& _other);
 

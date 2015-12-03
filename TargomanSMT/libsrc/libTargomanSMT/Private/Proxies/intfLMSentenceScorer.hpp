@@ -41,8 +41,6 @@ namespace Private {
  */
 namespace Proxies {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);
-
 class intfLMSentenceScorer : public Common::Configuration::intfModule
 {
 public:

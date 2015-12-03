@@ -19,47 +19,55 @@
  *                                                                            *
  ******************************************************************************/
 /**
- * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author Behrooz Vedadian <vedadian@targoman.com>
+ * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
  */
 
-#ifndef TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
-#define TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
+// There is no transliteration for anything but Statistical Machine Translation!
+#ifndef SMT
 
-#include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/Validators.hpp"
-#include "libTargomanCommon/Macros.h"
-#include "libTargomanCommon/exTargomanBase.h"
-
-namespace Targoman {
-namespace Apps {
-
-TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTConsole, Common::exTargomanBase);
-
-TARGOMAN_DEFINE_ENHANCED_ENUM(enuAppMode,
-                              Translation,
-                              Training,
-                              MakeBinary
-                              );
-}
-}
-
-ENUM_CONFIGURABLE(Targoman::Apps::enuAppMode);
+#include "clsTargomanTransliteratorProxy.h"
+//#include "Private/GlobalConfigs.h"
+#ifndef TARGOMAN_CORE_TRANSLITERATOR_H
+#define TARGOMAN_CORE_TRANSLITERATOR_H
+#ifdef TARGOMAN_CORE_CLSTRANSLATOR_H
+#undef TARGOMAN_CORE_CLSTRANSLATOR_H
+#endif
+#ifdef TARGOMAN_CORE_TYPES_H
+#undef TARGOMAN_CORE_TYPES_H
+#endif
+#define SMT SWT
+#include "Translator.h"
+#undef SMT
+#endif
 
 namespace Targoman {
-namespace Apps {
+namespace SMT {
+namespace Private {
+namespace Proxies {
+namespace Transliteration {
 
-class gConfigs{
-public:
-    static inline Common::Configuration::clsConfigPath appConfig(const QString& _name){
-        return Common::Configuration::clsConfigPath("App/" + _name);
-    }
-    static Common::Configuration::tmplConfigurable<enuAppMode::Type>    Mode;
-    static Common::Configuration::tmplConfigurable<QString>             InputFile;
-    static Common::Configuration::tmplConfigurable<QString>             InputText;
-    static Common::Configuration::tmplConfigurable<QString>             OutputFile;
-    static Common::Configuration::tmplConfigurable<quint8>              MaxThreads;
-};
+TARGOMAN_REGISTER_SINGLETON_MODULE(clsTargomanTransliteratorProxy);
+
+clsTargomanTransliteratorProxy::clsTargomanTransliteratorProxy() :
+    intfTransliterator(this->moduleName())
+{ }
+
+void clsTargomanTransliteratorProxy::init(QSharedPointer<QSettings> _configSettings)
+{
+    Targoman::SWT::Translator::init(_configSettings);
+}
+
+QString clsTargomanTransliteratorProxy::transliterate(QString _word)
+{
+    Q_UNUSED(_word);
+    return QString();
+}
 
 }
 }
-#endif // TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
+}
+}
+}
+
+#endif

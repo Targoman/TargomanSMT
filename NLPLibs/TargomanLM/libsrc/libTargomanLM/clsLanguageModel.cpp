@@ -46,7 +46,7 @@ using namespace Private;
 using namespace Targoman::Common::Configuration;
 
 tmplConfigurable<FilePath_t> clsLanguageModel::FilePath(
-        "/TargomanLM/FilePath",
+        MAKE_CONFIG_PATH("FilePath"),
         "File path of ARPA or binary models",
         ""
         "",
@@ -55,19 +55,19 @@ tmplConfigurable<FilePath_t> clsLanguageModel::FilePath(
         );
 
 tmplConfigurable<double>  clsLanguageModel::DefaultUnknownProb(
-        "/TargomanLM/DefaultUnknownProb",
+        MAKE_CONFIG_PATH("DefaultUnknownProb"),
         "Default value for unknown words probability when not defined in model file",
         -100);
 tmplConfigurable<double>  clsLanguageModel::DefaultUnknownBackoff(
-        "/TargomanLM/DefaultUnknownBackoff",
+        MAKE_CONFIG_PATH("DefaultUnknownBackoff"),
         "Default value for unknown words backoff when not defined in model file",
         0);
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::UseIndexBasedModel(
-        "/TargomanLM/UseIndexBasedModel",
+        MAKE_CONFIG_PATH("UseIndexBasedModel"),
         "Whether to use Index-Based or String-Based model",
         true);
 Targoman::Common::Configuration::tmplConfigurable<bool> clsLanguageModel::VerifyBinaryChecksum(
-        "/TargomanLM/VerifyBinaryChecksum",
+        MAKE_CONFIG_PATH("VerifyBinaryChecksum"),
         "Whether to verify checksum on binary files or not",
         true);
 

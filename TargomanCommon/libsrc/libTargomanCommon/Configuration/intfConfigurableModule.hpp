@@ -77,6 +77,8 @@ class clsModuleRegistrar{
 public:
     clsModuleRegistrar(const QString& _name, stuInstantiator _instantiatior);
 };
+
+
 /**
  * @def TARGOMAN_DEFINE_MODULE adds three function and one data member to not singleton module classes.
  * Registrar member is the static member that is of type clsModuleRegistrar and will be instantiated before main to insert module instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
@@ -86,7 +88,6 @@ public: \
     void   unregister(){/*TARGOMAN_UNREGISTER_ACTOR;*/} \
     static QString moduleName(){_class::ActiveInstances.fetchAndAddOrdered(-1);return QStringLiteral(_name);}  \
     static Targoman::Common::Configuration::intfModule* instantiator(){_class::ActiveInstances.fetchAndAddOrdered(1); return new _class(_class::Instances.fetchAndAddOrdered(1));} \
-    static QString baseConfigPath(){return "/" + moduleName();} \
 private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
     static QAtomicInt Instances; \
@@ -104,7 +105,6 @@ public: \
     static _class& instance() {return *((_class*)_class::moduleInstance());} \
     static Targoman::Common::Configuration::intfModule* moduleInstance(){static _class* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
     static QString moduleName(){return QStringLiteral(_name);}  \
-    static QString baseConfigPath(){return "/" + moduleName();} \
 private: \
     Q_DISABLE_COPY(_class) \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;

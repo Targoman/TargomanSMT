@@ -35,7 +35,7 @@ using namespace Common;
 using namespace Common::Configuration;
 
 tmplConfigurable<quint16> TSMonitor::UpdateInterval(
-        TSMonitor::instance().baseConfigPath() + "/UpdateInterval",
+        MAKE_CONFIG_PATH("UpdateInterval"),
         "Interval to collect information from servers in seconds must be less than 100",
         1,
         Validators::tmplNumericValidator<quint8,1,100>,
@@ -44,7 +44,7 @@ tmplConfigurable<quint16> TSMonitor::UpdateInterval(
         );
 
 tmplConfigurable<quint16> TSMonitor::WaitOnUpdtae(
-        TSMonitor::instance().baseConfigPath() + "/WaitOnUpdtae",
+        MAKE_CONFIG_PATH("WaitOnUpdtae"),
         "miliseconds to wait before new update request this must be less than half of UpdateInterval",
         300,
         [] (const Common::Configuration::intfConfigurable& _item, QString& _errorMessage) {

@@ -40,6 +40,7 @@ struct stuConfigs{
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> NormalizationFile;
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> SpellCorrectorBaseConfigPath;
     static Targoman::Common::Configuration::clsFileBasedConfig SpellCorrectorLanguageBasedConfigs;
+    static QString moduleName(){return "TargomanTextProcessor";}
 }extern Configs;
 
 

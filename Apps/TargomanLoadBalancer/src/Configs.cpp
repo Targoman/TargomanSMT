@@ -111,7 +111,7 @@ gConfigs::stuServer::stuStatistics::stuStatistics(const QString &_basePath) :
   {}
 
 tmplConfigurableMultiMap<gConfigs::stuServer> gConfigs::TranslationServers(
-         "TranslationServers",
+        clsConfigPath("TranslationServers"),
         "List of valid translation servers to connect to them separated by their translation direction");
 
 tmplConfigurable<quint16>     gConfigs::MaxConcurrentClients(

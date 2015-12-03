@@ -18,7 +18,12 @@
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
-ProjectName="TargomanSMT"
+if($$ProjectName) { 
+  ProjectName="TargomanSMT"
+}else{
+  message("***************************>$$ProjectName<***************************")
+}
+message("===========================>$$ProjectName<===========================")
 VERSION=0.1.0
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#

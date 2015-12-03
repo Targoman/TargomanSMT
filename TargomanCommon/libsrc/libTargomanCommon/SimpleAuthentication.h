@@ -67,6 +67,8 @@ public:
                              bool  _canView,
                              bool  _canChange);
 
+    static QString moduleName(){return "SimpleAuthentication";}
+
 public:
     static Common::Configuration::tmplConfigurable<FilePath_t> UserInfoFile;
 };

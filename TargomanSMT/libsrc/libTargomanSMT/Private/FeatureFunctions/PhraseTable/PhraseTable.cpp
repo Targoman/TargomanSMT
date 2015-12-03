@@ -39,7 +39,7 @@ using namespace RuleTable;
 TARGOMAN_REGISTER_SINGLETON_MODULE(PhraseTable);
 
 clsFileBasedConfig   PhraseTable::ScalingFactorsConfigSection(
-        PhraseTable::baseConfigPath() + "/ScalingFactors/");
+        MAKE_CONFIG_PATH("ScalingFactors"));
 
 QStringList   PhraseTable::ColumnNames;
 

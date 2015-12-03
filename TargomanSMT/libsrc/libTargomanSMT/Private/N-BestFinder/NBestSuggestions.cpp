@@ -37,7 +37,7 @@ using namespace SearchGraphBuilder;
 using namespace RuleTable;
 
 tmplConfigurable<quint8> NBestSuggestions::MaxSuggestions(
-        "NBestFinder/MaxSuggestions",
+        MAKE_CONFIG_PATH("MaxSuggestions"),
         "Maximum number of suggestions to output",
         5
         );

@@ -38,8 +38,8 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTServer, Common::exTargomanBase);
 
 class gConfigs{
 public:
-    static inline QString appConfig(const QString& _name){
-        return "App/" + _name;
+    static inline Common::Configuration::clsConfigPath appConfig(const QString& _name){
+        return Common::Configuration::clsConfigPath("App/" + _name);
     }
 
     static Common::Configuration::tmplConfigurable<quint8>           MaxThreads;

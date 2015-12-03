@@ -40,8 +40,10 @@ namespace Common {
 
 using namespace Configuration;
 
+#define CLASS_MODULE Logger
+
 tmplConfigurable<QString> LogFile(
-        Logger::moduleName() + "/File",
+        clsConfigPath(Logger::moduleName() + "/" + "File"),
         "Log File to store logs. If not set then no log file will be generated",
         "",
         [] (const intfConfigurable& _item, QString&){
@@ -58,7 +60,7 @@ tmplConfigurable<QString> LogFile(
 
 
 tmplConfigurable<bool> DontShow(
-        Logger::moduleName() + "/DontShow",
+        clsConfigPath(Logger::moduleName() + "/" + "DontShow"),
         "Disable showing logs while saving",
         false,
         [] (const intfConfigurable& _item, QString&){
@@ -73,7 +75,7 @@ tmplConfigurable<bool> DontShow(
         );
 
 tmplConfigurable<bool> Disable(
-        Logger::moduleName() + "/Disable",
+        clsConfigPath(Logger::moduleName() + "/" + "Disable"),
         "Disable logs",
         false,
         [] (const intfConfigurable& _item, QString&){
@@ -90,7 +92,7 @@ tmplConfigurable<bool> Disable(
 static clsLogSettings* LogSettings = new clsLogSettings[enuLogType::getCount()];
 
 tmplConfigurable<QStringList> LogDebugDetail(
-        Logger::moduleName() + "/DebugDetail",
+        clsConfigPath(Logger::moduleName() + "/" + "DebugDetail"),
         "Set Details of debugging logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -111,7 +113,7 @@ tmplConfigurable<QStringList> LogDebugDetail(
         );
 
 tmplConfigurable<quint8> LogDebugLevel(
-        Logger::moduleName() + "/DebugLevel",
+        clsConfigPath(Logger::moduleName() + "/" + "DebugLevel"),
         "Set debug log level",
         5,
         [] (const intfConfigurable& _item, QString&){
@@ -126,7 +128,7 @@ tmplConfigurable<quint8> LogDebugLevel(
         );
 
 tmplConfigurable<QStringList> LogWarningDetail(
-        Logger::moduleName() + "/WarningDetail",
+        clsConfigPath(Logger::moduleName() + "/" + "WarningDetail"),
         "Set details of warning logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -147,7 +149,7 @@ tmplConfigurable<QStringList> LogWarningDetail(
         );
 
 tmplConfigurable<quint8> LogWarningLevel(
-        Logger::moduleName() + "/WarningLevel",
+        clsConfigPath(Logger::moduleName() + "/" + "WarningLevel"),
         "Set warning log level",
         5,
         [] (const intfConfigurable& _item, QString&){
@@ -162,7 +164,7 @@ tmplConfigurable<quint8> LogWarningLevel(
         );
 
 tmplConfigurable<QStringList> LogErrorDetail(
-        Logger::moduleName() + "/ErrorDetail",
+        clsConfigPath(Logger::moduleName() + "/" + "ErrorDetail"),
         "Set details of error logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -183,7 +185,7 @@ tmplConfigurable<QStringList> LogErrorDetail(
         );
 
 tmplConfigurable<QStringList> LogInfoDetail(
-        Logger::moduleName() + "/InfoDetail",
+        clsConfigPath(Logger::moduleName() + "/" + "InfoDetail"),
         "Set details of informative Logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -204,7 +206,7 @@ tmplConfigurable<QStringList> LogInfoDetail(
         );
 
 tmplConfigurable<quint8> LogInfoLevel(
-        Logger::moduleName() + "/InfoLevel",
+        clsConfigPath(Logger::moduleName() + "/" + "InfoLevel"),
         "Set informative log level",
         5,
         [] (const intfConfigurable& _item, QString&){
@@ -219,7 +221,7 @@ tmplConfigurable<quint8> LogInfoLevel(
         );
 
 tmplConfigurable<QStringList> LogHappyDetail(
-        Logger::moduleName() + "/HappyDetail",
+        clsConfigPath(Logger::moduleName() + "/" + "HappyDetail"),
         "Set Details of happy logs",
         QStringList()<<"true"<<"true",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -240,7 +242,7 @@ tmplConfigurable<QStringList> LogHappyDetail(
         );
 
 tmplConfigurable<quint8> LogHappyLevel(
-        Logger::moduleName() + "/HappyLevel",
+        clsConfigPath(Logger::moduleName() + "/" + "HappyLevel"),
         "Set happy log level",
         5,
         [] (const intfConfigurable& _item, QString&){

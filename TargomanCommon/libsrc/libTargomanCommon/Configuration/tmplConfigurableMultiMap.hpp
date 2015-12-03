@@ -40,10 +40,10 @@ template <class itmplType_t>
 class tmplConfigurableMultiMap : public intfConfigurable, public intfConfigurableMultiMap
 {
 public:
-    tmplConfigurableMultiMap(const QString&  _configPath,
-                                 const QString&  _description) :
+    tmplConfigurableMultiMap(const clsConfigPath&  _configPath,
+                             const QString&  _description = "") :
         intfConfigurable(enuConfigType::MultiMap,
-                         _configPath + "/",
+                         _configPath.Path + "/",
                          _description)
     {
         this->RemoteViewAllowed = false;

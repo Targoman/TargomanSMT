@@ -43,22 +43,27 @@ using namespace SpecialTokenHandler::IXMLTagHandler;
 QSet<QString>    clsInput::SpecialTags;
 
 Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags(
-        clsInput::moduleName() + "/UserDefinedTags",
+        MAKE_CONFIG_PATH("UserDefinedTags"),
         "Valid user defined XML tags that must be stored with their attributes."
         "These must not overlap with predefined XML Tags",
         ""
         /*TODO add lambda to check overlap*/);
+Configuration::tmplConfigurable<QString>  clsInput::TagSeparator(
+        MAKE_CONFIG_PATH("TagSeparator"),
+        "Separator string between tags."
+        ";:;");
+
 Configuration::tmplConfigurable<bool>    clsInput::IsIXML(
-        clsInput::moduleName() + "/IsIXML",
+        MAKE_CONFIG_PATH("IsIXML"),
         "Input is in Plain text(default) or IXML format",
         false);
 Configuration::tmplConfigurable<bool>    clsInput::DoNormalize(
-        clsInput::moduleName() + "/DoNormalize",
+        MAKE_CONFIG_PATH("DoNormalize"),
         "Normalize Input(default) or let it unchanged",
         true);
 
 Configuration::tmplConfigurable<bool>    clsInput::TagNameEntities(
-        clsInput::moduleName() + "/TagNameEntities",
+        MAKE_CONFIG_PATH("TagNameEntities"),
         "Use NER to tag name entities",
         false);
 
@@ -86,7 +91,7 @@ void clsInput::init(QSharedPointer<QSettings> _configSettings)
         TargomanTextProcessor::instance().init(_configSettings);
 
     if (UserDefinedTags.value().size())
-        foreach(const QString& Tag, UserDefinedTags.value().split(gConfigs.Separator.value()))
+        foreach(const QString& Tag, UserDefinedTags.value().split(clsInput::TagSeparator.value()))
             clsInput::SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         clsInput::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));

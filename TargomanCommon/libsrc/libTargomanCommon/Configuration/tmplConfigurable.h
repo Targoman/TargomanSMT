@@ -49,7 +49,7 @@ static std::function<bool(const intfConfigurable& _item,
 template <class itmplType_t, bool ... _rest> class tmplConfigurable : public intfConfigurable
 {
 public:
-    tmplConfigurable(const QString&  _configPath,
+    tmplConfigurable(const clsConfigPath&  _configPath,
                      const QString&  _description,
                      const QVariant& _default = QVariant(),
                      const std::function< bool(const intfConfigurable& _item,
@@ -72,12 +72,13 @@ public:
                          _LongSwitch,
                          _configSources,
                          _remoteView,
-                         _finalizer)
+                         _finalizer
+                         )
     {
         try{
             QString ErrorMessage;
             if (!this->validate(_default, ErrorMessage)){
-                throw exTargomanInitialization("Invalid default value for: " + _configPath + ": " + ErrorMessage);
+                throw exTargomanInitialization("Invalid default value for: " + _configPath.Path + ": " + ErrorMessage);
             }
             this->setFromVariant(_default);
             if (this->ShortHelp.size()){

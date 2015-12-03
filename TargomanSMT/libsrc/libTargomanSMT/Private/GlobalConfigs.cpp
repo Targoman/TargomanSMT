@@ -26,6 +26,7 @@
 
 #include "GlobalConfigs.h"
 #include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/intfTransliterator.h"
 #include "ISO639.h"
 
 namespace Targoman {
@@ -42,12 +43,8 @@ QString ActorUUID;
 
 stuGlobalConfigs gConfigs;
 
-tmplConfigurable<QString> stuGlobalConfigs::Separator(
-        "/Common/Separator",
-        "Separator used on multi field configurations",
-        ";:;");
 tmplConfigurable<QString> stuGlobalConfigs::SourceLanguage(
-        "/Common/Language/Source",
+        MAKE_CONFIG_PATH("Language/Source"),
         "Source language from which translating",
         "en",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -55,12 +52,15 @@ tmplConfigurable<QString> stuGlobalConfigs::SourceLanguage(
                 return true;
             _errorMessage = "Invalid ISO639 Code ("+_item.toVariant().toString() +") for Source Language";
             return false;
-        },
-        "sl",
+        }
+#ifndef SMT
+        ,"sl",
         "SOURCE_LANG",
-        "source-lang");
+        "source-lang"
+#endif
+);
 tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage(
-        "/Common/Language/Destination",
+        MAKE_CONFIG_PATH("Language/Destination"),
         "Destination Language to which translating",
         "fa",
         [] (const intfConfigurable& _item, QString& _errorMessage){
@@ -68,31 +68,49 @@ tmplConfigurable<QString> stuGlobalConfigs::TargetLanguage(
                 return true;
             _errorMessage = "Invalid ISO639 Code ("+_item.toVariant().toString() +") for Target Language";
             return false;
-        },
-        "tl",
+        }
+#ifndef SMT
+        ,"tl",
         "SOURCE_LANG",
-        "target-lang");
+        "target-lang"
+#endif
+);
 
 tmplConfigurable<enuWorkingModes::Type> stuGlobalConfigs::WorkingMode(
-        "/Common/WorkingMode",
+        MAKE_CONFIG_PATH("Language/WorkingMode"),
         "WorkingModes can be (" + enuWorkingModes::options().join("|") + ")",
         enuWorkingModes::toStr(enuWorkingModes::Decode),
-        ReturnTrueCrossValidator,
-        "wm",
-        "WORKING_MODE",
-        "working-mode"
+        ReturnTrueCrossValidator
+#ifndef SMT
+    ,"wm",
+    "WORKING_MODE",
+    "working-mode"
+#endif
         );
 
 QMap<QString, FeatureFunction::intfFeatureFunction*>       stuGlobalConfigs::ActiveFeatureFunctions;
 
-clsModuleConfig         stuGlobalConfigs::LM("/Modules/LM",
-                                             "TODO Desc",
-                                             "KenLMProxy");
-clsModuleConfig         stuGlobalConfigs::RuleTable("/Modules/RuleTable",
-                                                    "TODO Desc",
-                                                    "BinaryRuleTable");
-QScopedPointer<Targoman::SMT::Private::Proxies::intfLMSentenceScorer>  stuGlobalConfigs::EmptyLMScorer;
-QHash<QString, Common::WordIndex_t>                            stuGlobalConfigs::SourceVocab;
+clsModuleConfig         stuGlobalConfigs::LM(
+        MAKE_CONFIG_PATH("Modules/LM"),
+        "TODO Desc",
+        "KenLMProxy");
+#ifndef SMT
+// There is no transliteration for anything but Statistical Machine Translation!
+clsModuleConfig         stuGlobalConfigs::Transliterator(
+        MAKE_CONFIG_PATH("Modules/Transliterator"),
+        "TODO Desc",
+        "TargomanTransliteratorProxy");
+#endif
+clsModuleConfig         stuGlobalConfigs::RuleTable(
+        MAKE_CONFIG_PATH("Modules/RuleTable"),
+        "TODO Desc",
+        "BinaryRuleTable");
+
+QScopedPointer<Targoman::SMT::Private::Proxies::intfLMSentenceScorer>
+    stuGlobalConfigs::EmptyLMScorer;
+
+QHash<QString, Common::WordIndex_t>
+    stuGlobalConfigs::SourceVocab;
 
 
 

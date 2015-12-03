@@ -39,7 +39,7 @@ using namespace std::placeholders;
 using namespace InputDecomposer;
 
 tmplConfigurable<QString> IXMLTagHandler::IXMLTagHandlerModules(
-        IXMLTagHandler::moduleName() + "/Handlers",
+        MAKE_CONFIG_PATH("Handlers"),
         "Name of IXMLTagHandler Modules to be used. Comma Separated",
         "",
         [] (const intfConfigurable& _item, QString& _errorMessage) {
@@ -58,12 +58,12 @@ tmplConfigurable<QString> IXMLTagHandler::IXMLTagHandlerModules(
 });
 
 tmplConfigurable<bool> IXMLTagHandler::IgnoreUserDefinedTags(
-        IXMLTagHandler::moduleName() + "/IgnoreUserDefinedTags",
+        MAKE_CONFIG_PATH("IgnoreUserDefinedTags"),
         "Whether ignore user defined tags or not",
         true);
 
 tmplConfigurable<bool> IXMLTagHandler::KeepUnknownUserDefinedTags(
-        IXMLTagHandler::moduleName() + "/KeepUnknownUserDefinedTags",
+        MAKE_CONFIG_PATH("KeepUnknownUserDefinedTags"),
         "If user defined tag does not exist in source vocab, whether keep user defined tags or not",
         false);
 

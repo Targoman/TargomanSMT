@@ -1,7 +1,4 @@
 ################################################################################
-# Copyright © 2012-2015, Targoman.com
-#
-################################################################################
 #   Targoman: A robust Statistical Machine Translation framework
 #
 #   Copyright 2014-2015 by ITRC <http://itrc.ac.ir>
@@ -21,12 +18,10 @@
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with Targoman. If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
-BasePath = ".."
+#Project name overridden
+ProjectName="TargomanSWT"
 
-TEMPLATE = subdirs
-
-SUBDIRS += libsrc_swt libsrc_smt
-CONFIG += ordered
-
-libsrc_swt.file = ./libsrc_swt.pro
-libsrc_smt.file = ./libsrc_smt.pro
+CONFIG += build_static
+DEFINES += SMT=SWT
+DEFINES += CONFIG_ROOT_PATH=/SWT/
+include(libsrc_common.pri)

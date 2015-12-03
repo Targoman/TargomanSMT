@@ -20,46 +20,43 @@
  ******************************************************************************/
 /**
  * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author Behrooz Vedadian <vedadian@targoman.com>
  */
 
-#ifndef TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
-#define TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
+// There is no transliteration for anything but Statistical Machine Translation!
+#ifndef SMT
 
-#include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/Validators.hpp"
-#include "libTargomanCommon/Macros.h"
-#include "libTargomanCommon/exTargomanBase.h"
+#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_CLSTARGOMANTRANSLITERATORPROXY_H
+#define TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_CLSTARGOMANTRANSLITERATORPROXY_H
 
-namespace Targoman {
-namespace Apps {
-
-TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTConsole, Common::exTargomanBase);
-
-TARGOMAN_DEFINE_ENHANCED_ENUM(enuAppMode,
-                              Translation,
-                              Training,
-                              MakeBinary
-                              );
-}
-}
-
-ENUM_CONFIGURABLE(Targoman::Apps::enuAppMode);
+#include "Private/Proxies/intfTransliterator.h"
 
 namespace Targoman {
-namespace Apps {
+namespace SMT {
+namespace Private {
+namespace Proxies {
+namespace Transliteration {
 
-class gConfigs{
+class clsTargomanTransliteratorProxy : public intfTransliterator
+{
 public:
-    static inline Common::Configuration::clsConfigPath appConfig(const QString& _name){
-        return Common::Configuration::clsConfigPath("App/" + _name);
-    }
-    static Common::Configuration::tmplConfigurable<enuAppMode::Type>    Mode;
-    static Common::Configuration::tmplConfigurable<QString>             InputFile;
-    static Common::Configuration::tmplConfigurable<QString>             InputText;
-    static Common::Configuration::tmplConfigurable<QString>             OutputFile;
-    static Common::Configuration::tmplConfigurable<quint8>              MaxThreads;
+    explicit clsTargomanTransliteratorProxy();
+
+    ~clsTargomanTransliteratorProxy(){}
+
+    void init(QSharedPointer<QSettings> _configSettings);
+
+    QString transliterate(QString _word);
+
+private:
+    TARGOMAN_DEFINE_SINGLETONMODULE("TargomanTransliteratorProxy", clsTargomanTransliteratorProxy);
 };
 
 }
 }
-#endif // TARGOMAN_APPS_TARGOMANSMTCONSOLE_CONFIGS_H
+}
+}
+}
+#endif // TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_CLSTARGOMANTRANSLITERATORPROXY_H
+
+#endif
