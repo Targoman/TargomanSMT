@@ -74,7 +74,7 @@ private:
     static Targoman::Common::Configuration::tmplConfigurable<QString>   WordAlignmentFilePath;        /**< File name of word level alignment of phrases. */
     static Targoman::Common::Configuration::tmplConfigurable<int>       MaxRuleNodeTargetRuleCount;     /**< Maximum number of target rules kept for each rule node. */
 
-    TARGOMAN_DEFINE_MODULE("MosesPTPlain", clsMosesPlainRuleTable);
+    TARGOMAN_DEFINE_MODULE(MosesPlainRuleTable);
 };
 
 }

@@ -37,13 +37,13 @@ namespace IXMLTagHandler {
 class clsOrderedListItemHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsOrderedListItemHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
+    explicit clsOrderedListItemHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
     { }
     ~clsOrderedListItemHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);
     QString getDefaultTranslation(const QString& _token);
 private:
-    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::OrderedListItem, "clsOrderedListItemHandler", clsOrderedListItemHandler);
+    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::OrderedListItem, OrderedListItemHandler);
 
 };
 

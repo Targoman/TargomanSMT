@@ -177,7 +177,7 @@ private:
 
     friend class clsTargetRuleData;
     friend class UnitTestNameSpace::clsUnitTest;
-    friend class clsDummyFeatureFunctionForInsertion;
+    friend class DummyFeatureFunctionForInsertion;
 };
 
 /**

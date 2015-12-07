@@ -79,7 +79,7 @@ QList<tmplConfigurable<QString>> clsJanePlainRuleTable::FeatureFunctions = {
 };
 
 clsJanePlainRuleTable::clsJanePlainRuleTable(quint64 _instanceID)  :
-    intfRuleTable(this->moduleName(), _instanceID)
+    intfRuleTable(_instanceID)
 {}
 
 clsJanePlainRuleTable::~clsJanePlainRuleTable()

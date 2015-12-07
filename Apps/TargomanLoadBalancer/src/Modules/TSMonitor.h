@@ -66,9 +66,9 @@ public:
 
 private:
     void run();
-    TSMonitor() : intfModule(this->moduleName()) {}
+    TSMonitor() {}
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("TSMonitor", TSMonitor)
+    TARGOMAN_DEFINE_SINGLETONMODULE(TSMonitor)
 private:
     QScopedPointer<TSMonitorPrivate> pPrivate;
 

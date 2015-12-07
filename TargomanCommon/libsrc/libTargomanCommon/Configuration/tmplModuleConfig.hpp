@@ -24,8 +24,8 @@
  * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
  */
 
-#ifndef TARGOMAN_COMMON_CONFIGURATION_CLSMODULECONFIG_HPP
-#define TARGOMAN_COMMON_CONFIGURATION_CLSMODULECONFIG_HPP
+#ifndef TARGOMAN_COMMON_CONFIGURATION_TMPLMODULECONFIG_HPP
+#define TARGOMAN_COMMON_CONFIGURATION_TMPLMODULECONFIG_HPP
 
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
@@ -37,9 +37,10 @@ namespace Configuration {
  * @brief This class is a derivation of intfConfigurable that is specific for module configurables
  * (for example for setting language model module in program configuration)
  */
-class clsModuleConfig : public intfConfigurable{
+template<class itmplAcceptableInterface>
+class tmplModuleConfig : public intfConfigurable{
 public:
-    clsModuleConfig(const clsConfigPath&  _configPath,
+    tmplModuleConfig(const clsConfigPath&  _configPath,
                     const QString&  _description,
                     const QString&  _default,
                     const QString&  _shortSwitch = "",
@@ -56,6 +57,7 @@ public:
                             enuConfigSource::File),
                          false){
         this->ActiveModuleName = _default;
+        this->AcceptableModule = itmplAcceptableInterface::moduleScope();
     }
     virtual inline void setFromVariant(const QVariant& _var){
         this->ActiveModuleName = _var.toString();
@@ -74,9 +76,18 @@ public:
      * @exception throws exeption if module doesn't have a instantiator.
      */
     virtual inline void finalizeConfig(){
-        this->Instantiatior = ConfigManager::instance().getInstantiator(this->ActiveModuleName);
+        this->Instantiatior =
+                ConfigManager::instance().getInstantiator(
+                    this->AcceptableModule + "::" + this->ActiveModuleName);
         if (this->Instantiatior == NULL)
-            throw exConfiguration("Invalid module name <" + this->ActiveModuleName + "> for " + this->configPath());
+            throw exConfiguration(
+                    QString("Invalid module name <%1> for %d\nValid Options are: (%3)").arg(
+                        this->ActiveModuleName).arg(
+                        this->ConfigPath).arg(
+                        ConfigManager::instance().registeredModules(
+                            this->AcceptableModule).join('|')
+                        )
+                    );
     }
     /**
      * @brief returns #Instantiator.
@@ -96,9 +107,10 @@ public:
 private:
     QString ActiveModuleName;               /**< Module name which will be set by setFromVariant(const QVariant&)*/
     fpModuleInstantiator_t Instantiatior;   /**< Pointer to the Instantiator function of module.*/
+    QString AcceptableModule;
 };
 
 }
 }
 }
-#endif // TARGOMAN_COMMON_CONFIGURATION_CLSMODULECONFIG_HPP
+#endif // TARGOMAN_COMMON_CONFIGURATION_TMPLMODULECONFIG_HPP

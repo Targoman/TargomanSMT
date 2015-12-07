@@ -72,7 +72,7 @@ private:
     LanguageModel():
         intfFeatureFunction(this->moduleName(), false)
     {}
-    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/LanguageModel", LanguageModel);
+    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, LanguageModel);
 
 public:
     Common::Cost_t getLanguageModelCost(const RuleTable::clsTargetRule& _targetRule) const;

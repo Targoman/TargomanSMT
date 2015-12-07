@@ -426,7 +426,7 @@ void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
 
 void ConfigManager::addModuleInstantiaor(const QString _name, const stuInstantiator &_instantiator)
 {
-    if (this->pPrivate->Configs.contains(_name))
+    if (this->pPrivate->ModuleInstantiators.contains(_name))
         throw exConfiguration("Duplicate Module Name: " + _name);
     this->pPrivate->ModuleInstantiators.insert(_name, _instantiator);
 }
@@ -492,6 +492,14 @@ fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) cons
         throw exConfiguration(_name + " Is a singleton module and can not be reinstantiated");
 
     return Instantiator.fpMethod;
+}
+
+QStringList ConfigManager::registeredModules(const QString &_moduleRoot){
+    QStringList AcceptableModules;
+    foreach(const QString& ModuleName, this->pPrivate->ModuleInstantiators.keys())
+        if (ModuleName.mid(0,ModuleName.lastIndexOf("::")) == _moduleRoot)
+            AcceptableModules.append(ModuleName.mid(ModuleName.lastIndexOf("::") + 2, -1));
+    return AcceptableModules;
 }
 
 QString ConfigManager::configFilePath()

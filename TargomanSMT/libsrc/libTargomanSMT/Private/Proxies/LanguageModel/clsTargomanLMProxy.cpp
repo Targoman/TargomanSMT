@@ -48,7 +48,7 @@ TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy);
  */
 
 clsTargomanLMProxy::clsTargomanLMProxy(quint64 _instanceID)  :
-    intfLMSentenceScorer(this->moduleName(), _instanceID),
+    intfLMSentenceScorer(_instanceID),
     LMSentenceScorer(new Targoman::NLPLibs::TargomanLM::clsLMSentenceScorer(clsTargomanLMProxy::LM)){}
 
 clsTargomanLMProxy::~clsTargomanLMProxy()

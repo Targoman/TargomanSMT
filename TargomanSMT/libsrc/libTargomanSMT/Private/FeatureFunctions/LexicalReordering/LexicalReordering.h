@@ -95,7 +95,7 @@ private:
     static Common::Configuration::tmplConfigurable<double>    ScalingFactors[6];    /**< Scale factor of lrm costs.*/
 
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/LexicalReordering", LexicalReordering);
+    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, LexicalReordering);
 };
 
 }

@@ -19,60 +19,55 @@
  *                                                                            *
  ******************************************************************************/
 /**
- * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
  * @author Behrooz Vedadian <vedadian@targoman.com>
  * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
-#define TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
+// There is no transliteration for anything but Statistical Machine Translation!
+#ifndef SMT
 
-#include "libTargomanCommon/Types.h"
-#include "libTargomanCommon/Configuration/intfConfigurable.hpp"
-#include "libTargomanCommon/exTargomanBase.h"
-#include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
-#include "Private/GlobalConfigs.h"
+#include "TargomanTransliteratorProxy.h"
+//#include "Private/GlobalConfigs.h"
+#ifndef TARGOMAN_CORE_TRANSLITERATOR_H
+#define TARGOMAN_CORE_TRANSLITERATOR_H
+#ifdef TARGOMAN_CORE_CLSTRANSLATOR_H
+#undef TARGOMAN_CORE_CLSTRANSLATOR_H
+#endif
+#ifdef TARGOMAN_CORE_TYPES_H
+#undef TARGOMAN_CORE_TYPES_H
+#endif
+#define SMT SWT
+#include "Translator.h"
+#undef SMT
+#endif
 
 namespace Targoman {
 namespace SMT {
 namespace Private {
-/**
- *  @brief Namespace surrounding all classes and interfaces to external libraries
- */
 namespace Proxies {
+namespace Transliteration {
 
-class intfLMSentenceScorer : public Common::Configuration::intfModule
+TARGOMAN_REGISTER_SINGLETON_MODULE(TargomanTransliteratorProxy);
+
+TargomanTransliteratorProxy::TargomanTransliteratorProxy() :
+    intfTransliterator()
+{ }
+
+void TargomanTransliteratorProxy::init(QSharedPointer<QSettings> _configSettings)
 {
-public:
-    intfLMSentenceScorer(const QString& _moduleName, quint64 _instanceID) :
-        intfModule(_moduleName, _instanceID)
-    {
-        UnknownWordIndex = 0;
-    }
+    Targoman::SWT::Translator::init(_configSettings);
+}
 
-    virtual ~intfLMSentenceScorer(){}
-
-    virtual void init(bool _justVocab) = 0;
-    virtual void initHistory(const intfLMSentenceScorer& _oldScorer) = 0;
-    virtual void reset(bool _withStartOfSentence = true) = 0;
-    virtual Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) = 0;
-    virtual Common::LogP_t endOfSentenceProb() = 0;
-    virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
-    virtual QString getWordByIndex(Common::WordIndex_t _wordIndex) = 0;
-    virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const = 0;
-    virtual void updateFutureStateHash(QCryptographicHash& _hash) const = 0;
-
-protected:
-    Common::WordIndex_t UnknownWordIndex;
-
-public:
-    inline Common::WordIndex_t unknownWordIndex() const {
-        return this->UnknownWordIndex;
-    }
-};
+QString TargomanTransliteratorProxy::transliterate(QString _word)
+{
+    Q_UNUSED(_word);
+    return QString();
+}
 
 }
 }
 }
 }
-#endif // TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
+}
+
+#endif

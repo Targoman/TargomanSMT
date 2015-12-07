@@ -29,7 +29,7 @@
 #ifndef TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_CLSTARGOMANTRANSLITERATORPROXY_H
 #define TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_CLSTARGOMANTRANSLITERATORPROXY_H
 
-#include "Private/Proxies/intfTransliterator.h"
+#include "intfTransliterator.h"
 
 namespace Targoman {
 namespace SMT {
@@ -37,19 +37,19 @@ namespace Private {
 namespace Proxies {
 namespace Transliteration {
 
-class clsTargomanTransliteratorProxy : public intfTransliterator
+class TargomanTransliteratorProxy : public intfTransliterator
 {
 public:
-    explicit clsTargomanTransliteratorProxy();
+    explicit TargomanTransliteratorProxy();
 
-    ~clsTargomanTransliteratorProxy(){}
+    ~TargomanTransliteratorProxy(){}
 
     void init(QSharedPointer<QSettings> _configSettings);
 
     QString transliterate(QString _word);
 
 private:
-    TARGOMAN_DEFINE_SINGLETONMODULE("TargomanTransliteratorProxy", clsTargomanTransliteratorProxy);
+    TARGOMAN_DEFINE_SINGLETONMODULE(TargomanTransliteratorProxy);
 };
 
 }

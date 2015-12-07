@@ -27,7 +27,7 @@
 
 #include "clsSearchGraph.h"
 #include "../GlobalConfigs.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
 #include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include <iostream>

@@ -33,7 +33,7 @@
 #include "libTargomanCommon/HashFunctions.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
 #include "libTargomanCommon/Configuration/Validators.hpp"
-#include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
+#include "libTargomanCommon/Configuration/tmplModuleConfig.hpp"
 #include "libTargomanCommon/tmplBoundedCache.hpp"
 #include "libTargomanCommon/FStreamExtended.h"
 #include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
@@ -59,7 +59,7 @@ static Configuration::tmplConfigurable<QString> D("/s2","fjkdfjkdsfjk","123",
                                                       return true;
                                                   });
 
-static Configuration::clsModuleConfig  LM("/Modules/LM", "LM Module", "Default");
+static Configuration::tmplModuleConfig  LM("/Modules/LM", "LM Module", "Default");
 */
 class exSample: public exTargomanBase
 {

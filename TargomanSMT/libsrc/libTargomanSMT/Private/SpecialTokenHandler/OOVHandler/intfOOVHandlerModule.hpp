@@ -47,7 +47,7 @@ public:
      * @brief When an instance of any kind special OOV handler instantiates, its name and pointer of itself will be added to AvailableOOVHandlers data member of OOVHandler class.
      */
     intfOOVHandlerModule(const QString& _moduleName, quint64 _instanceID) :
-        intfModule(_moduleName, _instanceID)
+        intfModule(_instanceID)
     {
 #ifndef TARGOMAN_SHOW_DEBUG
         Q_UNUSED(_instanceID)

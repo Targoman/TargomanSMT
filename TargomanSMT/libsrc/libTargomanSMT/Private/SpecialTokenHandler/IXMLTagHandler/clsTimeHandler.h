@@ -36,13 +36,13 @@ namespace IXMLTagHandler {
 class clsTimeHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsTimeHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
+    explicit clsTimeHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
     { }
     ~clsTimeHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);
     QString getDefaultTranslation(const QString& _token);
 private:
-    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::Time, "clsTimeHandler", clsTimeHandler);
+    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::Time, TimeHandler);
 
 };
 

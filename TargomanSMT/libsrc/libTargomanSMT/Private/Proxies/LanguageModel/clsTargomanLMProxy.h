@@ -27,7 +27,7 @@
 #ifndef TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
 #define TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_CLSTARGOMANLMPROXY_HPP
 
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "libTargomanLM/clsLMSentenceScorer.h"
 #include "libTargomanLM/clsLanguageModel.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
@@ -128,7 +128,7 @@ private:
     static Targoman::NLPLibs::TargomanLM::clsLanguageModel LM;                  /** < static data member of clsLanguageModel. */
 
     QScopedPointer<Targoman::NLPLibs::TargomanLM::clsLMSentenceScorer> LMSentenceScorer;    /** < clsLMSentenceScorer data pointer. */
-    TARGOMAN_DEFINE_MODULE("TargomanLMProxy", clsTargomanLMProxy);
+    TARGOMAN_DEFINE_MODULE(TargomanLMProxy);
 };
 
 }

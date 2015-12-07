@@ -28,7 +28,7 @@
 
 #define KENLM_MAX_ORDER 6
 
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libKenLM/lm/model.hh"
 
@@ -176,7 +176,7 @@ private:
     static clsVocabEnumerator Vocab;
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t> FilePath;
 
-    TARGOMAN_DEFINE_MODULE("KenLMProxy", clsKenLMProxy);
+    TARGOMAN_DEFINE_MODULE(KenLMProxy);
 };
 
 }

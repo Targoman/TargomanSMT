@@ -31,7 +31,7 @@
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "Private/RuleTable/clsRuleNode.h"
 #include "Private/GlobalConfigs.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "libTargomanCommon/Constants.h"
 #include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
 
@@ -56,7 +56,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exOOVHandler, exTargomanCore);
 class OOVHandler : public Targoman::Common::Configuration::intfModule
 {
 public:
-    OOVHandler(): intfModule(this->moduleName()) {}
+    OOVHandler(){}
     QList<WordIndex_t> getWordIndexOptions(const QString& _token, QVariantMap& _attrs);
     RuleTable::TargetRulesContainer_t generateTargetRules(const QString& _token);
     void initialize();
@@ -65,7 +65,7 @@ private:
     RuleTable::TargetRulesContainer_t gatherTargetRules(const QString& _token, QVariantMap& _attrs);
 
 private:
-    TARGOMAN_DEFINE_SINGLETONMODULE("OOVHandler", OOVHandler);
+    TARGOMAN_DEFINE_SINGLETONMODULE(OOVHandler);
 
 private:
     QList<intfOOVHandlerModule*>                                        ActiveOOVHandlers;        /**< List of active special OOV handlers.*/

@@ -36,13 +36,13 @@ namespace IXMLTagHandler {
 class clsSymbolHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsSymbolHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
+    explicit clsSymbolHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
     { }
     ~clsSymbolHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);
     QString getDefaultTranslation(const QString& _token);
 private:
-    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::Symbol, "clsSymbolHandler", clsSymbolHandler);
+    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::Symbol, SymbolHandler);
 
 };
 

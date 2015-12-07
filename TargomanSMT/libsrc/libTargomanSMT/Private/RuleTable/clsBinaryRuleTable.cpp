@@ -64,7 +64,7 @@ tmplConfigurable<quint32> clsBinaryRuleTable::MaxCachedItems(
 TARGOMAN_REGISTER_MODULE(clsBinaryRuleTable);
 
 clsBinaryRuleTable::clsBinaryRuleTable(quint64 _instanceID) :
-    intfRuleTable(this->moduleName(),_instanceID)
+    intfRuleTable(_instanceID)
 {
 }
 

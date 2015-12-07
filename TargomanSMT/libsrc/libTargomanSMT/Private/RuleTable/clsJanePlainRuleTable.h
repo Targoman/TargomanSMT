@@ -62,7 +62,7 @@ private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> PhraseCostNames;          /**< Name of field(features) of target rule. */
     static QList<Targoman::Common::Configuration::tmplConfigurable<QString>> FeatureFunctions;  /**< Name of aditional featurs like lrm*/
 
-    TARGOMAN_DEFINE_MODULE("JanePTPlain", clsJanePlainRuleTable);
+    TARGOMAN_DEFINE_MODULE(JanePlainRuleTable);
 };
 
 }

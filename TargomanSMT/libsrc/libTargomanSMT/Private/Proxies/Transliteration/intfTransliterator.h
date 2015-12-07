@@ -42,21 +42,23 @@ namespace Private {
  *  @brief Namespace surrounding all classes and interfaces to external libraries
  */
 namespace Proxies {
+namespace Transliteration {
 
 class intfTransliterator : public Common::Configuration::intfModule
 {
 public:
-    intfTransliterator(const QString& _moduleName) :
-        intfModule(_moduleName)
+    intfTransliterator()
     { }
 
     virtual ~intfTransliterator() { }
+    TARGOMAN_DEFINE_MODULE_SCOPE(intfTransliterator)
 
     virtual void init(QSharedPointer<QSettings> _configSettings) = 0;
     virtual QString transliterate(QString _word) = 0;
 
 };
 
+}
 }
 }
 }

@@ -59,7 +59,7 @@ private:
     static Common::Configuration::tmplConfigurable<Common::PrefixTree::enuBinaryLoadMode::Type>  LoadMode;
     static Common::Configuration::tmplConfigurable<quint32>  MaxCachedItems;
 
-    TARGOMAN_DEFINE_MODULE("BinaryRuleTable", clsBinaryRuleTable);
+    TARGOMAN_DEFINE_MODULE(BinaryRuleTable);
 };
 
 

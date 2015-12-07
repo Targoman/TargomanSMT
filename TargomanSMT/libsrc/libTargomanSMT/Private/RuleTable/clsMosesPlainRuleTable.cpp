@@ -96,7 +96,7 @@ tmplConfigurable<int> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(
         );
 
 clsMosesPlainRuleTable::clsMosesPlainRuleTable(quint64 _instanceID)  :
-    intfRuleTable(this->moduleName(), _instanceID)
+    intfRuleTable(_instanceID)
 {
     this->PrecomputedValueIndex = clsTargetRule::allocatePrecomputedValue();
 }

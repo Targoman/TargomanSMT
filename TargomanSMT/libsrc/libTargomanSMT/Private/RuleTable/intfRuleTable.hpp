@@ -28,12 +28,9 @@
 #define TARGOMAN_CORE_PRIVATE_RULETABLE_INTFRULETABLE_H
 
 #include "libTargomanCommon/Macros.h"
-#include "Private/InputDecomposer/clsInput.h"
 #include "Private/RuleTable/clsRuleNode.h"
 #include "libTargomanCommon/FStreamExtended.h"
 #include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
-
-//#include "libTargomanCommon/PrefixTree/tmplFullVectorFilePrefixTree.hpp"
 #include "libTargomanCommon/PrefixTree/tmplPrefixTree.h"
 
 namespace Targoman {
@@ -41,9 +38,8 @@ namespace SMT {
 namespace Private {
 namespace RuleTable {
 
-
-//typedef Common::PrefixTree::tmplFullVectorFilePrefixTree<RuleTable::clsRuleNode> RulesPrefixTree_t;
-typedef Common::PrefixTree::tmplPrefixTree<Common::WordIndex_t, RuleTable::clsRuleNode> RulesPrefixTree_t;
+typedef Common::PrefixTree::tmplPrefixTree<
+            Common::WordIndex_t, RuleTable::clsRuleNode> RulesPrefixTree_t;
 
 static const QString TARGOMAN_BINARY_RULETABLE_HEADER = "TargomanBinaryRuleTable-v0.1";
 
@@ -61,9 +57,11 @@ static const QString TARGOMAN_BINARY_RULETABLE_HEADER = "TargomanBinaryRuleTable
 class intfRuleTable : public Common::Configuration::intfModule
 {
 public:
-    intfRuleTable(const QString& _moduleName, quint64 _instanceID) :
-    intfModule(_moduleName, _instanceID)
+    intfRuleTable(quint64 _instanceID) :
+    intfModule(_instanceID)
     {}
+
+    TARGOMAN_DEFINE_MODULE_SCOPE(intfRuleTable)
 
     virtual ~intfRuleTable(){}
 

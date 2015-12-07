@@ -27,7 +27,7 @@
 #include "clsTargetRule.h"
 
 #include "Private/GlobalConfigs.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 
 namespace Targoman {
 namespace SMT {

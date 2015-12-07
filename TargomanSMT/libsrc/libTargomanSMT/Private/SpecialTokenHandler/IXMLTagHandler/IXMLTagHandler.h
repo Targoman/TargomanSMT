@@ -47,7 +47,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exIXMLTagHandler, exTargomanCore);
 class IXMLTagHandler : public Targoman::Common::Configuration::intfModule
 {
 public:
-    IXMLTagHandler(): intfModule(this->moduleName()) {}
+    IXMLTagHandler() {}
     QList<WordIndex_t> getWordIndexOptions(const QString& _tagStr,
                                            const QString& _token,
                                            INOUT QVariantMap& _attrs);
@@ -61,7 +61,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("IXMLTagHandler", IXMLTagHandler);
+    TARGOMAN_DEFINE_SINGLETONMODULE(IXMLTagHandler);
 
 private:
     QMap<QString,intfIXMLTagHandlerModule*>                             ActiveTagHandlers;    /**< List of active special tag handlers.*/
@@ -75,10 +75,10 @@ private:
     friend class intfIXMLTagHandlerModule;
 };
 
-#define TARGOMAN_DEFINE_TAG_HANDLER_MODULE(_tagName,_moduleName, _class) \
+#define TARGOMAN_DEFINE_TAG_HANDLER_MODULE(_tagName, _name) \
 public: \
     static inline QString tagName(){return Targoman::NLPLibs::enuTextTags::toStr(_tagName);}  \
-    TARGOMAN_DEFINE_MODULE(_moduleName, _class)
+    TARGOMAN_DEFINE_MODULE(_name)
 
 
 }

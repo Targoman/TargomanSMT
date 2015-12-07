@@ -25,7 +25,7 @@
  */
 
 #include "LanguageModel.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 
 namespace Targoman {
 namespace SMT {
@@ -34,7 +34,7 @@ namespace FeatureFunction{
 
 using namespace Common;
 using namespace SearchGraphBuilder;
-using namespace Proxies;
+using namespace Proxies::LanguageModel;
 using namespace RuleTable;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(LanguageModel);

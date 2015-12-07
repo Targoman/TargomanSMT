@@ -29,7 +29,7 @@ using namespace RuleTable;
 using namespace InputDecomposer;
 using namespace Targoman::Common;
 
-class clsDummyScorerProxyForRestCost : public Proxies::intfLMSentenceScorer {
+class clsDummyScorerProxyForRestCost : public Proxies::LanguageModel::intfLMSentenceScorer {
 public:
     virtual void init(bool _justVocab) { Q_UNUSED(_justVocab) }
     virtual void initHistory(const intfLMSentenceScorer& _oldScorer) { Q_UNUSED(_oldScorer) }
@@ -41,18 +41,18 @@ public:
     virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return 0;}
     virtual void updateFutureStateHash(QCryptographicHash& _hash) const { Q_UNUSED(_hash); }
 
-    clsDummyScorerProxyForRestCost(int x) : Proxies::intfLMSentenceScorer(this->moduleName(), x) { }
+    clsDummyScorerProxyForRestCost(int x) : Proxies::LanguageModel::intfLMSentenceScorer(x) { }
 
 
-    TARGOMAN_DEFINE_MODULE("clsDummyScorerProxyForRestCost", clsDummyScorerProxyForRestCost);
+    TARGOMAN_DEFINE_MODULE(DummyScorerProxyForRestCost);
 };
 
 TARGOMAN_REGISTER_MODULE(clsDummyScorerProxyForRestCost);
 
 
-class clsDummyFeatureFunctionForRestCost : public FeatureFunction::intfFeatureFunction {
+class DummyFeatureFunctionForRestCost : public FeatureFunction::intfFeatureFunction {
 public:
-    ~clsDummyFeatureFunctionForRestCost(){}
+    ~DummyFeatureFunctionForRestCost(){}
 
     void initialize(QSharedPointer<QSettings>){}
 
@@ -78,21 +78,21 @@ public:
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode&) { }
 
 public:
-    clsDummyFeatureFunctionForRestCost():
+    DummyFeatureFunctionForRestCost():
         intfFeatureFunction(this->moduleName(), false)
     {}
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("clsDummyFeatureFunctionForRestCost", clsDummyFeatureFunctionForRestCost);
+    TARGOMAN_DEFINE_SINGLETONMODULE(DummyFeatureFunctionForRestCost);
 };
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(clsDummyFeatureFunctionForRestCost);
+TARGOMAN_REGISTER_SINGLETON_MODULE(DummyFeatureFunctionForRestCost);
 
 void clsUnitTest::test_clsSearchGraphBuilder_initializeRestCostsMatrix()
 {
 
 
     gConfigs.EmptyLMScorer.reset(new clsDummyScorerProxyForRestCost(0));
-    clsDummyFeatureFunctionForRestCost FeatureFunction;
+    DummyFeatureFunctionForRestCost FeatureFunction;
     gConfigs.ActiveFeatureFunctions.insert("clsDummyFeatureFunctionForRestCost", &FeatureFunction);
 
     clsTargetRule::setColumnNames(QStringList() << "C1" << "C2");

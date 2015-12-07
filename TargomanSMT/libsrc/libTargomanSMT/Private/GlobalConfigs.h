@@ -29,7 +29,7 @@
 
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/Configuration/clsModuleConfig.hpp"
+#include "libTargomanCommon/Configuration/tmplModuleConfig.hpp"
 #include "Translator.h"
 #include "libTargomanCommon/Types.h"
 #include "Private/PrivateTypes.h"
@@ -41,10 +41,12 @@ namespace Private {
 namespace FeatureFunction{
 class intfFeatureFunction;
 }
-
+namespace RuleTable {
+class intfRuleTable;
+}
 namespace Proxies {
-class intfLMSentenceScorer;
-class intfTransliterator;
+namespace LanguageModel {class intfLMSentenceScorer;}
+namespace Transliteration{class intfTransliterator;}
 }
 
 // Global ActorUUID, back-off when the logging class is not a module or singlton
@@ -61,14 +63,14 @@ struct stuGlobalConfigs{
     static Common::Configuration::tmplConfigurable<QString>                 TargetLanguage;
     static Common::Configuration::tmplConfigurable<enuWorkingModes::Type>   WorkingMode;
 
-    static Common::Configuration::clsModuleConfig                           LM;
-    static Common::Configuration::clsModuleConfig                           RuleTable;
-
-    static QScopedPointer<SMT::Private::Proxies::intfLMSentenceScorer>      EmptyLMScorer;
-// There is no transliteration for anything but Statistical Machine Translation!
+    static Common::Configuration::tmplModuleConfig<Proxies::LanguageModel::intfLMSentenceScorer>     LM;
+    static Common::Configuration::tmplModuleConfig<RuleTable::intfRuleTable>   RuleTable;
 #ifndef SMT
-    static Common::Configuration::clsModuleConfig                           Transliterator;
+    static Common::Configuration::tmplModuleConfig<Proxies::Transliteration::intfTransliterator> Transliterator;
 #endif
+
+    static QScopedPointer<SMT::Private::Proxies::LanguageModel::intfLMSentenceScorer>      EmptyLMScorer;
+// There is no transliteration for anything but Statistical Machine Translation!
     static QHash<QString, Common::WordIndex_t>                              SourceVocab;
 
     static QMap<QString, FeatureFunction::intfFeatureFunction*>             ActiveFeatureFunctions;

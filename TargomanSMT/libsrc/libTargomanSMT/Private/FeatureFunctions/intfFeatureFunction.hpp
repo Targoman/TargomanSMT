@@ -53,8 +53,7 @@ public:
      * @param _moduleName
      * @param _canComputePositionSpecificRestCost
      */
-    intfFeatureFunction(const QString& _moduleName, bool _canComputePositionSpecificRestCost) :
-        intfModule(_moduleName)
+    intfFeatureFunction(const QString& _moduleName, bool _canComputePositionSpecificRestCost)
     {
         gConfigs.ActiveFeatureFunctions.insert(_moduleName, this);
         this->CanComputePositionSpecificRestCost = _canComputePositionSpecificRestCost;

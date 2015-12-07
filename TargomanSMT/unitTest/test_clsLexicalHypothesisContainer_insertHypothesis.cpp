@@ -32,9 +32,9 @@ using namespace Targoman::SMT::Private::RuleTable;
 using namespace Targoman::Common;
 //extern InvalidSearchGraphNodeData;
 
-class clsDummyFeatureFunctionForInsertion : public FeatureFunction::intfFeatureFunction {
+class DummyFeatureFunctionForInsertion : public FeatureFunction::intfFeatureFunction {
 public:
-    ~clsDummyFeatureFunctionForInsertion(){}
+    ~DummyFeatureFunctionForInsertion(){}
 
     void initialize(QSharedPointer<QSettings> ){}
 
@@ -68,14 +68,14 @@ public:
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode&) { }
 
 public:
-    clsDummyFeatureFunctionForInsertion():
+    DummyFeatureFunctionForInsertion():
         intfFeatureFunction(this->moduleName(), false)
     {}
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("clsDummyFeatureFunctionForInsertion", clsDummyFeatureFunctionForInsertion);
+    TARGOMAN_DEFINE_SINGLETONMODULE(DummyFeatureFunctionForInsertion);
 };
 
-TARGOMAN_REGISTER_SINGLETON_MODULE(clsDummyFeatureFunctionForInsertion);
+TARGOMAN_REGISTER_SINGLETON_MODULE(DummyFeatureFunctionForInsertion);
 
 
 void clsUnitTest::test_clsLexicalHypothesisContainer_insertHypothesis()
@@ -115,7 +115,7 @@ void clsUnitTest::test_clsLexicalHypothesisContainer_insertHypothesis()
     };
 
 
-    clsDummyFeatureFunctionForInsertion dummyFeatureFunction;
+    DummyFeatureFunctionForInsertion dummyFeatureFunction;
     gConfigs.ActiveFeatureFunctions.insert("clsDummyFeatureFunctionForInsertion", &dummyFeatureFunction);
     clsSearchGraphNode node[] = {
         clsSearchGraphNode(*pInvalidSearchGraphNode, 2, 5, Coverage, TargetRules[0], false, 10.1 ),

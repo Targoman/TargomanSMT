@@ -25,9 +25,11 @@
  */
 
 #include "GlobalConfigs.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
-#include "Private/Proxies/intfTransliterator.h"
 #include "ISO639.h"
+
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/Transliteration/intfTransliterator.h"
+#include "RuleTable/intfRuleTable.hpp"
 
 namespace Targoman {
 namespace SMT {
@@ -90,23 +92,23 @@ tmplConfigurable<enuWorkingModes::Type> stuGlobalConfigs::WorkingMode(
 
 QMap<QString, FeatureFunction::intfFeatureFunction*>       stuGlobalConfigs::ActiveFeatureFunctions;
 
-clsModuleConfig         stuGlobalConfigs::LM(
+tmplModuleConfig<Proxies::LanguageModel::intfLMSentenceScorer>         stuGlobalConfigs::LM(
         MAKE_CONFIG_PATH("Modules/LM"),
         "TODO Desc",
         "KenLMProxy");
 #ifndef SMT
 // There is no transliteration for anything but Statistical Machine Translation!
-clsModuleConfig         stuGlobalConfigs::Transliterator(
+tmplModuleConfig<Proxies::Transliteration::intfTransliterator>         stuGlobalConfigs::Transliterator(
         MAKE_CONFIG_PATH("Modules/Transliterator"),
         "TODO Desc",
         "TargomanTransliteratorProxy");
 #endif
-clsModuleConfig         stuGlobalConfigs::RuleTable(
+tmplModuleConfig<RuleTable::intfRuleTable>         stuGlobalConfigs::RuleTable(
         MAKE_CONFIG_PATH("Modules/RuleTable"),
         "TODO Desc",
         "BinaryRuleTable");
 
-QScopedPointer<Targoman::SMT::Private::Proxies::intfLMSentenceScorer>
+QScopedPointer<Targoman::SMT::Private::Proxies::LanguageModel::intfLMSentenceScorer>
     stuGlobalConfigs::EmptyLMScorer;
 
 QHash<QString, Common::WordIndex_t>

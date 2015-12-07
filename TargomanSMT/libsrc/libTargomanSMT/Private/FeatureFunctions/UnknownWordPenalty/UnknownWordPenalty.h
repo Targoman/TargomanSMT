@@ -72,7 +72,7 @@ private:
         intfFeatureFunction(this->moduleName(), false)
     {}
 
-    TARGOMAN_DEFINE_SINGLETONMODULE("FeatureFunctions/UnknownWordPenalty", UnknownWordPenalty);
+    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, UnknownWordPenalty);
 
 public:
     inline Common::Cost_t getUnknownWordPenaltyCost(const RuleTable::clsTargetRule& _targetRule) const {

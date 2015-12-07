@@ -36,13 +36,13 @@ namespace IXMLTagHandler {
 class clsSpecialNumberHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsSpecialNumberHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
+    explicit clsSpecialNumberHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
     { }
     ~clsSpecialNumberHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);
     QString getDefaultTranslation(const QString& _token);
 private:
-    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::SpecialNumber, "clsSpecialNumberHandler", clsSpecialNumberHandler);
+    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::SpecialNumber, SpecialNumberHandler);
 
 };
 

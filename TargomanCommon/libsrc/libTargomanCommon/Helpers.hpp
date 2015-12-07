@@ -30,22 +30,26 @@
 #include <cxxabi.h>
 #include <QVector>
 #include <QPair>
+#include <memory>
 #include "libTargomanCommon/Types.h"
 
 namespace Targoman {
 namespace Common {
 
+static QString demangle(const char* name) {
+
+    int Status = -4; // some arbitrary value to eliminate the compiler warning
+
+    std::unique_ptr<char, void(*)(void*)> Res {
+        abi::__cxa_demangle(name, NULL, NULL, &Status),
+        std::free
+    };
+
+    return (Status==0) ? Res.get() : name ;
+}
+
 template<typename T> QString getTypeStr(T _type){
-    char * Name = NULL;
-    QString ReturnVal;
-    int Status;
-    Name = abi::__cxa_demangle(typeid(_type).name(), 0, 0, &Status);
-    if (Name != NULL)
-        ReturnVal =  Name;
-    else
-        ReturnVal =  typeid(_type).name();
-    free(Name);
-    return ReturnVal;
+    return demangle(typeid(_type).name());
 }
 
 inline int minofVec(const QVector<int>& _values)

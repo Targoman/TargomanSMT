@@ -129,7 +129,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
     throw exTSManager("Unable to translate because max tries failed");
 }
 
-TSManager::TSManager() : intfModule(this->moduleName())
+TSManager::TSManager()
 {
     this->exportMyRPCs();
 }

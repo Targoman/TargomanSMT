@@ -36,13 +36,13 @@ namespace IXMLTagHandler {
 class clsEmailHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsEmailHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), this->moduleName(), _instanceID)
+    explicit clsEmailHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
     { }
     ~clsEmailHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);
     QString getDefaultTranslation(const QString& _token);
 private:
-    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::Email, "clsEmailHandler", clsEmailHandler);
+    TARGOMAN_DEFINE_TAG_HANDLER_MODULE(Targoman::NLPLibs::enuTextTags::Type::Email,EmailHandler);
 
 };
 

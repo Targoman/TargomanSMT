@@ -30,6 +30,7 @@
 #include <QString>
 #include <QAtomicInt>
 #include "libTargomanCommon/Logger.h"
+#include "libTargomanCommon/Helpers.hpp"
 
 namespace Targoman {
 namespace Common {
@@ -39,19 +40,29 @@ namespace Configuration {
  */
 class intfModule {
 public:
-    intfModule(const QString& _moduleName, quint64 _instanceID = 0){
+    intfModule(quint64 _instanceID = 0){
         this->InstanceID = _instanceID;
         if (_instanceID == 0)
-            TARGOMAN_REGISTER_ACTOR(_moduleName);
+            TARGOMAN_REGISTER_ACTOR(this->moduleFullName());
     }
 
 protected:
     virtual void unregister() = 0;
+    virtual QString moduleFullName() {return "UNDEFINED";}
 
 protected:
     QString ActorUUID;
     quint64 InstanceID;
 };
+
+//Following macro must be used in all interfaces derved from intfModule
+#define TARGOMAN_DEFINE_MODULE_SCOPE(_intf) \
+    static QString moduleScope(){ \
+        QString FN = Targoman::Common::demangle(typeid(_intf).name()); \
+        return FN.mid(0,FN.lastIndexOf("::")); \
+    } \
+
+
 /**
  * fpModuleInstantiator_t is function pointer to functions that returns pointer of intfModule (or its derivations) and have no argumnt.
  */
@@ -83,48 +94,64 @@ public:
  * @def TARGOMAN_DEFINE_MODULE adds three function and one data member to not singleton module classes.
  * Registrar member is the static member that is of type clsModuleRegistrar and will be instantiated before main to insert module instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
  */
-#define TARGOMAN_DEFINE_MODULE(_name, _class) \
+#define TARGOMAN_DEFINE_MODULE(_name) \
 public: \
     void   unregister(){/*TARGOMAN_UNREGISTER_ACTOR;*/} \
-    static QString moduleName(){_class::ActiveInstances.fetchAndAddOrdered(-1);return QStringLiteral(_name);}  \
-    static Targoman::Common::Configuration::intfModule* instantiator(){_class::ActiveInstances.fetchAndAddOrdered(1); return new _class(_class::Instances.fetchAndAddOrdered(1));} \
+    QString moduleFullName(){return Targoman::Common::demangle(typeid(*this).name());}\
+    static QString moduleFullNameStatic(){return Targoman::Common::demangle(typeid(cls##_name).name());} \
+    static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(_name));}  \
+    static Targoman::Common::Configuration::intfModule* instantiator(){ \
+       return new cls##_name(cls##_name::Instances.fetchAndAddOrdered(1));} \
 private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
-    static QAtomicInt Instances; \
-    static QAtomicInt ActiveInstances
-
+    static QAtomicInt Instances;
 
 /**
  * @def TARGOMAN_DEFINE_SINGLETONMODULE adds three function and two data member to singleton module classes.
  * Registrar member is the static member that is of type clsModuleRegistrar and will be instantiated before main to insert module instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
  */
 
-#define TARGOMAN_DEFINE_SINGLETONMODULE(_name, _class) \
+#define TARGOMAN_DEFINE_SINGLETONMODULE(_name) \
 public: \
     void   unregister(){}\
-    static _class& instance() {return *((_class*)_class::moduleInstance());} \
-    static Targoman::Common::Configuration::intfModule* moduleInstance(){static _class* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _class);} \
-    static QString moduleName(){return QStringLiteral(_name);}  \
+    QString moduleFullName(){return Targoman::Common::demangle(typeid(*this).name());}\
+    static _name& instance() {return *((_name*)_name::moduleInstance());} \
+    static Targoman::Common::Configuration::intfModule* moduleInstance(){static _name* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _name);} \
+    static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(_name));}  \
 private: \
-    Q_DISABLE_COPY(_class) \
+    Q_DISABLE_COPY(_name) \
+    static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
+
+#define TARGOMAN_CAT_BY_SLASH(_m1,_m2) _m1/_m2
+#define TARGOMAN_DEFINE_SINGLETONSUBMODULE(_module, _name) \
+public: \
+    void   unregister(){}\
+    QString moduleFullName(){return Targoman::Common::demangle(typeid(*this).name());}\
+    static _name& instance() {return *((_name*)_name::moduleInstance());} \
+    static Targoman::Common::Configuration::intfModule* moduleInstance(){static _name* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _name);} \
+    static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(TARGOMAN_CAT_BY_SLASH(_module,_name)));}  \
+private: \
+    Q_DISABLE_COPY(_name) \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for non singleton classes.
  */
 #define TARGOMAN_REGISTER_MODULE(_class) \
-    Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
-                      Targoman::Common::Configuration::stuInstantiator(_class::instantiator,false)); \
-    QAtomicInt _class::Instances; \
-    QAtomicInt _class::ActiveInstances
+    Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar( \
+         _class::moduleFullNameStatic(), \
+         Targoman::Common::Configuration::stuInstantiator(_class::instantiator,false)); \
+    QAtomicInt _class::Instances;
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for singleton classes. Also makes a null instance of class.
  */
 
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
-    Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(_class::moduleName(), \
-                      Targoman::Common::Configuration::stuInstantiator(_class::moduleInstance,true));
+    Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(\
+                      _class::instance().moduleFullName(), \
+                      Targoman::Common::Configuration::stuInstantiator(\
+                          _class::instance().moduleInstance,true));
 }
 }
 }

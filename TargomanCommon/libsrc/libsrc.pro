@@ -36,7 +36,6 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Configuration/clsFileBasedConfig.hpp \
     libTargomanCommon/Configuration/tmplConfigurable.h \
     libTargomanCommon/Configuration/ConfigManager.h \
-    libTargomanCommon/Configuration/clsModuleConfig.hpp \
     libTargomanCommon/Configuration/intfConfigurableModule.hpp \
     libTargomanCommon/CompressedStream/clsCompressedInputStream.h \
     libTargomanCommon/CompressedStream/clsCompressedOutputStream.h \
@@ -62,7 +61,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Private/intfConfigManagerOverNet.hpp \
     libTargomanCommon/Private/clsConfigByJsonRPC.h \
     libTargomanCommon/Private/clsBaseConfigOverNet.h \
-    libTargomanCommon/Private/clsLegacyConfigOverTCP.h
+    libTargomanCommon/Private/clsLegacyConfigOverTCP.h \
+    libTargomanCommon/Configuration/tmplModuleConfig.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \
