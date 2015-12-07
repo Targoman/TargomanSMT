@@ -31,7 +31,7 @@
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "Private/RuleTable/clsRuleNode.h"
 #include "Private/GlobalConfigs.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "libTargomanCommon/Constants.h"
 #include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
 

@@ -43,8 +43,12 @@ class intfFeatureFunction;
 }
 
 namespace Proxies {
+namespace LanguageModel {
 class intfLMSentenceScorer;
+}
+namespace Transliteration {
 class intfTransliterator;
+}
 }
 
 // Global ActorUUID, back-off when the logging class is not a module or singlton
@@ -64,7 +68,7 @@ struct stuGlobalConfigs{
     static Common::Configuration::clsModuleConfig                           LM;
     static Common::Configuration::clsModuleConfig                           RuleTable;
 
-    static QScopedPointer<SMT::Private::Proxies::intfLMSentenceScorer>      EmptyLMScorer;
+    static QScopedPointer<SMT::Private::Proxies::LanguageModel::intfLMSentenceScorer>      EmptyLMScorer;
 // There is no transliteration for anything but Statistical Machine Translation!
 #ifndef SMT
     static Common::Configuration::clsModuleConfig                           Transliterator;

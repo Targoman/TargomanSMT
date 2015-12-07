@@ -25,8 +25,8 @@
  */
 
 #include "GlobalConfigs.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
-#include "Private/Proxies/intfTransliterator.h"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/Transliteration/intfTransliterator.h"
 #include "ISO639.h"
 
 namespace Targoman {
@@ -38,6 +38,7 @@ namespace Private{
 
 using namespace Common;
 using namespace Common::Configuration;
+using namespace Proxies::LanguageModel;
 
 QString ActorUUID;
 
@@ -106,7 +107,7 @@ clsModuleConfig         stuGlobalConfigs::RuleTable(
         "TODO Desc",
         "BinaryRuleTable");
 
-QScopedPointer<Targoman::SMT::Private::Proxies::intfLMSentenceScorer>
+QScopedPointer<intfLMSentenceScorer>
     stuGlobalConfigs::EmptyLMScorer;
 
 QHash<QString, Common::WordIndex_t>

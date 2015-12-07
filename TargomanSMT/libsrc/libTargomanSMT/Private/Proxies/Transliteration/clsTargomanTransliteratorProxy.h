@@ -29,7 +29,7 @@
 #ifndef TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_CLSTARGOMANTRANSLITERATORPROXY_H
 #define TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_CLSTARGOMANTRANSLITERATORPROXY_H
 
-#include "Private/Proxies/intfTransliterator.h"
+#include "Private/Proxies/Transliteration/intfTransliterator.h"
 
 namespace Targoman {
 namespace SMT {

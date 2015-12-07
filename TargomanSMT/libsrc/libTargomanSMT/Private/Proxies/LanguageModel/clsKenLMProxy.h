@@ -28,7 +28,7 @@
 
 #define KENLM_MAX_ORDER 6
 
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libKenLM/lm/model.hh"
 

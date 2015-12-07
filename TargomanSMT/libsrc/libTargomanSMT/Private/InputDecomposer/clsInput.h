@@ -31,7 +31,7 @@
 
 #include "Private/GlobalConfigs.h"
 #include "libTargomanCommon/Types.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "Private/InputDecomposer/clsToken.h"
 
 #ifdef TARGOMAN_SHOW_DEBUG

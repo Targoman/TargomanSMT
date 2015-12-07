@@ -38,6 +38,13 @@
 namespace Targoman {
 namespace SMT {
 namespace Private {
+
+namespace Proxies {
+namespace NamedEntityRecognition {
+class intfNamedEntityRecognizer;
+}
+}
+
 namespace InputDecomposer {
 
 /**
@@ -75,6 +82,8 @@ private:
     QList<Common::WordIndex_t> WordIndexes;     /**< Indexes of token in hash table. */
     QString TagStr;                             /**< If token is in ixml tag, its tag string will be recorded in this variable. */
     QVariantMap         Attrs;                  /**< Some ixml tags has attributes. If token is in attributed ixml tag, attribute names and attributes values will be recorded in this variable.  */
+
+    friend class Proxies::NamedEntityRecognition::intfNamedEntityRecognizer;
 };
 
 

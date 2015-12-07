@@ -21,7 +21,7 @@
 #Project name overridden
 ProjectName="TargomanSWT"
 
-CONFIG += build_static
+#CONFIG += build_static
 DEFINES += SMT=SWT
 DEFINES += CONFIG_ROOT_PATH=/SWT/
 include(libsrc_common.pri)

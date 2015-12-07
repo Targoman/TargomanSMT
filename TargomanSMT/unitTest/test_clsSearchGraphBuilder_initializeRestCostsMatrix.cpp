@@ -29,7 +29,7 @@ using namespace RuleTable;
 using namespace InputDecomposer;
 using namespace Targoman::Common;
 
-class clsDummyScorerProxyForRestCost : public Proxies::intfLMSentenceScorer {
+class clsDummyScorerProxyForRestCost : public Proxies::LanguageModel::intfLMSentenceScorer {
 public:
     virtual void init(bool _justVocab) { Q_UNUSED(_justVocab) }
     virtual void initHistory(const intfLMSentenceScorer& _oldScorer) { Q_UNUSED(_oldScorer) }
@@ -41,7 +41,7 @@ public:
     virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return 0;}
     virtual void updateFutureStateHash(QCryptographicHash& _hash) const { Q_UNUSED(_hash); }
 
-    clsDummyScorerProxyForRestCost(int x) : Proxies::intfLMSentenceScorer(this->moduleName(), x) { }
+    clsDummyScorerProxyForRestCost(int x) : Proxies::LanguageModel::intfLMSentenceScorer(this->moduleName(), x) { }
 
 
     TARGOMAN_DEFINE_MODULE("clsDummyScorerProxyForRestCost", clsDummyScorerProxyForRestCost);

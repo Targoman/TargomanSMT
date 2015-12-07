@@ -27,7 +27,7 @@
 
 #include "clsSearchGraph.h"
 #include "../GlobalConfigs.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
 #include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include <iostream>
@@ -58,6 +58,7 @@ using namespace Common;
 using namespace Common::Configuration;
 using namespace RuleTable;
 using namespace Proxies;
+using namespace Proxies::LanguageModel;
 using namespace InputDecomposer;
 using namespace SpecialTokenHandler;
 using namespace SpecialTokenHandler::OOV;

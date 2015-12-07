@@ -31,7 +31,6 @@ HEADERS += \
     libTargomanSMT/Private/SearchGraphBuilder/clsCardinality.h \
     libTargomanSMT/Private/SearchGraphBuilder/clsHypothesisHolder.hpp \
     libTargomanSMT/Private/SearchGraphBuilder/clsSearchGraph.h \
-    libTargomanSMT/Private/Proxies/intfLMSentenceScorer.hpp \
     libTargomanSMT/Private/Proxies/LanguageModel/clsTargomanLMProxy.h \
     libTargomanSMT/Private/FeatureFunctions/intfFeatureFunction.hpp \
     libTargomanSMT/Private/FeatureFunctions/LexicalReordering/LexicalReordering.h \
@@ -67,9 +66,12 @@ HEADERS += \
     libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsTimeHandler.h \
     libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsOrdinalsHandler.h \
     libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsSymbolHandler.h \
-    $$PWD/libTargomanSMT/Private/tmplSMTConfigurable.hpp \
-    $$PWD/libTargomanSMT/Private/Proxies/intfTransliterator.h \
-    $$PWD/libTargomanSMT/Private/Proxies/Translitration/clsTargomanTransliteratorProxy.h
+    libTargomanSMT/Private/tmplSMTConfigurable.hpp \
+    libTargomanSMT/Private/Proxies/Transliteration/clsTargomanTransliteratorProxy.h \
+    libTargomanSMT/Private/Proxies/NamedEntityRecognition/clsZhangMaxEntProxy.h \
+    libTargomanSMT/Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h \
+    libTargomanSMT/Private/Proxies/Transliteration/intfTransliterator.h \
+    libTargomanSMT/Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -108,7 +110,8 @@ SOURCES += libID.cpp \
     libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsTimeHandler.cpp \
     libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsOrdinalsHandler.cpp \
     libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsSymbolHandler.cpp \
-    $$PWD/libTargomanSMT/Private/Proxies/Translitration/clsTargomanTransliteratorProxy.cpp
+    libTargomanSMT/Private/Proxies/Transliteration/clsTargomanTransliteratorProxy.cpp \
+    libTargomanSMT/Private/Proxies/NamedEntityRecognition/clsZhangMaxEntProxy.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

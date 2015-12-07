@@ -28,7 +28,7 @@
 #define TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSSEARCHGRAPHNODE_H
 
 #include "libTargomanCommon/Types.h"
-#include "Private/Proxies/intfLMSentenceScorer.hpp"
+#include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "Private/RuleTable/clsTargetRule.h"
 
 namespace Targoman{

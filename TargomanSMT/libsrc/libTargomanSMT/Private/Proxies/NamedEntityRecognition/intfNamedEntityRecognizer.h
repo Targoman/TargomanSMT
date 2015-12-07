@@ -21,17 +21,22 @@
 /**
  * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
  * @author Behrooz Vedadian <vedadian@targoman.com>
- * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
-#define TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
+// There is no transliteration for anything but Statistical Machine Translation!
+#ifndef SMT
+
+#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFNAMEDENTITYRECOGNIZER_HPP
+#define TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFNAMEDENTITYRECOGNIZER_HPP
 
 #include "libTargomanCommon/Types.h"
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/exTargomanBase.h"
 #include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
 #include "Private/GlobalConfigs.h"
+#include "Private/InputDecomposer/clsInput.h"
+
+#define NER_TAG_ATTR_KEY "NER_TAG"
 
 namespace Targoman {
 namespace SMT {
@@ -40,34 +45,23 @@ namespace Private {
  *  @brief Namespace surrounding all classes and interfaces to external libraries
  */
 namespace Proxies {
+namespace NamedEntityRecognition {
 
-class intfLMSentenceScorer : public Common::Configuration::intfModule
+class intfNamedEntityRecognizer : public Common::Configuration::intfModule
 {
 public:
-    intfLMSentenceScorer(const QString& _moduleName, quint64 _instanceID) :
-        intfModule(_moduleName, _instanceID)
-    {
-        UnknownWordIndex = 0;
-    }
+    intfNamedEntityRecognizer(const QString& _moduleName) :
+        intfModule(_moduleName)
+    { }
 
-    virtual ~intfLMSentenceScorer(){}
+    virtual ~intfNamedEntityRecognizer() { }
 
-    virtual void init(bool _justVocab) = 0;
-    virtual void initHistory(const intfLMSentenceScorer& _oldScorer) = 0;
-    virtual void reset(bool _withStartOfSentence = true) = 0;
-    virtual Common::LogP_t wordProb(const Common::WordIndex_t& _wordIndex) = 0;
-    virtual Common::LogP_t endOfSentenceProb() = 0;
-    virtual Common::WordIndex_t getWordIndex(const QString& _word) = 0;
-    virtual QString getWordByIndex(Common::WordIndex_t _wordIndex) = 0;
-    virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const = 0;
-    virtual void updateFutureStateHash(QCryptographicHash& _hash) const = 0;
+    virtual void init() = 0;
+    virtual void tagNamedEntities(InputDecomposer::Sentence_t _sentence) = 0;
 
 protected:
-    Common::WordIndex_t UnknownWordIndex;
-
-public:
-    inline Common::WordIndex_t unknownWordIndex() const {
-        return this->UnknownWordIndex;
+    void addTokenAttr(InputDecomposer::clsToken& _token, const QString& _key, const QVariant _value) {
+        _token.Attrs.insert(_key, _value);
     }
 };
 
@@ -75,4 +69,7 @@ public:
 }
 }
 }
-#endif // TARGOMAN_CORE_PRIVATE_PROXIES_LANGUAGEMODEL_INTFLMSENTENCESCORER_HPP
+}
+#endif // TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFNAMEDENTITYRECOGNIZER_HPP
+
+#endif
