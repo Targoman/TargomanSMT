@@ -68,17 +68,13 @@ public:
 
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
-private:
-    LanguageModel():
-        intfFeatureFunction(this->moduleName(), false)
-    {}
-    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, LanguageModel);
-
 public:
     Common::Cost_t getLanguageModelCost(const RuleTable::clsTargetRule& _targetRule) const;
 
 private:
     static Common::Configuration::tmplConfigurable<double> ScalingFactor;
+
+    TARGOMAN_SMT_DEFINE_FEATUREFUNCTION(LanguageModel, false)
 };
 
 

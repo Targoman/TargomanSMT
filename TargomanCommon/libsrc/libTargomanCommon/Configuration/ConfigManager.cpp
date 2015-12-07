@@ -94,7 +94,7 @@ void ConfigManager::init(const QString& _license,
         return;
     }
 
-    Targoman::Common::Logger::instance().registerActor(&this->pPrivate->ActorUUID, "ConfigManager");
+    Targoman::Common::Logger::instance().registerActor(this->pPrivate->ActorUUID, "ConfigManager");
 
     QSet<QString> Modules;
     bool SaveFile = false;
@@ -417,6 +417,8 @@ void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
     this->pPrivate->Configs.insert(_path, _item);
 }
 
+QString stuInstantiator::InvalidActorUUID;
+
 /**
  * @brief Registers new modules.
  * @param _name         Name of module
@@ -428,6 +430,10 @@ void ConfigManager::addModuleInstantiaor(const QString _name, const stuInstantia
 {
     if (this->pPrivate->ModuleInstantiators.contains(_name))
         throw exConfiguration("Duplicate Module Name: " + _name);
+    // TODO if (_instantiator.isInvalidActorUUID())
+    // TODO    throw exConfiguration("Invalid Instantiator on module: " + _name);
+
+    //TODO Targoman::Common::Logger::instance().registerActor(*_instantiator.ActorUUID, _name);
     this->pPrivate->ModuleInstantiators.insert(_name, _instantiator);
 }
 

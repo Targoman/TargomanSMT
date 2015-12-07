@@ -63,7 +63,7 @@ private:
     };
 
 public:
-    explicit clsKenLMProxy(quint64 _instanceID);
+    explicit clsKenLMProxy();
     ~clsKenLMProxy();
 
     /**

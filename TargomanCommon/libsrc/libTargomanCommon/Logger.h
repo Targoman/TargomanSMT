@@ -40,7 +40,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
 
 /** @brief below macro must be used to generate new UUID and register actor */
 #define TARGOMAN_REGISTER_ACTOR(_actorName) \
-    Targoman::Common::Logger::instance().registerActor(&ActorUUID, _actorName);
+    Targoman::Common::Logger::instance().registerActor(ActorUUID, _actorName);
 
 #define TARGOMAN_UNREGISTER_ACTOR \
     Targoman::Common::Logger::instance().unregisterActor(ActorUUID);
@@ -254,7 +254,7 @@ public:
      * @exception throws exception if _actorName or _actorUUID is empty
      * @exception throws exception if _actorName is already exists in our Map, but _actorUUID is different
      **/
-    void   registerActor(QString* _actorUUID, const QString& _actorName);
+    void   registerActor(QString &_actorUUID, const QString& _actorName);
 
     /**
      * @brief unregisterActor

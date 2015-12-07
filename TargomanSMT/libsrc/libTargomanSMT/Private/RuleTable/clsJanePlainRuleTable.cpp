@@ -78,13 +78,11 @@ QList<tmplConfigurable<QString>> clsJanePlainRuleTable::FeatureFunctions = {
     "lrm")
 };
 
-clsJanePlainRuleTable::clsJanePlainRuleTable(quint64 _instanceID)  :
-    intfRuleTable(_instanceID)
-{}
+clsJanePlainRuleTable::clsJanePlainRuleTable()
+{ }
 
 clsJanePlainRuleTable::~clsJanePlainRuleTable()
 {
-    this->unregister();
 }
 
 

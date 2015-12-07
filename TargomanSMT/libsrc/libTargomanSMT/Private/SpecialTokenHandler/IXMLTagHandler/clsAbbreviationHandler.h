@@ -37,7 +37,7 @@ namespace IXMLTagHandler {
 class clsAbbreviationHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsAbbreviationHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
+    explicit clsAbbreviationHandler(): intfIXMLTagHandlerModule(this->tagName())
     { }
     ~clsAbbreviationHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);

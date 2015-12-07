@@ -45,12 +45,7 @@ namespace LanguageModel {
 class intfLMSentenceScorer : public Common::Configuration::intfModule
 {
 public:
-    intfLMSentenceScorer(quint64 _instanceID) :
-        intfModule(_instanceID)
-    {
-        UnknownWordIndex = 0;
-    }
-
+    intfLMSentenceScorer(){ UnknownWordIndex = 0; }
     virtual ~intfLMSentenceScorer(){}
 
     TARGOMAN_DEFINE_MODULE_SCOPE(intfLMSentenceScorer)

@@ -47,14 +47,7 @@ public:
     /**
      * @brief When an instance of any kind special OOV handler instantiates, its name and pointer of itself will be added to AvailableOOVHandlers data member of OOVHandler class.
      */
-    intfIXMLTagHandlerModule(const QString& _tagName, quint64 _instanceID) :
-        intfModule(_instanceID)
-    {
-#ifndef TARGOMAN_SHOW_DEBUG
-        Q_UNUSED(_instanceID)
-#else
-        Q_ASSERT_X(_instanceID == 0, "intfIXMLTagHandlerModule()", "Multiple instances of IXMLTagHandlerModule may probably cause bugs");
-#endif
+    intfIXMLTagHandlerModule(const QString& _tagName) {
         IXMLTagHandler::instance().AvailableTagHandlers.insert(_tagName, this);
     }
     virtual TargetRulesContainer_t getTargetRules(const QString& _token) = 0;

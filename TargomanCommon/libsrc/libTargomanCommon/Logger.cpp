@@ -260,7 +260,7 @@ tmplConfigurable<quint8> LogHappyLevel(
 Logger::Logger(QObject *parent) :
     QObject(parent),pPrivate(new Targoman::Common::Private::LoggerPrivate)
 {
-    this->registerActor(&this->pPrivate->ActorUUID,"BaseLogger");
+    this->registerActor(this->pPrivate->ActorUUID,"BaseLogger");
 }
 
 bool Logger::init(const QString &_fileName,
@@ -338,25 +338,25 @@ void Logger::write(const QString &_actorID,
     emit this->sigLogAdded(QDateTime().currentDateTime(), _actorID, _type, _level, _message);
 }
 
-void Logger::registerActor(QString *_actorUUID, const QString &_actorName)
+void Logger::registerActor(QString& _actorUUID, const QString &_actorName)
 {
     QMutexLocker Locker(&this->pPrivate->mxLog);
 
     if (_actorName.isEmpty())
-        throw exLogger("Invalid Null Actor Name: " + *_actorUUID);
+        throw exLogger("Invalid Null Actor Name: " + _actorUUID);
 
-    if (_actorUUID->isEmpty())
-        *_actorUUID = QUuid::createUuid().toString();
-    else if (this->pPrivate->Actors.contains(*_actorUUID))
+    if (_actorUUID.isEmpty())
+        _actorUUID = QUuid::createUuid().toString();
+    else if (this->pPrivate->Actors.contains(_actorUUID))
         throw exLogger(QString ("Invalid Actor UUID: %1 it is in use by %2").arg(
-                           *_actorUUID).arg(this->pPrivate->Actors.value(*_actorUUID)));
+                           _actorUUID).arg(this->pPrivate->Actors.value(_actorUUID)));
 
     if (this->pPrivate->Actors.values().contains(_actorName) &&
-            this->pPrivate->Actors.key(_actorName,0) != *_actorUUID)
+            this->pPrivate->Actors.key(_actorName,0) != _actorUUID)
         throw exLogger(QString ("Invalid Actor UUID/Name: %1/%2 it has been previously registered as: %3/%4").arg(
-                           *_actorUUID).arg(_actorName).arg(this->pPrivate->Actors.key(_actorName)).arg(_actorName));
+                           _actorUUID).arg(_actorName).arg(this->pPrivate->Actors.key(_actorName)).arg(_actorName));
 
-    this->pPrivate->Actors.insert(*_actorUUID, _actorName);
+    this->pPrivate->Actors.insert(_actorUUID, _actorName);
     //TargomanInfo(6, qPrintable(_actorName + " Registerd with UUID: " + *_actorUUID) );
 }
 

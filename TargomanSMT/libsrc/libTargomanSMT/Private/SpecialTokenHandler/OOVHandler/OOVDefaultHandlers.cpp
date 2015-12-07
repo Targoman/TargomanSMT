@@ -32,9 +32,9 @@ namespace Private{
 namespace SpecialTokenHandler {
 namespace OOV{
 
-TARGOMAN_REGISTER_MODULE(clsOOVRemoveOnTarget);
-TARGOMAN_REGISTER_MODULE(clsOOVRemoveDecoding);
-TARGOMAN_REGISTER_MODULE(clsOOVKeepSource);
+TARGOMAN_REGISTER_MODULE(clsRemoveOnTarget);
+TARGOMAN_REGISTER_MODULE(clsRemoveDecoding);
+TARGOMAN_REGISTER_MODULE(clsKeepSource);
 
 }
 }

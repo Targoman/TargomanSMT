@@ -36,7 +36,7 @@ namespace IXMLTagHandler {
 class clsSymbolHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsSymbolHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
+    explicit clsSymbolHandler(): intfIXMLTagHandlerModule(this->tagName())
     { }
     ~clsSymbolHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);

@@ -73,10 +73,6 @@ public:
     int compareStates(const SearchGraphBuilder::clsSearchGraphNode &_first, const SearchGraphBuilder::clsSearchGraphNode &_second) const;
 
 private:
-    LexicalReordering():
-        intfFeatureFunction(this->moduleName(), false)
-    {}
-
     enuLexicalReorderingFields::Type getBackwardOreientation(
             SearchGraphBuilder::clsSearchGraphNode &_newHypothesisNode) const;
     enuLexicalReorderingFields::Type getForwardOreientation(
@@ -94,8 +90,7 @@ private:
     static Common::Configuration::tmplConfigurable<bool>      IsBidirectional;      /**< Whether our lexical reordering is biderctional or not.*/
     static Common::Configuration::tmplConfigurable<double>    ScalingFactors[6];    /**< Scale factor of lrm costs.*/
 
-
-    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, LexicalReordering);
+    TARGOMAN_SMT_DEFINE_FEATUREFUNCTION(LexicalReordering, false)
 };
 
 }

@@ -57,15 +57,13 @@ TARGOMAN_REGISTER_MODULE(clsKenLMProxy);
 /**
  * @brief Constructor of this class initializes its parrent class with its module name and instantiates #LMSentenceScorer with #clsKenLMProxy::LM
  */
-clsKenLMProxy::clsKenLMProxy(quint64 _instanceID) :
-    intfLMSentenceScorer(_instanceID) {
+clsKenLMProxy::clsKenLMProxy() {
     if(clsKenLMProxy::LM.data())
         this->State = clsKenLMProxy::LM->BeginSentenceState();
 }
 
 clsKenLMProxy::~clsKenLMProxy()
 {
-    this->unregister();
 }
 
 }

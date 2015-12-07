@@ -57,9 +57,7 @@ static const QString TARGOMAN_BINARY_RULETABLE_HEADER = "TargomanBinaryRuleTable
 class intfRuleTable : public Common::Configuration::intfModule
 {
 public:
-    intfRuleTable(quint64 _instanceID) :
-    intfModule(_instanceID)
-    {}
+    intfRuleTable() { }
 
     TARGOMAN_DEFINE_MODULE_SCOPE(intfRuleTable)
 

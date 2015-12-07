@@ -95,15 +95,12 @@ tmplConfigurable<int> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(
         Validators::tmplNumericValidator<int, 0, 65536>
         );
 
-clsMosesPlainRuleTable::clsMosesPlainRuleTable(quint64 _instanceID)  :
-    intfRuleTable(_instanceID)
-{
+clsMosesPlainRuleTable::clsMosesPlainRuleTable() {
     this->PrecomputedValueIndex = clsTargetRule::allocatePrecomputedValue();
 }
 
 clsMosesPlainRuleTable::~clsMosesPlainRuleTable()
 {
-    this->unregister();
 }
 
 /**

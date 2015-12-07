@@ -44,7 +44,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exMosesPhraseTable, exRuleTable);
 class clsMosesPlainRuleTable : intfRuleTable
 {
 public:
-    explicit clsMosesPlainRuleTable(quint64 _instanceID);
+    explicit clsMosesPlainRuleTable();
     ~clsMosesPlainRuleTable();
 
     void initializeSchema();

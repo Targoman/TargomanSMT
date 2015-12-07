@@ -44,11 +44,11 @@ using namespace Common;
  * @brief This type of Special OOV handler removes the OOV in the output but it doesn't ignore in decoding process.
  */
 
-class clsOOVRemoveOnTarget : public intfOOVHandlerModule{
+class clsRemoveOnTarget : public intfOOVHandlerModule{
 public:
-    explicit clsOOVRemoveOnTarget(quint64 _instanceID):
-        intfOOVHandlerModule(this->moduleName(), _instanceID) {}
-    ~clsOOVRemoveOnTarget();
+    explicit clsRemoveOnTarget():
+        intfOOVHandlerModule(this->moduleName()) {}
+    ~clsRemoveOnTarget();
 
     /**
      * @brief process       Sets type of OOV handling and returns an appropriate target rule.
@@ -65,18 +65,18 @@ public:
     }
 
 private:
-    TARGOMAN_DEFINE_MODULE(OOVRemoveOnTarget);
+    TARGOMAN_DEFINE_MODULE(RemoveOnTarget);
 };
 
 /**
  * @brief This type of Special OOV handler ignores OOV word in decoding process.
  */
 
-class clsOOVRemoveDecoding : public intfOOVHandlerModule{
+class clsRemoveDecoding : public intfOOVHandlerModule{
 public:
-    explicit clsOOVRemoveDecoding(quint64 _instanceID):
-        intfOOVHandlerModule(this->moduleName(), _instanceID) {}
-    ~clsOOVRemoveDecoding();
+    explicit clsRemoveDecoding():
+        intfOOVHandlerModule(this->moduleName()) {}
+    ~clsRemoveDecoding();
 
     /**
      * @brief process       Sets type of OOV handling and returns an appropriate target rule.
@@ -95,18 +95,18 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_MODULE(OOVRemoveDecoding);
+    TARGOMAN_DEFINE_MODULE(RemoveDecoding);
 };
 
 /**
  * @brief This type of Special OOV handler keeps OOV word as it is in the output.
  */
 
-class clsOOVKeepSource : public intfOOVHandlerModule{
+class clsKeepSource : public intfOOVHandlerModule{
 public:
-    explicit clsOOVKeepSource(quint64 _instanceID):
-        intfOOVHandlerModule(this->moduleName(), _instanceID) {}
-    ~clsOOVKeepSource();
+    explicit clsKeepSource():
+        intfOOVHandlerModule(this->moduleName()) {}
+    ~clsKeepSource();
 
     /**
      * @brief process       Sets type of OOV handling and returns an appropriate target rule.
@@ -126,7 +126,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_MODULE(OOVKeepSource);
+    TARGOMAN_DEFINE_MODULE( KeepSource);
 };
 
 }

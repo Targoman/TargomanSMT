@@ -43,7 +43,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exJanePhraseTable, exRuleTable);
 class clsJanePlainRuleTable : public intfRuleTable
 {
 public:
-    explicit clsJanePlainRuleTable(quint64 _instanceID);
+    explicit clsJanePlainRuleTable();
     ~clsJanePlainRuleTable();
 
     void initializeSchema();

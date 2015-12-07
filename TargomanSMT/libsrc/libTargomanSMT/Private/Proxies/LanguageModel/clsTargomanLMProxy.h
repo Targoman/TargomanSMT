@@ -45,7 +45,7 @@ namespace LanguageModel{
 class clsTargomanLMProxy : public intfLMSentenceScorer
 {
 public:
-    explicit clsTargomanLMProxy(quint64 _instanceID);
+    explicit clsTargomanLMProxy();
     ~clsTargomanLMProxy();
 
     /**

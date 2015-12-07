@@ -41,7 +41,7 @@ public:
     virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return 0;}
     virtual void updateFutureStateHash(QCryptographicHash& _hash) const { Q_UNUSED(_hash); }
 
-    clsDummyScorerProxyForRestCost(int x) : Proxies::LanguageModel::intfLMSentenceScorer(x) { }
+    clsDummyScorerProxyForRestCost() : Proxies::LanguageModel::intfLMSentenceScorer() { }
 
 
     TARGOMAN_DEFINE_MODULE(DummyScorerProxyForRestCost);

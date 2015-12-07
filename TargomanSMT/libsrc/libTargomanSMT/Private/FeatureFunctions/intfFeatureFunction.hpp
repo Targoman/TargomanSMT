@@ -41,6 +41,12 @@ namespace Private{
 namespace FeatureFunction {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exFeatureFunction, exTargomanCore);
+
+#define     TARGOMAN_SMT_DEFINE_FEATUREFUNCTION(_name, _canComputePositionSpecificRestCost) \
+    private: \
+    _name(): intfFeatureFunction(this->moduleName(), _canComputePositionSpecificRestCost) {} \
+    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, _name);
+
 /**
  * @brief The intfFeatureFunction class is an interface class that every feature function like phrase table or lexical reordering table is derivated from that.
  */
@@ -53,8 +59,7 @@ public:
      * @param _moduleName
      * @param _canComputePositionSpecificRestCost
      */
-    intfFeatureFunction(const QString& _moduleName, bool _canComputePositionSpecificRestCost)
-    {
+    intfFeatureFunction(const QString& _moduleName, bool _canComputePositionSpecificRestCost) {
         gConfigs.ActiveFeatureFunctions.insert(_moduleName, this);
         this->CanComputePositionSpecificRestCost = _canComputePositionSpecificRestCost;
         this->PrecomputedIndex = RuleTable::clsTargetRule::allocatePrecomputedValue();
@@ -62,6 +67,7 @@ public:
     }
 
     virtual ~intfFeatureFunction(){}
+    TARGOMAN_DEFINE_MODULE_SCOPE(intfFeatureFunction)
 
     /**
      * @brief nodesHaveSameState checks equality of states of two search graph noedes.

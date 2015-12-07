@@ -64,13 +64,6 @@ public:
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
 private:
-    ReorderingJump():
-        intfFeatureFunction(this->moduleName(), true)
-    {}
-
-    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, ReorderingJump);
-
-private:
     static Common::Cost_t getJumpCost(size_t _jumpWidth) {
         Common::Cost_t Cost = _jumpWidth;
 
@@ -87,6 +80,7 @@ private:
 
     friend class UnitTestNameSpace::clsUnitTest;
 
+    TARGOMAN_SMT_DEFINE_FEATUREFUNCTION(ReorderingJump, true)
 };
 
 }

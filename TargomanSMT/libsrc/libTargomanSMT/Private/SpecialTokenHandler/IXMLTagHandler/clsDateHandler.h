@@ -36,7 +36,7 @@ namespace IXMLTagHandler {
 class clsDateHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsDateHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
+    explicit clsDateHandler(): intfIXMLTagHandlerModule(this->tagName())
     { }
     ~clsDateHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);

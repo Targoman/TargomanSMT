@@ -47,32 +47,14 @@ TARGOMAN_REGISTER_MODULE(clsTargomanLMProxy);
  * @brief Constructor of this class initializes its parrent class with its module name and instantiates #LMSentenceScorer with #clsTargomanLMProxy::LM
  */
 
-clsTargomanLMProxy::clsTargomanLMProxy(quint64 _instanceID)  :
-    intfLMSentenceScorer(_instanceID),
+clsTargomanLMProxy::clsTargomanLMProxy() :
     LMSentenceScorer(new Targoman::NLPLibs::TargomanLM::clsLMSentenceScorer(clsTargomanLMProxy::LM)){}
 
 clsTargomanLMProxy::~clsTargomanLMProxy()
-{this->unregister();}
+{}
 
 }
 }
 }
 }
 }
-
-//namespace Targoman {
-//namespace NLPLibs {
-//namespace TargomanLM {
-
-//tmplConfigurable<FilePath_t> clsLanguageModel::FilePath(
-//        "/TargomanLM/FilePath",
-//        "File path of ARPA or binary models",
-//        "",
-//        ConditionalPathValidator(
-//            Targoman::SMT::Private::gConfigs.LM.toVariant().toString() ==
-//                Targoman::SMT::Private::Proxies::LanguageModel::clsTargomanLMProxy::moduleName(),
-//            enuPathAccess::File | enuPathAccess::Readable)
-//        );
-//}
-//}
-//}

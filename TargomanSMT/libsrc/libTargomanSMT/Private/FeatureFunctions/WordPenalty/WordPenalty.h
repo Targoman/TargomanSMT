@@ -67,13 +67,6 @@ public:
 
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
-private:
-    WordPenalty():
-        intfFeatureFunction(this->moduleName(), false)
-    {}
-
-    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, WordPenalty);
-
 public:
     inline Common::Cost_t getWordPenaltyCost(const RuleTable::clsTargetRule& _targetRule) const {
         return _targetRule.size() * WordPenalty::ScalingFactor.value();
@@ -82,6 +75,7 @@ public:
 private:
     static Common::Configuration::tmplConfigurable<double> ScalingFactor;
 
+    TARGOMAN_SMT_DEFINE_FEATUREFUNCTION(WordPenalty, false)
 };
 
 

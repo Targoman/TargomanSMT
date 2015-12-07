@@ -42,7 +42,7 @@ public:
     virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return 0;}
     virtual void updateFutureStateHash(QCryptographicHash& _hash) const { Q_UNUSED(_hash); }
 
-    clsDummyScorerProxy(int x) : Proxies::LanguageModel::intfLMSentenceScorer(x) { }
+    clsDummyScorerProxy() : Proxies::LanguageModel::intfLMSentenceScorer() { }
 
 
     TARGOMAN_DEFINE_MODULE(DummyScorerProxy);
@@ -66,7 +66,7 @@ public:
         RuleNode.targetRules().append(TargetRule);
     }
 
-    clsDummyRuleTable(int x) : intfRuleTable(x) {
+    clsDummyRuleTable() : intfRuleTable() {
         this->PrefixTree.reset(new RulesPrefixTree_t());
     }
 
@@ -85,7 +85,7 @@ TARGOMAN_REGISTER_MODULE(clsDummyRuleTable);
 
 void clsUnitTest::test_clsSearchGraphBuilder_collectPhraseCandidates()
 {
-    gConfigs.EmptyLMScorer.reset(new clsDummyScorerProxy(0));
+    gConfigs.EmptyLMScorer.reset(new clsDummyScorerProxy());
 
     Sentence_t Sentence;
     Sentence << clsToken("word1", 1, "", QVariantMap())
@@ -94,7 +94,7 @@ void clsUnitTest::test_clsSearchGraphBuilder_collectPhraseCandidates()
              << clsToken("word4", 4, "", QVariantMap())
              << clsToken("word5", 5, "", QVariantMap());
 
-    clsDummyRuleTable RuleTable(0);
+    clsDummyRuleTable RuleTable();
 
     for(int i = 0; i < Sentence.size(); ++i)
         RuleTable.addRule(

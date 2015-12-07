@@ -33,5 +33,5 @@ CONFIG += ordered
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 addSubdirs(libsrc)
 addSubdirs(test, libsrc)
-addSubdirs(unitTest, libsrc)
+#addSubdirs(unitTest, libsrc)
 

@@ -72,17 +72,14 @@ public:
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
 private:
-    PhraseTable():
-        intfFeatureFunction(this->moduleName(), false)
-    {}
-    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, PhraseTable);
-
 
     QList<double> ScalingFactors;
     static QStringList   ColumnNames;
 
 private:
     static Targoman::Common::Configuration::clsFileBasedConfig ScalingFactorsConfigSection;
+
+    TARGOMAN_SMT_DEFINE_FEATUREFUNCTION(PhraseTable, false)
 };
 
 

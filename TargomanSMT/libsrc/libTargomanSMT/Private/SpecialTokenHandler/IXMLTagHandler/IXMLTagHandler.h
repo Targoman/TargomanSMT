@@ -79,8 +79,6 @@ private:
 public: \
     static inline QString tagName(){return Targoman::NLPLibs::enuTextTags::toStr(_tagName);}  \
     TARGOMAN_DEFINE_MODULE(_name)
-
-
 }
 }
 }

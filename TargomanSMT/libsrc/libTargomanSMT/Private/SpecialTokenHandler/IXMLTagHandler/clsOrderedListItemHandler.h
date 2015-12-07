@@ -37,7 +37,7 @@ namespace IXMLTagHandler {
 class clsOrderedListItemHandler : public intfIXMLTagHandlerModule
 {
 public:
-    explicit clsOrderedListItemHandler(quint64 _instanceID): intfIXMLTagHandlerModule(this->tagName(), _instanceID)
+    explicit clsOrderedListItemHandler(): intfIXMLTagHandlerModule(this->tagName())
     { }
     ~clsOrderedListItemHandler();
     TargetRulesContainer_t getTargetRules(const QString& _token);

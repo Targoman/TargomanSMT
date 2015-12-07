@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
         clsSafeCoreApplication App(argc, argv);
 
         printMemoryUsage("@first");
-        ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf");
+        ConfigManager::instance().init("dummy-license", QStringList()<<"-c"<<"./Targoman.conf"<<"--config-save");
         TARGOMAN_IO_SETTINGS.setDefault(8);
         TARGOMAN_IO_SETTINGS.Debug.setDetails(true);
         //Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);

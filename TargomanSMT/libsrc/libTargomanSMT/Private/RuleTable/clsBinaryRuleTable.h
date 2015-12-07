@@ -45,7 +45,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exMosesPhraseTable, exRuleTable);
 class clsBinaryRuleTable : public intfRuleTable
 {
 public:
-    explicit clsBinaryRuleTable(quint64 _instanceID);
+    explicit clsBinaryRuleTable();
     ~clsBinaryRuleTable();
 
     void initializeSchema();

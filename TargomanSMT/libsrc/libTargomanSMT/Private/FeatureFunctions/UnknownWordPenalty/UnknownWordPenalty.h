@@ -67,13 +67,6 @@ public:
 
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
-private:
-    UnknownWordPenalty():
-        intfFeatureFunction(this->moduleName(), false)
-    {}
-
-    TARGOMAN_DEFINE_SINGLETONSUBMODULE(FeatureFunctions, UnknownWordPenalty);
-
 public:
     inline Common::Cost_t getUnknownWordPenaltyCost(const RuleTable::clsTargetRule& _targetRule) const {
         Common::Cost_t Cost = 0;
@@ -85,6 +78,7 @@ public:
 private:
     static Common::Configuration::tmplConfigurable<double> ScalingFactor;
 
+    TARGOMAN_SMT_DEFINE_FEATUREFUNCTION(UnknownWordPenalty, false)
 };
 
 
