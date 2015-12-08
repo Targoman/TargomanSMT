@@ -426,7 +426,7 @@ void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
 
 void ConfigManager::addModuleInstantiaor(const QString _name, const stuInstantiator &_instantiator)
 {
-    if (this->pPrivate->Configs.contains(_name))
+    if (this->pPrivate->ModuleInstantiators.contains(_name))
         throw exConfiguration("Duplicate Module Name: " + _name);
     this->pPrivate->ModuleInstantiators.insert(_name, _instantiator);
 }
