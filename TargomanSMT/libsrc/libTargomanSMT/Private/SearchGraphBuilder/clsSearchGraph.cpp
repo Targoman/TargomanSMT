@@ -58,6 +58,7 @@ using namespace Common;
 using namespace Common::Configuration;
 using namespace RuleTable;
 using namespace Proxies;
+using namespace Proxies::LanguageModel;
 using namespace InputDecomposer;
 using namespace SpecialTokenHandler;
 using namespace SpecialTokenHandler::OOV;

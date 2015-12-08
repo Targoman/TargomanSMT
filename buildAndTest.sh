@@ -42,11 +42,11 @@ fi
 echo Using $QMAKE_COMMAND ...
 
 Projects="ExternalToolsAndLibs/
-          TargomanCommon 
+          TargomanCommon/ 
           NLPLibs/TargomanLM/ 
           NLPLibs/TargomanTextProcessor/
-          Apps/E4SMT 
-          TargomanSMT 
+          Apps/E4SMT/ 
+          TargomanSMT/ 
           Apps/TargomanSMTConsole 
           Apps/TargomanSMTServer 
           Apps/TargomanLoadBalancer"
@@ -59,8 +59,10 @@ else
   QMAKE_CONFIG=""
 fi
 
+
 if [ "$1" == "full" ]; then
   rm -rf out
+  mkdir -p out/include
   for Proj in $Projects
   do
     cd  $BasePath/$Proj
@@ -91,11 +93,12 @@ if [ "$1" == "full" ]; then
     fi
   done
 else
+  mkdir -p out/include
   for Proj in $Projects
   do
     cd  $BasePath/$Proj
     $QMAKE_COMMAND $QMAKE_CONFIG
-    make -j 8
+    make -j 1
     if [ $? -ne 0 ];then
       echo -e "\n\e[31m!!!!!!!!!!!!!!!!! $Proj Build Has failed!!!!!!!!!!!!!!!! \e[39m\n"
       exit 1;

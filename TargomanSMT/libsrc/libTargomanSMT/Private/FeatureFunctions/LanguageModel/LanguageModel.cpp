@@ -35,6 +35,7 @@ namespace FeatureFunction{
 using namespace Common;
 using namespace SearchGraphBuilder;
 using namespace Proxies::LanguageModel;
+using namespace Proxies::LanguageModel;
 using namespace RuleTable;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(LanguageModel);

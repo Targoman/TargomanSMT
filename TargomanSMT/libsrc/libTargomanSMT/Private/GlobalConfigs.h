@@ -38,15 +38,18 @@ namespace Targoman {
 namespace SMT {
 namespace Private {
 
-namespace FeatureFunction{
+namespace FeatureFunction
+{
 class intfFeatureFunction;
 }
+
 namespace RuleTable {
 class intfRuleTable;
 }
+
 namespace Proxies {
 namespace LanguageModel {class intfLMSentenceScorer;}
-namespace Transliteration{class intfTransliterator;}
+namespace Transliteration {class intfTransliterator;}
 }
 
 // Global ActorUUID, back-off when the logging class is not a module or singlton

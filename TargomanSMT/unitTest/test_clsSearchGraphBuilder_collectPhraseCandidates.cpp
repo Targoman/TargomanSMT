@@ -42,7 +42,11 @@ public:
     virtual int compareHistoryWith(const intfLMSentenceScorer& _otherScorer) const {Q_UNUSED(_otherScorer); return 0;}
     virtual void updateFutureStateHash(QCryptographicHash& _hash) const { Q_UNUSED(_hash); }
 
+<<<<<<< .mine
+    clsDummyScorerProxy(int x) : Proxies::LanguageModel::intfLMSentenceScorer(this->moduleName(), x) { }
+=======
     clsDummyScorerProxy() : Proxies::LanguageModel::intfLMSentenceScorer() { }
+>>>>>>> .r326
 
 
     TARGOMAN_DEFINE_MODULE(DummyScorerProxy);

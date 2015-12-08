@@ -27,7 +27,7 @@
 #ifndef SMT
 
 #include "TargomanTransliteratorProxy.h"
-//#include "Private/GlobalConfigs.h"
+
 #ifndef TARGOMAN_CORE_TRANSLITERATOR_H
 #define TARGOMAN_CORE_TRANSLITERATOR_H
 #ifdef TARGOMAN_CORE_CLSTRANSLATOR_H
@@ -49,8 +49,7 @@ namespace Transliteration {
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(TargomanTransliteratorProxy);
 
-TargomanTransliteratorProxy::TargomanTransliteratorProxy() :
-    intfTransliterator()
+TargomanTransliteratorProxy::TargomanTransliteratorProxy()
 { }
 
 void TargomanTransliteratorProxy::init(QSharedPointer<QSettings> _configSettings)

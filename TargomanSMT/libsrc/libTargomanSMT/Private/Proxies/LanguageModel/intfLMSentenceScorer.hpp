@@ -45,9 +45,11 @@ namespace LanguageModel {
 class intfLMSentenceScorer : public Common::Configuration::intfModule
 {
 public:
-    intfLMSentenceScorer(){ UnknownWordIndex = 0; }
-    virtual ~intfLMSentenceScorer(){}
+    intfLMSentenceScorer() {
+        UnknownWordIndex = 0;
+    }
 
+    virtual ~intfLMSentenceScorer(){}
     TARGOMAN_DEFINE_MODULE_SCOPE(intfLMSentenceScorer)
 
     virtual void init(bool _justVocab) = 0;

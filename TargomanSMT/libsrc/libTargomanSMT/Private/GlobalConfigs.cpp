@@ -40,6 +40,7 @@ namespace Private{
 
 using namespace Common;
 using namespace Common::Configuration;
+using namespace Proxies::LanguageModel;
 
 QString ActorUUID;
 

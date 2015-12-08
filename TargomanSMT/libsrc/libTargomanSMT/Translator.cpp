@@ -58,14 +58,13 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
     }
 
     InputDecomposer::clsInput::init(_configSettings);
-    gConfigs.EmptyLMScorer.reset(
-                gConfigs.LM.getInstance<Proxies::LanguageModel::intfLMSentenceScorer>());
+    gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::LanguageModel::intfLMSentenceScorer>());
     gConfigs.EmptyLMScorer->init(false);
 
     // Transliteration exists just for Statistical Machine Translation
 #ifndef SMT
-    Proxies::Transliteration::intfTransliterator* Transliterator =
-            gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>();
+    Proxies::Transliteration::intfTransliterator* Transliterator = 
+        gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>();
     Transliterator->init(_configSettings);
 #endif
 
