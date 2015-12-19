@@ -578,8 +578,7 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
                                    const QString &_longSwitch,
                                    enuConfigSource::Type _configSources,
                                    bool _remoteView,
-                                   const std::function<void(const intfConfigurable& _item)> &_finalizer/*,
-                                   const QString _configRootPath*/) :
+                                   const std::function<void(const intfConfigurable& _item)> &_finalizer) :
     pPrivate(new Private::intfConfigurablePrivate)
 {
     try{

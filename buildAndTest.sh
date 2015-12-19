@@ -98,7 +98,7 @@ else
   do
     cd  $BasePath/$Proj
     $QMAKE_COMMAND $QMAKE_CONFIG
-    make -j 1
+    make -j 8
     if [ $? -ne 0 ];then
       echo -e "\n\e[31m!!!!!!!!!!!!!!!!! $Proj Build Has failed!!!!!!!!!!!!!!!! \e[39m\n"
       exit 1;
