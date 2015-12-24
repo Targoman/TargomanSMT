@@ -56,7 +56,7 @@ public:
     virtual ~intfNamedEntityRecognizer() { }
     TARGOMAN_DEFINE_MODULE_SCOPE(intfNamedEntityRecognizer)
 
-    virtual void init() = 0;
+    virtual void init(QSharedPointer<QSettings> _configSettings) = 0;
     virtual void tagNamedEntities(InputDecomposer::Sentence_t _sentence) = 0;
 
 protected:

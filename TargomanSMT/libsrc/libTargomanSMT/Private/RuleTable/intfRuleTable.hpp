@@ -105,6 +105,14 @@ public:
     }
 
 protected:
+    void setReorderingAndAlignmentAvailability(bool _lexicalReorderingAvailable,
+                                               bool _alignmentAvailable)
+    {
+        clsTargetRule::LexicalReorderingAvailable = _lexicalReorderingAvailable;
+        clsTargetRule::AlignmentDataAvailable = _alignmentAvailable;
+    }
+
+protected:
     QScopedPointer<RulesPrefixTree_t> PrefixTree;               /**< The container which stores the source and target phrases. */
 };
 

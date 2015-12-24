@@ -68,10 +68,15 @@ tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::ReorderingTableFilePath(
         MAKE_CONFIG_PATH("ReorderingTableFilePath"),
         "Filepath where reordering table is stored",
         "",
-        ConditionalPathValidator(
-            gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName(),
-            enuPathAccess::File | enuPathAccess::Readable)
-        );
+        [] (const intfConfigurable& _item, QString& _errorMessage) { \
+            if(gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName())
+                return Validators::tmplPathAccessValidator<
+                        (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable), false>(
+                            _item, _errorMessage);
+            else
+                 return true;
+        }
+    );
 
 tmplConfigurable<QString> clsMosesPlainRuleTable::WordAlignmentFilePath(
         MAKE_CONFIG_PATH("WordAlignmentFilePath"),
@@ -111,35 +116,59 @@ void clsMosesPlainRuleTable::initializeSchema()
     TargomanLogInfo(5,
                     "Initializing Moses Plain Rule Table schema from " +
                     this->PhraseTableFilePath.value() +
-                    " and " + this->ReorderingTableFilePath.value());
+                    (this->ReorderingTableFilePath.value().isEmpty() ?
+                    "" :
+                    " and " + this->ReorderingTableFilePath.value())
+                    );
 
     clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFilePath.value().toStdString());
-    clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFilePath.value().toStdString());
+    clsCompressedInputStream ReorderingTableInputStream;
     clsCompressedInputStream AlignmentInputStream;
     bool AlignmentFileExists = QFile::exists(clsMosesPlainRuleTable::WordAlignmentFilePath.value());
     if(AlignmentFileExists)
         AlignmentInputStream.open(clsMosesPlainRuleTable::WordAlignmentFilePath.value().toStdString(), true);
+    bool ReorderingFileExists = QFile::exists(clsMosesPlainRuleTable::ReorderingTableFilePath.value());
+    if(ReorderingFileExists )
+        ReorderingTableInputStream.open(clsMosesPlainRuleTable::ReorderingTableFilePath.value().toStdString(), true);
 
-    if(PhraseTableInputStream.peek() < 0 && ReorderingTableInputStream.peek() < 0 && AlignmentFileExists && AlignmentInputStream.peek() < 0)
+    intfRuleTable::setReorderingAndAlignmentAvailability(
+                ReorderingFileExists,
+                AlignmentFileExists
+                );
+
+    if(PhraseTableInputStream.peek() < 0 || (ReorderingFileExists && ReorderingTableInputStream.peek() < 0) || (AlignmentFileExists && AlignmentInputStream.peek() < 0))
         throw exMosesPhraseTable("Phrase table, reordering table or alignment file is of size zero.");
 
     std::string PhraseTableLine, ReorderingTableLine, AlignmentFileLine;
     getline(PhraseTableInputStream, PhraseTableLine);
-    getline(ReorderingTableInputStream, ReorderingTableLine);
+    if(ReorderingFileExists)
+        getline(ReorderingTableInputStream, ReorderingTableLine);
     if(AlignmentFileExists)
         getline(AlignmentInputStream, AlignmentFileLine);
-    if (PhraseTableLine == "" || ReorderingTableLine == "" || (AlignmentFileExists && AlignmentFileLine == ""))
+    if (PhraseTableLine == "" || (ReorderingFileExists && ReorderingTableLine == "") || (AlignmentFileExists && AlignmentFileLine == ""))
         throw exMosesPhraseTable("Empty first line in alignmetn file, phrase table or reordering table.");
 
     QStringList PhraseTableFields = QString::fromUtf8(PhraseTableLine.c_str()).split("|||");
     if (PhraseTableFields.size() < 3)
         throw exMosesPhraseTable(QString("Bad phrase table file format in first line : %1").arg(PhraseTableLine.c_str()));
-    QStringList ReorderingTableFields = QString::fromUtf8(ReorderingTableLine.c_str()).split("|||");
-    if (ReorderingTableFields.size() < 3)
-        throw exMosesPhraseTable(QString("Bad reordering table file format in first line : %1").arg(ReorderingTableLine.c_str()));
-    if (ReorderingTableFields[mosesFormatSourcePhrase] != PhraseTableFields[mosesFormatSourcePhrase] ||
-            ReorderingTableFields[mosesFormatTargetPhrase] != PhraseTableFields[mosesFormatTargetPhrase])
-        throw exMosesPhraseTable(QString("Reordering and phrase tables do not match (at first line) : %1").arg(PhraseTableLine.c_str()));
+    int ReorderingCostsFieldsSize = 0;
+    this->ReorderingFeatureCount = 0;
+    if(ReorderingFileExists) {
+        QStringList ReorderingTableFields = QString::fromUtf8(ReorderingTableLine.c_str()).split("|||");
+        if (ReorderingTableFields.size() < 3)
+            throw exMosesPhraseTable(QString("Bad reordering table file format in first line : %1").arg(ReorderingTableLine.c_str()));
+        if (ReorderingTableFields[mosesFormatSourcePhrase] != PhraseTableFields[mosesFormatSourcePhrase] ||
+                ReorderingTableFields[mosesFormatTargetPhrase] != PhraseTableFields[mosesFormatTargetPhrase])
+            throw exMosesPhraseTable(QString("Reordering and phrase tables do not match (at first line) : %1").arg(PhraseTableLine.c_str()));
+
+        QStringList ReorderingCostsFields = ReorderingTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
+
+        if (ReorderingCostsFields.size() != 3 && ReorderingCostsFields.size() != 6 )
+            throw exMosesPhraseTable(QString("Invalid count of reordering scores in first line : %1").arg(ReorderingTableLine.c_str()));
+
+        ReorderingCostsFieldsSize = ReorderingCostsFields.size();
+        this->ReorderingFeatureCount = ReorderingCostsFields.size();
+    }
     if(AlignmentFileExists){
         QStringList AlignmentFileFields = QString::fromUtf8(AlignmentFileLine.c_str()).split("|||");
         if (AlignmentFileFields.size() < 3)
@@ -147,27 +176,22 @@ void clsMosesPlainRuleTable::initializeSchema()
     }
 
     QStringList PhraseCostsFields = PhraseTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
-    QStringList ReorderingCostsFields = ReorderingTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
-
-    if (ReorderingCostsFields.size() != 3 && ReorderingCostsFields.size() != 6 )
-        throw exMosesPhraseTable(QString("Invalid count of reordering scores in first line : %1").arg(ReorderingTableLine.c_str()));
-
     if(PhraseCostsFields.size() == 0)
         throw exMosesPhraseTable(
                 QString("No phrase features defined (at first line) : %1")
                 .arg(PhraseTableLine.c_str()));
 
     this->PhraseFeatureCount = PhraseCostsFields.size();
-    this->ReorderingFeatureCount = ReorderingCostsFields.size();
     QStringList ColumnNames;
     for(int i = 0; i < PhraseCostsFields.size(); ++i)
         ColumnNames.append("PhraseFeature" + QString::number(i));
 
     PhraseTable::setColumnNames(ColumnNames);
-    ColumnNames.append(
+    if(ReorderingFileExists)
+        ColumnNames.append(
                 reinterpret_cast<intfFeatureFunction*>(LexicalReordering::moduleInstance())->columnNames()
                 );
-    if(ReorderingCostsFields.size() == 3 && ColumnNames.size() != PhraseCostsFields.size() + 3)
+    if(ReorderingCostsFieldsSize == 3 && ColumnNames.size() != PhraseCostsFields.size() + 3)
         ColumnNames = ColumnNames.mid(0, ColumnNames.size() - 3);
     clsTargetRule::setColumnNames(ColumnNames);
     TargomanLogInfo(5, "Moses plain text rule set schema loaded. ");
@@ -193,7 +217,11 @@ void clsMosesPlainRuleTable::loadTableData()
     addUnkToUnkRule(TotalRuleNodes);
 
     clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFilePath.value().toStdString());
-    clsCompressedInputStream ReorderingTableInputStream(clsMosesPlainRuleTable::ReorderingTableFilePath.value().toStdString());
+    clsCompressedInputStream ReorderingTableInputStream;
+    bool ReorderingFileExists = QFile::exists(clsMosesPlainRuleTable::ReorderingTableFilePath.value());
+    if(ReorderingFileExists)
+        ReorderingTableInputStream.open(clsMosesPlainRuleTable::ReorderingTableFilePath.value().toStdString(), true);
+
     size_t RulesRead = 0;
 
     clsCompressedInputStream AlignmentInputStream;
@@ -201,16 +229,21 @@ void clsMosesPlainRuleTable::loadTableData()
     if(AlignmentFileExists)
         AlignmentInputStream.open(clsMosesPlainRuleTable::WordAlignmentFilePath.value().toStdString(), true);
 
-    while (PhraseTableInputStream.peek() >= 0 && ReorderingTableInputStream.peek() >= 0
-           && AlignmentFileExists && AlignmentInputStream.peek() >= 0){
+    while (PhraseTableInputStream.peek() >= 0
+           && (ReorderingFileExists == false || ReorderingTableInputStream.peek() >= 0)
+           && (AlignmentFileExists == false || AlignmentInputStream.peek() >= 0)){
         std::string PhraseTableLine, ReorderingTableLine, AlignmentFileLine;
         getline(PhraseTableInputStream, PhraseTableLine);
-        getline(ReorderingTableInputStream, ReorderingTableLine);
+        if(ReorderingFileExists)
+            getline(ReorderingTableInputStream, ReorderingTableLine);
         if(AlignmentFileExists)
             getline(AlignmentInputStream, AlignmentFileLine);
 
-        if (PhraseTableLine == "" || ReorderingTableLine == "" || (AlignmentFileExists && AlignmentFileLine == ""))
+        if (PhraseTableLine == "" ||
+            (ReorderingFileExists && ReorderingTableLine == "") ||
+            (AlignmentFileExists && AlignmentFileLine == ""))
             continue;
+
         ++RulesRead;
         ProgressBar.setValue(RulesRead);
 
@@ -219,14 +252,17 @@ void clsMosesPlainRuleTable::loadTableData()
         if (PhraseTableFields.size() < 3)
             throw exMosesPhraseTable(QString("Bad phrase table file format in line %1 : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
 
-        QStringList ReorderingTableFields = QString::fromUtf8(ReorderingTableLine.c_str()).split("|||");
+        QStringList ReorderingTableFields;
+        if(ReorderingFileExists) {
+            ReorderingTableFields = QString::fromUtf8(ReorderingTableLine.c_str()).split("|||");
 
-        if (ReorderingTableFields.size() < 3)
-            throw exMosesPhraseTable(QString("Bad reordering table file format in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
+            if (ReorderingTableFields.size() < 3)
+                throw exMosesPhraseTable(QString("Bad reordering table file format in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
 
-        if (ReorderingTableFields[mosesFormatSourcePhrase] != PhraseTableFields[mosesFormatSourcePhrase] ||
-                ReorderingTableFields[mosesFormatTargetPhrase] != PhraseTableFields[mosesFormatTargetPhrase])
-            throw exMosesPhraseTable(QString("Reordering and phrase tables do not match (at line %1) : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
+            if (ReorderingTableFields[mosesFormatSourcePhrase] != PhraseTableFields[mosesFormatSourcePhrase] ||
+                    ReorderingTableFields[mosesFormatTargetPhrase] != PhraseTableFields[mosesFormatTargetPhrase])
+                throw exMosesPhraseTable(QString("Reordering and phrase tables do not match (at line %1) : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
+        }
 
         if (PhraseTableFields[mosesFormatTargetPhrase].isEmpty()){
             TargomanWarn(5,"Ignoring phrase with empty target side at line: " + QString::number(RulesRead));
@@ -238,24 +274,31 @@ void clsMosesPlainRuleTable::loadTableData()
             AlignmentFileFields = QString::fromUtf8(AlignmentFileLine.c_str()).split("|||");
 
         QStringList PhraseCostsFields = PhraseTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
-        QStringList ReorderingCostsFields = ReorderingTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
+        QStringList ReorderingCostsFields;
+        if(ReorderingFileExists)
+            ReorderingCostsFields = ReorderingTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
         QStringList WordAlignments;
         if(AlignmentFileExists)
             WordAlignments = AlignmentFileFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
 
-        if (ReorderingCostsFields.size() != 3 && ReorderingCostsFields.size() != 6 )
-            throw exMosesPhraseTable(QString("Invalid count of reordering scores in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
+        if(ReorderingFileExists){
+            if (ReorderingCostsFields.size() != 3 && ReorderingCostsFields.size() != 6 )
+                throw exMosesPhraseTable(QString("Invalid count of reordering scores in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
+        }
 
         if (PhraseCostsFields.size() != this->PhraseFeatureCount)
             throw exMosesPhraseTable(QString("Inconsistent phrase scores in line %1 : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
 
-        if (ReorderingCostsFields.size() != this->ReorderingFeatureCount)
-            throw exMosesPhraseTable(QString("Inconsistent reordering scores in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
+        if(ReorderingFileExists){
+            if (ReorderingCostsFields.size() != this->ReorderingFeatureCount)
+                throw exMosesPhraseTable(QString("Inconsistent reordering scores in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
+        }
 
-        if(this->ReorderingFeatureCount == 6)
-            PhraseCostsFields.append(ReorderingCostsFields.mid(3, 3));
-        PhraseCostsFields.append(ReorderingCostsFields.mid(0, 3));
-
+        if(ReorderingFileExists){
+            if(this->ReorderingFeatureCount == 6)
+                PhraseCostsFields.append(ReorderingCostsFields.mid(3, 3));
+            PhraseCostsFields.append(ReorderingCostsFields.mid(0, 3));
+        }
 
         this->addRule(TotalRuleNodes, PhraseTableFields[mosesFormatSourcePhrase], PhraseTableFields[mosesFormatTargetPhrase], PhraseCostsFields, WordAlignments, RulesRead);
     }

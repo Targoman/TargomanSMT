@@ -24,8 +24,8 @@
  * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
  */
 
-#ifndef TARGOMAN_COMMON_CONFIGURATION_TMPLMODULECONFIG_HPP
-#define TARGOMAN_COMMON_CONFIGURATION_TMPLMODULECONFIG_HPP
+#ifndef TARGOMAN_COMMON_CONFIGURATION_TMPLADDINCONFIG_HPP
+#define TARGOMAN_COMMON_CONFIGURATION_TMPLADDINCONFIG_HPP
 
 #include "libTargomanCommon/Configuration/intfConfigurable.hpp"
 #include "libTargomanCommon/Configuration/ConfigManager.h"
@@ -34,15 +34,14 @@ namespace Targoman {
 namespace Common {
 namespace Configuration {
 /**
- * @brief This class is a derivation of intfConfigurable that is specific for module configurables
- * (for example for setting language model module in program configuration)
+ * @brief This class is a derivation of intfConfigurable that is specific for addin configurables
  */
 template<class itmplAcceptableInterface>
-class tmplModuleConfig : public intfConfigurable{
+class tmplAddinConfig : public intfConfigurable{
 public:
-    tmplModuleConfig(const clsConfigPath&  _configPath,
+    tmplAddinConfig(const clsConfigPath&  _configPath,
                     const QString&  _description,
-                    const QString&  _default,
+                    const QStringList&  _default = QStringList(),
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
                     const QString&  _LongSwitch = "") :
@@ -56,15 +55,18 @@ public:
                             enuConfigSource::Arg  |
                             enuConfigSource::File),
                          false){
-        this->ActiveModuleName = _default;
+        this->ActiveAddins = _default;
         this->AcceptableModule = itmplAcceptableInterface::moduleScope();
     }
     virtual inline void setFromVariant(const QVariant& _var){
-        this->ActiveModuleName = _var.toString();
+        if (_var.canConvert(QVariant::StringList))
+            this->ActiveAddins = _var.toStringList();
+        else
+            this->ActiveAddins = _var.toString().split(',');
     }
 
     virtual inline QVariant    toVariant() const{
-        return this->ActiveModuleName;
+        return this->ActiveAddins.join(",");
     }
 
     virtual inline bool        validate(const QVariant&, QString&) const{
@@ -76,19 +78,27 @@ public:
      * @exception throws exeption if module doesn't have a instantiator.
      */
     virtual inline void finalizeConfig(){
-        this->Instantiatior =
-                ConfigManager::instance().getInstantiator(
-                    this->AcceptableModule + "::" + this->ActiveModuleName);
-        if (this->Instantiatior == NULL)
-            throw exConfiguration(
-                    QString("Invalid module name <%1> for %2\nValid Options are: (%3)\n"
-                            "Maybe you have forgotten to place:\n"
-                            "\tTARGOMAN_REGISTER_[SINGLETON_]MODULE(%1)\n"
-                            "In implementation of <%1>").arg(
-                        this->ActiveModuleName).arg(
-                        this->ConfigPath).arg(
-                        this->validValues())
-                    );
+        foreach (const QString& Addin, this->ActiveAddins){
+            this->Instantiatior =
+                    ConfigManager::instance().getInstantiator(
+                        this->AcceptableModule + "::" + Addin, true);
+            if (this->Instantiatior == NULL){
+
+                throw exConfiguration(
+                        QString("Invalid addin name <%1> for %2\nValid Options are: (%3)\n"
+                                "Maybe you have forgotten to place:\n"
+                                "\tTARGOMAN_REGISTER_SINGLETON_MODULE(%1)\n"
+                                "In implementation of <%1>").arg(
+                            Addin).arg(
+                            this->ConfigPath).arg(
+                            this->validValues())
+                        );
+            }
+            intfModule* Instance = this->Instantiatior();
+            if(dynamic_cast<itmplAcceptableInterface*>(Instance) == NULL)
+                throw exConfiguration(QString("Addin: %1 must be of type %2").arg(
+                                          typeid(itmplAcceptableInterface).name()));
+        }
     }
     /**
      * @brief returns #Instantiator.
@@ -98,15 +108,28 @@ public:
     }
 
     virtual QString typeString() const{
-        return "QString";
+        return "AddinConfig";
     }
 
     virtual QString validValues() const{
-        return ConfigManager::instance().registeredModules(this->AcceptableModule).join('|');
+        QStringList AcceptableAddins;
+        foreach(const QString CheckingAddin,
+                ConfigManager::instance().registeredModules(this->AcceptableModule)){
+            try{
+                fpModuleInstantiator_t Instantiator = ConfigManager::instance().getInstantiator(
+                            this->AcceptableModule + "::" + CheckingAddin, true);
+                intfModule* Instance = Instantiator();
+                if(dynamic_cast<itmplAcceptableInterface*>(Instance) != NULL)
+                    AcceptableAddins.append(CheckingAddin);
+            }catch(exConfiguration &e){
+                //Ignore exception on non-singleton modules
+            }
+        }
+        return AcceptableAddins.join('|');
     }
 
 private:
-    QString ActiveModuleName;               /**< Module name which will be set by setFromVariant(const QVariant&)*/
+    QStringList ActiveAddins;           /**< Module name which will be set by setFromVariant(const QVariant&)*/
     fpModuleInstantiator_t Instantiatior;   /**< Pointer to the Instantiator function of module.*/
     QString AcceptableModule;
 };
@@ -114,4 +137,4 @@ private:
 }
 }
 }
-#endif // TARGOMAN_COMMON_CONFIGURATION_TMPLMODULECONFIG_HPP
+#endif // TARGOMAN_COMMON_CONFIGURATION_TMPLADDINCONFIG_HPP

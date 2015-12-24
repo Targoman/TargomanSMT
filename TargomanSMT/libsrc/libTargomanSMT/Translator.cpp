@@ -34,7 +34,7 @@
 #include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
 // TODO: This header must be included in OOVHandler module
 #include "Private/Proxies/Transliteration/intfTransliterator.h"
-
+#include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
 
 namespace Targoman{
 /**
@@ -66,6 +66,10 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
     Proxies::Transliteration::intfTransliterator* Transliterator = 
         gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>();
     Transliterator->init(_configSettings);
+
+    Proxies::NamedEntityRecognition::intfNamedEntityRecognizer* NER =
+            gConfigs.NER.getInstance<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer>();
+    NER->init(_configSettings);
 #endif
 
     OOVHandler::instance().initialize();

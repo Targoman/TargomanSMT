@@ -34,6 +34,7 @@
 #include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "libTargomanCommon/Constants.h"
 #include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
+#include "libTargomanCommon/Configuration/tmplAddinConfig.hpp"
 
 namespace Targoman{
 namespace SMT {
@@ -65,15 +66,16 @@ private:
     RuleTable::TargetRulesContainer_t gatherTargetRules(const QString& _token, QVariantMap& _attrs);
 
 private:
-    TARGOMAN_DEFINE_SINGLETONMODULE(OOVHandler);
+    TARGOMAN_DEFINE_SINGLETON_MODULE(OOVHandler);
 
 private:
     QList<intfOOVHandlerModule*>                                        ActiveOOVHandlers;        /**< List of active special OOV handlers.*/
 
 private:
-    static Targoman::Common::Configuration::tmplConfigurable<QString>   OOVHandlerModules;
-    static Targoman::Common::Configuration::tmplConfigurable<bool>      CheckDifferentLetterCases;
-    static QMap<QString, intfOOVHandlerModule*>                         AvailableOOVHandlers; /**< List of available special OOV handlers*/
+    //static Targoman::Common::Configuration::tmplConfigurable<QString>   OOVHandlerModules;
+    static Targoman::Common::Configuration::tmplAddinConfig<intfOOVHandlerModule>   OOVHandlerModules;
+    static Targoman::Common::Configuration::tmplConfigurable<bool>                  CheckDifferentLetterCases;
+    //static QMap<QString, intfOOVHandlerModule*>                                     AvailableOOVHandlers; /**< List of available special OOV handlers*/
     friend class intfOOVHandlerModule;
 };
 

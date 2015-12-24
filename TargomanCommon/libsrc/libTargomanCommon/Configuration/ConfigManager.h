@@ -76,7 +76,7 @@ public:
     QStringList registeredModules(const QString& _moduleRoot);
     QVariant getConfig(const QString& _path, const QVariant &_default = QVariant()) const;
     void setValue(const QString& _path, const QVariant &_value) const;
-    fpModuleInstantiator_t getInstantiator(const QString& _name) const;
+    fpModuleInstantiator_t getInstantiator(const QString& _name, bool _mustBeSingleton = false) const;
     QString configFilePath();
     QSharedPointer<QSettings> configSettings();
     QString configFileDir();

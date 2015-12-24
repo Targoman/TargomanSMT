@@ -47,8 +47,10 @@ public:
      * @brief When an instance of any kind special OOV handler instantiates, its name and pointer of itself will be added to AvailableOOVHandlers data member of OOVHandler class.
      */
     intfOOVHandlerModule(const QString& _moduleName) {
-       OOVHandler::instance().AvailableOOVHandlers.insert(_moduleName, this);
+        //OOVHandler::instance().AvailableOOVHandlers.insert(_moduleName, this);
+        OOVHandler::instance().ActiveOOVHandlers.append(this);
     }
+    TARGOMAN_DEFINE_MODULE_SCOPE(intfOOVHandlerModule)
 
     virtual RuleTable::clsTargetRule process(const QString& _token, QVariantMap& _currAttrs) = 0;
 };

@@ -114,11 +114,11 @@ private: \
     static QAtomicInt Instances;
 
 /**
- * @def TARGOMAN_DEFINE_SINGLETONMODULE adds three function and two data member to singleton module classes.
+ * @def TARGOMAN_DEFINE_SINGLETON_MODULE adds three function and two data member to singleton module classes.
  * Registrar member is the static member that is of type clsModuleRegistrar and will be instantiated before main to insert module instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
  */
 
-#define TARGOMAN_DEFINE_SINGLETONMODULE(_name) \
+#define TARGOMAN_DEFINE_SINGLETON_MODULE(_name) \
 public: \
     QString moduleFullName(){return Targoman::Common::demangle(typeid(*this).name());}\
     static _name& instance() {return *((_name*)_name::moduleInstance());} \

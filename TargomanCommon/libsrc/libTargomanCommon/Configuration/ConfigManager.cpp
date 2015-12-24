@@ -488,14 +488,27 @@ void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
  * @exception throws exception if ConfigManager is not initialized yet.
  * @exception throws exception if input module is singleton (because singleton module can not be reinitialized).
  */
-fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) const
+fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name, bool _mustBeSingleton) const
 {
     if (this->pPrivate->Initialized == false)
         throw exConfiguration("Configuration is not initialized yet.");
 
     stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(_name);
+    // TODO: Check the comments below!
+    /*
+     * The following error checking is not relevant as singleton modules handle
+     * their instantiation by themselves.
+     *
+     * /EMPHASIZE{clsBinaryRuleTable} and other implementations of intfRuleTable
+     *  should be singleton
+    */
+    /*
     if (Instantiator.IsSingleton)
         throw exConfiguration(_name + " Is a singleton module and can not be reinstantiated");
+    */
+
+    if (Instantiator.fpMethod != NULL && _mustBeSingleton && Instantiator.IsSingleton == false)
+        throw exConfiguration(_name + " must be singleton");
 
     return Instantiator.fpMethod;
 }

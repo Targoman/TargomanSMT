@@ -65,7 +65,7 @@ public slots:
 private:
     TSManager();
 
-    TARGOMAN_DEFINE_SINGLETONMODULE(TSManager)
+    TARGOMAN_DEFINE_SINGLETON_MODULE(TSManager)
 private:
     static Common::Configuration::tmplConfigurable<quint16> MaxTranslationTime;
     static Common::Configuration::tmplConfigurable<quint8>  MaxRetries;

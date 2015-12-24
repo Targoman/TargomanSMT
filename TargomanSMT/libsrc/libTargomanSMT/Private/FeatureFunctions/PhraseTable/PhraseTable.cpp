@@ -75,6 +75,7 @@ void PhraseTable::initialize(QSharedPointer<QSettings> _configSettings)
         throw exPhraseTable("No configuration settings provided");
 
     _configSettings->beginGroup(PhraseTable::ScalingFactorsConfigSection.configPath());
+
     foreach(const QString& ColumnName, this->ColumnNames){
         if (_configSettings->value(ColumnName).isValid()){
             bool Ok;
@@ -87,6 +88,7 @@ void PhraseTable::initialize(QSharedPointer<QSettings> _configSettings)
         }else
             throw exPhraseTable("No scaling factor found for column: "+ ColumnName);
     }
+    _configSettings->endGroup();
 }
 
 /**

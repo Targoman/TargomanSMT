@@ -61,7 +61,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_SINGLETONMODULE(IXMLTagHandler);
+    TARGOMAN_DEFINE_SINGLETON_MODULE(IXMLTagHandler);
 
 private:
     QMap<QString,intfIXMLTagHandlerModule*>                             ActiveTagHandlers;    /**< List of active special tag handlers.*/

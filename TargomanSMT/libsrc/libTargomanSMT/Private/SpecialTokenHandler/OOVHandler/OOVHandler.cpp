@@ -38,34 +38,42 @@ using namespace Common;
 using namespace RuleTable;
 using namespace Targoman::Common::Configuration;
 
-tmplConfigurable<QString> OOVHandler::OOVHandlerModules(
+//tmplConfigurable<QString> OOVHandler::OOVHandlerModules(
+//        MAKE_CONFIG_PATH("Handlers"),
+//        "Name of OOVHandler Modules to be used. Comma Separated",
+//        "",
+//        [] (const intfConfigurable& _item, QString& _errorMessage) {
+//    QSet<QString> ModuleNames = QSet<QString>::fromList(_item.toVariant().toString().split(",", QString::SkipEmptyParts));
+//    for(auto Iterator = ModuleNames.begin(); Iterator != ModuleNames.end(); ++Iterator) {
+//        const QString& ModuleName = *Iterator;
+//        // TODO: Implement a more decent approach
+//        fpModuleInstantiator_t Instantiator = ConfigManager::instance().getInstantiator(
+//                    OOVHandler:: ModuleName);
+//        if(Instantiator == NULL) {
+//            _errorMessage = "Unknown OOVHandlerModule `" + ModuleName + "`";
+//            return false;
+//        }
+//        // Just create the object and leave it alone, this will be handled by OOVHandler itself
+//        Instantiator();
+//    }
+//    return true;
+//});
+
+tmplAddinConfig<intfOOVHandlerModule> OOVHandler::OOVHandlerModules(
         MAKE_CONFIG_PATH("Handlers"),
-        "Name of OOVHandler Modules to be used. Comma Separated",
-        "",
-        [] (const intfConfigurable& _item, QString& _errorMessage) {
-    QSet<QString> ModuleNames = QSet<QString>::fromList(_item.toVariant().toString().split(",", QString::SkipEmptyParts));
-    for(auto Iterator = ModuleNames.begin(); Iterator != ModuleNames.end(); ++Iterator) {
-        const QString& ModuleName = *Iterator;
-        fpModuleInstantiator_t Instantiator = ConfigManager::instance().getInstantiator(ModuleName);
-        if(Instantiator == NULL) {
-            _errorMessage = "Unknown OOVHandlerModule `" + ModuleName + "`";
-            return false;
-        }
-        // Just create the object and leave it alone, this will be handled by OOVHandler itself
-        Instantiator();
-    }
-    return true;
-});
+        "Name of OOVHandler Modules to be used. Comma Separated"
+        );
 
 tmplConfigurable<bool> OOVHandler::CheckDifferentLetterCases(
         MAKE_CONFIG_PATH("CheckDifferentLetterCases"),
         "Check upper, lower and Pascal forms of unknown words",
         false);
 
-QMap<QString, intfOOVHandlerModule*>                       OOVHandler::AvailableOOVHandlers;
+//QMap<QString, intfOOVHandlerModule*>                       OOVHandler::AvailableOOVHandlers;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(OOVHandler);
 
+// TODO: Update following comments
 /**
  * @brief OOVHandler::initialize Sets #ActivesOOVHandlers from #OOVHandlerModules and checks whethere they are available handlers or not.
  * @exception throws exception if name of special OOV handler is not in #AvailableOOVHandlers.
@@ -73,6 +81,8 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(OOVHandler);
 
 void OOVHandler::initialize()
 {
+    // TODO: Remove following comments if we are sure
+    /*
     QStringList OOVHandlers = OOVHandler::OOVHandlerModules.value().split(",", QString::SkipEmptyParts);
     foreach(const QString& OOVHandlerName, OOVHandlers){
         intfOOVHandlerModule* pOOVHandler = this->AvailableOOVHandlers.value(OOVHandlerName);
@@ -80,7 +90,7 @@ void OOVHandler::initialize()
             throw exOOVHandler("Invalid OOVHandler name: "+ OOVHandlerName );
         this->ActiveOOVHandlers.append(pOOVHandler);
     }
-
+    */
 }
 
 TargetRulesContainer_t OOVHandler::gatherTargetRules(const QString &_token, QVariantMap &_attrs)
