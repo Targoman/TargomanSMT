@@ -45,12 +45,28 @@ tmplConfigurable<FilePath_t> ZhangMaxEntProxy::FilePath(
         "File path of binary maxent model",
         ""
         );
+tmplConfigurable<FilePath_t> ZhangMaxEntProxy::RareWordsPath(
+        MAKE_CONFIG_PATH("RareWordsPath"),
+        "Path of the file containing rare words",
+        ""
+        );
 maxent::MaxentModel ZhangMaxEntProxy::Model;
 bool ZhangMaxEntProxy::ModelLoaded = false;
 QStringList ZhangMaxEntProxy::RareWords;
 
 ZhangMaxEntProxy::ZhangMaxEntProxy()
 { }
+
+QStringList readalllines(string _filename)
+{
+    QStringList AllLines;
+    ifstream File(_filename);
+
+    string Line;
+    while(getline(File, Line))
+        AllLines.append(QString::fromStdString(Line));
+    return AllLines;
+}
 
 void ZhangMaxEntProxy::init(QSharedPointer<QSettings> _configSettings)
 {
@@ -59,12 +75,16 @@ void ZhangMaxEntProxy::init(QSharedPointer<QSettings> _configSettings)
         throw exTargomanInitialization("Initialization of ZhangMaxEntProxy must be called just once.");
 
     ZhangMaxEntProxy::Model.load(ZhangMaxEntProxy::FilePath.value().toStdString());
+    ZhangMaxEntProxy::RareWords = readalllines(ZhangMaxEntProxy::RareWordsPath.value().toStdString());
     ZhangMaxEntProxy::ModelLoaded = true;
 }
 
-vector<string> ZhangMaxEntProxy::getMaxEntContext(const Sentence_t& _sentence, const QStringList &_previousTags, int _index)
+vector<string> ZhangMaxEntProxy::getMaxEntContext(
+        const QList<InputDecomposer::clsToken::stuInfo>& _sentence,
+        const QStringList &_previousTags,
+        int _index)
 {
-    // Convertd directly from Zhang's maxent implementation example, postagger.py
+    // Converted directly from Zhang's maxent implementation example, postagger.py
     // so do not blame me!
     auto get_prefix_suffix_english =
             [] (QString w, int length, QStringList& p, QStringList& s) {
@@ -80,9 +100,9 @@ vector<string> ZhangMaxEntProxy::getMaxEntContext(const Sentence_t& _sentence, c
     static QRegExp re_number = QRegExp("[0-9]");
     static QRegExp re_hyphen = QRegExp("-");
     static QRegExp re_uppercase = QRegExp("[A-Z]");
-    auto get_context_english = [&] (Sentence_t words, const QStringList& pos, int i, bool rare_word) {
+    auto get_context_english = [&] (const QList<InputDecomposer::clsToken::stuInfo>& words, const QStringList& pos, int i, bool rare_word) {
         QList<QString> context;
-        QString w = words[i].string();
+        QString w = words[i].Str;
         int n = words.size();
         if(rare_word) {
             QStringList prefix, suffix;
@@ -102,10 +122,10 @@ vector<string> ZhangMaxEntProxy::getMaxEntContext(const Sentence_t& _sentence, c
         }
 
         if(i > 0) {
-            context.append("word-1=" + words[i - 1].string());
+            context.append("word-1=" + words[i - 1].Str);
             context.append("tag-1=" + pos[i - 1]);
             if(i > 1) {
-                context.append("word-2=" + words[i - 2].string());
+                context.append("word-2=" + words[i - 2].Str);
                 context.append("tag-1,2=" + pos[i - 2] + "," + pos[i - 1]);
             } else {
                 context.append("word-2=BOUNDARY");
@@ -119,9 +139,9 @@ vector<string> ZhangMaxEntProxy::getMaxEntContext(const Sentence_t& _sentence, c
         }
 
         if(i + 1 < n) {
-            context.append("word+1=" + words[i + 1].string());
+            context.append("word+1=" + words[i + 1].Str);
             if(i + 2 < n)
-                context.append("word+2=" + words[i + 2].string());
+                context.append("word+2=" + words[i + 2].Str);
             else
                 context.append("word+2=BOUNDARY");
         } else {
@@ -140,12 +160,12 @@ vector<string> ZhangMaxEntProxy::getMaxEntContext(const Sentence_t& _sentence, c
     return get_context_english(_sentence, _previousTags,
                                _index,
                                ZhangMaxEntProxy::RareWords.contains(
-                                   _sentence[_index].string()
+                                   _sentence[_index].Str
                                    )
                                );
 }
 
-void ZhangMaxEntProxy::tagNamedEntities(Sentence_t _sentence)
+void ZhangMaxEntProxy::tagNamedEntities(QList<InputDecomposer::clsToken::stuInfo>& _sentence)
 {
     QStringList PreviousTags;
     for(int i = 0; i < _sentence.size(); ++i) {
@@ -158,11 +178,7 @@ void ZhangMaxEntProxy::tagNamedEntities(Sentence_t _sentence)
                     ZhangMaxEntProxy::Model.predict(Context)
                     );
         PreviousTags.append(CurrentTag);
-        intfNamedEntityRecognizer::addTokenAttr(
-                        _sentence[i],
-                        NER_TAG_ATTR_KEY,
-                        CurrentTag
-                        );
+        _sentence[i].Attrs.insert(NER_TAG_ATTR_KEY, CurrentTag);
     }
 }
 

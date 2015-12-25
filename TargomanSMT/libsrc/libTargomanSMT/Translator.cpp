@@ -95,7 +95,15 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     if (_justTranslationString){
         stuTranslationOutput Output;
         Output.Translation = OutputComposer.translationString();
-        qDebug() << "Translation took " << start.elapsed() / 1000.0 << " miliseconds";
+        int Elapsed = start.elapsed();
+#ifndef SMT
+        TargomanLogDebug(5, "Translation [" << Elapsed / 1000.0 << "s]"<<
+                         _inputStr << " => " << Output.Translation);
+#else
+        QString InputWord = _inputStr;
+        TargomanLogDebug(5, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
+                         InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
+#endif
         return Output;
     }else
         return OutputComposer.translationOutput();

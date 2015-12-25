@@ -76,9 +76,11 @@ public:
      * @exception throws exeption if module doesn't have a instantiator.
      */
     virtual inline void finalizeConfig(){
-        this->Instantiatior =
-                ConfigManager::instance().getInstantiator(
-                    this->AcceptableModule + "::" + this->ActiveModuleName);
+        bool IsSingleton;
+        ConfigManager::instance().getInstantiator(
+                    this->AcceptableModule + "::" + this->ActiveModuleName,
+                    this->Instantiatior,
+                    IsSingleton);
         if (this->Instantiatior == NULL)
             throw exConfiguration(
                     QString("Invalid module name <%1> for %2\nValid Options are: (%3)\n"
@@ -89,6 +91,8 @@ public:
                         this->ConfigPath).arg(
                         this->validValues())
                     );
+        if(IsSingleton)
+            this->Instantiatior();
     }
     /**
      * @brief returns #Instantiator.
@@ -109,6 +113,7 @@ private:
     QString ActiveModuleName;               /**< Module name which will be set by setFromVariant(const QVariant&)*/
     fpModuleInstantiator_t Instantiatior;   /**< Pointer to the Instantiator function of module.*/
     QString AcceptableModule;
+
 };
 
 }

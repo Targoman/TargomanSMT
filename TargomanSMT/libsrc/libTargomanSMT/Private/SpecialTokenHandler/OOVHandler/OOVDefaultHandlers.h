@@ -47,7 +47,7 @@ using namespace Common;
 class RemoveOnTarget : public intfOOVHandlerModule{
 public:
     explicit RemoveOnTarget():
-        intfOOVHandlerModule(this->moduleName()) {}
+        intfOOVHandlerModule(/*this->moduleName()*/) {}
     ~RemoveOnTarget();
 
     /**
@@ -75,7 +75,7 @@ private:
 class RemoveDecoding : public intfOOVHandlerModule{
 public:
     explicit RemoveDecoding():
-        intfOOVHandlerModule(this->moduleName()) {}
+        intfOOVHandlerModule(/*this->moduleName()*/) {}
     ~RemoveDecoding();
 
     /**
@@ -105,7 +105,7 @@ private:
 class KeepSource : public intfOOVHandlerModule{
 public:
     explicit KeepSource():
-        intfOOVHandlerModule(this->moduleName()) {}
+        intfOOVHandlerModule(/*this->moduleName()*/) {}
     ~KeepSource();
 
     /**

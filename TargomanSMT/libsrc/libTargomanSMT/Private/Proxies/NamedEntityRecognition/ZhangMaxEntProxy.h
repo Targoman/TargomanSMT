@@ -49,13 +49,16 @@ public:
     ~ZhangMaxEntProxy(){}
 
     void init(QSharedPointer<QSettings> _configSettings);
-    void tagNamedEntities(InputDecomposer::Sentence_t _sentence);
+    virtual void tagNamedEntities(QList<InputDecomposer::clsToken::stuInfo>& _sentence);
 
 private:
-    vector<string> getMaxEntContext(const InputDecomposer::Sentence_t &_sentence, const QStringList& _previousTags, int index);
+    vector<string> getMaxEntContext(const QList<InputDecomposer::clsToken::stuInfo> &_sentence,
+                                    const QStringList& _previousTags,
+                                    int index);
 
 public:
     static Common::Configuration::tmplConfigurable<FilePath_t> FilePath;
+    static Common::Configuration::tmplConfigurable<FilePath_t> RareWordsPath;
     static bool ModelLoaded;
     static maxent::MaxentModel Model;
     static QStringList RareWords;

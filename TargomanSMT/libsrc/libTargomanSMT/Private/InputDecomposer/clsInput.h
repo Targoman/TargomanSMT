@@ -82,9 +82,10 @@ private:
     void parsePlain(const QString &_inputStr);
     void parseRichIXML(const QString& _inputIXML);
     void parseRichIXML(const QString& _inputIXML, bool _normalize);
-    void newToken(const QString& _token,
+    void newTokenInfo(const QString& _token,
                   const QString &_tagStr = "",
                   const QVariantMap &_attrs = QVariantMap());
+    void makeSentence();
 
     inline bool isSpace(const QChar& _ch){
         return _ch == ' ';
@@ -92,6 +93,7 @@ private:
 
 private:
     Sentence_t Tokens;                                                                  /**< A list of clsToken class. Input string will be parsed and recorded in this structure. */
+    QList<clsToken::stuInfo>     TokenInfoList;
     static QSet<QString>    SpecialTags;                                                /**< List of valid tags. */
     QString                 NormalizedString;                                           /**< Normalized String when using plain text */
 
@@ -99,7 +101,7 @@ private:
     static Targoman::Common::Configuration::tmplConfigurable<QString> UserDefinedTags;  /**< Users can add their defined iXML tags to list of valid tags (#SpecialTags). */
     static Targoman::Common::Configuration::tmplConfigurable<bool>    IsIXML;           /**< A configurable to specify whether input string has inline xml or not. */
     static Targoman::Common::Configuration::tmplConfigurable<bool>    DoNormalize;      /**< A configurable to specify whether input string should be normalized or not. */
-    static Targoman::Common::Configuration::tmplConfigurable<bool>    TagNameEntities;  /**< Use NER to tag name entities */
+    static Targoman::Common::Configuration::tmplConfigurable<bool>    TagNamedEntities;  /**< Use NER to tag name entities */
     static Targoman::Common::Configuration::tmplConfigurable<QString> TagSeparator;
     // TODO: Add a configuration that selects wether to keep the inside of IXML tags in translation or whatever!
 

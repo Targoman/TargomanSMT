@@ -71,7 +71,8 @@ HEADERS += \
     libTargomanSMT/Private/Proxies/Transliteration/intfTransliterator.h \
     libTargomanSMT/Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp \
     $$PWD/libTargomanSMT/Private/Proxies/Transliteration/TargomanTransliteratorProxy.h \
-    $$PWD/libTargomanSMT/Private/Proxies/NamedEntityRecognition/ZhangMaxEntProxy.h
+    $$PWD/libTargomanSMT/Private/Proxies/NamedEntityRecognition/ZhangMaxEntProxy.h \
+    $$PWD/libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/TransliterateNamedEntities.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -111,7 +112,8 @@ SOURCES += libID.cpp \
     libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsOrdinalsHandler.cpp \
     libTargomanSMT/Private/SpecialTokenHandler/IXMLTagHandler/clsSymbolHandler.cpp \
     $$PWD/libTargomanSMT/Private/Proxies/Transliteration/TargomanTransliteratorProxy.cpp \
-    $$PWD/libTargomanSMT/Private/Proxies/NamedEntityRecognition/ZhangMaxEntProxy.cpp
+    $$PWD/libTargomanSMT/Private/Proxies/NamedEntityRecognition/ZhangMaxEntProxy.cpp \
+    $$PWD/libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/TransliterateNamedEntities.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

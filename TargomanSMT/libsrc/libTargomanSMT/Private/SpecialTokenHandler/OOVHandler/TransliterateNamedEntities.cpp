@@ -21,51 +21,25 @@
 /**
  * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
  * @author Behrooz Vedadian <vedadian@targoman.com>
+ * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
  */
 
-// There is no transliteration for anything but Statistical Machine Translation!
 #ifndef SMT
 
-#ifndef TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFNAMEDENTITYRECOGNIZER_HPP
-#define TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFNAMEDENTITYRECOGNIZER_HPP
+#include "TransliterateNamedEntities.h"
 
-#include "libTargomanCommon/Types.h"
-#include "libTargomanCommon/Configuration/intfConfigurable.hpp"
-#include "libTargomanCommon/exTargomanBase.h"
-#include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
-#include "Private/GlobalConfigs.h"
-#include "Private/InputDecomposer/clsInput.h"
-
-#define NER_TAG_ATTR_KEY "NER_TAG"
-#define NER_TAG_OTHER    "O"
-
-namespace Targoman {
+namespace Targoman{
 namespace SMT {
-namespace Private {
-/**
- *  @brief Namespace surrounding all classes and interfaces to external libraries
- */
-namespace Proxies {
-namespace NamedEntityRecognition {
+namespace Private{
+namespace SpecialTokenHandler {
+namespace OOV{
 
-class intfNamedEntityRecognizer : public Common::Configuration::intfModule
-{
-public:
-    intfNamedEntityRecognizer()
-    { }
-
-    virtual ~intfNamedEntityRecognizer() { }
-    TARGOMAN_DEFINE_MODULE_SCOPE(intfNamedEntityRecognizer)
-
-    virtual void init(QSharedPointer<QSettings> _configSettings) = 0;
-    virtual void tagNamedEntities(QList<InputDecomposer::clsToken::stuInfo>& _sentence) = 0;
-};
+TARGOMAN_REGISTER_SINGLETON_MODULE(TransliterateNamedEntities);
 
 }
 }
 }
 }
 }
-#endif // TARGOMAN_CORE_PRIVATE_PROXIES_TRANSLITERATION_INTFNAMEDENTITYRECOGNIZER_HPP
 
 #endif

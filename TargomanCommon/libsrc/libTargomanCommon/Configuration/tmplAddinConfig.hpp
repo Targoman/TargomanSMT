@@ -52,8 +52,8 @@ public:
                          _shortHelp,
                          _LongSwitch,
                          (enuConfigSource::Type)(
-                            enuConfigSource::Arg  |
-                            enuConfigSource::File),
+                             enuConfigSource::Arg  |
+                             enuConfigSource::File),
                          false){
         this->ActiveAddins = _default;
         this->AcceptableModule = itmplAcceptableInterface::moduleScope();
@@ -79,21 +79,25 @@ public:
      */
     virtual inline void finalizeConfig(){
         foreach (const QString& Addin, this->ActiveAddins){
-            this->Instantiatior =
-                    ConfigManager::instance().getInstantiator(
-                        this->AcceptableModule + "::" + Addin, true);
+            bool IsSingleton;
+            ConfigManager::instance().getInstantiator(
+                        this->AcceptableModule + "::" + Addin,
+                        this->Instantiatior,
+                        IsSingleton);
             if (this->Instantiatior == NULL){
 
                 throw exConfiguration(
-                        QString("Invalid addin name <%1> for %2\nValid Options are: (%3)\n"
-                                "Maybe you have forgotten to place:\n"
-                                "\tTARGOMAN_REGISTER_SINGLETON_MODULE(%1)\n"
-                                "In implementation of <%1>").arg(
-                            Addin).arg(
-                            this->ConfigPath).arg(
-                            this->validValues())
-                        );
+                            QString("Invalid addin name <%1> for %2\nValid Options are: (%3)\n"
+                                    "Maybe you have forgotten to place:\n"
+                                    "\tTARGOMAN_REGISTER_SINGLETON_MODULE(%1)\n"
+                                    "In implementation of <%1>").arg(
+                                Addin).arg(
+                                this->ConfigPath).arg(
+                                this->validValues())
+                            );
             }
+            if (IsSingleton == false)
+                throw exConfiguration("Addin <" + Addin + "> must be singleton");
             intfModule* Instance = this->Instantiatior();
             if(dynamic_cast<itmplAcceptableInterface*>(Instance) == NULL)
                 throw exConfiguration(QString("Addin: %1 must be of type %2").arg(
@@ -116,8 +120,12 @@ public:
         foreach(const QString CheckingAddin,
                 ConfigManager::instance().registeredModules(this->AcceptableModule)){
             try{
-                fpModuleInstantiator_t Instantiator = ConfigManager::instance().getInstantiator(
-                            this->AcceptableModule + "::" + CheckingAddin, true);
+                fpModuleInstantiator_t Instantiator;
+                bool IsSingleton;
+                ConfigManager::instance().getInstantiator(
+                            this->AcceptableModule + "::" + CheckingAddin,
+                            Instantiator,
+                            IsSingleton);
                 intfModule* Instance = Instantiator();
                 if(dynamic_cast<itmplAcceptableInterface*>(Instance) != NULL)
                     AcceptableAddins.append(CheckingAddin);
