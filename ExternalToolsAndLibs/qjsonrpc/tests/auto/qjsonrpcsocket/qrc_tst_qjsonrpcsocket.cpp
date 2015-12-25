@@ -1,13 +1,13 @@
 /****************************************************************************
 ** Resource object code
 **
-** Created by: The Resource Compiler for Qt version 5.5.0
+** Created by: The Resource Compiler for Qt version 5.4.1
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
 static const unsigned char qt_resource_data[] = {
-  // /data/Projects/HLT/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/qjsonrpc/tests/auto/qjsonrpcsocket/testwire.json
+  // /Share/local/vedadian/Targoman/Repo/vedadian-based-on-r328/ExternalToolsAndLibs/qjsonrpc/tests/auto/qjsonrpcsocket/testwire.json
   0x0,0x0,0xd,0xda,
   0x0,
   0x0,0xb7,0xe9,0x78,0x9c,0xed,0x5a,0xe9,0x72,0xdb,0xc8,0x11,0xfe,0xef,0xa7,0x98,

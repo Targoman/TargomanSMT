@@ -72,11 +72,14 @@ public:
               fnAppInitializer_t _appInitializer = [](){}, bool _minimal = false);
     void save2File(const QString&  _fileName, bool _backup);
     void addConfig(const QString _path, intfConfigurable* _item);
-    void addModuleInstantiaor(const QString _name, const stuInstantiator& _instantiator);
+    void addModuleInstantiaor(const QString& _fullName, const QString& _name, const stuInstantiator& _instantiator);
     QStringList registeredModules(const QString& _moduleRoot);
     QVariant getConfig(const QString& _path, const QVariant &_default = QVariant()) const;
     void setValue(const QString& _path, const QVariant &_value) const;
     fpModuleInstantiator_t getInstantiator(const QString& _name) const;
+    void getInstantiator(const QString& _name,
+                         fpModuleInstantiator_t& _instantoiator,
+                         bool& _isSingleton) const;
     QString configFilePath();
     QSharedPointer<QSettings> configSettings();
     QString configFileDir();

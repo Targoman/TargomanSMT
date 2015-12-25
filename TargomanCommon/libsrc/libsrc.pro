@@ -62,7 +62,8 @@ HEADERS += libTargomanCommon/exTargomanBase.h \
     libTargomanCommon/Private/clsConfigByJsonRPC.h \
     libTargomanCommon/Private/clsBaseConfigOverNet.h \
     libTargomanCommon/Private/clsLegacyConfigOverTCP.h \
-    libTargomanCommon/Configuration/tmplModuleConfig.hpp
+    libTargomanCommon/Configuration/tmplModuleConfig.hpp \
+    libTargomanCommon/Configuration/tmplAddinConfig.hpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += \

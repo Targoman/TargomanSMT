@@ -28,6 +28,7 @@
 #include "clsInput.h"
 #include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
+#include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
 
 using Targoman::NLPLibs::TargomanTextProcessor;
 
@@ -39,6 +40,7 @@ namespace InputDecomposer {
 using namespace Common;
 using namespace SpecialTokenHandler::OOV;
 using namespace SpecialTokenHandler::IXMLTagHandler;
+using namespace Targoman::SMT::Private::Proxies::NamedEntityRecognition;
 
 QSet<QString>    clsInput::SpecialTags;
 
@@ -62,8 +64,8 @@ Configuration::tmplConfigurable<bool>    clsInput::DoNormalize(
         "Normalize Input(default) or let it unchanged",
         true);
 
-Configuration::tmplConfigurable<bool>    clsInput::TagNameEntities(
-        MAKE_CONFIG_PATH("TagNameEntities"),
+Configuration::tmplConfigurable<bool>    clsInput::TagNamedEntities(
+        MAKE_CONFIG_PATH("TagNamedEntities"),
         "Use NER to tag name entities",
         false);
 
@@ -81,6 +83,13 @@ clsInput::clsInput(const QString &_inputStr, bool _isIXML)
     }else{
         this->parsePlain(_inputStr);
     }
+#ifndef SMT
+    if(clsInput::TagNamedEntities.value()) {
+        intfNamedEntityRecognizer* NER = gConfigs.NER.getInstance<intfNamedEntityRecognizer>();
+        NER->tagNamedEntities(this->TokenInfoList);
+    }
+#endif
+    this->makeSentence();
 }
 /**
  * @brief clsInput::init This function inserts userdefined and default tags to #SpecialTags.
@@ -134,7 +143,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
 {
     if (_inputIXML.contains('<') == false) {
       foreach(const QString& Token, _inputIXML.split(" ", QString::SkipEmptyParts))
-          this->newToken(Token);
+          this->newTokenInfo(Token);
       return;
     }
 
@@ -173,7 +182,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             }
             NextCharEscaped = false;
             if (this->isSpace(Ch)){
-                this->newToken(Token);
+                this->newTokenInfo(Token);
                 Token.clear();
             }else if (Ch == '\\'){
                 NextCharEscaped = true;
@@ -263,7 +272,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
             else if (Ch == '>'){
                 if (TempStr != TagStr)
                     throw exInput("Invalid closing tag: <"+TempStr+"> while looking for <"+TagStr+">");
-                this->newToken(Token, TagStr, Attributes);
+                this->newTokenInfo(Token, TagStr, Attributes);
 
                 Token.clear();
                 TempStr.clear();
@@ -307,31 +316,41 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
  * @param _tagStr If token is wrapped with a tag, this argument inserts string of tag to the function.
  * @param _attrs If token is wrapped with a tag and tag has some attributes, this argument inserts keys and value of those attributes.
  */
-
-void clsInput::newToken(const QString &_token, const QString &_tagStr, const QVariantMap &_attrs)
-{
+void clsInput::newTokenInfo(const QString &_token,
+                            const QString &_tagStr,
+                            const QVariantMap &_attrs){
     if (_token.isEmpty())
         return;
+    this->TokenInfoList.append(clsToken::stuInfo(_token, _tagStr, _attrs));
+}
 
-    QList<WordIndex_t> WordIndexes;
-    QVariantMap Attributes = _attrs;   
 
-    if (_tagStr.size() )
-        WordIndexes = IXMLTagHandler::instance().getWordIndexOptions(_tagStr, _token, Attributes);
+void clsInput::makeSentence()
+{
+    this->Tokens.clear();
+    for(clsToken::stuInfo& TokenInfo : this->TokenInfoList) {
+        QList<WordIndex_t> WordIndexes;
 
-    if (Attributes.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
-        return; // User Or IXMLTagHandler says that I must ignore this word when decoding
+        if (TokenInfo.TagStr.size() )
+            WordIndexes = IXMLTagHandler::instance().getWordIndexOptions(
+                        TokenInfo.TagStr, TokenInfo.Str, TokenInfo.Attrs
+                        );
 
-    if (WordIndexes.isEmpty()){
-        WordIndex_t WordIndex = gConfigs.SourceVocab.value(_token, Constants::SrcVocabUnkWordIndex);
-        if (WordIndex == Constants::SrcVocabUnkWordIndex){
-            WordIndexes = OOVHandler::instance().getWordIndexOptions(_token, Attributes);
-            if (Attributes.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
-                return; // OOVHandler says that I must ignore this word when decoding
-        }else
-            WordIndexes.append(WordIndex);
+        if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
+            return; // User Or IXMLTagHandler says that I must ignore this word when decoding
+
+        if (WordIndexes.isEmpty()){
+            WordIndex_t WordIndex = gConfigs.SourceVocab.value(
+                        TokenInfo.Str, Constants::SrcVocabUnkWordIndex);
+            if (WordIndex == Constants::SrcVocabUnkWordIndex){
+                WordIndexes = OOVHandler::instance().getWordIndexOptions(TokenInfo.Str, TokenInfo.Attrs);
+                if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
+                    return; // OOVHandler says that I must ignore this word when decoding
+            }else
+                WordIndexes.append(WordIndex);
+        }
+        this->Tokens.append(clsToken(TokenInfo, WordIndexes));
     }
-    this->Tokens.append(clsToken(_token, WordIndexes, _tagStr, Attributes));
 }
 
 /**

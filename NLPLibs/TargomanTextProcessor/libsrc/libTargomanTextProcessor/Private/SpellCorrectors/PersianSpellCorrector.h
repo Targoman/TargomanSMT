@@ -71,22 +71,6 @@ private:
     QSet<QString>            VerbStemPast;          /**< A set to store all past verb stems from Persian SpellCorrector 'verbStemPast' config file. */
     QSet<QString>            HamzeAllowed;          /**< A set to store all words that Hamze or Mad is allowed from Persian SpellCorrector 'HamzeOrMadAllowed' config file. */
     QSet<QString>            AdverbsEndWithFathatan;      /**< A set to store all adverbs that end with An from Persian SpellCorrector 'AdverbsEndWithAn' config file. */
-
-    QRegExp                  RxInteractiveChars;    /**< A RegExp to match any interactive chars like ؤ,ئ,إ,أ,آ */
-    QRegExp                  RxPresentImperfect;    /**< A RegExp to match last parts of any present imperfect verb. */
-    QRegExp                  RxEndPresentImperfect; /**< A RegExp to match any present imperfect verb. */
-    QRegExp                  RxPastImperfect;       /**< A RegExp to match last parts of any past imperfect verb. */
-    QRegExp                  RxEndPastImperfect;    /**< A RegExp to match any past imperfect verb. */
-    QRegExp                  RxPastPerfect;         /**< A RegExp to match last parts of any past perfect verb. */
-    QRegExp                  RxEndPastPerfect;    /**< A RegExp to match any past imperfect verb. */
-    QRegExp                  RxEndVerbPerfect;      /**< A RegExp to match any perfect verb. */
-    QRegExp                  RxVerbPerfect;         /**< A RegExp to match last parts of any perfect verb. */
-    QRegExp                  RxHa;                  /**< A RegExp to match Persian all variations of 'Ha' plural maker */
-    QRegExp                  RxEndWithHa;           /**< A RegExp to match any Persian plural noun that ends with 'Ha'*/
-    QRegExp                  RxAn;                  /**< A RegExp to match Persian all variations of 'An' plural maker */
-    QRegExp                  RxEndWithAn;           /**< A RegExp to match any Persian plural noun that ends with 'An'*/
-    QRegExp                  RxPossesive;           /**< A RegExp to match all kinds of Persian Possesives*/
-    QRegExp                  RxEndWithPossesive;    /**< A RegExp to match any Persian word that have any variation of possesives*/
 };
 
 }

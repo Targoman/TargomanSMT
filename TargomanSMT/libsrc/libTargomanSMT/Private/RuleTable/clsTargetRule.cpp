@@ -39,6 +39,9 @@ using namespace Common;
 QStringList  clsTargetRule::ColumnNames;
 size_t clsTargetRule::PrecomputedValuesSize = 0;
 
+bool clsTargetRule::AlignmentDataAvailable;
+bool clsTargetRule::LexicalReorderingAvailable;
+
 clsTargetRule* pInvalidTargetRule = NULL;
 clsTargetRuleData* InvalidTargetRuleData = NULL;
 

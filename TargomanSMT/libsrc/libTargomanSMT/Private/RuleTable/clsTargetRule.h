@@ -44,6 +44,7 @@ namespace RuleTable{
 TARGOMAN_ADD_EXCEPTION_HANDLER(exRuleTable, exTargomanCore);
 
 class clsTargetRuleData;
+class intfRuleTable;
 
 extern clsTargetRuleData* InvalidTargetRuleData;
 
@@ -166,6 +167,9 @@ public:
         return clsTargetRule(_targetPhrase, ZeroCost, Alignments, _isUnknownWord);
     }
 
+    static bool lexicalReorderingAvailable() { return clsTargetRule::LexicalReorderingAvailable; }
+    static bool alignmentDataAvailable() { return clsTargetRule::AlignmentDataAvailable; }
+
 #ifdef TARGOMAN_SHOW_DEBUG
     QString toStr() const;
 #endif
@@ -174,7 +178,10 @@ private:
     QExplicitlySharedDataPointer<clsTargetRuleData>     Data;                   /**< Data member of this class is stored in a seperate class. A shared pointer of this seperate class is stored here */
     static  QStringList                                 ColumnNames;            /** A List of Names of Fields of feature values */
     static  size_t                                      PrecomputedValuesSize;
+    static  bool                                        AlignmentDataAvailable;
+    static  bool                                        LexicalReorderingAvailable;
 
+    friend class intfRuleTable;
     friend class clsTargetRuleData;
     friend class UnitTestNameSpace::clsUnitTest;
     friend class DummyFeatureFunctionForInsertion;

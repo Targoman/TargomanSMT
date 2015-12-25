@@ -34,7 +34,7 @@
 #include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
 // TODO: This header must be included in OOVHandler module
 #include "Private/Proxies/Transliteration/intfTransliterator.h"
-
+#include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
 
 namespace Targoman{
 /**
@@ -66,6 +66,10 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
     Proxies::Transliteration::intfTransliterator* Transliterator = 
         gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>();
     Transliterator->init(_configSettings);
+
+    Proxies::NamedEntityRecognition::intfNamedEntityRecognizer* NER =
+            gConfigs.NER.getInstance<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer>();
+    NER->init(_configSettings);
 #endif
 
     OOVHandler::instance().initialize();
@@ -91,7 +95,15 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     if (_justTranslationString){
         stuTranslationOutput Output;
         Output.Translation = OutputComposer.translationString();
-        qDebug() << "Translation took " << start.elapsed() / 1000.0 << " miliseconds";
+        int Elapsed = start.elapsed();
+#ifndef SMT
+        TargomanLogDebug(5, "Translation [" << Elapsed / 1000.0 << "s]"<<
+                         _inputStr << " => " << Output.Translation);
+#else
+        QString InputWord = _inputStr;
+        TargomanLogDebug(5, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
+                         InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
+#endif
         return Output;
     }else
         return OutputComposer.translationOutput();

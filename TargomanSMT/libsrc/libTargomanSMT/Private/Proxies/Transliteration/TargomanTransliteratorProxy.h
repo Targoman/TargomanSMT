@@ -49,7 +49,7 @@ public:
     QString transliterate(QString _word);
 
 private:
-    TARGOMAN_DEFINE_SINGLETONMODULE(TargomanTransliteratorProxy);
+    TARGOMAN_DEFINE_SINGLETON_MODULE(TargomanTransliteratorProxy);
 };
 
 }

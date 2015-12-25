@@ -54,34 +54,40 @@ namespace InputDecomposer {
 class clsToken
 {
 public:
+    struct stuInfo{
+        QString Str;
+        QString TagStr;
+        QVariantMap Attrs;
+        stuInfo(const QString &_str = "",
+                     const QString &_tagStr = "",
+                     const QVariantMap &_attrs = QVariantMap()):
+            Str(_str),
+            TagStr(_tagStr),
+            Attrs(_attrs)
+        {}
+    };
 
-    clsToken(const QString& _value,
-             const QList<Common::WordIndex_t>& _wordIndexes,
-             const QString& _tagStr,
-             const QVariantMap& _attrs){
-        this->String = _value;
+public:
+
+    clsToken(const stuInfo& _info,
+             const QList<Common::WordIndex_t>& _wordIndexes) {
+        this->Info = _info;
         this->WordIndexes = _wordIndexes;
-        this->TagStr = _tagStr;
-        this->Attrs = _attrs;
     }
 
-    clsToken(const QString& _value,
-             const Common::WordIndex_t _wordIndexes,
-             const QString& _tagStr,
-             const QVariantMap& _attrs)
-        : clsToken(_value, QList<Common::WordIndex_t>() << _wordIndexes, _tagStr, _attrs)
+    clsToken(const stuInfo& _info,
+             const Common::WordIndex_t _wordIndexes)
+        : clsToken(_info, QList<Common::WordIndex_t>() << _wordIndexes)
     { }
 
-    inline const QString& string() const {return this->String;}
+    inline const QString& string() const {return this->Info.Str;}
     inline const QList<Common::WordIndex_t>& wordIndexes() const {return this->WordIndexes;}
-    inline const QString& tagStr() const {return this->TagStr;}
-    inline const QVariantMap& attrs() const {return this->Attrs;}
+    inline const QString& tagStr() const {return this->Info.TagStr;}
+    inline const QVariantMap& attrs() const {return this->Info.Attrs;}
 
 private:
-    QString String;                             /**< String of token. */
+    stuInfo Info;
     QList<Common::WordIndex_t> WordIndexes;     /**< Indexes of token in hash table. */
-    QString TagStr;                             /**< If token is in ixml tag, its tag string will be recorded in this variable. */
-    QVariantMap         Attrs;                  /**< Some ixml tags has attributes. If token is in attributed ixml tag, attribute names and attributes values will be recorded in this variable.  */
 
     friend class Proxies::NamedEntityRecognition::intfNamedEntityRecognizer;
 };

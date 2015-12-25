@@ -101,6 +101,10 @@ public:
 
 void LexicalReordering::initialize(QSharedPointer<QSettings>)
 {
+    // Nothing to be done if there are no lexical reordering data
+    // available
+    if(clsTargetRule::lexicalReorderingAvailable() == false)
+        return;
     for (int i=0;
          i< (LexicalReordering::IsBidirectional.value() ?
              enuLexicalReorderingFields::getCount() :
@@ -131,6 +135,9 @@ void LexicalReordering::newSentence(const Sentence_t &_inputSentence)
 Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
         clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
 {
+    if(clsTargetRule::lexicalReorderingAvailable() == false)
+        return 0;
+
     clsLexicalReorderingFeatureData* Data =
             new clsLexicalReorderingFeatureData(this->IsBidirectional.value() ? 6 : 3);
     _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
@@ -224,6 +231,8 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
 
 int LexicalReordering::compareStates(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
 {
+    if(clsTargetRule::lexicalReorderingAvailable() == false)
+        return 0;
     if(this->IsBidirectional.value()) {
         if(_first.prevNode().isInvalid() == false || _second.prevNode().isInvalid() == false) {
             if(_first.prevNode().coverage() > _second.prevNode().coverage())

@@ -72,7 +72,6 @@ public:
     clsConfigPath(const QString& _name,
                   const QString& _base = "",
                   const QString& _info = ""){
-        Q_UNUSED(_base)
         Q_UNUSED(_info)
         //qDebug()<<_base<<_info;
         Path = QString(_base + "/" + _name);

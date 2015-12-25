@@ -45,7 +45,7 @@ using namespace RuleTable;
 class intfIXMLTagHandlerModule : public Common::Configuration::intfModule {
 public:
     /**
-     * @brief When an instance of any kind special OOV handler instantiates, its name and pointer of itself will be added to AvailableOOVHandlers data member of OOVHandler class.
+     * @brief When an instance of any kind of special SpecialTagHandler instantiates, its name and pointer will be added to AvailableTagHandlers data member of OOVHandler class.
      */
     intfIXMLTagHandlerModule(const QString& _tagName) {
         IXMLTagHandler::instance().AvailableTagHandlers.insert(_tagName, this);

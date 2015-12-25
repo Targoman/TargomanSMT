@@ -155,7 +155,7 @@ void ConfigManager::init(const QString& _license,
                 QString BasePath = Key;
                 do{
                     BasePath.truncate(BasePath.lastIndexOf('/'));
-                    Modules.insert(BasePath);
+                    Modules.insert('/' + BasePath);
                 }while(BasePath.contains('/'));
 
                 if (this->pPrivate->Configs.contains(Key) == false){
@@ -266,7 +266,7 @@ void ConfigManager::init(const QString& _license,
             }
             if(!ArgumentIsConfigItem)
             {
-                if ( KeyIter->startsWith("--") && this->pPrivate->ModuleInstantiators.value(KeyIter->mid(2)).IsSingleton){
+                if ( KeyIter->startsWith("--") && this->pPrivate->ModuleInstantiatorsByFullName.value(KeyIter->mid(2)).IsSingleton){
                     Modules.insert(KeyIter->mid(2));
                 }else{
                     throw exConfiguration("Unrecognized argument: " + *KeyIter);
@@ -308,7 +308,7 @@ void ConfigManager::init(const QString& _license,
         // /marshal all singletons
         // ////////////////////////////////////////////////
         foreach (const QString& Module, Modules){
-            stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(Module);
+            stuInstantiator Instantiator = this->pPrivate->ModuleInstantiatorsByName.value(Module);
             if (Instantiator.IsSingleton && Instantiator.fpMethod)
                 Instantiator.fpMethod();
         }
@@ -341,9 +341,10 @@ void ConfigManager::init(const QString& _license,
                 }
             }
         }
-
-
-
+        QString& ActorUUID = this->pPrivate->ActorUUID;
+        TargomanLogHappy(1, "******* " <<
+                         QCoreApplication::applicationName() <<
+                         " (re)started *******");
     }catch(...){
         this->pPrivate->Initialized = false;
         throw;
@@ -426,15 +427,19 @@ QString stuInstantiator::InvalidActorUUID;
  * @exception throws exception if a name for a module already exists.
  */
 
-void ConfigManager::addModuleInstantiaor(const QString _name, const stuInstantiator &_instantiator)
+void ConfigManager::addModuleInstantiaor(const QString& _fullName,
+                                         const QString& _name,
+                                         const stuInstantiator &_instantiator)
 {
-    if (this->pPrivate->ModuleInstantiators.contains(_name))
+    if (this->pPrivate->ModuleInstantiatorsByName.contains(_name) ||
+        this->pPrivate->ModuleInstantiatorsByFullName.contains(_fullName))
         throw exConfiguration("Duplicate Module Name: " + _name);
     // TODO if (_instantiator.isInvalidActorUUID())
     // TODO    throw exConfiguration("Invalid Instantiator on module: " + _name);
 
     //TODO Targoman::Common::Logger::instance().registerActor(*_instantiator.ActorUUID, _name);
-    this->pPrivate->ModuleInstantiators.insert(_name, _instantiator);
+    this->pPrivate->ModuleInstantiatorsByFullName.insert(_fullName, _instantiator);
+    this->pPrivate->ModuleInstantiatorsByName.insert(_name, _instantiator);
 }
 
 /**
@@ -490,19 +495,30 @@ void ConfigManager::setValue(const QString &_path, const QVariant &_value) const
  */
 fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) const
 {
+    fpModuleInstantiator_t Instantiator;
+    bool IsSingleton;
+
+    this->getInstantiator(_name, Instantiator, IsSingleton);
+
+    if (IsSingleton)
+        throw exConfiguration(_name + " Is a singleton module and can not be reinstantiated");
+
+    return Instantiator;
+}
+
+void ConfigManager::getInstantiator(const QString &_name, fpModuleInstantiator_t &_instantiator, bool &_isSingleton) const
+{
     if (this->pPrivate->Initialized == false)
         throw exConfiguration("Configuration is not initialized yet.");
 
-    stuInstantiator Instantiator = this->pPrivate->ModuleInstantiators.value(_name);
-    if (Instantiator.IsSingleton)
-        throw exConfiguration(_name + " Is a singleton module and can not be reinstantiated");
-
-    return Instantiator.fpMethod;
+    stuInstantiator Instantiator = this->pPrivate->ModuleInstantiatorsByFullName.value(_name);
+    _instantiator = Instantiator.fpMethod;
+    _isSingleton = Instantiator.IsSingleton;
 }
 
 QStringList ConfigManager::registeredModules(const QString &_moduleRoot){
     QStringList AcceptableModules;
-    foreach(const QString& ModuleName, this->pPrivate->ModuleInstantiators.keys())
+    foreach(const QString& ModuleName, this->pPrivate->ModuleInstantiatorsByFullName.keys())
         if (ModuleName.mid(0,ModuleName.lastIndexOf("::")) == _moduleRoot)
             AcceptableModules.append(ModuleName.mid(ModuleName.lastIndexOf("::") + 2, -1));
     return AcceptableModules;
@@ -660,8 +676,10 @@ void intfConfigurable::finalizeConfig()
 /**
  * @brief constructor of clsModuleRegistrar. This is where each module inserts its instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
  */
-clsModuleRegistrar::clsModuleRegistrar(const QString &_name, stuInstantiator _instantiatior){
-    ConfigManager::instance().addModuleInstantiaor(_name, _instantiatior);
+clsModuleRegistrar::clsModuleRegistrar(const QString& _fullName,
+                                       const QString& _name,
+                                       stuInstantiator _instantiatior){
+    ConfigManager::instance().addModuleInstantiaor(_fullName, _name, _instantiatior);
 }
 /***********************************************************************************************/
 void intfRPCExporter::exportMyRPCs(){

@@ -32,6 +32,11 @@
 #include "libTargomanCommon/Logger.h"
 #include "libTargomanCommon/Helpers.hpp"
 
+#define TARGOMAN_CAT_BY_SLASH(_m1,_m2) _m1/_m2
+#define MAKE_ABSOLUTE_MODULE_NAME \
+    QString("%1/%2").arg(TARGOMAN_M2STR(CONFIG_ROOT_PATH)).arg(moduleName()).replace("//", "/")
+
+
 namespace Targoman {
 namespace Common {
 namespace Configuration {
@@ -94,7 +99,9 @@ struct stuInstantiator{
  */
 class clsModuleRegistrar{
 public:
-    clsModuleRegistrar(const QString& _name, stuInstantiator _instantiatior);
+    clsModuleRegistrar(const QString& _fullName,
+                       const QString& _name,
+                       stuInstantiator _instantiatior);
 };
 
 
@@ -114,27 +121,29 @@ private: \
     static QAtomicInt Instances;
 
 /**
- * @def TARGOMAN_DEFINE_SINGLETONMODULE adds three function and two data member to singleton module classes.
+ * @def TARGOMAN_DEFINE_SINGLETON_MODULE adds three function and two data member to singleton module classes.
  * Registrar member is the static member that is of type clsModuleRegistrar and will be instantiated before main to insert module instantiator to ModuleInstantiators Map of pPrivate member of ConfigManager.
  */
-
-#define TARGOMAN_DEFINE_SINGLETONMODULE(_name) \
+#define TARGOMAN_DEFINE_SINGLETON_MODULE(_name) \
 public: \
-    QString moduleFullName(){return Targoman::Common::demangle(typeid(*this).name());}\
+    static QString moduleFullNameStatic(){return Targoman::Common::demangle(typeid(_name).name());}\
+    QString moduleFullName(){return _name::moduleFullNameStatic();}\
     static _name& instance() {return *((_name*)_name::moduleInstance());} \
     static Targoman::Common::Configuration::intfModule* moduleInstance(){static _name* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _name);} \
     static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(_name));}  \
+    static QString dummyActorUUID; \
 private: \
     Q_DISABLE_COPY(_name) \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
 
-#define TARGOMAN_CAT_BY_SLASH(_m1,_m2) _m1/_m2
 #define TARGOMAN_DEFINE_SINGLETONSUBMODULE(_module, _name) \
 public: \
-    virtual QString moduleFullName(){return Targoman::Common::demangle(typeid(*this).name());}\
+    static QString moduleFullNameStatic(){return Targoman::Common::demangle(typeid(_name).name());}\
+    virtual QString moduleFullName(){return _name::moduleFullNameStatic();}\
     static _name& instance() {return *((_name*)_name::moduleInstance());} \
     static Targoman::Common::Configuration::intfModule* moduleInstance(){static _name* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _name);} \
     static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(TARGOMAN_CAT_BY_SLASH(_module,_name)));}  \
+    static QString dummyActorUUID; \
 private: \
     Q_DISABLE_COPY(_name) \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
@@ -145,6 +154,7 @@ private: \
 #define TARGOMAN_REGISTER_MODULE(_class) \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar( \
          _class::moduleFullNameStatic(), \
+         MAKE_ABSOLUTE_MODULE_NAME, \
          Targoman::Common::Configuration::stuInstantiator(\
             Targoman::Common::Configuration::stuInstantiator::InvalidActorUUID, _class::instantiator,false)); \
     QAtomicInt _class::Instances;
@@ -152,12 +162,13 @@ private: \
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for singleton classes. Also makes a null instance of class.
  */
-
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
+    QString _class::dummyActorUUID = ""; \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(\
-                      _class::instance().moduleFullName(), \
-                      Targoman::Common::Configuration::stuInstantiator(\
-                          _class::instance().ActorUUID, _class::instance().moduleInstance,true));
+        _class::moduleFullNameStatic(), \
+        MAKE_ABSOLUTE_MODULE_NAME, \
+        Targoman::Common::Configuration::stuInstantiator(\
+            _class::dummyActorUUID, _class::moduleInstance,true));
 }
 }
 }

@@ -44,11 +44,11 @@ using namespace Common;
  * @brief This type of Special OOV handler removes the OOV in the output but it doesn't ignore in decoding process.
  */
 
-class clsRemoveOnTarget : public intfOOVHandlerModule{
+class RemoveOnTarget : public intfOOVHandlerModule{
 public:
-    explicit clsRemoveOnTarget():
-        intfOOVHandlerModule(this->moduleName()) {}
-    ~clsRemoveOnTarget();
+    explicit RemoveOnTarget():
+        intfOOVHandlerModule(/*this->moduleName()*/) {}
+    ~RemoveOnTarget();
 
     /**
      * @brief process       Sets type of OOV handling and returns an appropriate target rule.
@@ -65,18 +65,18 @@ public:
     }
 
 private:
-    TARGOMAN_DEFINE_MODULE(RemoveOnTarget);
+    TARGOMAN_DEFINE_SINGLETON_MODULE(RemoveOnTarget);
 };
 
 /**
  * @brief This type of Special OOV handler ignores OOV word in decoding process.
  */
 
-class clsRemoveDecoding : public intfOOVHandlerModule{
+class RemoveDecoding : public intfOOVHandlerModule{
 public:
-    explicit clsRemoveDecoding():
-        intfOOVHandlerModule(this->moduleName()) {}
-    ~clsRemoveDecoding();
+    explicit RemoveDecoding():
+        intfOOVHandlerModule(/*this->moduleName()*/) {}
+    ~RemoveDecoding();
 
     /**
      * @brief process       Sets type of OOV handling and returns an appropriate target rule.
@@ -95,18 +95,18 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_MODULE(RemoveDecoding);
+    TARGOMAN_DEFINE_SINGLETON_MODULE(RemoveDecoding);
 };
 
 /**
  * @brief This type of Special OOV handler keeps OOV word as it is in the output.
  */
 
-class clsKeepSource : public intfOOVHandlerModule{
+class KeepSource : public intfOOVHandlerModule{
 public:
-    explicit clsKeepSource():
-        intfOOVHandlerModule(this->moduleName()) {}
-    ~clsKeepSource();
+    explicit KeepSource():
+        intfOOVHandlerModule(/*this->moduleName()*/) {}
+    ~KeepSource();
 
     /**
      * @brief process       Sets type of OOV handling and returns an appropriate target rule.
@@ -126,7 +126,7 @@ public:
 
 private:
 
-    TARGOMAN_DEFINE_MODULE( KeepSource);
+    TARGOMAN_DEFINE_SINGLETON_MODULE(KeepSource);
 };
 
 }

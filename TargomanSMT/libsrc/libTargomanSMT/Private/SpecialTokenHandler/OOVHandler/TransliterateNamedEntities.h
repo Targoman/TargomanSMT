@@ -24,12 +24,17 @@
  * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
  */
 
-#ifndef TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_INTFOOVHANDLERMODULE_HPP
-#define TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_INTFOOVHANDLERMODULE_HPP
+#ifndef SMT
 
-#include "libTargomanCommon/Configuration/intfConfigurableModule.hpp"
+#ifndef TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_TRANSLITERATENAMEDENTITIES_H
+#define TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_TRANSLITERATENAMEDENTITIES_H
+
+#include "Types.h"
+#include "intfOOVHandlerModule.hpp"
+#include "Private/InputDecomposer/clsInput.h"
+#include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
+#include "Private/Proxies/Transliteration/intfTransliterator.h"
 #include "Private/RuleTable/clsTargetRule.h"
-#include "OOVHandler.h"
 
 namespace Targoman{
 namespace SMT {
@@ -37,22 +42,38 @@ namespace Private{
 namespace SpecialTokenHandler {
 namespace OOV{
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exOOVHandlerModule, exOOVHandler);
-/**
- * @brief The intfOOVHandlerModule class is an interface class that every other Special OOV Handlers like clsOOVRemoveOnTarget or clsOOVKeepSource can be derive from this interface class.
- */
-class intfOOVHandlerModule : public Common::Configuration::intfModule{
+class TransliterateNamedEntities : public intfOOVHandlerModule{
 public:
-    /**
-     * @brief When an instance of any kind special OOV handler instantiates, its name and pointer of itself will be added to AvailableOOVHandlers data member of OOVHandler class.
-     */
-    intfOOVHandlerModule(/*const QString& _moduleName*/) {
-        //OOVHandler::instance().AvailableOOVHandlers.insert(_moduleName, this);
-        OOVHandler::instance().ActiveOOVHandlers.append(this);
-    }
-    TARGOMAN_DEFINE_MODULE_SCOPE(intfOOVHandlerModule)
+    explicit TransliterateNamedEntities():
+        intfOOVHandlerModule(/*this->moduleName()*/) {}
+    ~TransliterateNamedEntities();
 
-    virtual RuleTable::clsTargetRule process(const QString& _token, QVariantMap& _currAttrs) = 0;
+    /**
+     * @brief process       Sets type of OOV handling and returns an appropriate target rule.
+     * @param[in] _token    Input string of token.
+     * @param[out] _attrs   Type of  OOV handling will be stored in this argument.
+     * @return              Returns an invalid target rule.
+     */
+
+    RuleTable::clsTargetRule process(const QString &_token, QVariantMap& _attrs){
+        if(_attrs.contains(NER_TAG_ATTR_KEY) == false ||
+           _attrs.value(NER_TAG_ATTR_KEY) == NER_TAG_OTHER)
+            return *RuleTable::pInvalidTargetRule;
+
+        Proxies::Transliteration::intfTransliterator* Transliterator =
+               gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>();
+        QString TargetWord = Transliterator->transliterate(_token);
+        QList<WordIndex_t> TargetPhrase;
+        TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(TargetWord));
+        _attrs.insert(
+                    InputDecomposer::enuDefaultAttrs::toStr(InputDecomposer::enuDefaultAttrs::Translation),
+                    TargetWord);
+        return RuleTable::clsTargetRule::createZeroCostTargetRule(TargetPhrase, true);
+    }
+
+private:
+
+    TARGOMAN_DEFINE_SINGLETON_MODULE(TransliterateNamedEntities);
 };
 
 }
@@ -60,4 +81,7 @@ public:
 }
 }
 }
-#endif // TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_INTFOOVHANDLERMODULE_HPP
+
+#endif // TARGOMAN_SMT_PRIVATE_SPECIAL_TOKEN_HANDLER_OOV_TRANSLITERATENAMEDENTITIES_H
+
+#endif

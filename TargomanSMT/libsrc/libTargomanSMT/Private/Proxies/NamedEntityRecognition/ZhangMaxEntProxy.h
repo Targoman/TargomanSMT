@@ -30,7 +30,10 @@
 #define TARGOMAN_CORE_PRIVATE_PROXIES_NAMEDENTITYRECOGNITION_ZHANGMAXENTPROXY_H
 
 #include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "libMaxent/maxentmodel.hpp"
+#pragma GCC diagnostic pop
 
 namespace Targoman {
 namespace SMT {
@@ -45,19 +48,23 @@ public:
 
     ~ZhangMaxEntProxy(){}
 
-    void init();
-    void tagNamedEntities(InputDecomposer::Sentence_t _sentence);
+    void init(QSharedPointer<QSettings> _configSettings);
+    virtual void tagNamedEntities(QList<InputDecomposer::clsToken::stuInfo>& _sentence);
 
 private:
-    QVector<vector<string>> getMaxEntContexts(InputDecomposer::Sentence_t _sentence);
+    vector<string> getMaxEntContext(const QList<InputDecomposer::clsToken::stuInfo> &_sentence,
+                                    const QStringList& _previousTags,
+                                    int index);
 
 public:
     static Common::Configuration::tmplConfigurable<FilePath_t> FilePath;
+    static Common::Configuration::tmplConfigurable<FilePath_t> RareWordsPath;
     static bool ModelLoaded;
     static maxent::MaxentModel Model;
+    static QStringList RareWords;
 
 private:
-    TARGOMAN_DEFINE_SINGLETONMODULE(ZhangMaxEntProxy);
+    TARGOMAN_DEFINE_SINGLETON_MODULE(ZhangMaxEntProxy);
 };
 
 }

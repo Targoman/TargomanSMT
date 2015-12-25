@@ -68,7 +68,7 @@ private:
     void run();
     TSMonitor() {}
 
-    TARGOMAN_DEFINE_SINGLETONMODULE(TSMonitor)
+    TARGOMAN_DEFINE_SINGLETON_MODULE(TSMonitor)
 private:
     QScopedPointer<TSMonitorPrivate> pPrivate;
 

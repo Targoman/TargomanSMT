@@ -60,7 +60,9 @@ void TargomanTransliteratorProxy::init(QSharedPointer<QSettings> _configSettings
 QString TargomanTransliteratorProxy::transliterate(QString _word)
 {
     Q_UNUSED(_word);
-    return QString();
+    QString intermediateSource = _word.split("", QString::SkipEmptyParts).join(" ");
+    QString intermediateTarget = Targoman::SWT::Translator::translate(intermediateSource, true, false).Translation;
+    return intermediateTarget.replace(" ", "");
 }
 
 }

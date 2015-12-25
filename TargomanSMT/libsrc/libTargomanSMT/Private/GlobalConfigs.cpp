@@ -29,6 +29,7 @@
 
 #include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "Private/Proxies/Transliteration/intfTransliterator.h"
+#include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
 #include "RuleTable/intfRuleTable.hpp"
 
 namespace Targoman {
@@ -97,12 +98,16 @@ tmplModuleConfig<Proxies::LanguageModel::intfLMSentenceScorer>         stuGlobal
         MAKE_CONFIG_PATH("Modules/LM"),
         "TODO Desc",
         "KenLMProxy");
-#ifndef SMT
 // There is no transliteration for anything but Statistical Machine Translation!
+#ifndef SMT
 tmplModuleConfig<Proxies::Transliteration::intfTransliterator>         stuGlobalConfigs::Transliterator(
         MAKE_CONFIG_PATH("Modules/Transliterator"),
         "TODO Desc",
         "TargomanTransliteratorProxy");
+tmplModuleConfig<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer>         stuGlobalConfigs::NER(
+        MAKE_CONFIG_PATH("Modules/NamedEntityRecognizer"),
+        "TODO Desc",
+        "ZhangMaxEntProxy");
 #endif
 tmplModuleConfig<RuleTable::intfRuleTable>         stuGlobalConfigs::RuleTable(
         MAKE_CONFIG_PATH("Modules/RuleTable"),

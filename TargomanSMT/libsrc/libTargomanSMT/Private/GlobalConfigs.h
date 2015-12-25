@@ -50,6 +50,7 @@ class intfRuleTable;
 namespace Proxies {
 namespace LanguageModel {class intfLMSentenceScorer;}
 namespace Transliteration {class intfTransliterator;}
+namespace NamedEntityRecognition {class intfNamedEntityRecognizer;}
 }
 
 // Global ActorUUID, back-off when the logging class is not a module or singlton
@@ -70,6 +71,7 @@ struct stuGlobalConfigs{
     static Common::Configuration::tmplModuleConfig<RuleTable::intfRuleTable>   RuleTable;
 #ifndef SMT
     static Common::Configuration::tmplModuleConfig<Proxies::Transliteration::intfTransliterator> Transliterator;
+    static Common::Configuration::tmplModuleConfig<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer> NER;
 #endif
 
     static QScopedPointer<SMT::Private::Proxies::LanguageModel::intfLMSentenceScorer>      EmptyLMScorer;

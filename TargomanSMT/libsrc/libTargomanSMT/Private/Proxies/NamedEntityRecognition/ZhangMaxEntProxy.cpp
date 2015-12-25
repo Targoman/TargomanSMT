@@ -38,42 +38,148 @@ using namespace Common::Configuration;
 using namespace InputDecomposer;
 using namespace std;
 
+TARGOMAN_REGISTER_SINGLETON_MODULE(ZhangMaxEntProxy);
+
 tmplConfigurable<FilePath_t> ZhangMaxEntProxy::FilePath(
         MAKE_CONFIG_PATH("FilePath"),
         "File path of binary maxent model",
         ""
         );
+tmplConfigurable<FilePath_t> ZhangMaxEntProxy::RareWordsPath(
+        MAKE_CONFIG_PATH("RareWordsPath"),
+        "Path of the file containing rare words",
+        ""
+        );
 maxent::MaxentModel ZhangMaxEntProxy::Model;
 bool ZhangMaxEntProxy::ModelLoaded = false;
+QStringList ZhangMaxEntProxy::RareWords;
 
 ZhangMaxEntProxy::ZhangMaxEntProxy()
 { }
 
-void ZhangMaxEntProxy::init()
+QStringList readalllines(string _filename)
 {
+    QStringList AllLines;
+    ifstream File(_filename);
+
+    string Line;
+    while(getline(File, Line))
+        AllLines.append(QString::fromStdString(Line));
+    return AllLines;
+}
+
+void ZhangMaxEntProxy::init(QSharedPointer<QSettings> _configSettings)
+{
+    Q_UNUSED(_configSettings);
     if(ZhangMaxEntProxy::ModelLoaded)
         throw exTargomanInitialization("Initialization of ZhangMaxEntProxy must be called just once.");
 
     ZhangMaxEntProxy::Model.load(ZhangMaxEntProxy::FilePath.value().toStdString());
+    ZhangMaxEntProxy::RareWords = readalllines(ZhangMaxEntProxy::RareWordsPath.value().toStdString());
     ZhangMaxEntProxy::ModelLoaded = true;
 }
 
-QVector<vector<string>> ZhangMaxEntProxy::getMaxEntContexts(Sentence_t _sentence)
+vector<string> ZhangMaxEntProxy::getMaxEntContext(
+        const QList<InputDecomposer::clsToken::stuInfo>& _sentence,
+        const QStringList &_previousTags,
+        int _index)
 {
-    Q_UNUSED(_sentence);
-    return  QVector<vector<string>>();
+    // Converted directly from Zhang's maxent implementation example, postagger.py
+    // so do not blame me!
+    auto get_prefix_suffix_english =
+            [] (QString w, int length, QStringList& p, QStringList& s) {
+        p.clear();
+        s.clear();
+        int wl = w.size();
+        int l = qMin(wl, length + 1);
+        for(int i = 0; i < l; ++i) {
+            p.append(w.mid(0, i + 1));
+            s.append(w.mid(wl - i - 1, i + 1));
+        }
+    };
+    static QRegExp re_number = QRegExp("[0-9]");
+    static QRegExp re_hyphen = QRegExp("-");
+    static QRegExp re_uppercase = QRegExp("[A-Z]");
+    auto get_context_english = [&] (const QList<InputDecomposer::clsToken::stuInfo>& words, const QStringList& pos, int i, bool rare_word) {
+        QList<QString> context;
+        QString w = words[i].Str;
+        int n = words.size();
+        if(rare_word) {
+            QStringList prefix, suffix;
+            get_prefix_suffix_english(w, 4, prefix, suffix);
+            foreach(const QString& p, prefix)
+                context.append("prefix=" + p);
+            foreach(const QString& s, suffix)
+                context.append("suffix=" + s);
+            if(w.contains(re_number))
+                context.append("numeric");
+            if(w.contains(re_uppercase))
+                context.append("uppercase");
+            if(w.contains(re_hyphen))
+                context.append("hyphen");
+        } else {
+            context.append("curword=" + w);
+        }
+
+        if(i > 0) {
+            context.append("word-1=" + words[i - 1].Str);
+            context.append("tag-1=" + pos[i - 1]);
+            if(i > 1) {
+                context.append("word-2=" + words[i - 2].Str);
+                context.append("tag-1,2=" + pos[i - 2] + "," + pos[i - 1]);
+            } else {
+                context.append("word-2=BOUNDARY");
+                context.append("tag-1,2=BOUNDARY," + pos[0]);
+            }
+        } else {
+            context.append("word-1=BOUNDARY");
+            context.append("word-2=BOUNDARY");
+            context.append("tag-1=BOUNDARY");
+            context.append("tag-1,2=BOUNDARY,BOUNDARY");
+        }
+
+        if(i + 1 < n) {
+            context.append("word+1=" + words[i + 1].Str);
+            if(i + 2 < n)
+                context.append("word+2=" + words[i + 2].Str);
+            else
+                context.append("word+2=BOUNDARY");
+        } else {
+            context.append("word+1=BOUNDARY");
+            context.append("word+2=BOUNDARY");
+        }
+
+        vector<string> stdcontext;
+        stdcontext.resize(context.size());
+        for(int i = 0; i < context.size(); ++i)
+            stdcontext[i] = context[i].toStdString();
+
+        return stdcontext;
+    };
+
+    return get_context_english(_sentence, _previousTags,
+                               _index,
+                               ZhangMaxEntProxy::RareWords.contains(
+                                   _sentence[_index].Str
+                                   )
+                               );
 }
 
-void ZhangMaxEntProxy::tagNamedEntities(Sentence_t _sentence)
+void ZhangMaxEntProxy::tagNamedEntities(QList<InputDecomposer::clsToken::stuInfo>& _sentence)
 {
-    QVector<vector<string>> Contexts =
-            getMaxEntContexts(_sentence);
-    for(int i = 0; i < _sentence.size(); ++i)
-        intfNamedEntityRecognizer::addTokenAttr(
-                        _sentence[i],
-                        NER_TAG_ATTR_KEY,
-                        QString::fromStdString(ZhangMaxEntProxy::Model.predict(Contexts.at(i)))
-                        );
+    QStringList PreviousTags;
+    for(int i = 0; i < _sentence.size(); ++i) {
+        vector<string> Context = this->getMaxEntContext(
+                    _sentence,
+                    PreviousTags,
+                    i
+                    );
+        QString CurrentTag = QString::fromStdString(
+                    ZhangMaxEntProxy::Model.predict(Context)
+                    );
+        PreviousTags.append(CurrentTag);
+        _sentence[i].Attrs.insert(NER_TAG_ATTR_KEY, CurrentTag);
+    }
 }
 
 }
