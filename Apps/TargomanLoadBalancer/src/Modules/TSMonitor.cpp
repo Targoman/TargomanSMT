@@ -107,16 +107,16 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
 void TSMonitor::wait4AtLeastOneServerAvailable()
 {
     TargomanLogInfo(1,"Waiting for at least one translation server to be ready.")
-    bool IsReady = false;
-    while(IsReady == false){
+    quint16 ReadyServers = 0;
+    while(ReadyServers == 0){
         foreach (clsTranslationServer* Server, this->pPrivate->Servers){
             QReadLocker Locker(&Server->RWLock);
-            if (Server->totalScore() > 0){
-                IsReady = true;
-                break;
-            }
+            if (Server->totalScore() > 0)
+                ++ReadyServers;
         }
     }
+    TargomanLogHappy(1, "Currently active servers: "<<ReadyServers)
+
 }
 
 void TSMonitorPrivate::slotUpdateInfo()

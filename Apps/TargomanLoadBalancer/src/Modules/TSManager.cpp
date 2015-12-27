@@ -159,7 +159,6 @@ QVariantList TSManagerJsonRPCService::translate(
     Common::JSONConversationProtocol::stuResponse Response =
             TSManager::instance().baseTranslation(Args);
     return QVariantList()<<Response.Result<<Response.Args;
-
 }
 #endif
 }
