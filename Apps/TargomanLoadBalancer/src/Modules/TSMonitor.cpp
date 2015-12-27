@@ -57,6 +57,7 @@ tmplConfigurable<quint16> TSMonitor::WaitOnUpdtae(
 Common::Configuration::enuConfigSource::File
 );
 
+//TODO when No network is active application starts but does not work
 void TSMonitor::run()
 {
     try{

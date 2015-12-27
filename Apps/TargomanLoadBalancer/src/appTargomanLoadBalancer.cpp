@@ -43,7 +43,6 @@ appTargomanLoadBalancer::appTargomanLoadBalancer()
 void appTargomanLoadBalancer::slotExecute()
 {
     try{
-
         connect(&Configuration::ConfigManager::instance(),
                 &Configuration::ConfigManager::sigPing,
                 this,

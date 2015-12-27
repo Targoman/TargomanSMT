@@ -37,8 +37,12 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exTSManager, exTargomanLoadBalancer);
 #ifdef WITH_QJsonRPC
 class TSManagerJsonRPCService : public QJsonRpcService
 {
+    Q_OBJECT
+    Q_CLASSINFO("serviceName", "TSManager")
 public:
     TSManagerJsonRPCService();
+
+public slots:
     QVariantList translate(
             quint32 _preferedServer,
             QString _dir,
