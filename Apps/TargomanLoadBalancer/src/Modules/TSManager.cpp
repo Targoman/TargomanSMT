@@ -131,14 +131,16 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
 
 TSManager::TSManager()
 {
+#ifdef WITH_QJsonRPC
+    ConfigManager::instance().registerJsonRPCModule(TSManagerJsonRPCService::instance());
+#endif
     this->exportMyRPCs();
 }
 
 /************************************************************/
+#ifdef WITH_QJsonRPC
 TSManagerJsonRPCService::TSManagerJsonRPCService()
-{
-    ConfigManager::instance().registerJsonRPCModule(*this);
-}
+{}
 
 QVariantList TSManagerJsonRPCService::translate(
         quint32 _preferedServer,
@@ -159,7 +161,7 @@ QVariantList TSManagerJsonRPCService::translate(
     return QVariantList()<<Response.Result<<Response.Args;
 
 }
-
+#endif
 }
 }
 }

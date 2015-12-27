@@ -30,6 +30,7 @@
 #include "libTargomanCommon/CmdIO.h"
 #include "libTargomanCommon/SimpleAuthentication.h"
 #include "Modules/TSMonitor.h"
+#include "Modules/TSManager.h"
 
 namespace Targoman {
 namespace Apps {
@@ -57,6 +58,8 @@ void appTargomanLoadBalancer::slotExecute()
         Modules::TSMonitor::instance().start();
         sleep(1);
         Modules::TSMonitor::instance().wait4AtLeastOneServerAvailable();
+        Modules::TSManager::instance();
+
         Configuration::ConfigManager::instance().startAdminServer();
     }catch(exTargomanBase& e){
         TargomanError(e.what());

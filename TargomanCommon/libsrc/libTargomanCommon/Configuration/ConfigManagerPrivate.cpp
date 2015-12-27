@@ -282,12 +282,12 @@ void clsConfigManagerPrivate::registerJsonRPCModule(QJsonRpcService &_service)
     case enuConfigOverNetMode::JsonRPCOverHTTP:
         if (this->ConfigOverNetServer.isNull())
             throw exConfiguration("Invalid RPC registeration on uninitializaed config manager");
-        ((QJsonRpcAbstractServer*)this->ConfigOverNetServer.data())->addService(&_service);
+        ((clsConfigByJsonRPC*)this->ConfigOverNetServer.data())->addService(&_service);
         break;
     default:
-        throw exConfiguration("Unable to register JSonRPCModule on Legacy or no TCP server");
-
-
+        // Do not throw because submodules does not know my state
+        //throw exConfiguration("Unable to register JSonRPCModule on Legacy or no TCP server");
+        break;
     }
 }
 #endif

@@ -40,7 +40,10 @@ class TSManagerJsonRPCService : public QJsonRpcService
     Q_OBJECT
     Q_CLASSINFO("serviceName", "TSManager")
 public:
-    TSManagerJsonRPCService();
+    static TSManagerJsonRPCService& instance(){
+        static TSManagerJsonRPCService* Instance = NULL;
+        return *(Q_LIKELY(Instance) ? Instance : (Instance = new TSManagerJsonRPCService));
+    }
 
 public slots:
     QVariantList translate(
@@ -49,6 +52,9 @@ public slots:
             QString _text,
             bool _brief,
             bool _keep);
+private:
+    TSManagerJsonRPCService();
+    Q_DISABLE_COPY(TSManagerJsonRPCService)
 };
 #endif
 
