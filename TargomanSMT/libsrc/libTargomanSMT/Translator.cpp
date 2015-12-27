@@ -67,9 +67,6 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
         gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>();
     Transliterator->init(_configSettings);
 
-    Proxies::NamedEntityRecognition::intfNamedEntityRecognizer* NER =
-            gConfigs.NER.getInstance<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer>();
-    NER->init(_configSettings);
 #endif
 
     OOVHandler::instance().initialize();
@@ -77,6 +74,7 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
     SearchGraphBuilder::clsSearchGraph::init(_configSettings);
 
     TranslatorInitialized = true;
+    TargomanLogHappy(5, "Translator Initialize successfully");
 }
 
 stuTranslationOutput Translator::translate(const QString &_inputStr,

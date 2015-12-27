@@ -104,6 +104,15 @@ void clsInput::init(QSharedPointer<QSettings> _configSettings)
             clsInput::SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         clsInput::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
+
+#ifndef SMT
+    if (clsInput::TagNamedEntities.value() == true){
+        Proxies::NamedEntityRecognition::intfNamedEntityRecognizer* NER =
+                gConfigs.NER.getInstance<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer>();
+        NER->init(_configSettings);
+    }
+#endif
+
 }
 
 /**

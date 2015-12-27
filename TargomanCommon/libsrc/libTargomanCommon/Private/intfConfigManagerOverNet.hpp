@@ -54,7 +54,7 @@ public:
                                                     this->ListenPort.value()));
                 else{
                     if (PrintMessage && _justCheck == false){
-                        TargomanInfo(5, "Waiting for port %d ready...", this->ListenPort.value());
+                        TargomanLogInfo(5, "Waiting for port "<<this->ListenPort.value()<<" to become ready...");
                         PrintMessage = false;
                     }
                     usleep(500000);
