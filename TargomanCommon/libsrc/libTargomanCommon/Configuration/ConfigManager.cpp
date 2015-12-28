@@ -297,11 +297,13 @@ void ConfigManager::init(const QString& _license,
             this->pPrivate->prepareServer();
 
         // ////////////////////////////////////////////////
-        // /finalize all config items (for module configurables, this puts instantiator
-        // /function of module to Instatiator member of that.)
+        // /finalize all config items except addins
+        // / * for module configurables, this puts instantiator function of
+        // /   module to Instatiator member of that.
         // ////////////////////////////////////////////////
         foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
-            ConfigItem->finalizeConfig();
+            if (ConfigItem->configType() != enuConfigType::Addin)
+                ConfigItem->finalizeConfig();
         }
 
         // ////////////////////////////////////////////////
@@ -311,6 +313,14 @@ void ConfigManager::init(const QString& _license,
             stuInstantiator Instantiator = this->pPrivate->ModuleInstantiatorsByName.value(Module);
             if (Instantiator.IsSingleton && Instantiator.fpMethod)
                 Instantiator.fpMethod();
+        }
+
+        // ////////////////////////////////////////////////
+        // /finalize addin config items to instantiate active ones
+        // ////////////////////////////////////////////////
+        foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
+            if (ConfigItem->configType() == enuConfigType::Addin)
+                ConfigItem->finalizeConfig();
         }
 
         if (_minimal == false && SaveFile)
