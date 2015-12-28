@@ -139,12 +139,12 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
         foreach(const stuTranslationOutput::stuMetaInfo& MetaInfo, _intermediate.MetaInfo){
             QString TargetPhrase = TranslationWords.at(MetaInfo.TargetWordsPos.start());
             for(size_t i=MetaInfo.TargetWordsPos.start() + 1; i<MetaInfo.TargetWordsPos.end(); ++i)
-                TargetPhrase.append(" %1").arg(TranslationWords.at(i));
+                TargetPhrase.append(" ").append(TranslationWords.at(i));
            PhraseIndexList.insert(PhraseIndexList.size(), QVariantList()<<TargetPhrase<<PhraseIndexList.size());
 
            QString SourcePhrase = SourceWords.at(MetaInfo.SourceWordsPos.start());
            for(size_t i=MetaInfo.SourceWordsPos.start() + 1; i<MetaInfo.SourceWordsPos.end(); ++i)
-               SourcePhrase.append(" %1").arg(SourceWords.at(i));
+               SourcePhrase.append(" ").append(SourceWords.at(i));
 
            QVariantList TranslationOptions;
            bool IsFirstOption = true;

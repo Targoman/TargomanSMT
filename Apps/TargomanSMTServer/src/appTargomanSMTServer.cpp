@@ -64,6 +64,10 @@ void appTargomanSMTServer::slotExecute()
 
         QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
         Configuration::ConfigManager::instance().startAdminServer();
+
+        /*clsTranslationJob* TRJ = new clsTranslationJob(false, false);
+        TRJ->doJob("یا مدت برای یا مدت زمان");*/
+
     }catch(exTargomanBase& e){
         TargomanError(e.what());
         QCoreApplication::exit(-1);

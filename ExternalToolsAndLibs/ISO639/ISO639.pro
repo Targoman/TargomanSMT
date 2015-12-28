@@ -28,7 +28,6 @@ error("**** $$ProjectName: Unable to find Configuration file $$ConfigFile ****")
 include ($$ConfigFile)
 
 TEMPLATE=lib
-DESTDIR = dummy
+DESTDIR = $$BaseBuildFolder/
 
 system(cp ISO639.h $$BaseLibraryIncludeFolder/)
-QMAKE_POST_LINK += rm -rf dummy
