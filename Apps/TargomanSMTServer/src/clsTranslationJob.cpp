@@ -212,7 +212,8 @@ void clsTranslationJob::reduceSentenceTranslation(stuTranslationOutput &_result,
         Offset = _result.Translation.count(' ');
     }
 
-    _result.Translation.append(_intermediate.Translation);
+    _result.Translation.append(
+                TargomanTextProcessor::instance().ixml2Text(_intermediate.Translation));
 
     foreach(stuTranslationOutput::stuMetaInfo MetaInfo, _intermediate.MetaInfo){
         MetaInfo.SourceWordsPos.first  += Offset;

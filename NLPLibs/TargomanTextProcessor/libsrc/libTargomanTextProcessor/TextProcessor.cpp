@@ -135,6 +135,53 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
 
 
 
+QStringList getIXMLLines(QString& _data)
+{
+    _data = _data.replace (". .", "..");
+    _data = _data.replace (". .", "..");
+    _data = _data.replace ("  ", " ");
+    _data = _data.replace ("  ", " ");
+
+    _data = _data.replace (" . \"", " TGMN_DOT\"");
+    _data = _data.replace (" . )" , " TGMN_DOT)");
+    _data = _data.replace (" . ]" , " TGMN_DOT]");
+    _data = _data.replace (" . }" , " TGMN_DOT}");
+
+    _data = _data.replace (" ? \"", " TGMN_QM\"");
+    _data = _data.replace (" ? )" , " TGMN_QM)");
+    _data = _data.replace (" ? ]" , " TGMN_QM]");
+    _data = _data.replace (" ? }" , " TGMN_QM}");
+
+    _data = _data.replace (" ! \"", " TGMN_EM\"\n");
+    _data = _data.replace (" ! )" , " TGMN_EM)\n");
+    _data = _data.replace (" ! ]" , " TGMN_EM]\n");
+    _data = _data.replace (" ! }" , " TGMN_EM}\n");
+
+    _data = _data.replace (" . &gt;", " .&gt;");
+    _data = _data.replace ("  ", " ");
+    _data = _data.replace ("  ", " ");
+    _data = _data.replace (" . ", " .\n");
+    _data = _data.replace (" ? ", " ?\n");
+    _data = _data.replace (" ! ", " !\n");
+
+    _data = _data.replace (" TGMN_DOT\"", " .\"\n");
+    _data = _data.replace (" TGMN_DOT)" , " .)\n");
+    _data = _data.replace (" TGMN_DOT]" , " .]\n");
+    _data = _data.replace (" TGMN_DOT]" , " .}\n");
+
+    _data = _data.replace (" TGMN_QM\"", " ? \"\n");
+    _data = _data.replace (" TGMN_QM)", " ? )\n");
+    _data = _data.replace (" TGMN_QM]", " ? ]\n");
+    _data = _data.replace (" TGMN_QM}", " ? }\n");
+
+    _data = _data.replace (" TGMN_EM\"\n", " ! \"\n");
+    _data = _data.replace (" TGMN_EM)\n", " ! )\n");
+    _data = _data.replace (" TGMN_EM]\n", " ! ]\n");
+    _data = _data.replace (" TGMN_EM}\n", " ! }\n");
+
+     return _data.split ('\n', QString::SkipEmptyParts);
+}
+
 
 /**
  * @brief TextProcessor::ixml2Text
@@ -146,9 +193,57 @@ QString TargomanTextProcessor::ixml2Text(const QString &_ixml) const
     if (!Initialized)
         throw exTextProcessor("Text Processor has not been initialized");
 
-    Q_UNUSED(_ixml)
-    //TODO detokenize
-    return "";
+    thread_local static QRegExp RxSuffixes = QRegExp(
+                QString("(?: )('[%1])(?: )").arg(IXMLWriter::instance().supportedSuffixes()));
+
+    thread_local static QRegExp RxDetokenDQuote = QRegExp("(?:(?: |^)\" )([^\"]+)(?: \"(?: |$))");
+    thread_local static QRegExp RxDetokenQuote  = QRegExp("(?:(?: |^)\\' )([^\\']+)(?: \\'(?: |$))");
+    thread_local static QRegExp RxAllIXMLTags =
+        QRegExp(
+                QString("<%1>").arg(enuTextTags::options().join(">|<")) +
+                QString("|</%1>").arg(enuTextTags::options().join(">|</"))
+                );
+
+
+    QString IXML = _ixml;
+    QStringList Lines = getIXMLLines (IXML);
+    for (int i = 0; i < Lines.count (); ++i)
+    {
+        Lines[i] = Lines[i].replace (RxSuffixes, "\\1 ");
+        Lines[i] = Lines[i].replace (RxAllIXMLTags,"");
+
+        int Pos=0;
+        while ((Pos=RxDetokenDQuote.indexIn(Lines[i], 0)) != -1) {
+            Lines[i]=
+                    Lines[i].mid(0,Pos) +
+                    " \"" + RxDetokenDQuote.cap(1) + "\" " +
+                    Lines[i].mid(Pos + RxDetokenDQuote.matchedLength());
+        }
+
+        Pos=0;
+        while ((Pos=RxDetokenQuote.indexIn(Lines[i], 0)) != -1) {
+            Lines[i]=
+                    Lines[i].mid(0,Pos) +
+                    " '" + RxDetokenQuote.cap(1) + "' " +
+                    Lines[i].mid(Pos + RxDetokenQuote.matchedLength());
+        }
+
+        Lines[i] = Lines[i].replace ("&gt;", ">");
+        Lines[i] = Lines[i].replace ("&lt;", "<");
+        Lines[i] = Lines[i].replace ("&amp;", "&");
+        Lines[i] = Lines[i].replace (" .", ".");
+
+        Lines[i] = Lines[i].replace (" .", ".");
+        Lines[i] = Lines[i].replace (" ,", ",");
+        Lines[i] = Lines[i].replace (" ;", ";");
+        Lines[i] = Lines[i].replace (" :", ":");
+        Lines[i] = Lines[i].replace (" ?", "?");
+        Lines[i] = Lines[i].replace (" !", "!");
+        Lines[i] = Lines[i].replace (" )", ")");
+        Lines[i] = Lines[i].replace (") ", ")");
+        Lines[i] = Lines[i].replace ("( ", "(");
+    }
+    return Lines.join("\n");
 }
 
 /**
