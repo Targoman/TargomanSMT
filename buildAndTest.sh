@@ -43,6 +43,7 @@ echo Using $QMAKE_COMMAND ...
 
 #Projects=" TargomanCommon/ 
 Projects="ExternalToolsAndLibs/
+          TargomanCommon/
           NLPLibs/ 
           Apps/E4SMT/ 
           TargomanSMT/ 
