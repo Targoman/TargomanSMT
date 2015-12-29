@@ -97,6 +97,8 @@ qint64 QJsonRpcHttpServerSocket::writeData(const char *data, qint64 maxSize)
         responseHeader += "Content-Length: " + QByteArray::number(m_responseBuffer.size()) + "\r\n";
         responseHeader += "\r\n";
 
+        qJsonRpcDebug() << Q_FUNC_INFO << "Write: " << m_responseBuffer;
+
         // body
         m_responseBuffer.prepend(responseHeader);
         qint64 bytesWritten = QSslSocket::writeData(m_responseBuffer.constData(), m_responseBuffer.size());
@@ -115,6 +117,7 @@ void QJsonRpcHttpServerSocket::sendErrorResponse(int statusCode)
     QByteArray responseHeader;
     responseHeader += "HTTP/1.1 " + QByteArray::number(statusCode) +" " + statusMessageForCode(statusCode) + "\r\n";
     responseHeader += "\r\n";
+    qJsonRpcDebug() << Q_FUNC_INFO << "Write: " << responseHeader;
 
     QSslSocket::writeData(responseHeader.constData(), responseHeader.size());
     close();
@@ -123,6 +126,8 @@ void QJsonRpcHttpServerSocket::sendErrorResponse(int statusCode)
 void QJsonRpcHttpServerSocket::readIncomingData()
 {
     QByteArray requestBuffer = readAll();
+    qJsonRpcDebug() << Q_FUNC_INFO << "Data: " << requestBuffer;
+
     http_parser_execute(m_requestParser, &m_requestParserSettings,
                         requestBuffer.constData(), requestBuffer.size());
 }
@@ -286,6 +291,7 @@ void QJsonRpcHttpServer::incomingConnection(int socketDescriptor)
     connect(socket, SIGNAL(messageReceived(QJsonRpcMessage)),
               this, SLOT(processIncomingMessage(QJsonRpcMessage)));
     QJsonRpcHttpServerRpcSocket *rpcSocket = new QJsonRpcHttpServerRpcSocket(socket, this);
+    qJsonRpcDebug() << Q_FUNC_INFO << "NewConnection: " << socket;
     d->requestSocketLookup.insert(socket, rpcSocket);
 }
 

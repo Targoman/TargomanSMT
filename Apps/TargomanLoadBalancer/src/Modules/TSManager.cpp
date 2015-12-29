@@ -34,7 +34,6 @@ namespace Modules {
 
 using namespace Common;
 using namespace Common::Configuration;
-const char*  SERVER_DISCONNECTED="SERVER_DISCONNECTED";
 
 
 tmplConfigurable<quint16> TSManager::MaxTranslationTime(
@@ -54,17 +53,6 @@ tmplConfigurable<quint8> TSManager::MaxRetries(
         "","","",
         Common::Configuration::enuConfigSource::File
         );
-
-void TSManager::slotServerDisconnected()
-{
-    clsTranslationServer* Server = dynamic_cast<clsTranslationServer*>(QObject::sender());
-    if(Server){
-        Server->Response = JSONConversationProtocol::stuResponse(
-                    JSONConversationProtocol::stuResponse::Pong,
-                    SERVER_DISCONNECTED);
-        Server->RWLock.unlock();
-    }
-}
 
 stuRPCOutput TSManager::rpcTranslate(const QVariantMap &_args){
     Common::JSONConversationProtocol::stuResponse Response = this->baseTranslation(_args);
@@ -92,8 +80,6 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
                         PreferedServerInex,
                         "rpcTranslate",
                         _args);
-            connect(BestServer, &clsTranslationServer::sigDisconnected,
-                    this, &TSManager::slotServerDisconnected);
             connect(BestServer, &clsTranslationServer::sigReadyForFirstRequest,
                     BestServer, &clsTranslationServer::slotSendPredefinedRequest,
                     Qt::DirectConnection);
@@ -101,7 +87,8 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
 
             quint32 ElapsedCentiSeconds = 0;
             //Wait until response unlocks
-            while(BestServer->isResponseReady() == false){
+            Common::JSONConversationProtocol::stuResponse Response;
+            while(BestServer->getSafeResponse(Response) == false){
                 usleep(10000);
                 QCoreApplication::processEvents();
                 ++ElapsedCentiSeconds;
@@ -111,8 +98,8 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
                 }
             }
 
-            if (BestServer->Response.Type == JSONConversationProtocol::stuResponse::Pong &&
-                    BestServer->Response.Result.toString() == SERVER_DISCONNECTED){
+            if (Response.Type == JSONConversationProtocol::stuResponse::Pong &&
+                    Response.Result.toString() == SERVER_DISCONNECTED){
                 BestServer->blockSignals(true);
                 BestServer->deleteLater();
                 PreferedServerInex = -1;
@@ -121,7 +108,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
             BestServer->blockSignals(true);
             BestServer->deleteLater();
 
-            return BestServer->Response;
+            return Response;
         }catch(exTSMonitor &e){
             throw exTSManager("No resources available");
         }
@@ -131,14 +118,16 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
 
 TSManager::TSManager()
 {
+#ifdef WITH_QJsonRPC
+    ConfigManager::instance().registerJsonRPCModule(TSManagerJsonRPCService::instance());
+#endif
     this->exportMyRPCs();
 }
 
 /************************************************************/
+#ifdef WITH_QJsonRPC
 TSManagerJsonRPCService::TSManagerJsonRPCService()
-{
-    ConfigManager::instance().registerJsonRPCModule(*this);
-}
+{}
 
 QVariantList TSManagerJsonRPCService::translate(
         quint32 _preferedServer,
@@ -157,9 +146,8 @@ QVariantList TSManagerJsonRPCService::translate(
     Common::JSONConversationProtocol::stuResponse Response =
             TSManager::instance().baseTranslation(Args);
     return QVariantList()<<Response.Result<<Response.Args;
-
 }
-
+#endif
 }
 }
 }

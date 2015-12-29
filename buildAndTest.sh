@@ -41,10 +41,10 @@ fi
 
 echo Using $QMAKE_COMMAND ...
 
+#Projects=" TargomanCommon/ 
 Projects="ExternalToolsAndLibs/
-          TargomanCommon/ 
-          NLPLibs/TargomanLM/ 
-          NLPLibs/TargomanTextProcessor/
+          TargomanCommon/
+          NLPLibs/ 
           Apps/E4SMT/ 
           TargomanSMT/ 
           Apps/TargomanSMTConsole 
@@ -56,7 +56,7 @@ export LD_LIBRARY_PATH="$BasePath/out/lib"
 if [ "$2" != "release" ] ; then
   QMAKE_CONFIG="CONFIG+=debug CONFIG+=WITH_QJsonRPC"
 else
-  QMAKE_CONFIG=""
+  QMAKE_CONFIG="CONFIG+=WITH_QJsonRPC"
 fi
 
 

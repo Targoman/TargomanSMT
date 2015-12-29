@@ -29,6 +29,10 @@ public:
     virtual ~QJsonRpcAbstractServer();
     virtual int connectedClientCount() const = 0;
 
+    /*virtual bool addService(QJsonRpcService *service){
+        return QJsonRpcServiceProvider::addService(service);
+    }*/
+
 // Q_SIGNALS:
     virtual void clientConnected() = 0;
     virtual void clientDisconnected() = 0;

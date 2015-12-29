@@ -22,9 +22,7 @@ TEMPLATE = subdirs
 CONFIG += ordered
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SUBDIRS  =  TargomanLM   \
-            TargomanTextProcessor #\
-            #TargomanStemmer \
-            #TargomanTransliterate
+            TargomanTextProcessor
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 

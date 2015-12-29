@@ -153,6 +153,7 @@ tmplConfigurable<QString> Access(
 
 int main(int _argc, char *_argv[])
 {
+    //TODO handle backspace on password entry
     try{
         TARGOMAN_IO_SETTINGS.setDefault(0,4);
         QCoreApplication App(_argc, _argv);

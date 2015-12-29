@@ -97,6 +97,7 @@ stuTranslationOutput clsTranslationJob::mapSentenceTranslation(const QString &_i
     return Translator::translate(_ixml, this->Brief);
 }
 
+//TODO this method must be revised and optimized after upgrading WebInterface
 void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
                                               const stuTranslationOutput &_intermediate)
 {
@@ -110,12 +111,14 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
 
     QVariantList TranslationSection = (_result[0].toList().isEmpty() ? QVariantList() : _result[0].toList());
     TranslationSection.insert(TranslationSection.size(),
-                              QVariantList()<<_intermediate.Translation<<_intermediate.TaggedSource);
+                              QVariantList()<<
+                              TargomanTextProcessor::instance().ixml2Text(_intermediate.Translation)<<
+                              _intermediate.TaggedSource);
     _result[0] = TranslationSection;
 
     if (this->Brief == false){
-        QVariantList PhraseIndexList;
-        QVariantList AlignInfoList;
+        QMap<size_t, QString> PhraseIndexMap;
+        QMap<size_t, QVariantList> AlignInfoMap;
         QStringList TranslationWords = _intermediate.Translation.split(" ", QString::SkipEmptyParts);
         QStringList SourceWords = _intermediate.TaggedSource.split(' ', QString::SkipEmptyParts);
 
@@ -133,63 +136,80 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
             LastAcceptedChar+=SourceWords.at(i).size();
         }
 
-/*        qDebug()<<TaggedWordsCharMap;
-        qDebug()<<Tagged2OrigianlCharMap;
-*/
         foreach(const stuTranslationOutput::stuMetaInfo& MetaInfo, _intermediate.MetaInfo){
             QString TargetPhrase = TranslationWords.at(MetaInfo.TargetWordsPos.start());
-            for(size_t i=MetaInfo.TargetWordsPos.start() + 1; i<MetaInfo.TargetWordsPos.end(); ++i)
-                TargetPhrase.append(" %1").arg(TranslationWords.at(i));
-           PhraseIndexList.insert(PhraseIndexList.size(), QVariantList()<<TargetPhrase<<PhraseIndexList.size());
+            for(size_t i=MetaInfo.TargetWordsPos.start() + 1; i<MetaInfo.TargetWordsPos.end(); ++i){
+                TargetPhrase.append(" ").append(TranslationWords.at(i));
+            }
 
-           QString SourcePhrase = SourceWords.at(MetaInfo.SourceWordsPos.start());
-           for(size_t i=MetaInfo.SourceWordsPos.start() + 1; i<MetaInfo.SourceWordsPos.end(); ++i)
-               SourcePhrase.append(" %1").arg(SourceWords.at(i));
+            PhraseIndexMap.insert(MetaInfo.TargetWordsPos.start(),
+                                   TargomanTextProcessor::instance().ixml2Text(TargetPhrase));
 
-           QVariantList TranslationOptions;
-           bool IsFirstOption = true;
-           foreach(const QString& Option, MetaInfo.TranslationOptions){
-               TranslationOptions.insert(TranslationOptions.size(),QVariantList()<<Option<<IsFirstOption);
-               if (IsFirstOption)
-                   IsFirstOption = false;
-           }
-
-           QVariantList AlignInfo;
-           AlignInfo.insert(0,SourcePhrase);
-           AlignInfo.insert(1,AlignInfoList.size());
-           AlignInfo.insert(2,TranslationOptions);
+            QString SourcePhrase;
+            if((size_t)SourceWords.size() > MetaInfo.SourceWordsPos.start()){
+                SourceWords.at(MetaInfo.SourceWordsPos.start());
+                for(size_t i=MetaInfo.SourceWordsPos.start() + 1; i<MetaInfo.SourceWordsPos.end(); ++i){
+                        SourcePhrase.append(" ").append(SourceWords.at(i));
+                }
+            }
 
 
-           QVariantList CharAlignInfo;
-           qint32 FirstChar = INT_MAX;
-           qint32 LastChar  = 0;
+            QVariantList TranslationOptions;
+            bool IsFirstOption = true;
+            foreach(const QString& Option, MetaInfo.TranslationOptions){
+                TranslationOptions.insert(TranslationOptions.size(),
+                                          QVariantList()<<
+                                          TargomanTextProcessor::instance().ixml2Text(Option)<<
+                                          IsFirstOption);
+                if (IsFirstOption)
+                    IsFirstOption = false;
+            }
 
-           stuPos TaggedSourceCharRange(TaggedWordsCharMap.at(MetaInfo.SourceWordsPos.start()).start(),
-                                        TaggedWordsCharMap.at(MetaInfo.SourceWordsPos.end() - 1).end());
-           for (size_t i=TaggedSourceCharRange.start(); i < TaggedSourceCharRange.end(); ++i){
-               if (Tagged2OrigianlCharMap.at(i).isValid()){
-                   FirstChar = qMin(Tagged2OrigianlCharMap.at(i).first, FirstChar);
-                   LastChar = qMax(Tagged2OrigianlCharMap.at(i).second, LastChar);
-               }
-           }
-
-           while (_intermediate.OriginalText.at(FirstChar) == ' ') ++FirstChar;
-           while (_intermediate.OriginalText.at(LastChar - 1) == ' ') --LastChar;
-
-           CharAlignInfo.insert(CharAlignInfo.size(), QVariantList()<<FirstChar<<LastChar);
-/*           if (OriginalSourceCharRange.first > 0 && _intermediate.OriginalText.at(OriginalSourceCharRange.first - 1) != ' '){
-
-           }
-           if (OriginalSourceCharRange.second < _intermediate.OriginalText.size() &&
-               _intermediate.OriginalText.at(OriginalSourceCharRange.second) != ' '){
-
-           }*/
+            QVariantList AlignInfo;
+            AlignInfo.insert(0,SourcePhrase);
+            AlignInfo.insert(1,AlignInfoMap.size());
+            AlignInfo.insert(2,TranslationOptions);
 
 
-           AlignInfo.insert(3,CharAlignInfo);
-           AlignInfo.insert(4,QVariantList()<<(quint16)MetaInfo.SourceWordsPos.start()<<(quint16)MetaInfo.SourceWordsPos.end());
+            QVariantList CharAlignInfo;
+            qint32 FirstChar = INT_MAX;
+            qint32 LastChar  = 0;
 
-           AlignInfoList.insert(AlignInfoList.size(), AlignInfo);
+            if (((size_t)TaggedWordsCharMap.size()) > MetaInfo.SourceWordsPos.start()){
+                stuPos TaggedSourceCharRange(TaggedWordsCharMap.at(MetaInfo.SourceWordsPos.start()).start(),
+                                             TaggedWordsCharMap.at(MetaInfo.SourceWordsPos.end() - 1).end());
+
+                for (size_t i=TaggedSourceCharRange.start(); i < TaggedSourceCharRange.end(); ++i){
+                    if (Tagged2OrigianlCharMap.at(i).isValid()){
+                        FirstChar = qMin(Tagged2OrigianlCharMap.at(i).first, FirstChar);
+                        LastChar = qMax(Tagged2OrigianlCharMap.at(i).second, LastChar);
+                    }
+                }
+                while (_intermediate.OriginalText.at(FirstChar) == ' ') ++FirstChar;
+                while (_intermediate.OriginalText.at(LastChar - 1) == ' ') --LastChar;
+                CharAlignInfo.insert(CharAlignInfo.size(), QVariantList()<<FirstChar<<LastChar);
+            }else
+                CharAlignInfo.insert(CharAlignInfo.size(), QVariantList()<<0<<0);
+
+            AlignInfo.insert(3,CharAlignInfo);
+            AlignInfo.insert(4,QVariantList()<<
+                             (quint16)MetaInfo.SourceWordsPos.start()<<(quint16)MetaInfo.SourceWordsPos.end());
+
+            AlignInfoMap.insert(MetaInfo.TargetWordsPos.start(), AlignInfo);
+        }
+
+        QVariantList PhraseIndexList;
+        foreach(const QString& Phrase, PhraseIndexMap.values())
+            PhraseIndexList.insert(PhraseIndexList.size(),
+                                   QVariantList()<<
+                                   Phrase<<
+                                   PhraseIndexList.size());
+
+        QVariantList AlignInfoList;
+        foreach(const QVariantList& Info, AlignInfoMap.values()){
+            QVariantList UpdatedInfo = Info;
+            UpdatedInfo[1] = AlignInfoList.size();
+            AlignInfoList.insert(AlignInfoList.size(),UpdatedInfo);
         }
 
         QVariantList IndexSection = _result[1].toList();

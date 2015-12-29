@@ -259,9 +259,7 @@ tmplConfigurable<quint8> LogHappyLevel(
 /******************************************************************************************/
 Logger::Logger(QObject *parent) :
     QObject(parent),pPrivate(new Targoman::Common::Private::LoggerPrivate)
-{
-    this->registerActor(this->pPrivate->ActorUUID,"BaseLogger");
-}
+{}
 
 bool Logger::init(const QString &_fileName,
                   quint64 _maxSize,
@@ -276,7 +274,7 @@ bool Logger::init(const QString &_fileName,
 }
 
 
-void Logger::write(const QString &_actorID,
+void Logger::write(const QString &_callerFuncName,
                    enuLogType::Type _type,
                    quint8 _level,
                    const QString &_message,
@@ -285,11 +283,7 @@ void Logger::write(const QString &_actorID,
     if (this->isActive() == false || LogSettings[_type].canBeShown(_level) == false)
         return;
 
-    QString Actor = this->pPrivate->Actors.value(_actorID);
-    if (!_actorID.isEmpty() && Actor.isEmpty())
-        throw exLogger(QString("Actor ID %1 Not registerd: message(%2)").arg(_actorID).arg(_message));
-
-    QByteArray LogMessage= LogSettings[_type].details(Actor).toLatin1();
+    QByteArray LogMessage= LogSettings[_type].details(_callerFuncName).toLatin1();
 
     LogMessage+= QString("[%1]").arg(enuLogType::toStr(_type));
     LogMessage += "[" + QString::number(_level) + "]: ";
@@ -335,45 +329,9 @@ void Logger::write(const QString &_actorID,
         this->pPrivate->rotateLog();
     }
     Locker.unlock();
-    emit this->sigLogAdded(QDateTime().currentDateTime(), _actorID, _type, _level, _message);
+    emit this->sigLogAdded(QDateTime().currentDateTime(), _callerFuncName, _type, _level, _message);
 }
 
-void Logger::registerActor(QString& _actorUUID, const QString &_actorName)
-{
-    QMutexLocker Locker(&this->pPrivate->mxLog);
-
-    if (_actorName.isEmpty())
-        throw exLogger("Invalid Null Actor Name: " + _actorUUID);
-
-    if (_actorUUID.isEmpty())
-        _actorUUID = QUuid::createUuid().toString();
-    else if (this->pPrivate->Actors.contains(_actorUUID))
-        throw exLogger(QString ("Invalid Actor UUID: %1 it is in use by %2").arg(
-                           _actorUUID).arg(this->pPrivate->Actors.value(_actorUUID)));
-
-    if (this->pPrivate->Actors.values().contains(_actorName) &&
-            this->pPrivate->Actors.key(_actorName,0) != _actorUUID)
-        throw exLogger(QString ("Invalid Actor UUID/Name: %1/%2 it has been previously registered as: %3/%4").arg(
-                           _actorUUID).arg(_actorName).arg(this->pPrivate->Actors.key(_actorName)).arg(_actorName));
-
-    this->pPrivate->Actors.insert(_actorUUID, _actorName);
-    //TargomanInfo(6, qPrintable(_actorName + " Registerd with UUID: " + *_actorUUID) );
-}
-
-void Logger::unregisterActor(const QString& _actorUUID)
-{
-    QMutexLocker Locker(&this->pPrivate->mxLog);
-    QString ActorName = this->pPrivate->Actors.value(_actorUUID);
-
-    this->pPrivate->Actors.remove(_actorUUID);
-
-    //TargomanInfo(6, _actorUUID + " / " + ActorName + " Unregistered");
-}
-
-const QHash<QString, QString> &Logger::actors()
-{
-    return this->pPrivate->Actors;
-}
 Logger::~Logger()
 {
     //It is defined to suppress error on QScoppedPointer
@@ -438,6 +396,23 @@ void Targoman::Common::Private::LoggerPrivate::rotateLog()
         throw exTargomanNotImplemented("Compressing files on OSs other than linux is not yet implemented");
 #endif
     }
+}
+
+QString clsLogSettings::getPrettyModuleName(const QString &_callerFuncName)
+{
+    thread_local static QRegExp RxPrivate("::Private$");
+    QString ModuleName = _callerFuncName;
+    int ParenthesisLoc = ModuleName.indexOf('(');
+    if (ParenthesisLoc >=0 )
+        ModuleName.truncate(ParenthesisLoc);
+    int SpaceLoc = ModuleName.lastIndexOf(" ");
+    ModuleName = (SpaceLoc >= 0 ? ModuleName.mid(SpaceLoc + 1) : ModuleName);
+    ModuleName = ModuleName.mid(0, ModuleName.lastIndexOf("::"));
+    if(ModuleName.contains("cls"))
+        ModuleName = ModuleName.mid(0, ModuleName.lastIndexOf("::"));
+    ModuleName.replace("::Private::", "::");
+    ModuleName.replace(RxPrivate, "");
+    return ModuleName;
 }
 
 }

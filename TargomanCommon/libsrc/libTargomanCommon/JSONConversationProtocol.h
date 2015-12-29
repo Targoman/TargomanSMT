@@ -59,6 +59,8 @@ public:
         }
     };
 
+
+    //TODO obey Qt Design pattern to avoid copy
     struct stuResponse
     {
         enum enuResponseTypes{
