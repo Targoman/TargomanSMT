@@ -48,10 +48,7 @@ int main(int _argc, char *_argv[])
     Q_UNUSED(_argv)
 
    try{
-        QString ActorUUID;
-
         qDebug()<<"sdklfdsklfjldsjk";
-        TARGOMAN_REGISTER_ACTOR("testLibCommon");
         Targoman::Common::Logger::instance().init("log.log");
 
         //Change below in order to silent

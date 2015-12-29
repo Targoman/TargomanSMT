@@ -54,7 +54,6 @@ public:
                                                     this->ListenPort.value()));
                 else{
                     if (PrintMessage && _justCheck == false){
-                        QString ActorUUID; // TODO update for pretty log
                         TargomanLogInfo(5, "Waiting for port "<<this->ListenPort.value()<<" to become ready...");
                         PrintMessage = false;
                     }

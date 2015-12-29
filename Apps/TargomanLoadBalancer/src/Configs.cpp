@@ -180,7 +180,5 @@ tmplConfigurable<QString>     gConfigs::DBSchema(
         "db-schema",
         (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File)
         );
-QString ActorUUID;
-
 }
 }

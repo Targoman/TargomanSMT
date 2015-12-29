@@ -40,8 +40,6 @@ namespace Apps {
 using namespace Common;
 using namespace Common::Configuration;
 
-QString ActorUUID;
-
 void appTargomanSMTServer::slotExecute()
 {
     try{

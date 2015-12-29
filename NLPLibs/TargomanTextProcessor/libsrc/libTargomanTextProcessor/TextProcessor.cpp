@@ -38,7 +38,6 @@ using namespace Targoman::NLPLibs::TargomanTP::Private;
 namespace Targoman {
 namespace NLPLibs {
 
-QString ActorUUID;
 bool Initialized = false;
 
 
@@ -46,9 +45,7 @@ bool Initialized = false;
  * @brief TextProcessor::TextProcessor
  */
 TargomanTextProcessor::TargomanTextProcessor()
-{
-    TARGOMAN_REGISTER_ACTOR("TextProcessor");
-}
+{}
 
 /**
  * @brief TextProcessor::init
