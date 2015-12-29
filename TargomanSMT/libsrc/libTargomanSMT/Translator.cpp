@@ -82,21 +82,22 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     SearchGraphBuilder::clsSearchGraph  SearchGraph(Input.tokens());
     OutputComposer::clsOutputComposer   OutputComposer(Input, SearchGraph);
 
+    stuTranslationOutput Output;
     if (_justTranslationString){
-        stuTranslationOutput Output;
         Output.Translation = OutputComposer.translationString();
-        int Elapsed = start.elapsed();
+    }else{
+        Output = OutputComposer.translationOutput();
+    }
+    int Elapsed = start.elapsed();
 #ifndef SMT
-        TargomanLogInfo(7, "Translation [" << Elapsed / 1000.0 << "s]"<<
-                         _inputStr << " => " << Output.Translation);
+    TargomanLogInfo(7, "Translation [" << Elapsed / 1000.0 << "s]"<<
+                     _inputStr << " => " << Output.Translation);
 #else
-        QString InputWord = _inputStr;
-        TargomanLogInfo(7, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
-                         InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
+    QString InputWord = _inputStr;
+    TargomanLogInfo(7, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
+                     InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
 #endif
-        return Output;
-    }else
-        return OutputComposer.translationOutput();
+    return Output;
 }
 
 void Translator::saveBinaryRuleTable(const QString &_filePath)

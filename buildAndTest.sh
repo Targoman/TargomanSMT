@@ -43,7 +43,7 @@ fi
 
 echo Using $QMAKE_COMMAND ...
 
-#Projects=" TargomanCommon/ 
+#TODO -Werror
 Projects="ExternalToolsAndLibs/
           TargomanCommon/
           NLPLibs/ 
