@@ -139,13 +139,17 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
         foreach(const stuTranslationOutput::stuMetaInfo& MetaInfo, _intermediate.MetaInfo){
 
             QString TargetPhrase;
-            if (TranslationWords.size() > MetaInfo.TargetWordsPos.start()){
+            if ((size_t)TranslationWords.size() > MetaInfo.TargetWordsPos.start()){
                 TargetPhrase = TranslationWords.at(MetaInfo.TargetWordsPos.start());
                 for(size_t i=MetaInfo.TargetWordsPos.start() + 1;
-                    TranslationWords.size() > i && i<MetaInfo.TargetWordsPos.end();
+                    (size_t)TranslationWords.size() > i && i<MetaInfo.TargetWordsPos.end();
                     ++i){
                     TargetPhrase.append(" ").append(TranslationWords.at(i));
                 }
+            }else{
+                TargomanDebug(5, "TranslationWords Failed"<<
+                              "TranslationWords.size()"<<TranslationWords.size()<<
+                              "MetaInfo.TargetWordsPos.start()"<<MetaInfo.TargetWordsPos.start())
             }
 
             PhraseIndexMap.insert(MetaInfo.TargetWordsPos.start(),
@@ -155,10 +159,14 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
             if((size_t)SourceWords.size() > MetaInfo.SourceWordsPos.start()){
                 SourcePhrase = SourceWords.at(MetaInfo.SourceWordsPos.start());
                 for(size_t i=MetaInfo.SourceWordsPos.start() + 1;
-                    SourceWords.size() > i && i<MetaInfo.SourceWordsPos.end();
+                    (size_t)SourceWords.size() > i && i<MetaInfo.SourceWordsPos.end();
                     ++i){
                     SourcePhrase.append(" ").append(SourceWords.at(i));
                 }
+            }else{
+                TargomanDebug(5, "SourceWords Failed"<<
+                              "SourceWords.size()"<<SourceWords.size()<<
+                              "MetaInfo.SourceWordsPos.start()"<<MetaInfo.SourceWordsPos.start())
             }
 
 
@@ -183,7 +191,8 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
             qint32 FirstChar = INT_MAX;
             qint32 LastChar  = 0;
 
-            if (((size_t)TaggedWordsCharMap.size()) > MetaInfo.SourceWordsPos.start()){
+            if (((size_t)TaggedWordsCharMap.size()) > MetaInfo.SourceWordsPos.start() &&
+                ((size_t)TaggedWordsCharMap.size()) > MetaInfo.SourceWordsPos.end() -1){
                 stuPos TaggedSourceCharRange(TaggedWordsCharMap.at(MetaInfo.SourceWordsPos.start()).start(),
                                              TaggedWordsCharMap.at(MetaInfo.SourceWordsPos.end() - 1).end());
 
@@ -196,8 +205,14 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
                 while (_intermediate.OriginalText.at(FirstChar) == ' ') ++FirstChar;
                 while (_intermediate.OriginalText.at(LastChar - 1) == ' ') --LastChar;
                 CharAlignInfo.insert(CharAlignInfo.size(), QVariantList()<<FirstChar<<LastChar);
-            }else
+            }else{
+                TargomanDebug(5,"TaggedSourceCharRange Failed"<<
+                              "TaggedWordsCharMap.size()"<<TaggedWordsCharMap.size()<<
+                              "MetaInfo.SourceWordsPos.start()"<<MetaInfo.SourceWordsPos.start()<<
+                              "MetaInfo.SourceWordsPos.end() -1"<<MetaInfo.SourceWordsPos.end() -1
+                              )
                 CharAlignInfo.insert(CharAlignInfo.size(), QVariantList()<<0<<0);
+            }
 
             AlignInfo.insert(3,CharAlignInfo);
             AlignInfo.insert(4,QVariantList()<<
