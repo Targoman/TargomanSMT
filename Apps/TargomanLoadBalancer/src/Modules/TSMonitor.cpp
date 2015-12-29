@@ -57,6 +57,7 @@ tmplConfigurable<quint16> TSMonitor::WaitOnUpdtae(
 Common::Configuration::enuConfigSource::File
 );
 
+//TODO when No network is active application starts but does not work
 void TSMonitor::run()
 {
     try{
@@ -64,8 +65,10 @@ void TSMonitor::run()
         foreach (const QString& Key,gConfigs::TranslationServers.keys()){
             const tmplConfigurableArray<gConfigs::stuServer>& ServersConfig =
                     gConfigs::TranslationServers.values(Key);
+            QMutexLocker Locker(&this->pPrivate->ListLock);
             for(size_t i=0; i<ServersConfig.size(); ++i)
                     this->pPrivate->Servers.insertMulti(Key,new clsTranslationServer(Key,i));
+            Locker.unlock();
         }
         this->pPrivate->slotUpdateInfo();
 
@@ -88,7 +91,6 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
     static QMap<QString, qint16> LastUsedServer;
 
     foreach (clsTranslationServer* Server, this->pPrivate->Servers.values(_dir)){
-        QReadLocker Locker(&Server->RWLock);
         if (Server->totalScore() > BestServerScore){
             NextBestServerIndex = BestServerIndex;
             BestServerIndex = Server->configIndex();
@@ -105,17 +107,31 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
 
 void TSMonitor::wait4AtLeastOneServerAvailable()
 {
+    static int count=0;
+
+    count++;
     TargomanLogInfo(1,"Waiting for at least one translation server to be ready.")
-    bool IsReady = false;
-    while(IsReady == false){
-        foreach (clsTranslationServer* Server, this->pPrivate->Servers){
-            QReadLocker Locker(&Server->RWLock);
+    quint16 ReadyServers = 0;
+    while(ReadyServers == 0){
+        QMutexLocker Locker(&this->pPrivate->ListLock);
+        auto Servers = this->pPrivate->Servers;
+        Locker.unlock();
+        foreach (clsTranslationServer* Server, Servers){
             if (Server->totalScore() > 0){
-                IsReady = true;
-                break;
+                TargomanLogInfo(
+                            1,
+                            "Server ID: "<<
+                            Server->configIndex()<<
+                            " :"<<
+                            gConfigs::TranslationServers[Server->dir()][Server->configIndex()].Host.value()<<
+                            " is ready");
+                ++ReadyServers;
             }
         }
+        sleep (1);
     }
+    TargomanLogHappy(1, "Currently active servers: "<<ReadyServers)
+
 }
 
 void TSMonitorPrivate::slotUpdateInfo()
@@ -123,7 +139,10 @@ void TSMonitorPrivate::slotUpdateInfo()
     try{
         size_t TempConnectedServers = 0;
         QMutexLocker Locker(&this->ListLock);
-        foreach(clsTranslationServer* Server, this->Servers){
+        auto Servers = this->Servers;
+        Locker.unlock();
+
+        foreach(clsTranslationServer* Server, Servers){
             Server->TotalScore = 0;
             if (Server->isConnected() == false) {
                 Server->reset();
@@ -155,6 +174,7 @@ void TSMonitorPrivate::slotServerDisconnected()
     if(Server){
         QMutexLocker Locker(&this->ListLock);
         Server->reset();
+        Locker.unlock();
     }
 }
 
@@ -193,15 +213,9 @@ void TSMonitorPrivate::slotProcessResponse(Common::JSONConversationProtocol::stu
                     ((100 - TranslationQueue) * (Load15min < 70 ? 6 : 4)) +
                     FreeMem;
 
-            gConfigs::stuServer& ServerConfigs =
-                    *((gConfigs::stuServer*)&(gConfigs::TranslationServers[Server->dir()][Server->configIndex()]));
-            QWriteLocker Locker(&Server->RWLock);
-            ServerConfigs.Statistics.Load1MinPercent.setFromVariant(Load1min);
-            ServerConfigs.Statistics.Load15MinPercent.setFromVariant(Load15min);
-            ServerConfigs.Statistics.FreeMemoryPercent.setFromVariant(FreeMem);
-            ServerConfigs.Statistics.TranslationQueuePercent.setFromVariant(TranslationQueue);
-            Server->TotalScore = Score;
-        }
+            Server->updateStatistics(Load1min, Load15min, FreeMem, TranslationQueue, Score);
+       }
+
     }catch(exTargomanBase &e){
         TargomanError(e.what());
     }catch(...){

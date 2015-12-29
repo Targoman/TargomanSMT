@@ -40,8 +40,6 @@ namespace Apps {
 using namespace Common;
 using namespace Common::Configuration;
 
-QString ActorUUID;
-
 void appTargomanSMTServer::slotExecute()
 {
     try{
@@ -64,6 +62,10 @@ void appTargomanSMTServer::slotExecute()
 
         QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
         Configuration::ConfigManager::instance().startAdminServer();
+
+        /*clsTranslationJob* TRJ = new clsTranslationJob(false, false);
+        TRJ->doJob("یا مدت برای یا مدت زمان");//*/
+
     }catch(exTargomanBase& e){
         TargomanError(e.what());
         QCoreApplication::exit(-1);
@@ -123,13 +125,17 @@ stuRPCOutput appTargomanSMTServer::rpcTranslate(const QVariantMap &_args)
     if (Text.isEmpty())
         throw exTargomanSMTServer("Obligatory argument 'txt' missing");
 
-    TargomanLogDebug(7,QString("rpcTranslate(brief=%1,keep=%2,txt=%3) => Result not logged").arg(
+    QString UUID=QUuid::createUuid().toString();
+    TargomanLogInfo(6,QString("rpcTranslate::start(UUID=%1,brief=%2,keep=%3,txt=%4)").arg(
+                         UUID,
                          _args.value("brief",false).toBool()).arg(
                          _args.value("keep",false).toBool()).arg(
                          _args.value("txt").toString().replace("\n","\\n")));
     QVariantMap Result;
     Result.insert("t",clsTranslationJob(_args.value("brief",false).toBool(),
                                         _args.value("keep",false).toBool()).doJob(Text));
+
+    TargomanLogInfo(6,QString("rpcTranslate::result(UUID=%1)").arg(UUID));
     return stuRPCOutput(1, Result);
 }
 

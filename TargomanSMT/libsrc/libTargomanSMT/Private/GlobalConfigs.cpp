@@ -43,8 +43,6 @@ using namespace Common;
 using namespace Common::Configuration;
 using namespace Proxies::LanguageModel;
 
-QString ActorUUID;
-
 stuGlobalConfigs gConfigs;
 
 tmplConfigurable<QString> stuGlobalConfigs::SourceLanguage(

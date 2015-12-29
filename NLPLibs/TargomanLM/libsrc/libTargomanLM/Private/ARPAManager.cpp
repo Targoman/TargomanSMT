@@ -51,12 +51,8 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuParseState,
 
 ARPAManager* ARPAManager::Instance = NULL;
 
-QString ActorUUID;
-
 ARPAManager::ARPAManager()
-{
-    TARGOMAN_REGISTER_ACTOR("TargomanLM");
-}
+{}
 
 /**
  * @brief Loads     language model _file to _model.

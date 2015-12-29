@@ -94,8 +94,6 @@ void ConfigManager::init(const QString& _license,
         return;
     }
 
-    Targoman::Common::Logger::instance().registerActor(this->pPrivate->ActorUUID, "ConfigManager");
-
     QSet<QString> Modules;
     bool SaveFile = false;
     bool FirstTimeConfigFile = false;
@@ -297,11 +295,13 @@ void ConfigManager::init(const QString& _license,
             this->pPrivate->prepareServer();
 
         // ////////////////////////////////////////////////
-        // /finalize all config items (for module configurables, this puts instantiator
-        // /function of module to Instatiator member of that.)
+        // /finalize all config items except addins
+        // / * for module configurables, this puts instantiator function of
+        // /   module to Instatiator member of that.
         // ////////////////////////////////////////////////
         foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
-            ConfigItem->finalizeConfig();
+            if (ConfigItem->configType() != enuConfigType::Addin)
+                ConfigItem->finalizeConfig();
         }
 
         // ////////////////////////////////////////////////
@@ -311,6 +311,14 @@ void ConfigManager::init(const QString& _license,
             stuInstantiator Instantiator = this->pPrivate->ModuleInstantiatorsByName.value(Module);
             if (Instantiator.IsSingleton && Instantiator.fpMethod)
                 Instantiator.fpMethod();
+        }
+
+        // ////////////////////////////////////////////////
+        // /finalize addin config items to instantiate active ones
+        // ////////////////////////////////////////////////
+        foreach (intfConfigurable* ConfigItem, this->pPrivate->Configs.values()){
+            if (ConfigItem->configType() == enuConfigType::Addin)
+                ConfigItem->finalizeConfig();
         }
 
         if (_minimal == false && SaveFile)
@@ -341,7 +349,6 @@ void ConfigManager::init(const QString& _license,
                 }
             }
         }
-        QString& ActorUUID = this->pPrivate->ActorUUID;
         TargomanLogHappy(1, "******* " <<
                          QCoreApplication::applicationName() <<
                          " (re)started *******");
@@ -418,8 +425,6 @@ void ConfigManager::addConfig(const QString _path, intfConfigurable *_item)
     this->pPrivate->Configs.insert(_path, _item);
 }
 
-QString stuInstantiator::InvalidActorUUID;
-
 /**
  * @brief Registers new modules.
  * @param _name         Name of module
@@ -434,10 +439,7 @@ void ConfigManager::addModuleInstantiaor(const QString& _fullName,
     if (this->pPrivate->ModuleInstantiatorsByName.contains(_name) ||
         this->pPrivate->ModuleInstantiatorsByFullName.contains(_fullName))
         throw exConfiguration("Duplicate Module Name: " + _name);
-    // TODO if (_instantiator.isInvalidActorUUID())
-    // TODO    throw exConfiguration("Invalid Instantiator on module: " + _name);
 
-    //TODO Targoman::Common::Logger::instance().registerActor(*_instantiator.ActorUUID, _name);
     this->pPrivate->ModuleInstantiatorsByFullName.insert(_fullName, _instantiator);
     this->pPrivate->ModuleInstantiatorsByName.insert(_name, _instantiator);
 }

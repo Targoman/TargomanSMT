@@ -52,9 +52,6 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuTextTags,
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTextProcessor, Targoman::Common::exTargomanBase);
 
-//Used by Logger Methods
-extern QString ActorUUID;
-
 class TargomanTextProcessor
 {
 public:
