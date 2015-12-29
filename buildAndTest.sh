@@ -30,6 +30,8 @@
 #								    esac
 #							    done
 
+cd $(dirname $0)
+
 QMAKE_COMMAND=qmake-qt5
 if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
   QMAKE_COMMAND=qmake
