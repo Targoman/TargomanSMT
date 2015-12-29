@@ -62,15 +62,13 @@ fi
 
 if [ "$1" == "full" ]; then
   rm -rf out
+  rm -f `find ./ -name 'Makefile*'`
   mkdir -p out/include
   for Proj in $Projects
   do
     cd  $BasePath/$Proj
     if [ -f *.pro ]; then
-      make distclean
       $QMAKE_COMMAND $QMAKE_CONFIG
-    else
-      make clean
     fi
     make -j 8
     if [ $? -ne 0 ];then
