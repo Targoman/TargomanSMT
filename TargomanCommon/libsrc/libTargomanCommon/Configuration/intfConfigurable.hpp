@@ -53,7 +53,8 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuConfigType,
                               FileBased,
                               Array,
                               MultiMap,
-                              Module);
+                              Module,
+                              Addin);
 
 class intfConfigurable;
 /// @brief A predefined lambda function used which always returns true used when there
@@ -160,7 +161,8 @@ public:
     inline const QString& shortHelp()const{return this->ShortHelp;}
     inline const QString& longSwitch()const{return this->LongSwitch;}
     inline bool  canBemanaged() { return this->ConfigType == enuConfigType::Normal ||
-                                         this->ConfigType == enuConfigType::Module; }
+                                         this->ConfigType == enuConfigType::Module ||
+                                         this->ConfigType == enuConfigType::Addin; }
     inline bool  canBeConfigured(enuConfigSource::Type _source) const { return testFlag(this->ConfigSources, _source) ;}
     inline qint8 argCount()const{return this->ArgCount;}
     inline const QString& configPath()const{return this->ConfigPath;}

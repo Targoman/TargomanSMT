@@ -86,14 +86,22 @@ void QJsonRpcServiceProvider::processMessage(QJsonRpcAbstractSocket *socket, con
                 socket->notify(error);
             }
         } else {
-            QJsonRpcService *service = d->services.value(serviceName);
-            service->d_func()->currentRequest = QJsonRpcServiceRequest(message, socket);
-            if (message.type() == QJsonRpcMessage::Request)
-                QObject::connect(service, SIGNAL(result(QJsonRpcMessage)),
-                                 socket, SLOT(notify(QJsonRpcMessage)), Qt::UniqueConnection);
-            QJsonRpcMessage response = service->dispatch(message);
-            if (response.isValid())
-                socket->notify(response);
+            try{
+                QJsonRpcService *service = d->services.value(serviceName);
+                service->d_func()->currentRequest = QJsonRpcServiceRequest(message, socket);
+                if (message.type() == QJsonRpcMessage::Request)
+                    QObject::connect(service, SIGNAL(result(QJsonRpcMessage)),
+                                     socket, SLOT(notify(QJsonRpcMessage)), Qt::UniqueConnection);
+                QJsonRpcMessage response = service->dispatch(message);
+                if (response.isValid())
+                    socket->notify(response);
+            }catch(std::exception &e){
+                qJsonRpcDebug()<<e.what();
+                QJsonRpcMessage error =
+                        message.createErrorResponse(QJsonRpc::InternalError,
+                                                    e.what());
+                socket->notify(error);
+            }
         }
     }
         break;

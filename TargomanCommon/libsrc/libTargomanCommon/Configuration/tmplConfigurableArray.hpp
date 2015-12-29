@@ -53,7 +53,7 @@ public:
         return *this;
     }
 
-    itmplType_t& data() const{
+    itmplType_t& data(){
         return *this;
     }
 };

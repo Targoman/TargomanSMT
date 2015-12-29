@@ -40,8 +40,6 @@ namespace NLPLibs {
 namespace TargomanLM {
 namespace Private {
 
-extern QString ActorUUID;
-
 clsAbstractProbingModel::clsAbstractProbingModel() : intfBaseModel(enuMemoryModel::Probing)
 {
     this->SumLevels = 0;
