@@ -31,6 +31,8 @@ namespace Apps {
 using namespace Common;
 using namespace Common::Configuration;
 
+const char*  SERVER_DISCONNECTED="SERVER_DISCONNECTED";
+
 gConfigs::stuServer::stuServer(const QString &_basePath) :
     Host(_basePath + "Host",
          "Host or IP Address of Server",

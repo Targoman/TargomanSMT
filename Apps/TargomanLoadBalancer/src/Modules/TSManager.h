@@ -67,9 +67,6 @@ public:
     Common::JSONConversationProtocol::stuResponse baseTranslation(const QVariantMap &_args);
 
 public slots:
-    void slotServerDisconnected();
-
-public slots:
     Common::Configuration::stuRPCOutput rpcTranslate(const QVariantMap& _args);
 
 private:

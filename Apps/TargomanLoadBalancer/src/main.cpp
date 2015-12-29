@@ -55,7 +55,7 @@ int main(int _argc, char *_argv[])
         });
 
 
-        QTimer::singleShot(0, new appTargomanLoadBalancer, SLOT(slotExecute()));
+        QTimer::singleShot(1000, new appTargomanLoadBalancer, SLOT(slotExecute()));
         return App.exec();
     }catch(exTargomanBase& e){
         TargomanError(e.what());
