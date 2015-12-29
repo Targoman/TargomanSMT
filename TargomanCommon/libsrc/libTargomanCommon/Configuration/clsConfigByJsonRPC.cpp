@@ -40,7 +40,9 @@ clsConfigByJsonRPC::clsConfigByJsonRPC(enuType _type, clsConfigManagerPrivate &_
                                  (QTcpServer*)new QJsonRpcTcpServer :
                                  ( QTcpServer*)new QJsonRpcHttpServerMultiThreaded(MaxConnections.value()))
 {
-    ((QJsonRpcAbstractServer*)this)->addService(new clsConfigurationService(_configManager));
+    QJsonRpcAbstractServer* Server = dynamic_cast<QJsonRpcAbstractServer*>(this->Server.data());
+    clsConfigurationService* Service = new clsConfigurationService(_configManager);
+    Server->addService(Service);
 }
 
 clsConfigByJsonRPC::~clsConfigByJsonRPC()

@@ -45,7 +45,7 @@ public:
                     const QString&  _shortSwitch = "",
                     const QString&  _shortHelp = "",
                     const QString&  _LongSwitch = "") :
-        intfConfigurable(enuConfigType::Module,
+        intfConfigurable(enuConfigType::Addin,
                          _configPath,
                          _description,
                          _shortSwitch,

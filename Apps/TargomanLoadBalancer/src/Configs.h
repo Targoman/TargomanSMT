@@ -36,8 +36,8 @@ namespace Targoman {
 namespace Apps {
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanLoadBalancer, Common::exTargomanBase);
+extern const char*  SERVER_DISCONNECTED;
 
-extern QString ActorUUID;
 class gConfigs{
 public:
     static inline Common::Configuration::clsConfigPath appConfig(const QString& _name){

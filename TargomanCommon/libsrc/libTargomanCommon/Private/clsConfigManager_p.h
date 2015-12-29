@@ -108,8 +108,6 @@ public:
 
     bool SetPathsRelativeToConfigPath;
 
-    QString ActorUUID;
-
     ConfigManager& Parent;
     QScopedPointer<intfConfigManagerOverNet> ConfigOverNetServer;
     static Common::Configuration::tmplConfigurable<enuConfigOverNetMode::Type>    ConfigOverNetMode;

@@ -30,6 +30,8 @@
 #								    esac
 #							    done
 
+cd $(dirname $0)
+
 QMAKE_COMMAND=qmake-qt5
 if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
   QMAKE_COMMAND=qmake
@@ -41,10 +43,10 @@ fi
 
 echo Using $QMAKE_COMMAND ...
 
+#Projects=" TargomanCommon/ 
 Projects="ExternalToolsAndLibs/
-          TargomanCommon/ 
-          NLPLibs/TargomanLM/ 
-          NLPLibs/TargomanTextProcessor/
+          TargomanCommon/
+          NLPLibs/ 
           Apps/E4SMT/ 
           TargomanSMT/ 
           Apps/TargomanSMTConsole 
@@ -56,21 +58,19 @@ export LD_LIBRARY_PATH="$BasePath/out/lib"
 if [ "$2" != "release" ] ; then
   QMAKE_CONFIG="CONFIG+=debug CONFIG+=WITH_QJsonRPC"
 else
-  QMAKE_CONFIG=""
+  QMAKE_CONFIG="CONFIG+=WITH_QJsonRPC"
 fi
 
 
 if [ "$1" == "full" ]; then
   rm -rf out
+  rm -f `find ./ -name 'Makefile*'`
   mkdir -p out/include
   for Proj in $Projects
   do
     cd  $BasePath/$Proj
     if [ -f *.pro ]; then
-      make distclean
       $QMAKE_COMMAND $QMAKE_CONFIG
-    else
-      make clean
     fi
     make -j 8
     if [ $? -ne 0 ];then

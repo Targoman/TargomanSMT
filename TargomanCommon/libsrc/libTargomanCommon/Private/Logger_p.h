@@ -65,8 +65,6 @@ public:
     quint64 MaxFileSize;
     char GlobalSettings;            /**< first bit of this boolean defines whether it is active or not and second bit defines whether it is visible or not*/
     QMutex  mxLog;                  /**< a mutex for insuring unique access for logging outputs for safty */
-    QString ActorUUID;
-    QHash<QString, QString> Actors; /**< a map for registring actors. Key: actor_name, Value: actor_UUID */
 
     /**
      * @todo add configuration settings

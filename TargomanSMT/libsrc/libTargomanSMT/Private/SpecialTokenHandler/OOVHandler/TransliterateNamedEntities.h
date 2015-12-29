@@ -45,7 +45,13 @@ namespace OOV{
 class TransliterateNamedEntities : public intfOOVHandlerModule{
 public:
     explicit TransliterateNamedEntities():
-        intfOOVHandlerModule(/*this->moduleName()*/) {}
+        intfOOVHandlerModule(/*this->moduleName()*/),
+        refTransliterator(
+            *gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>())
+        {
+        this->refTransliterator.init(Configuration::ConfigManager::instance().configSettings());
+    }
+
     ~TransliterateNamedEntities();
 
     /**
@@ -60,9 +66,7 @@ public:
            _attrs.value(NER_TAG_ATTR_KEY) == NER_TAG_OTHER)
             return *RuleTable::pInvalidTargetRule;
 
-        Proxies::Transliteration::intfTransliterator* Transliterator =
-               gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>();
-        QString TargetWord = Transliterator->transliterate(_token);
+        QString TargetWord = this->refTransliterator.transliterate(_token);
         QList<WordIndex_t> TargetPhrase;
         TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(TargetWord));
         _attrs.insert(
@@ -72,7 +76,7 @@ public:
     }
 
 private:
-
+    Proxies::Transliteration::intfTransliterator& refTransliterator;
     TARGOMAN_DEFINE_SINGLETON_MODULE(TransliterateNamedEntities);
 };
 

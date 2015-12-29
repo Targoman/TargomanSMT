@@ -29,7 +29,8 @@ namespace Targoman {
 namespace Common {
 
 exTargomanBase::exTargomanBase(const QString& _message, quint32 _line) throw(){
-    this->Message = _line ? QString::number(_line) + ": " + _message : _message;
+    QString Message = _line ? QString::number(_line) + ": " + _message : _message;
+    this->Message = Message.toUtf8();
 }
 
 exTargomanBase::~exTargomanBase() throw()
@@ -40,7 +41,7 @@ void exTargomanBase::raise() const
     throw *this;
 }
 
-QException *exTargomanBase::clone()
+QException *exTargomanBase::clone() const
 {
     return new exTargomanBase(*this);
 }
@@ -48,7 +49,7 @@ QException *exTargomanBase::clone()
 
 QString exTargomanBase::what()
 {
-    return this->Message;
+    return QString::fromUtf8(this->Message);
 }
 
 exTargomanInvalidParameter::exTargomanInvalidParameter(const QString& _message, int _line):
@@ -67,7 +68,8 @@ exTargomanNotImplemented::exTargomanNotImplemented(const QString& _message, int 
     exTargomanBase(_message, _line)
 {
     this->Message.append(">;exTargomanNotImplemented");
-    std::cerr<<this->Message.toUtf8().constData()<<std::endl;
+    //Show error on screen as this exception normally occurs before application startup
+    std::cerr<<this->Message.constData()<<std::endl;
 }
 
 exTargomanMustBeImplemented::exTargomanMustBeImplemented(const QString& _message, int _line) :
@@ -80,7 +82,8 @@ exTargomanInitialization::exTargomanInitialization(const QString& _message, int 
     exTargomanBase(_message, _line)
 {
     this->Message.append(">;exTargomanInitialization");
-    std::cerr<<this->Message.toUtf8().constData()<<std::endl;
+    //Show error on screen as this exception normally occurs before application startup
+    std::cerr<<this->Message.constData()<<std::endl;
 }
 
 }

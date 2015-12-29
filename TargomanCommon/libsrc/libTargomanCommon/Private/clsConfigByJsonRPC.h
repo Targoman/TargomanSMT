@@ -31,6 +31,7 @@
 #include <QScopedPointer>
 #include <QTcpServer>
 #include "libQJsonRPC/qjsonrpcservice.h"
+#include "libQJsonRPC/qjsonrpcabstractserver.h"
 #include "clsBaseConfigOverNet.h"
 #include "clsConfigManager_p.h"
 #include "intfConfigManagerOverNet.hpp"
@@ -51,6 +52,9 @@ public:
 public:
     clsConfigByJsonRPC(enuType _type,clsConfigManagerPrivate& _configManager);
     ~clsConfigByJsonRPC();
+    inline bool addService(QJsonRpcService *_service){
+        return dynamic_cast<QJsonRpcAbstractServer*>(this->Server.data())->addService(_service);
+    }
 };
 /*************************************************************************/
 
