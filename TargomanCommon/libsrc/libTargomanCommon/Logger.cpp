@@ -410,6 +410,8 @@ QString clsLogSettings::getPrettyModuleName(const QString &_callerFuncName)
     ModuleName = ModuleName.mid(0, ModuleName.lastIndexOf("::"));
     if(ModuleName.contains("cls"))
         ModuleName = ModuleName.mid(0, ModuleName.lastIndexOf("::"));
+    if(ModuleName.contains("intf"))
+        ModuleName = ModuleName.mid(0, ModuleName.lastIndexOf("::"));
     ModuleName.replace("::Private::", "::");
     ModuleName.replace(RxPrivate, "");
     return ModuleName;

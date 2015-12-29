@@ -66,7 +66,7 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
     SearchGraphBuilder::clsSearchGraph::init(_configSettings);
 
     TranslatorInitialized = true;
-    TargomanLogHappy(5, "Translator Initialize successfully");
+    TargomanLogHappy(5, "Translator Initialized successfully");
 }
 
 stuTranslationOutput Translator::translate(const QString &_inputStr,
@@ -87,11 +87,11 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
         Output.Translation = OutputComposer.translationString();
         int Elapsed = start.elapsed();
 #ifndef SMT
-        TargomanLogDebug(5, "Translation [" << Elapsed / 1000.0 << "s]"<<
+        TargomanLogInfo(7, "Translation [" << Elapsed / 1000.0 << "s]"<<
                          _inputStr << " => " << Output.Translation);
 #else
         QString InputWord = _inputStr;
-        TargomanLogDebug(5, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
+        TargomanLogInfo(7, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
                          InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
 #endif
         return Output;

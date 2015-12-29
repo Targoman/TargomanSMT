@@ -137,9 +137,15 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
         }
 
         foreach(const stuTranslationOutput::stuMetaInfo& MetaInfo, _intermediate.MetaInfo){
-            QString TargetPhrase = TranslationWords.at(MetaInfo.TargetWordsPos.start());
-            for(size_t i=MetaInfo.TargetWordsPos.start() + 1; i<MetaInfo.TargetWordsPos.end(); ++i){
-                TargetPhrase.append(" ").append(TranslationWords.at(i));
+
+            QString TargetPhrase;
+            if (TranslationWords.size() > MetaInfo.TargetWordsPos.start()){
+                TargetPhrase = TranslationWords.at(MetaInfo.TargetWordsPos.start());
+                for(size_t i=MetaInfo.TargetWordsPos.start() + 1;
+                    TranslationWords.size() > i && i<MetaInfo.TargetWordsPos.end();
+                    ++i){
+                    TargetPhrase.append(" ").append(TranslationWords.at(i));
+                }
             }
 
             PhraseIndexMap.insert(MetaInfo.TargetWordsPos.start(),
@@ -147,9 +153,11 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
 
             QString SourcePhrase;
             if((size_t)SourceWords.size() > MetaInfo.SourceWordsPos.start()){
-                SourceWords.at(MetaInfo.SourceWordsPos.start());
-                for(size_t i=MetaInfo.SourceWordsPos.start() + 1; i<MetaInfo.SourceWordsPos.end(); ++i){
-                        SourcePhrase.append(" ").append(SourceWords.at(i));
+                SourcePhrase = SourceWords.at(MetaInfo.SourceWordsPos.start());
+                for(size_t i=MetaInfo.SourceWordsPos.start() + 1;
+                    SourceWords.size() > i && i<MetaInfo.SourceWordsPos.end();
+                    ++i){
+                    SourcePhrase.append(" ").append(SourceWords.at(i));
                 }
             }
 
