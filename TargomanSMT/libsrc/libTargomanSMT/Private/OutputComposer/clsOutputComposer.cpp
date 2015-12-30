@@ -113,7 +113,10 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
                 return QString();
             if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::ShowSource), false) == true)
                 return Token.string();
-            return "<unk/>";
+            //TODO toglle comment after checking why unknown is generated while there are valid target rules
+            //Sample آقای فارسیجانی به آقای علی‌خانی گفت که آقای منصوری به شهر برازجان رفتند
+            //return "<unk/>";
+            return Token.string();
         }
     }
 
