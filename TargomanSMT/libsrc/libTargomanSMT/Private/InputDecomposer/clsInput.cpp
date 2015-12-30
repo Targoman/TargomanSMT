@@ -143,6 +143,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize)
         this->parseRichIXML(_inputIXML);
 }
 
+
 /**
  * @brief clsInput::parseRichIXML parses iXML input string and adds detected tokens and their additional informations to #Tokens list.
  * @param _inputIXML Input string.
@@ -344,7 +345,15 @@ void clsInput::makeSentence()
             WordIndexes = IXMLTagHandler::instance().getWordIndexOptions(
                         TokenInfo.TagStr, TokenInfo.Str, TokenInfo.Attrs
                         );
-        TargomanDebug(9,TokenInfo.Str<<TokenInfo.TagStr<<TokenInfo.Attrs);
+        auto qVariantMapToString = [] (const QVariantMap& _map) {
+                QStringList Result;
+                for(auto Iter = _map.begin(); Iter != _map.end(); ++Iter)
+                    Result.append( QString("[%1]=%2").arg(Iter.key()).arg(Iter.value().toString()) );
+                return "(" + Result.join(",") + ")";
+        };
+
+        TargomanLogDebug(9,TokenInfo.Str<<TokenInfo.TagStr<<qVariantMapToString(TokenInfo.Attrs));
+
         if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
             return; // User Or IXMLTagHandler says that I must ignore this word when decoding
 
