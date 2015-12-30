@@ -366,10 +366,10 @@ void clsInput::makeSentence()
                 WordIndexes.append(WordIndex);
         }
         this->Tokens.append(clsToken(TokenInfo, WordIndexes));
-        TargomanLogDebug(9,TokenInfo.Str<<
-                         TokenInfo.TagStr<<
-                         qVariantMapToString(TokenInfo.Attrs)<<
-                         WordIndexes<<
+        TargomanLogDebug(9,TokenInfo.Str<<","<<
+                         TokenInfo.TagStr<<","<<
+                         qVariantMapToString(TokenInfo.Attrs)<<","<<
+                         WordIndexes<<","<<
                          gConfigs.SourceVocab.value(TokenInfo.Str, Constants::SrcVocabUnkWordIndex));
 
     }

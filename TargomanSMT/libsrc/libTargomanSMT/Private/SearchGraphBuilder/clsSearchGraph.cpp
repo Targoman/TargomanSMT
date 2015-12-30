@@ -141,21 +141,30 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
 
     TargomanLogInfo(7, "Checking Source Vocab");
     try{
+        QList<QHash<QString, Common::WordIndex_t>::iterator> ItersToRemove;
         /// @note As a result of aligning some words to NULL by general word aligners, we need to take care of
         ///       tokens that have a word index but only contribute to multi-word phrases. These will cause
         ///       malfunction of OOV handler module as it will assume these words have translations by themselves
-        for(auto TokenIter = gConfigs.SourceVocab.begin(); TokenIter != gConfigs.SourceVocab.end(); ++TokenIter) {
+        for(auto TokenIter = gConfigs.SourceVocab.begin();
+            TokenIter != gConfigs.SourceVocab.end();
+            ++TokenIter) {
             clsRuleNode& SingleWordRuleNode =
                     clsSearchGraph::pRuleTable->prefixTree().getOrCreateNode(
                         QList<WordIndex_t>() << TokenIter.value()
                         )->getData();
-            if(SingleWordRuleNode.isInvalid())
+            if(SingleWordRuleNode.isInvalid() ||
+                    SingleWordRuleNode.targetRules().isEmpty())
+                ItersToRemove.append(TokenIter);
+            /*if(SingleWordRuleNode.isInvalid())
                 SingleWordRuleNode.detachInvalidData();
+
             if(SingleWordRuleNode.targetRules().isEmpty())
                 SingleWordRuleNode.targetRules().append(
                             OOVHandler::instance().generateTargetRules(TokenIter.key())
-                            );
+                            );*/
         }
+        foreach(auto TokenIter, ItersToRemove)
+            gConfigs.SourceVocab.erase(TokenIter);
 
     }catch(exTargomanNotImplemented &e){
         throw exTargomanNotImplemented(
