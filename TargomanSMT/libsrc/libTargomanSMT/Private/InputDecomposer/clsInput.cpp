@@ -344,7 +344,7 @@ void clsInput::makeSentence()
             WordIndexes = IXMLTagHandler::instance().getWordIndexOptions(
                         TokenInfo.TagStr, TokenInfo.Str, TokenInfo.Attrs
                         );
-
+        TargomanDebug(9,TokenInfo.Str<<TokenInfo.TagStr<<TokenInfo.Attrs);
         if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
             return; // User Or IXMLTagHandler says that I must ignore this word when decoding
 

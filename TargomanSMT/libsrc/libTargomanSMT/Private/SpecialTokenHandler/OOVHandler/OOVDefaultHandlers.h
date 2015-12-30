@@ -116,6 +116,7 @@ public:
      */
 
     RuleTable::clsTargetRule process(const QString &_token, QVariantMap& _attrs){
+        TargomanLogDebug(9,_token<<_attrs);
         QList<WordIndex_t> TargetPhrase;
         TargetPhrase.append(gConfigs.EmptyLMScorer->getWordIndex(_token));
         _attrs.insert(
