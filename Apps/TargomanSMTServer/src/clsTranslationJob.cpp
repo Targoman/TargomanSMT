@@ -202,8 +202,9 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
                         LastChar = qMax(Tagged2OrigianlCharMap.at(i).second, LastChar);
                     }
                 }
-                while (_intermediate.OriginalText.at(FirstChar) == ' ') ++FirstChar;
-                while (_intermediate.OriginalText.at(LastChar - 1) == ' ') --LastChar;
+                while (_intermediate.OriginalText.size() > FirstChar &&
+                       _intermediate.OriginalText.at(FirstChar) == ' ') ++FirstChar;
+                while (LastChar > 0 && _intermediate.OriginalText.at(LastChar - 1) == ' ') --LastChar;
                 CharAlignInfo.insert(CharAlignInfo.size(), QVariantList()<<FirstChar<<LastChar);
             }else{
                 TargomanDebug(5,"TaggedSourceCharRange Failed"<<
