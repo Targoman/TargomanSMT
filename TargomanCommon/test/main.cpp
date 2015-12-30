@@ -165,12 +165,10 @@ static Targoman::Common::Configuration::tmplConfigurableArray<stuServers> Server
 
 
 
-
-
-
 int main(int argc, char *argv[])
 {
     try{
+
     Targoman::Common::printLoadedLibs();
 
 /*    tmplExpirableCache<QMap,  QString, int> FF;
@@ -213,9 +211,6 @@ int main(int argc, char *argv[])
     std::cout<<AAA.CrossValidator(-5)<<std::endl;
 
 
-        QString ActorUUID;
-
-        TARGOMAN_REGISTER_ACTOR("testLibCommon");
         TARGOMAN_IO_SETTINGS.setFull();
         Targoman::Common::Logger::instance().init("log.log");
         Configuration::ConfigManager::instance().init("Testlicense", App.arguments().mid(1));

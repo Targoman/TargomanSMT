@@ -40,7 +40,7 @@ namespace Targoman {
 namespace SMT {
 namespace Private {
 namespace RuleTable {
-Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule);
+    Cost_t getPrematureargetRuleCost(const clsTargetRule& _targetRule);
 }
 }
 }
@@ -139,6 +139,7 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
 
     clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData(), true);
 
+    TargomanLogInfo(7, "Checking Source Vocab");
     try{
         /// @note As a result of aligning some words to NULL by general word aligners, we need to take care of
         ///       tokens that have a word index but only contribute to multi-word phrases. These will cause
@@ -155,12 +156,13 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
                             OOVHandler::instance().generateTargetRules(TokenIter.key())
                             );
         }
+
     }catch(exTargomanNotImplemented &e){
         throw exTargomanNotImplemented(
                     e.what() +
                     ". Maybe you are using an incompatible BinaryRuleTable.");
     }
-
+    TargomanLogInfo(7, "Search Graph Initialized successfully");
 }
 
 void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,

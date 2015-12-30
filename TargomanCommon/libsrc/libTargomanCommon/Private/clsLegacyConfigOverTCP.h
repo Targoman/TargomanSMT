@@ -64,7 +64,6 @@ private slots:
 
 private:
     clsConfigManagerPrivate&          ConfigManagerPrivate;
-    QString&                          ActorUUID;
     quint16                           ConnectedClients;
 };
 

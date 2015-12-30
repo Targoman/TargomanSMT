@@ -38,31 +38,28 @@ namespace Common {
 TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
 
 
-/** @brief below macro must be used to generate new UUID and register actor */
-#define TARGOMAN_REGISTER_ACTOR(_actorName) \
-    Targoman::Common::Logger::instance().registerActor(ActorUUID, _actorName);
-
-#define TARGOMAN_UNREGISTER_ACTOR \
-    Targoman::Common::Logger::instance().unregisterActor(ActorUUID);
 
 /** @brief These are helper macros to ease usage of Logger */
 #define TargomanLogWarn(_level, _message) {\
     QString Buffer; \
-    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Warning, \
+    Targoman::Common::Logger::instance().write(Q_FUNC_INFO, \
+                                               Targoman::Common::enuLogType::Warning, \
                                                _level,\
                                                *(QTextStream(&Buffer)<<_message).string());\
 }
 
 #define TargomanLogInfo( _level, _message) {\
     QString Buffer; \
-    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Info, \
+    Targoman::Common::Logger::instance().write(Q_FUNC_INFO, \
+                                               Targoman::Common::enuLogType::Info, \
                                                _level,\
                                                *(QTextStream(&Buffer)<<_message).string());\
 }
 
 #define TargomanLogError( _message) {\
     QString Buffer; \
-    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Error, \
+    Targoman::Common::Logger::instance().write(Q_FUNC_INFO, \
+                                               Targoman::Common::enuLogType::Error, \
                                                1,\
                                                *(QTextStream(&Buffer)<<_message).string());\
 }
@@ -70,7 +67,8 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
 #if TARGOMAN_SHOW_DEBUG
     #define TargomanLogDebug(_level, _message) {\
         QString Buffer; \
-        Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Debug, \
+        Targoman::Common::Logger::instance().write(Q_FUNC_INFO, \
+                                                   Targoman::Common::enuLogType::Debug, \
                                                    _level,\
                                                    *(QTextStream(&Buffer)<<_message).string());\
     }
@@ -80,7 +78,8 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exLogger, Targoman::Common::exTargomanBase);
 
 #define TargomanLogHappy(_level, _message) {\
     QString Buffer; \
-    Targoman::Common::Logger::instance().write(ActorUUID, Targoman::Common::enuLogType::Happy, \
+    Targoman::Common::Logger::instance().write(Q_FUNC_INFO, \
+                                               Targoman::Common::enuLogType::Happy, \
                                                _level,\
                                                *(QTextStream(&Buffer)<<_message).string());\
 }
@@ -145,16 +144,23 @@ class clsLogSettings
             this->Details |= 0x40;
     }
 
-    inline QString details(const QString& _actor){
+    inline QString details(const QString& _callerFuncName){
         QString OutStr;
         OutStr +=  (this->Details & 0x10 ?
                     QString("[" + QDateTime().currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]") :
                     QString(""));
         if (this->Details & 0x40)
-                OutStr +=   QString("[%1]").arg(_actor.isEmpty() ? "UNREG" : _actor);
+                OutStr +=   "[" + this->getPrettyModuleName(_callerFuncName) + "]";
 
         return OutStr;
     }
+
+    /**
+     * @brief getPrettyModuleName
+     * @param _callerFuncName
+     * @return
+     */
+    QString getPrettyModuleName(const QString& _callerFuncName);
 
     /**
      * @brief sets level of details.
@@ -174,27 +180,27 @@ class clsLogSettings
 struct stuLogMessage
 {
     QDateTime DateTime;
-    QString   ActorID;
+    QString   PrettyModuleName;
     enuLogType::Type Type;
     quint8 Level;
     QString Message;
 
     /**
    * @brief stuLogMessage Helper method/constructor of stuLogMessage to be used to create new Log Struct
-   * @param _actorID ID of the actor who has generated the log. This will be mapped to his name by different modules
+   * @param _callerFuncName function who has called logger
    * @param _type Type of the Log baesed on \a enuLogType enumeration
    * @param _level Level of the log. used to ignore or filter some log levels
    * @param _message Message of the log
    * @param _dateTime Date and time of the generated Log. This will be stored to File/DB instead of the write time
    */
-    stuLogMessage(QString   _actorID,
+    stuLogMessage(QString   _callerFuncName,
                   enuLogType::Type _type,
                   quint8 _level,
                   QString _message,
                   QDateTime _dateTime = QDateTime::currentDateTime())
     {
         this->DateTime = _dateTime;
-        this->ActorID = _actorID;
+        this->PrettyModuleName = _callerFuncName;
         this->Type = _type;
         this->Level = _level;
         this->Message = _message;
@@ -240,35 +246,12 @@ public:
      * @param _newLine if this is true, newline character will be added after printing message in log file.
      * @exception throws exception if _actorID and value of _actorID in LoggerPrivate#Actor is empty.
      */
-    void   write(const QString&     _actorUUID,
+    void   write(const QString&     _callerFuncName,
                  enuLogType::Type   _type,
                  quint8             _level,
                  const QString&     _message,
                  bool _newLine = true);
-    /**
-     * @brief A metho to register actors. this methos will create new UUID if actor has not been registered before
-     *
-     * @param _actorID UUID for registering actor. If it passes empty a new UUID will be generated
-     * @param _actorName Name for the registering Actor
-     * @return void in case of any error it will rais an exception
-     * @exception throws exception if _actorName or _actorUUID is empty
-     * @exception throws exception if _actorName is already exists in our Map, but _actorUUID is different
-     **/
-    void   registerActor(QString &_actorUUID, const QString& _actorName);
 
-    /**
-     * @brief unregisterActor
-     * @param _actorID
-     * @param _actorName
-     */
-    void   unregisterActor(const QString &_actorUUID);
-
-    /**
-     * @brief List of all registered actors
-     *
-     * @return const QMap< QString, QString >&
-     **/
-    const  QHash<QString, QString>& actors();
 
     /**
      * @brief setActive Activates and deactivates logging
@@ -293,7 +276,7 @@ private:
 
 signals:
     void sigLogAdded(const QDateTime& _time,
-                     QString          _actorID,
+                     QString          _callerFuncName,
                      enuLogType::Type _type,
                      quint8           _level,
                      const QString& _message);

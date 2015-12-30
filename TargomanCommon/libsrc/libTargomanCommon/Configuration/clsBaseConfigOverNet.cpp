@@ -31,8 +31,7 @@ namespace Configuration {
 namespace Private {
 
 clsBaseConfigOverNet::clsBaseConfigOverNet(clsConfigManagerPrivate &_configManager) :
-    ConfigManagerPrivate(_configManager),
-    ActorUUID(_configManager.ActorUUID)
+    ConfigManagerPrivate(_configManager)
 {
 }
 

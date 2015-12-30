@@ -92,7 +92,7 @@ public:
         return this->Items.contains(_key);
     }
 
-    tmplConfigurableArray<itmplType_t> values(const QString& _key){
+    tmplConfigurableArray<itmplType_t> values(const QString& _key) const{
         if (this->Items.contains(_key) == false)
             throw exConfiguration("Invalid lookup to non existent item key: " + _key);
         return this->Items.value(_key,tmplConfigurableMultiMap::invalidArray());

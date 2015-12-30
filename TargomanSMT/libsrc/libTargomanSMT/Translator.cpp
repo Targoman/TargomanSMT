@@ -61,22 +61,12 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
     gConfigs.EmptyLMScorer.reset(gConfigs.LM.getInstance<Proxies::LanguageModel::intfLMSentenceScorer>());
     gConfigs.EmptyLMScorer->init(false);
 
-    // Transliteration exists just for Statistical Machine Translation
-#ifndef SMT
-    Proxies::Transliteration::intfTransliterator* Transliterator = 
-        gConfigs.Transliterator.getInstance<Proxies::Transliteration::intfTransliterator>();
-    Transliterator->init(_configSettings);
-
-    Proxies::NamedEntityRecognition::intfNamedEntityRecognizer* NER =
-            gConfigs.NER.getInstance<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer>();
-    NER->init(_configSettings);
-#endif
-
     OOVHandler::instance().initialize();
     IXMLTagHandler::instance().initialize();
     SearchGraphBuilder::clsSearchGraph::init(_configSettings);
 
     TranslatorInitialized = true;
+    TargomanLogHappy(5, "Translator Initialized successfully");
 }
 
 stuTranslationOutput Translator::translate(const QString &_inputStr,
@@ -92,21 +82,22 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     SearchGraphBuilder::clsSearchGraph  SearchGraph(Input.tokens());
     OutputComposer::clsOutputComposer   OutputComposer(Input, SearchGraph);
 
+    stuTranslationOutput Output;
     if (_justTranslationString){
-        stuTranslationOutput Output;
         Output.Translation = OutputComposer.translationString();
-        int Elapsed = start.elapsed();
+    }else{
+        Output = OutputComposer.translationOutput();
+    }
+    int Elapsed = start.elapsed();
 #ifndef SMT
-        TargomanLogDebug(5, "Translation [" << Elapsed / 1000.0 << "s]"<<
-                         _inputStr << " => " << Output.Translation);
+    TargomanLogInfo(7, "Translation [" << Elapsed / 1000.0 << "s]"<<
+                     _inputStr << " => " << Output.Translation);
 #else
-        QString InputWord = _inputStr;
-        TargomanLogDebug(5, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
-                         InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
+    QString InputWord = _inputStr;
+    TargomanLogInfo(7, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
+                     InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
 #endif
-        return Output;
-    }else
-        return OutputComposer.translationOutput();
+    return Output;
 }
 
 void Translator::saveBinaryRuleTable(const QString &_filePath)

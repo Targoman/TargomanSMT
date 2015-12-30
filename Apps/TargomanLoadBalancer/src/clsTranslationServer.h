@@ -53,10 +53,14 @@ public:
     inline quint32 configIndex(){return this->ConfigIndex;}
     inline const QString& dir(){return this->Dir;}
     inline bool isLoggedIn() {return this->LoggedIn;}
-    inline bool isResponseReady() {return this->RWLock.tryLockForRead();}
-    inline quint16 totalScore() const {return TotalScore;}
+    bool getSafeResponse(Common::JSONConversationProtocol::stuResponse& _response);
+
+    inline quint16 totalScore() {
+        return this->TotalScore;
+    }
     void resetScore();
     void reset();
+    void updateStatistics(quint32 _load1min, quint32 _load15min, quint32 _freeMem, quint32 _translationQueue, quint16 _score);
 
     qint64 sendRequest(const QString &_rpc, const QVariantMap &_args = QVariantMap());
 signals:
@@ -70,15 +74,17 @@ public slots:
 private slots:
     void slotConnected();
     void slotReadyRead();
+    void slotDisconnected();
 
 public:
     quint16            TotalScore;
     QTime              LastRequestTime;
-    QReadWriteLock     RWLock;
     Common::JSONConversationProtocol::stuResponse         Response;
 
 private:
-    const gConfigs::stuServer& Configs;
+    QMutex     ResponseLock;
+    bool               IsResponseReady;
+    gConfigs::stuServer& Configs;
     QString    LastRequestUUID;
     QScopedPointer<QTcpSocket> Socket;
     quint32    ConfigIndex;
