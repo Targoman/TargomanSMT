@@ -90,18 +90,15 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
 {
     if (_sourcePhrasePos.hasSingleItem() && _target.size() == 1) {
         clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePhrasePos.start());
-        if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
-            return QString();
-        if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::ShowSource), false) == true)
-            return Token.string();
-        if(Token.tagStr().size())
-        {
+        if(Token.tagStr().size()) {
             if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)))
                 return Token.attrs().value(
                             enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)).toString();
             if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)))
                 return Token.attrs().value(
                             enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
+            if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
+                return QString();
         }
         // Absolutely just a fall-back for when the translation can not be shown using
         // a target language word
@@ -112,7 +109,11 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
             if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)))
                 return Token.attrs().value(
                             enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
-            return Token.string();
+            if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
+                return QString();
+            if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::ShowSource), false) == true)
+                return Token.string();
+            return "<unk/>";
         }
     }
 
