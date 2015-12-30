@@ -163,6 +163,10 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
                             OOVHandler::instance().generateTargetRules(TokenIter.key())
                             );*/
         }
+        TargomanLogWarn(8, ItersToRemove.size()<<
+                        " Tokens removed from Source vocab which had: "<<
+                        gConfigs.SourceVocab.size()<<" Items");
+
         foreach(auto TokenIter, ItersToRemove)
             gConfigs.SourceVocab.erase(TokenIter);
 
@@ -171,7 +175,7 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
                     e.what() +
                     ". Maybe you are using an incompatible BinaryRuleTable.");
     }
-    TargomanLogInfo(7, "Search Graph Initialized successfully");
+    TargomanLogInfo(7, "Search Graph Initialized successfully.");
 }
 
 void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,
