@@ -18,6 +18,9 @@ class QJsonRpcHttpServerMultiThreaded: public QTcpServer, public QJsonRpcAbstrac
 {
     Q_OBJECT
 public:
+    /*virtual bool addService(QJsonRpcService *service){
+        return QJsonRpcAbstractServer::addService(service);
+    }*/
     QJsonRpcHttpServerMultiThreaded(quint16 _maxConcurrentClients, QObject *parent = 0);
     ~QJsonRpcHttpServerMultiThreaded();
 

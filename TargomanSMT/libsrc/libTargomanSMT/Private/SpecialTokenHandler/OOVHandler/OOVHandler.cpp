@@ -69,8 +69,6 @@ tmplConfigurable<bool> OOVHandler::CheckDifferentLetterCases(
         "Check upper, lower and Pascal forms of unknown words",
         false);
 
-//QMap<QString, intfOOVHandlerModule*>                       OOVHandler::AvailableOOVHandlers;
-
 TARGOMAN_REGISTER_SINGLETON_MODULE(OOVHandler);
 
 // TODO: Update following comments
@@ -81,16 +79,6 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(OOVHandler);
 
 void OOVHandler::initialize()
 {
-    // TODO: Remove following comments if we are sure
-    /*
-    QStringList OOVHandlers = OOVHandler::OOVHandlerModules.value().split(",", QString::SkipEmptyParts);
-    foreach(const QString& OOVHandlerName, OOVHandlers){
-        intfOOVHandlerModule* pOOVHandler = this->AvailableOOVHandlers.value(OOVHandlerName);
-        if (pOOVHandler == NULL)
-            throw exOOVHandler("Invalid OOVHandler name: "+ OOVHandlerName );
-        this->ActiveOOVHandlers.append(pOOVHandler);
-    }
-    */
 }
 
 TargetRulesContainer_t OOVHandler::gatherTargetRules(const QString &_token, QVariantMap &_attrs)

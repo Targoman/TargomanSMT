@@ -356,6 +356,11 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     return OutputPhrase;
 }
 
+QString IXMLWriter::supportedSuffixes() const
+{
+    return TGMN_SUFFIXES;
+}
+
 /**
  * @brief Finds a RegExp in input _phrase and if found, replaces that with a _mark and adds that to _listOfMaches.
  * @param _phrase input phrase.

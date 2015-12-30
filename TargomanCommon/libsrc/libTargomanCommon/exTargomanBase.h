@@ -20,10 +20,11 @@
  ******************************************************************************/
 /**
  * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
+ * @author Behrooz Vedadian <vedadian@targoman.com>
  */
 
-#ifndef TARGOMAN_COMMON_exTargomanBASE_HPP_
-#define TARGOMAN_COMMON_exTargomanBASE_HPP_
+#ifndef TARGOMAN_COMMON_EXTARGOMANBASE_HPP
+#define TARGOMAN_COMMON_EXTARGOMANBASE_HPP
 
 #include <QException>
 #include <QString>
@@ -43,11 +44,21 @@ namespace Common {
     this->Message.append(" >;" TARGOMAN_M2STR(_name));\
     }}
 
+class exTargomanStdOverrider : public QException {
+public:
+    const char* what() const _GLIBCXX_USE_NOEXCEPT {
+        return this->Message.constData();
+    }
+
+protected:
+  QByteArray Message;
+};
+
 /**
  * @exception exTargomanBase
  * @brief Base Exception Class. All the classes will raise an exception inherited from this
  */
-class exTargomanBase: public QException
+class exTargomanBase: public exTargomanStdOverrider
 {
   public:
     /**
@@ -60,16 +71,13 @@ class exTargomanBase: public QException
     ~exTargomanBase() throw ();
 
     void raise() const;
-    QException* clone();
+    QException* clone() const;
     /**
      * @brief A method to show Exception message
-     *
+     * @note this method must be defined as const but it will collide with std::exception
      * @return QString Exception message
      **/
     QString what();
-
-  protected:
-    QString Message;
 };
 
 /**
@@ -125,4 +133,4 @@ class exTargomanInitialization: public exTargomanBase
 }
 }
 
-#endif /* TARGOMAN_COMMON_EXTARGOMANBASE_HPP_ */
+#endif /* TARGOMAN_COMMON_EXTARGOMANBASE_HPP */

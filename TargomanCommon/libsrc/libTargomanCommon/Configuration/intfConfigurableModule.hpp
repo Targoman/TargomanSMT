@@ -51,9 +51,6 @@ protected:
     virtual QString moduleFullName() {
         throw exTargomanMustBeImplemented("Seems that you forgot to use TARGOMAN_DEFINE_MODULE_SCOPE macro");
     }
-
-protected:
-    QString ActorUUID;
 };
 
 //Following macro must be used in all interfaces derved from intfModule
@@ -79,19 +76,11 @@ typedef intfModule* (*fpModuleInstantiator_t)();
 struct stuInstantiator{
     fpModuleInstantiator_t fpMethod;
     bool                 IsSingleton;
-    QString*             ActorUUID;
-    stuInstantiator(QString& _actorUUID = stuInstantiator::InvalidActorUUID,
-                    fpModuleInstantiator_t _method = NULL,
-                    bool _isSingleton = false ) :
-        ActorUUID(&_actorUUID) {
+    stuInstantiator(fpModuleInstantiator_t _method = NULL,
+                    bool _isSingleton = false ){
         this->fpMethod = _method;
         this->IsSingleton = _isSingleton;
     }
-    bool isInvalidActorUUID() const {
-        return this->ActorUUID == &stuInstantiator::InvalidActorUUID;
-    }
-
-    static QString InvalidActorUUID;
 };
 /**
  * @brief This class is defined to make a static member of it in module class because we wanted its constructor to be called before main function.
@@ -131,7 +120,6 @@ public: \
     static _name& instance() {return *((_name*)_name::moduleInstance());} \
     static Targoman::Common::Configuration::intfModule* moduleInstance(){static _name* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _name);} \
     static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(_name));}  \
-    static QString dummyActorUUID; \
 private: \
     Q_DISABLE_COPY(_name) \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
@@ -143,7 +131,6 @@ public: \
     static _name& instance() {return *((_name*)_name::moduleInstance());} \
     static Targoman::Common::Configuration::intfModule* moduleInstance(){static _name* Instance = NULL; return Q_LIKELY(Instance) ? Instance : (Instance = new _name);} \
     static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(TARGOMAN_CAT_BY_SLASH(_module,_name)));}  \
-    static QString dummyActorUUID; \
 private: \
     Q_DISABLE_COPY(_name) \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
@@ -155,20 +142,17 @@ private: \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar( \
          _class::moduleFullNameStatic(), \
          MAKE_ABSOLUTE_MODULE_NAME, \
-         Targoman::Common::Configuration::stuInstantiator(\
-            Targoman::Common::Configuration::stuInstantiator::InvalidActorUUID, _class::instantiator,false)); \
+         Targoman::Common::Configuration::stuInstantiator(_class::instantiator,false)); \
     QAtomicInt _class::Instances;
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for singleton classes. Also makes a null instance of class.
  */
 #define TARGOMAN_REGISTER_SINGLETON_MODULE(_class) \
-    QString _class::dummyActorUUID = ""; \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(\
         _class::moduleFullNameStatic(), \
         MAKE_ABSOLUTE_MODULE_NAME, \
-        Targoman::Common::Configuration::stuInstantiator(\
-            _class::dummyActorUUID, _class::moduleInstance,true));
+        Targoman::Common::Configuration::stuInstantiator(_class::moduleInstance,true));
 }
 }
 }

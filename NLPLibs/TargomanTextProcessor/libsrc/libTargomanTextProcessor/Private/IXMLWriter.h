@@ -71,6 +71,7 @@ public:
                          quint32 _lineNo = 0,
                          bool _interactive = false,
                          bool _useSpellCorrector = true);
+    QString supportedSuffixes() const;
 
 private:
 
