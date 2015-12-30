@@ -127,7 +127,7 @@ stuRPCOutput appTargomanSMTServer::rpcTranslate(const QVariantMap &_args)
 
     QString UUID=QUuid::createUuid().toString();
     TargomanLogInfo(6,QString("rpcTranslate::start(UUID=%1,brief=%2,keep=%3,txt=%4)").arg(
-                         UUID,
+                         UUID).arg(
                          _args.value("brief",false).toBool()).arg(
                          _args.value("keep",false).toBool()).arg(
                          _args.value("txt").toString().replace("\n","\\n")));
