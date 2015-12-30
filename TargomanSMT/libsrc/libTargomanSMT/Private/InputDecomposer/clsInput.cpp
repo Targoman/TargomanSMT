@@ -352,8 +352,6 @@ void clsInput::makeSentence()
                 return "(" + Result.join(",") + ")";
         };
 
-        TargomanLogDebug(9,TokenInfo.Str<<TokenInfo.TagStr<<qVariantMapToString(TokenInfo.Attrs));
-
         if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
             return; // User Or IXMLTagHandler says that I must ignore this word when decoding
 
@@ -368,6 +366,8 @@ void clsInput::makeSentence()
                 WordIndexes.append(WordIndex);
         }
         this->Tokens.append(clsToken(TokenInfo, WordIndexes));
+        TargomanLogDebug(9,TokenInfo.Str<<TokenInfo.TagStr<<qVariantMapToString(TokenInfo.Attrs)<<WordIndexes);
+
     }
 }
 
