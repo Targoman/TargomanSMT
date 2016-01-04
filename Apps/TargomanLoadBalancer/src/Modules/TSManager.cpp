@@ -80,6 +80,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
                         PreferedServerInex,
                         "rpcTranslate",
                         _args);
+            TargomanLogInfo(4,"Trying to translate using Server: "<<Dir<<BestServer->configIndex());
             connect(BestServer, &clsTranslationServer::sigReadyForFirstRequest,
                     BestServer, &clsTranslationServer::slotSendPredefinedRequest,
                     Qt::DirectConnection);
@@ -109,6 +110,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
             BestServer->deleteLater();
 
             Response.Args.insert("Server",BestServer->configIndex());
+            TargomanLogInfo(4,"Returning response from: "<<Dir<<BestServer->configIndex());
             return Response;
         }catch(exTSMonitor &e){
             throw exTSManager("No resources available");
