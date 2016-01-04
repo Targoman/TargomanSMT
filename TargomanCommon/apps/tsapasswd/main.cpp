@@ -33,7 +33,7 @@
 const char* LicenseStr =
         "Targoman Simple Authentication Manager Ver: %2 Build %3\n"
         "Published under the terms of GNU Lesser General Public License version 3\n\n"
-        "%1 [File] [Action] [Arguments]\n"
+        "%1 [-f File] [-a|-g|-r] [Arguments]\n"
         "Arguments: \n";
 
 using namespace Targoman;

@@ -46,8 +46,7 @@ public:
     }
 
 public slots:
-    QVariantList translate(
-            quint32 _preferedServer,
+    QVariantList translate(qint32 _preferedServer,
             QString _dir,
             QString _text,
             bool _brief,

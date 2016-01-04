@@ -108,6 +108,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
             BestServer->blockSignals(true);
             BestServer->deleteLater();
 
+            Response.Args.insert("Server",BestServer->configIndex());
             return Response;
         }catch(exTSMonitor &e){
             throw exTSManager("No resources available");
@@ -130,7 +131,7 @@ TSManagerJsonRPCService::TSManagerJsonRPCService()
 {}
 
 QVariantList TSManagerJsonRPCService::translate(
-        quint32 _preferedServer,
+        qint32 _preferedServer,
         QString _dir,
         QString _text,
         bool _brief,
