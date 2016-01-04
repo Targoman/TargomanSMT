@@ -89,6 +89,7 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
     qint16 BestServerIndex = 0;
     qint16 NextBestServerIndex = -1;
     static QMap<QString, qint16> LastUsedServer;
+    static QMutex LastUsedServerLock;
 
     foreach (clsTranslationServer* Server, this->pPrivate->Servers.values(_dir)){
         if (Server->totalScore() > BestServerScore){
@@ -101,8 +102,10 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
     if (BestServerScore == 0)
         throw exTSMonitor("No server available.");
 
-    return LastUsedServer.value(_dir,-1) == BestServerIndex ?
-                (NextBestServerIndex < 0 ? BestServerIndex : NextBestServerIndex) : BestServerIndex;
+    QMutexLocker Locker(&LastUsedServerLock);
+    LastUsedServer.insert(_dir, LastUsedServer.value(_dir,-1) == BestServerIndex ?
+                (NextBestServerIndex < 0 ? BestServerIndex : NextBestServerIndex) : BestServerIndex);
+    return LastUsedServer.value(_dir);
 }
 
 void TSMonitor::wait4AtLeastOneServerAvailable()
