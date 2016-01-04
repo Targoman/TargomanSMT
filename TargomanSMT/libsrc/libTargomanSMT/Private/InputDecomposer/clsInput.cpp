@@ -104,6 +104,15 @@ void clsInput::init(QSharedPointer<QSettings> _configSettings)
             clsInput::SpecialTags.insert(Tag);
     for (int i=0; i<Targoman::NLPLibs::enuTextTags::getCount(); i++)
         clsInput::SpecialTags.insert(Targoman::NLPLibs::enuTextTags::toStr((Targoman::NLPLibs::enuTextTags::Type)i));
+
+#ifndef SMT
+    if (clsInput::TagNamedEntities.value() == true){
+        Proxies::NamedEntityRecognition::intfNamedEntityRecognizer* NER =
+                gConfigs.NER.getInstance<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer>();
+        NER->init(_configSettings);
+    }
+#endif
+
 }
 
 /**
@@ -133,6 +142,7 @@ void clsInput::parseRichIXML(const QString &_inputIXML, bool _normalize)
     }else
         this->parseRichIXML(_inputIXML);
 }
+
 
 /**
  * @brief clsInput::parseRichIXML parses iXML input string and adds detected tokens and their additional informations to #Tokens list.
@@ -335,6 +345,12 @@ void clsInput::makeSentence()
             WordIndexes = IXMLTagHandler::instance().getWordIndexOptions(
                         TokenInfo.TagStr, TokenInfo.Str, TokenInfo.Attrs
                         );
+        auto qVariantMapToString = [] (const QVariantMap& _map) {
+                QStringList Result;
+                for(auto Iter = _map.begin(); Iter != _map.end(); ++Iter)
+                    Result.append( QString("[%1]=%2").arg(Iter.key()).arg(Iter.value().toString()) );
+                return "(" + Result.join(",") + ")";
+        };
 
         if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
             return; // User Or IXMLTagHandler says that I must ignore this word when decoding
@@ -350,6 +366,12 @@ void clsInput::makeSentence()
                 WordIndexes.append(WordIndex);
         }
         this->Tokens.append(clsToken(TokenInfo, WordIndexes));
+        TargomanLogDebug(9,TokenInfo.Str<<","<<
+                         TokenInfo.TagStr<<","<<
+                         qVariantMapToString(TokenInfo.Attrs)<<","<<
+                         WordIndexes<<","<<
+                         gConfigs.SourceVocab.value(TokenInfo.Str, Constants::SrcVocabUnkWordIndex));
+
     }
 }
 

@@ -37,14 +37,23 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exTSManager, exTargomanLoadBalancer);
 #ifdef WITH_QJsonRPC
 class TSManagerJsonRPCService : public QJsonRpcService
 {
+    Q_OBJECT
+    Q_CLASSINFO("serviceName", "TSManager")
 public:
-    TSManagerJsonRPCService();
-    QVariantList translate(
-            quint32 _preferedServer,
+    static TSManagerJsonRPCService& instance(){
+        static TSManagerJsonRPCService* Instance = NULL;
+        return *(Q_LIKELY(Instance) ? Instance : (Instance = new TSManagerJsonRPCService));
+    }
+
+public slots:
+    QVariantList translate(qint32 _preferedServer,
             QString _dir,
             QString _text,
             bool _brief,
             bool _keep);
+private:
+    TSManagerJsonRPCService();
+    Q_DISABLE_COPY(TSManagerJsonRPCService)
 };
 #endif
 
@@ -55,9 +64,6 @@ class TSManager :
     Q_OBJECT
 public:
     Common::JSONConversationProtocol::stuResponse baseTranslation(const QVariantMap &_args);
-
-public slots:
-    void slotServerDisconnected();
 
 public slots:
     Common::Configuration::stuRPCOutput rpcTranslate(const QVariantMap& _args);

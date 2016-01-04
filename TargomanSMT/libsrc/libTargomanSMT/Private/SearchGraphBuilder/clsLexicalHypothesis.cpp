@@ -120,13 +120,13 @@ const clsSearchGraphNode &clsLexicalHypothesisContainer::FindNode(const char *_t
     static clsSearchGraphNode InvalidSearchGraphNode;
     return InvalidSearchGraphNode;
 }
+#endif
 
 QString clsLexicalHypothesisContainer::moduleName()
 {
     return clsSearchGraph::moduleName();
 }
 
-#endif
 
 }
 }

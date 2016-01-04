@@ -60,7 +60,6 @@ protected:
     QString                    ActorName;
     bool                       AllowedToChange;
     bool                       AllowedToView;
-    QString&                   ActorUUID;
 };
 
 }

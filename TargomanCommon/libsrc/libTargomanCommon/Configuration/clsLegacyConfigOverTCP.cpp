@@ -46,7 +46,6 @@ clsLegacyConfigOverTCP::~clsLegacyConfigOverTCP()
 
 clsLegacyConfigOverTCPServer::clsLegacyConfigOverTCPServer(clsConfigManagerPrivate &_configManager) :
     ConfigManagerPrivate(_configManager),
-    ActorUUID(_configManager.ActorUUID),
     ConnectedClients(0)
 {}
 

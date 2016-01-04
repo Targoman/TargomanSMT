@@ -35,14 +35,18 @@ clsTranslationServer::clsTranslationServer(const QString &_dir,
                                            const QString &_requestRPC,
                                            const QVariantMap &_requestArgs):
     TotalScore(0),
-    Configs(gConfigs::TranslationServers.values(_dir).at(_configIndex).constData()),
+    IsResponseReady(false),
+    Configs(gConfigs::TranslationServers[_dir][_configIndex].data()),
     Socket(new QTcpSocket),
     ConfigIndex(_configIndex),
     Dir(_dir),
     LoggedIn(false),
     RequestRPC(_requestRPC),
     RequestArgs(_requestArgs)
-{}
+{
+    int a=2;
+    a++;
+}
 
 void clsTranslationServer::connect()
 {
@@ -56,12 +60,26 @@ void clsTranslationServer::connect()
                      this, &clsTranslationServer::slotReadyRead, Qt::DirectConnection);
     QObject::connect(this->Socket.data(),&QTcpSocket::disconnected,
                      this, &clsTranslationServer::sigDisconnected, Qt::DirectConnection);
-    this->RWLock.lockForWrite();
+    QMutexLocker Locker(&this->ResponseLock);
+    this->IsResponseReady = false;
 }
 
 bool clsTranslationServer::isConnected()
 {
     return this->Socket->isValid() && this->Socket->state() == QTcpSocket::ConnectedState;
+}
+
+bool clsTranslationServer::getSafeResponse(JSONConversationProtocol::stuResponse &_response)
+{
+    if (this->ResponseLock.tryLock() == false)
+        return false;
+    if (this->IsResponseReady)
+        _response = this->Response;
+
+    bool ReturnVal = this->IsResponseReady;
+
+    this->ResponseLock.unlock();
+    return ReturnVal;
 }
 
 qint64 clsTranslationServer::sendRequest(const QString& _rpc, const QVariantMap& _args){
@@ -87,6 +105,20 @@ void clsTranslationServer::reset(){
     this->Socket.reset(new QTcpSocket);
     this->LoggedIn = false;
     this->resetScore();
+}
+
+void clsTranslationServer::updateStatistics(
+        quint32 _load1min,
+        quint32 _load15min,
+        quint32 _freeMem,
+        quint32 _translationQueue,
+        quint16 _score)
+{
+    this->Configs.Statistics.Load1MinPercent.setFromVariant(_load1min);
+    this->Configs.Statistics.Load15MinPercent.setFromVariant(_load15min);
+    this->Configs.Statistics.FreeMemoryPercent.setFromVariant(_freeMem);
+    this->Configs.Statistics.TranslationQueuePercent.setFromVariant(_translationQueue);
+    this->TotalScore = _score;
 }
 
 void clsTranslationServer::slotConnected()
@@ -121,13 +153,24 @@ void clsTranslationServer::slotReadyRead()
     }else if (Response.CallUID != this->LastRequestUUID){
         TargomanWarn(3, "Ignoring response with old UUID: "+ Response.CallUID);
     }else if (this->LoggedIn){
+        QMutexLocker Locker(&this->ResponseLock);
+        this->IsResponseReady = true;
         this->Response = Response;
-        this->RWLock.unlock();
         emit sigResponse(this->Response);
     }else if (Response.Result.toUInt() >= 1){
         this->LoggedIn = true;
         emit sigReadyForFirstRequest();
     }
+}
+
+void clsTranslationServer::slotDisconnected()
+{
+    QMutexLocker Locker(&this->ResponseLock);
+    this->IsResponseReady = true;
+    this->Response = JSONConversationProtocol::stuResponse(
+                JSONConversationProtocol::stuResponse::Pong,
+                SERVER_DISCONNECTED);
+    emit this->sigDisconnected();
 }
 
 }
