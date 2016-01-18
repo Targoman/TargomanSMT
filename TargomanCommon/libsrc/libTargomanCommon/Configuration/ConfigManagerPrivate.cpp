@@ -41,23 +41,18 @@ namespace Common {
 namespace Configuration {
 namespace Private {
 
-tmplConfigurable<int> intfConfigManagerOverNet::ListenPort(
+tmplRangedConfigurable<unsigned> intfConfigManagerOverNet::Port(
         ConfigManager::moduleName() + "/Admin/Port",
-        "Initializes a network channel to monitor and control application",
+        "Port to listen on when networking is enabled",
+        1000,65000,
         10000,
-        [] (const intfConfigurable& _item, QString& _errorMessage){
-    if (_item.toVariant().toUInt() == 0 || _item.toVariant().toUInt() > 65000){
-        _errorMessage = "Invalid port to listen: " + _item.toVariant().toString();
-        return false;
-    }
-    return true;
-},
-"",
-"PORT",
-"admin-port",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
+        ReturnTrueCrossValidator,
+        "",
+        "PORT",
+        "admin-port",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
 
 tmplConfigurable<bool> intfConfigManagerOverNet::AdminLocal(
         ConfigManager::moduleName() + "/Admin/Local",
@@ -83,48 +78,50 @@ tmplConfigurable<bool> intfConfigManagerOverNet::WaitPortReady(
         false
         );
 
-tmplConfigurable<int> intfConfigManagerOverNet::MaxSessionTime(
+tmplRangedConfigurable<int> intfConfigManagerOverNet::MaxSessionTime(
         ConfigManager::moduleName() + "/Admin/MaxSessiontime",
         "Max allowed time for a session. This is independent from idle time and must be greater. -1 means no limit",
+        -1,65000,
         -1,
         [] (const intfConfigurable& _item, QString& _errorMessage){
-    int MaxIdleTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxIdleTime").toInt();
-    if (_item.toVariant().toInt() >= 0 &&
-            (MaxIdleTime <0 ||
-             _item.toVariant().toInt() < MaxIdleTime)){
-        _errorMessage = "Invalid Max Session Time. It must be greater than Max IdleTime";
-        return false;
-    }
-    return true;
-},
-"",
-"SECONDS",
-"admin-max-session-time",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
+            int MaxIdleTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxIdleTime").toInt();
+            if (_item.toVariant().toInt() >= 0 &&
+                    (MaxIdleTime <0 ||
+                     _item.toVariant().toInt() < MaxIdleTime)){
+                _errorMessage = "Invalid Max Session Time. It must be greater than Max IdleTime";
+                return false;
+            }
+            return true;
+        },
+        "",
+        "SECONDS",
+        "admin-max-session-time",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
 
-tmplConfigurable<int> intfConfigManagerOverNet::MaxIdleTime(
+tmplRangedConfigurable<int> intfConfigManagerOverNet::MaxIdleTime(
         ConfigManager::moduleName() + "/Admin/MaxIdleTime",
         "Max allowed time for a session. This is independent from idle time and must be greater. -1 means no limit",
+        -1,65000,
         -1,
         [] (const intfConfigurable& _item, QString& _errorMessage){
-    int MaxSessionTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxSessiontime").toInt();
-    if (_item.toVariant().toInt() == 0 || (
-                _item.toVariant().toInt() > 0 &&
-                (MaxSessionTime > 0 ||
-                 _item.toVariant().toInt() < MaxSessionTime))){
-        _errorMessage = "Invalid Max Idle Time. It must be greater than zero but less than Max Session Time";
-        return false;
-    }
-    return true;
-},
-"",
-"SECONDS",
-"admin-max-idle-time",
-(enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
-false
-);
+            int MaxSessionTime = ConfigManager::instance().getConfig(ConfigManager::moduleName() + "/MaxSessiontime").toInt();
+            if (_item.toVariant().toInt() == 0 || (
+                        _item.toVariant().toInt() > 0 &&
+                        (MaxSessionTime > 0 ||
+                         _item.toVariant().toInt() < MaxSessionTime))){
+                _errorMessage = "Invalid Max Idle Time. It can be greater than zero but less than Max Session Time";
+                return false;
+            }
+            return true;
+        },
+        "",
+        "SECONDS",
+        "admin-max-idle-time",
+        (enuConfigSource::Type)(enuConfigSource::Arg | enuConfigSource::File),
+        false
+        );
 
 tmplConfigurable<quint16> intfConfigManagerOverNet::MaxConnections(
         ConfigManager::moduleName() + "/Admin/MaxConnections",
@@ -140,7 +137,7 @@ tmplConfigurable<quint16> intfConfigManagerOverNet::MaxConnections(
 
 tmplConfigurable<enuConfigOverNetMode::Type> clsConfigManagerPrivate::ConfigOverNetMode(
         ConfigManager::moduleName() + "/Admin/Mode",
-        "Configuration over Net mode Can be [" + enuConfigOverNetMode::options().join("|")+"]",
+        "Configuration over Net mode.",
         enuConfigOverNetMode::NoNetwork,
         ReturnTrueCrossValidator,
         "",
@@ -160,9 +157,47 @@ clsConfigManagerPrivate::~clsConfigManagerPrivate()
     //Just to supress compiler error on QScopped Pointer
 }
 
-QSharedPointer<QSettings> clsConfigManagerPrivate::configSettings(const QString& _filePath){
-    return QSharedPointer<QSettings>(new QSettings(_filePath, QSettings::IniFormat));
+bool confReadFunc(QIODevice &_device, QSettings::SettingsMap &_map){
+    QTextStream Stream(&_device);
+    quint64 LineNumber = 0;
+    static QRegExp RxGroup("^\\s*\\[([%\\w]+)\\]\\b*",Qt::CaseSensitive, QRegExp::RegExp2);
+    static QRegExp RxKeyValue("^\\s*([%\\w/]+)\\s*=\\s*(\"(.*)\"|[^\"#;][^#;]*)\\s*[#;]?",Qt::CaseSensitive, QRegExp::RegExp2);
+    _map.clear();
+    QString Group="General";
+    while(Stream.atEnd() == false){
+        QString Line = Stream.readLine().trimmed();
+        LineNumber++;
+        if (Line.isEmpty() || Line.startsWith('#') || Line.startsWith(';'))
+            continue;
+        if (RxGroup.exactMatch(Line)){
+            Group = RxGroup.cap(1);
+            continue;
+        }
+
+        if(RxKeyValue.indexIn(Line)!=-1){
+            QString Key=RxKeyValue.cap(1);
+            QString Value = RxKeyValue.captureCount() == 4 ? RxKeyValue.cap(4) : RxKeyValue.cap(2);
+            _map.insert(Group + "/" + Key, Value.trimmed());
+            continue;
+        }
+
+        throw std::exception();
+    }
+    return true;
 }
+
+bool confWriteFunc(QIODevice&, const QSettings::SettingsMap&){
+    //ConfigManager will not write to file
+    return false;
+}
+
+QSharedPointer<QSettings> clsConfigManagerPrivate::configSettings(const QString& _filePath){
+    static const QSettings::Format ConfFormat =
+            QSettings::registerFormat("conf", confReadFunc, confWriteFunc);
+
+    return QSharedPointer<QSettings>(new QSettings(_filePath, ConfFormat));
+}
+
 
 void clsConfigManagerPrivate::printConfigsHelp(bool _include, const QStringList& _list, bool _showHeader)
 {
@@ -195,6 +230,10 @@ void clsConfigManagerPrivate::printConfigsHelp(bool _include, const QStringList&
             if (Item->shortHelp().size())
                 std::cout<<"\t"<<Item->shortHelp().toUtf8().constData();
             std::cout<<"\n\t\t"<<Item->description().toUtf8().constData()<<std::endl;
+            std::cout<<"\t\tCan be ["<<Item->validValues().toUtf8().constData()<<"]";
+            if (Item->shortHelp().size())
+                std::cout<<" ( default= '"<<Item->toVariant().toString().toUtf8().constData()<<"' )";
+            std::cout<<std::endl;
         }
     }
 }
@@ -212,8 +251,8 @@ void clsConfigManagerPrivate::printHelp(const QString& _license, bool _minimal)
         this->printConfigsHelp(true, QStringList()<<ConfigManager::moduleName(),false);
     }
     std::cout<<"\n\t--config-print:\n\t\t Prints all active configurations"<<std::endl;
-    printConfigsHelp(true, QStringList()<<"App", true);
-    printConfigsHelp(false,
+    this->printConfigsHelp(true, QStringList()<<"App", true);
+    this->printConfigsHelp(false,
                      QStringList()<<
                      ConfigManager::moduleName()<<
                      CmdIO::moduleName()<<
@@ -221,7 +260,7 @@ void clsConfigManagerPrivate::printHelp(const QString& _license, bool _minimal)
                      "App",
                      true);
     if (_minimal == false)
-        printConfigsHelp(true,
+        this->printConfigsHelp(true,
                          QStringList()<<CmdIO::moduleName()<<Logger::moduleName(),
                          true);
 }

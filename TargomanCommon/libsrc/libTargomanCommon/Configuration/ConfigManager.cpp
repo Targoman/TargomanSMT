@@ -365,19 +365,98 @@ void ConfigManager::init(const QString& _license,
  * @param _backup save backup option.
  */
 
-void ConfigManager::save2File(const QString &_fileName, bool _backup)
+void ConfigManager::save2File(const QString &_fileName, bool _backup, int _wrapLine)
 {
     if (_backup){
         if (QFile::exists(_fileName))
             QFile::copy(_fileName, _fileName + ".back-" + QDateTime::currentDateTime().toString("dd-MM-yyyy_hh:mm:ss"));
     }
-    QSharedPointer<QSettings> ConfigFile(this->pPrivate->configSettings(_fileName));
 
-    foreach (Configuration::intfConfigurable* ConfigItem, this->pPrivate->Configs.values())
-        if (testFlag(ConfigItem->configSources(), enuConfigSource::File)){
-            ConfigFile->setValue(ConfigItem->configPath(),ConfigItem->toVariant());
+    QFile ConfigFile(_fileName);
+    if (ConfigFile.open(QFile::WriteOnly) == false)
+        throw exConfiguration("Unable to open " + _fileName + " for writing.");
+
+    QTextStream ConfigStream(&ConfigFile);
+
+    auto writeComments = [&](const QString& _comment) {
+        static QRegExp RxDelimiter("\\b");
+
+        QString Prepared = _comment;
+        while(Prepared.size() > _wrapLine){
+            int BreakPos = Prepared.lastIndexOf(RxDelimiter,_wrapLine);
+            QString ToPrint = Prepared.mid(0,BreakPos);
+            ConfigStream<<"# "<<ToPrint.replace("\n", "\n# ")<<"\n";
+            Prepared = Prepared.mid(BreakPos).trimmed();
         }
-    ConfigFile->sync();
+        ConfigStream<<"# "<<Prepared.replace("\n", "\n# ")<<"\n";
+    };
+    auto writeLine = [&](char _ch, float _scale = 1) {
+        ConfigStream<<"#"<<QString((_wrapLine - 1) * _scale, _ch)<<"\n";
+    };
+
+    auto writeSection  = [&](const QString& _sectionName) {
+        writeLine('%');
+        writeComments(QString((_wrapLine - 18 - _sectionName.size()) / 2, ' ') + "@@@ " + _sectionName + " SECTION @@@");
+        writeLine('%');
+    };
+
+    auto writeVar = [&](const QString& _key, const QVariant& _val){
+        writeLine('-',.5);
+        ConfigStream<<";"<<_key<<" = "<<_val.toString()<<"\n";
+    };
+
+    ConfigStream.setCodec("UTF-8");
+    writeLine('#');
+    writeComments("This file was auto generated on "+QDateTime::currentDateTime().toString(Qt::ISODate));
+    writeComments("Help strings are minimal and all configurations are commented. Uncomment any configuration that you want to change");
+    writeLine('#');
+
+    QStringList ConfigKeys = this->pPrivate->Configs.keys();
+    ConfigKeys.sort();
+
+    QString LastGroup = "";
+    foreach (QString Key, ConfigKeys){
+        QString Group = "";
+        if (Key.contains('/')){
+            Group= Key.mid(0,Key.indexOf('/'));
+            Key = Key.mid(Group.length() + 1);
+        }else{
+            Group = Key;
+            Key="";
+        }
+
+        intfConfigurable* Configurable = this->pPrivate->Configs.value(Group + (Key.isEmpty() ? "" : "/"+Key));
+        if (!Configurable)
+            Configurable = this->pPrivate->Configs.value(Group + (Key.isEmpty() ? "" : "/"+Key) + '/');
+        Q_ASSERT(Configurable);
+
+
+        if (LastGroup != Group){
+            writeSection(Group);
+            ConfigStream<<"["+Group+"]\n";
+            LastGroup = Group;
+        }
+
+        writeComments(Configurable->description());
+        switch(Configurable->configType()){
+        case enuConfigType::Array:
+            writeVar(Key + "#/... ","...");
+            break;
+        case enuConfigType::FileBased:
+            writeVar(Key + "... ","...");
+            break;
+        case enuConfigType::MultiMap:
+            writeVar(Key + ".../#/... ","...");
+            break;
+
+        default:
+            writeComments("Valid values: " + Configurable->validValues());
+            writeComments("Default value: " + Configurable->toVariant().toString());
+            writeVar(Key,Configurable->toVariant());
+        }
+
+        ConfigStream<<"\n";
+    }
 }
 
 /**
@@ -511,7 +590,7 @@ fpModuleInstantiator_t ConfigManager::getInstantiator(const QString &_name) cons
 void ConfigManager::getInstantiator(const QString &_name, fpModuleInstantiator_t &_instantiator, bool &_isSingleton) const
 {
     if (this->pPrivate->Initialized == false)
-        throw exConfiguration("Configuration is not initialized yet.");
+        throw exCofigItemNotInitialized("Configuration is not initialized yet.");
 
     stuInstantiator Instantiator = this->pPrivate->ModuleInstantiatorsByFullName.value(_name);
     _instantiator = Instantiator.fpMethod;

@@ -41,7 +41,7 @@ using namespace Common::Configuration;
 
 tmplConfigurable<FilePath_t> clsKenLMProxy::FilePath(
         MAKE_CONFIG_PATH("FilePath"),
-        "File path of ARPA or binary models",
+        "File path of ARPA or binary models. Relative to config file path unless specified as absolute path.",
         "",
         ConditionalPathValidator(
             gConfigs.LM.toVariant().toString() == clsKenLMProxy::moduleName(),

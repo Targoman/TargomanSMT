@@ -49,10 +49,10 @@ Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags(
         "Valid user defined XML tags that must be stored with their attributes."
         "These must not overlap with predefined XML Tags",
         ""
-        /*TODO add lambda to check overlap*/);
+        /* TODO add lambda to check overlap*/);
 Configuration::tmplConfigurable<QString>  clsInput::TagSeparator(
         MAKE_CONFIG_PATH("TagSeparator"),
-        "Separator string between tags."
+        "Separator string between tags.",
         ";:;");
 
 Configuration::tmplConfigurable<bool>    clsInput::IsIXML(

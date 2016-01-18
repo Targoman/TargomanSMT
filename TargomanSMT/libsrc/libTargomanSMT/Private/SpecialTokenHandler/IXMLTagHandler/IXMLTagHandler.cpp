@@ -64,7 +64,7 @@ tmplConfigurable<bool> IXMLTagHandler::IgnoreUserDefinedTags(
 
 tmplConfigurable<bool> IXMLTagHandler::KeepUnknownUserDefinedTags(
         MAKE_CONFIG_PATH("KeepUnknownUserDefinedTags"),
-        "If user defined tag does not exist in source vocab, whether keep user defined tags or not",
+        "If user defined tag does not exist in source vocab, whether keep user defined tags or not(default)",
         false);
 
 

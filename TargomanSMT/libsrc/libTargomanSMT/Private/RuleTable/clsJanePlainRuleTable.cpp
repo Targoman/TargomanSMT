@@ -59,7 +59,7 @@ TARGOMAN_REGISTER_MODULE(clsJanePlainRuleTable);
 
 tmplConfigurable<FilePath_t> clsJanePlainRuleTable::FilePath(
         MAKE_CONFIG_PATH("FilePath"),
-        "FilePath where phrase table is stored",
+        "FilePath where phrase table is stored. Relative to config file path unless specified as absolute path.",
         "",
         ConditionalPathValidator(
             gConfigs.RuleTable.toVariant().toString() == clsJanePlainRuleTable::moduleName(),

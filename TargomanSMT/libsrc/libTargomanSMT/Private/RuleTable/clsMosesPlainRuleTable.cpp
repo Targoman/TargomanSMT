@@ -57,7 +57,7 @@ TARGOMAN_REGISTER_MODULE(clsMosesPlainRuleTable);
 
 tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::PhraseTableFilePath(
         MAKE_CONFIG_PATH("PhraseTableFilePath"),
-        "Filepath where phrase table is stored",
+        "Filepath where phrase table is stored. Relative to config file path unless specified as absolute path.",
         "",
         ConditionalPathValidator(
             gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName(),
@@ -66,7 +66,7 @@ tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::PhraseTableFilePath(
 
 tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::ReorderingTableFilePath(
         MAKE_CONFIG_PATH("ReorderingTableFilePath"),
-        "Filepath where reordering table is stored",
+        "Filepath where reordering table is stored. Relative to config file path unless specified as absolute path.",
         "",
         [] (const intfConfigurable& _item, QString& _errorMessage) { \
             if(gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName())
@@ -80,7 +80,7 @@ tmplConfigurable<FilePath_t> clsMosesPlainRuleTable::ReorderingTableFilePath(
 
 tmplConfigurable<QString> clsMosesPlainRuleTable::WordAlignmentFilePath(
         MAKE_CONFIG_PATH("WordAlignmentFilePath"),
-        "Filepath where word alignment data of phrases is stored",
+        "Filepath where word alignment data of phrases is stored. Relative to config file path unless specified as absolute path.",
         "",
         [] (const intfConfigurable& _item, QString& _errorMessage) { \
             if(gConfigs.RuleTable.toVariant().toString() == clsMosesPlainRuleTable::moduleName())
@@ -93,11 +93,10 @@ tmplConfigurable<QString> clsMosesPlainRuleTable::WordAlignmentFilePath(
     );
 
 
-tmplConfigurable<int> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(
+tmplConfigurable<quint16> clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount(
         MAKE_CONFIG_PATH("MaxRuleNodeTargetRuleCount"),
         "Maximum number of target rules kept for each rule node.",
-        20,
-        Validators::tmplNumericValidator<int, 0, 65536>
+        20
         );
 
 clsMosesPlainRuleTable::clsMosesPlainRuleTable() {
@@ -308,7 +307,7 @@ void clsMosesPlainRuleTable::loadTableData()
     for(int i = 0; i < TotalRuleNodes.size(); ++i) {
         QList<clsTargetRule>& TargetRuleList = TotalRuleNodes[i].targetRules();
         int NumberOfRulesToKeep = qMin(
-                    clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount.value(),
+                    (int)clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount.value(),
                     TargetRuleList.size()
                     );
         std::nth_element(

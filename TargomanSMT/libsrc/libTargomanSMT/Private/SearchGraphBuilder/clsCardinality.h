@@ -237,9 +237,9 @@ public:
 
 private:
     QExplicitlySharedDataPointer<clsCardinalityHypothesisContainerData> Data;
-    static Common::Configuration::tmplConfigurable<quint16>  MaxCardinalityContainerSize; /**< Maximum number of nodes contained in a cardinality hypothesis container*/
-    static Common::Configuration::tmplConfigurable<quint8>  PrimaryCoverageShare; /**< Primary share of each coverage from the cardinality nodes.*/
-    static Common::Configuration::tmplConfigurable<double>  SearchBeamWidth; /**< Beam width for the beam search */
+    static Common::Configuration::tmplRangedConfigurable<quint16>  MaxCardinalityContainerSize; /**< Maximum number of nodes contained in a cardinality hypothesis container*/
+    static Common::Configuration::tmplRangedConfigurable<quint8>  PrimaryCoverageShare; /**< Primary share of each coverage from the cardinality nodes.*/
+    static Common::Configuration::tmplRangedConfigurable<double>  SearchBeamWidth; /**< Beam width for the beam search */
 
     friend class UnitTestNameSpace::clsUnitTest;
 

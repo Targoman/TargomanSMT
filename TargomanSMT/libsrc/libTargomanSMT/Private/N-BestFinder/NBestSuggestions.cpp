@@ -36,9 +36,10 @@ using namespace Common::Configuration;
 using namespace SearchGraphBuilder;
 using namespace RuleTable;
 
-tmplConfigurable<quint8> NBestSuggestions::MaxSuggestions(
+tmplRangedConfigurable<quint8> NBestSuggestions::MaxSuggestions(
         MAKE_CONFIG_PATH("MaxSuggestions"),
         "Maximum number of suggestions to output",
+        0,10,
         5
         );
 

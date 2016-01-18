@@ -57,7 +57,7 @@ private:
 private:
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   FilePath;            /**< File name of phrase table. */
     static Common::Configuration::tmplConfigurable<Common::PrefixTree::enuBinaryLoadMode::Type>  LoadMode;
-    static Common::Configuration::tmplConfigurable<quint32>  MaxCachedItems;
+    static Common::Configuration::tmplRangedConfigurable<quint32>  MaxCachedItems;
 
     TARGOMAN_DEFINE_MODULE(BinaryRuleTable);
 };
