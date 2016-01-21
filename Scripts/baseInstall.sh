@@ -52,6 +52,7 @@ function installBasePackages(){
 function createBasePaths(){
     logInfo "Creating BaseFolders"
     InstallationDirs="
+        $InstallDir/
         $InstallDir/Binaries/
         $InstallDir/Binaries/vDummy/bin
         $InstallDir/Binaries/vDummy/libs
@@ -71,6 +72,7 @@ function createBasePaths(){
     "
     if [ $AlsoTest -eq 1 ]; then
         InstallationDirs="$InstallationDirs
+            $InstallDir/Binaries/Trunk/
             $InstallDir/Binaries/Trunk/bin
             $InstallDir/Binaries/Trunk/libs
             $InstallDir/Configs/TargomanCommon/Trunk/
@@ -79,22 +81,22 @@ function createBasePaths(){
     fi
 
     runCommand install -v -o $User -g $Group -m 2775 -d $InstallationDirs
+    runCommand install -v -d "$BaseSMTFolder/bin"  #bin folder must be created with root priviledges
     logInfo "Creating Base Symlinks"
     runCommand cd $InstallDir/Binaries/
-    ln -s vDummy Active
+    runCommand ln -sfn vDummy Active
     runCommand cd $InstallDir/Configs/TargomanCommon/
-    ln -s vDummy Active
+    runCommand ln -sfn vDummy Active
     runCommand cd $InstallDir/Configs/TargomanApps/
-    ln -s vDummy Active
+    runCommand ln -sfn vDummy Active
     runCommand cd $InstallDir/Configs/SysConfigs/
-    ln -s vDummy Active
+    runCommand ln -sfn vDummy Active
     runCommand cd $InstallDir/Models/
-    ln -s vDummy Active
+    runCommand ln -sfn vDummy Active
     runCommand cd $BaseSMTFolder
-    runCommand ln -s $InstallDir/Binaries/Active/bin
-    runCommand ln -s $InstallDir/Binaries/Active/libs
+    runCommand ln -sfn $InstallDir/Binaries/Active/libs
     runCommand pushd conf >/dev/null 2>&1
-    runCommand ln -s $InstallDir/Configs/SysConfigs/Active SysConfigs
+    runCommand ln -sfn $InstallDir/Configs/SysConfigs/Active SysConfigs
     runCommand popd >/dev/null 2>&1
     logInfo "Configuring system"
     runCommand echo "$BaseSMTFolder/libs" > /etc/ld.so.conf.d/Targoman.conf
@@ -107,11 +109,17 @@ function installWebServer(){
 
     logInfo "Creating Base WebServer Symlinks"
     runCommand cd $BaseSMTFolder
-    runCommand ln -s /srv/www/vhosts/ WebUI
+    runCommand ln -sfn /srv/www/vhosts/ WebUI
+
+    runCommand pushd bin >/dev/null 2>&1
+    runCommand ln -sfn $InstallDir/Binaries/Active/bin/TargomanLoadBalancer
+    runCommand ln -sfn $InstallDir/Binaries/Active/bin/tsapasswd
+    runCommand popd >/dev/null 2>&1
+
     runCommand pushd conf >/dev/null 2>&1
-    runCommand ln -s $InstallDir/Configs/TargomanApps/Active/TargomanLoadBalancer.ini
+    runCommand ln -sfn $InstallDir/Configs/TargomanApps/Active/TargomanLoadBalancer.ini
     if [ $AlsoTest -eq 1 ]; then
-        runCommand ln -s $InstallDir/Configs/TargomanApps/Trunk/TargomanLoadBalancer.ini TargomanLoadBalancer.trunk.ini
+        runCommand ln -sfn $InstallDir/Configs/TargomanApps/Trunk/TargomanLoadBalancer.ini TargomanLoadBalancer.trunk.ini
     fi
     runCommand popd >/dev/null 2>&1
     logInfo "Creating Service scripts"
@@ -127,7 +135,7 @@ function installWebServer(){
         "WantedBy=multi-user.target\n"\
         > $BaseSMTFolder/scripts/services/targomanloadbalancer.service
     sed -i "s/^ //g" $BaseSMTFolder/scripts/services/targomanloadbalancer.service
-    runCommand ln -s /sbin/service /usr/sbin/rctargomanloadbalancer
+    runCommand ln -sfn /sbin/service /usr/sbin/rctargomanloadbalancer
 
     if [ $AlsoTest -eq 1 ]; then
         echo -e "#!/bin/sh\n"\
@@ -135,6 +143,7 @@ function installWebServer(){
             "$InstallDir/Binaries/Trunk/bin/TargomanLoadBalancer \$*\n"\
             > $BaseSMTFolder/bin/TargomanLoadBalancer.trunk
         sed -i "s/^ //g" $BaseSMTFolder/bin/TargomanLoadBalancer.trunk
+        chmod a+x $BaseSMTFolder/bin/TargomanLoadBalancer.trunk
         echo -e "[Unit]\n"\
             "Description=Proxifies Translation requests to Targoman Translation servers for testing. This is the trunk version\n"\
             "After=network.target\n"\
@@ -147,7 +156,7 @@ function installWebServer(){
             "WantedBy=multi-user.target\n"\
             > $BaseSMTFolder/scripts/services/targomanloadbalancer.trunk.service
         sed -i "s/^ //g" $BaseSMTFolder/scripts/services/targomanloadbalancer.trunk.service
-        runCommand ln -s /sbin/service /usr/sbin/rctargomanloadbalancer.trunk
+        runCommand ln -sfn /sbin/service /usr/sbin/rctargomanloadbalancer.trunk
     fi
 
     logInfo "Creating soffice service scripts"
@@ -163,7 +172,7 @@ function installWebServer(){
         "WantedBy=multi-user.target\n"\
         > $BaseSMTFolder/scripts/services/soffice.service
     sed -i "s/^ //g" $BaseSMTFolder/scripts/services/soffice.service
-    runCommand ln -s /sbin/service /usr/sbin/soffice
+    runCommand ln -sfn /sbin/service /usr/sbin/soffice
 
     logInfo "Creating logrotate scripts"
     echo -e "$BaseSMTFolder/logs/TargomanLoadBalancer.log {
@@ -177,11 +186,12 @@ function installWebServer(){
         nomail
         }
     " > $BaseSMTFolder/scripts/logrotate.d/targomanloadbalancer.lr
-    ln -s $BaseSMTFolder/scripts/logrotate.d/targomanloadbalancer.lr /etc/logrotate.d/
+    ln -sfn $BaseSMTFolder/scripts/logrotate.d/targomanloadbalancer.lr /etc/logrotate.d/
     if [ $AlsoTest -eq 1 ]; then
         runCommand cp  $BaseSMTFolder/scripts/logrotate.d/targomanloadbalancer.lr $BaseSMTFolder/scripts/logrotate.d/targomanloadbalancer.trunk.lr
         sed -i "s/\.log/.trunk.log/g"
     fi
+
     logSection "Finished"
 }
 
@@ -193,23 +203,26 @@ function installSMTServer(){
     logSection "Installing SMTServer"
     logInfo "Creating Base SMTServer Symlinks"
     runCommand cd $BaseSMTFolder
-    runCommand ln -s $InstallDir/Models/Active models
+    runCommand ln -sfn $InstallDir/Models/Active models
     runCommand pushd conf >/dev/null 2>&1
-    runCommand ln -s $InstallDir/Configs/TargomanCommon/Active TargomanCommon
-    runCommand ln -s $InstallDir/Configs/TargomanApps/Active/TargomanSMTServer.en2fa.ini
-    runCommand ln -s $InstallDir/Configs/TargomanApps/Active/TargomanSMTServer.fa2en.ini
+    runCommand ln -sfn $InstallDir/Configs/TargomanCommon/Active TargomanCommon
+    runCommand ln -sfn $InstallDir/Configs/TargomanApps/Active/TargomanSMTServer.en2fa.ini
+    runCommand ln -sfn $InstallDir/Configs/TargomanApps/Active/TargomanSMTServer.fa2en.ini
     if [ $AlsoTest -eq 1 ]; then
-        runCommand ln -s $InstallDir/Configs/TargomanApps/Trunk/TargomanSMTServer.en2fa.ini TargomanSMTServer.en2fa.trunk.ini
-        runCommand ln -s $InstallDir/Configs/TargomanApps/Trunk/TargomanSMTServer.fa2en.ini TargomanSMTServer.fa2en.trunk.ini
-        runCommand ln -s $InstallDir/Configs/TargomanApps/Trunk/TargomanSMTConsole.en2fa.ini TargomanSMTConsole.en2fa.trunk.ini
-        runCommand ln -s $InstallDir/Configs/TargomanApps/Trunk/TargomanSMTConsole.fa2en.ini TargomanSMTConsole.fa2en.trunk.ini
+        runCommand ln -sfn $InstallDir/Configs/TargomanApps/Trunk/TargomanSMTServer.en2fa.ini TargomanSMTServer.en2fa.trunk.ini
+        runCommand ln -sfn $InstallDir/Configs/TargomanApps/Trunk/TargomanSMTServer.fa2en.ini TargomanSMTServer.fa2en.trunk.ini
+        runCommand ln -sfn $InstallDir/Configs/TargomanApps/Trunk/TargomanSMTConsole.en2fa.ini TargomanSMTConsole.en2fa.trunk.ini
+        runCommand ln -sfn $InstallDir/Configs/TargomanApps/Trunk/TargomanSMTConsole.fa2en.ini TargomanSMTConsole.fa2en.trunk.ini
     fi
     runCommand popd >/dev/null 2>&1
     runCommand pushd bin >/dev/null 2>&1
-    runCommand ln -s TargomanSMTServer TargomanSMTServer.master.en2fa
-    runCommand ln -s TargomanSMTServer TargomanSMTServer.master.fa2en
-    runCommand ln -s TargomanSMTServer TargomanSMTServer.slave.en2fa
-    runCommand ln -s TargomanSMTServer TargomanSMTServer.slave.fa2en
+    runCommand ln -sfn $InstallDir/Binaries/Active/bin/TargomanSMTConsole
+    runCommand ln -sfn $InstallDir/Binaries/Active/bin/tsapasswd
+    runCommand ln -sfn $InstallDir/Binaries/Active/bin/TargomanSMTServer
+    runCommand ln -sfn TargomanSMTServer TargomanSMTServer.master.en2fa
+    runCommand ln -sfn TargomanSMTServer TargomanSMTServer.master.fa2en
+    runCommand ln -sfn TargomanSMTServer TargomanSMTServer.slave.en2fa
+    runCommand ln -sfn TargomanSMTServer TargomanSMTServer.slave.fa2en
     runCommand popd >/dev/null 2>&1
     logInfo "Creating Service scripts"
     echo -e "[Unit]\n"\
@@ -231,14 +244,14 @@ function installSMTServer(){
     runCommand cp $BaseSMTFolder/scripts/services/targomansmtserver.master.fa2en.service $BaseSMTFolder/scripts/services/targomansmtserver.slave.fa2en.service
     sed -i "s/master/slave/g" $BaseSMTFolder/scripts/services/targomansmtserver.slave.fa2en.service
 
-    runCommand ln -s /sbin/service /usr/sbin/rctargomansmtserver.master.en2fa
-    runCommand ln -s /sbin/service /usr/sbin/rctargomansmtserver.master.fa2en
-    runCommand ln -s /sbin/service /usr/sbin/rctargomansmtserver.slave.en2fa
-    runCommand ln -s /sbin/service /usr/sbin/rctargomansmtserver.slave.fa2en
-    runCommand ln -s $BaseSMTFolder/scripts/services/targomansmtserver.master.en2fa.service /usr/lib/systemd/system/
-    runCommand ln -s $BaseSMTFolder/scripts/services/targomansmtserver.master.fa2en.service /usr/lib/systemd/system/
-    runCommand ln -s $BaseSMTFolder/scripts/services/targomansmtserver.slave.en2fa.service /usr/lib/systemd/system/
-    runCommand ln -s $BaseSMTFolder/scripts/services/targomansmtserver.slave.fa2en.service /usr/lib/systemd/system/
+    runCommand ln -sfn /sbin/service /usr/sbin/rctargomansmtserver.master.en2fa
+    runCommand ln -sfn /sbin/service /usr/sbin/rctargomansmtserver.master.fa2en
+    runCommand ln -sfn /sbin/service /usr/sbin/rctargomansmtserver.slave.en2fa
+    runCommand ln -sfn /sbin/service /usr/sbin/rctargomansmtserver.slave.fa2en
+    runCommand ln -sfn $BaseSMTFolder/scripts/services/targomansmtserver.master.en2fa.service /usr/lib/systemd/system/
+    runCommand ln -sfn $BaseSMTFolder/scripts/services/targomansmtserver.master.fa2en.service /usr/lib/systemd/system/
+    runCommand ln -sfn $BaseSMTFolder/scripts/services/targomansmtserver.slave.en2fa.service /usr/lib/systemd/system/
+    runCommand ln -sfn $BaseSMTFolder/scripts/services/targomansmtserver.slave.fa2en.service /usr/lib/systemd/system/
 
     logInfo "Creating logrotate scripts"
     echo -e "$BaseSMTFolder/logs/TargomanSMTServer.en2fa.log {
@@ -254,8 +267,8 @@ function installSMTServer(){
     " > $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.en2fa.lr
     runCommand cp $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.en2fa.lr $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.fa2en.lr
     sed -i "s/en2fa/fa2en/g" $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.fa2en.lr
-    ln -s $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.en2fa.lr /etc/logrotate.d/
-    ln -s $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.fa2en.lr /etc/logrotate.d/
+    ln -sfn $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.en2fa.lr /etc/logrotate.d/
+    ln -sfn $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.fa2en.lr /etc/logrotate.d/
 
     if [ $AlsoTest -eq 1 ]; then
         echo -e "#!/bin/sh\n"\
@@ -263,16 +276,17 @@ function installSMTServer(){
             "$InstallDir/Binaries/Trunk/bin/TargomanSMTServer \$*\n"\
             > $BaseSMTFolder/bin/TargomanSMTServer.trunk
         sed -i "s/^ //g" $BaseSMTFolder/bin/TargomanSMTServer.trunk
+        chmod a+x $BaseSMTFolder/bin/TargomanSMTServer.trunk
         runCommand pushd bin >/dev/null 2>&1
-        runCommand ln -s TargomanSMTServer.trunk TargomanSMTServer.trunk.en2fa
-        runCommand ln -s TargomanSMTServer.trunk TargomanSMTServer.trunk.fa2en
+        runCommand ln -sfn TargomanSMTServer.trunk TargomanSMTServer.trunk.en2fa
+        runCommand ln -sfn TargomanSMTServer.trunk TargomanSMTServer.trunk.fa2en
         runCommand popd >/dev/null 2>&1
         echo -e "[Unit]\n"\
             "Description=Proxifies Translation requests to Targoman Translation servers for testing. This is the trunk version\n"\
             "After=network.target\n"\
             "\n"\
             "[Service]\n"\
-            "ExecStart=$BaseSMTFolder/bin/TargomanSMTServer.trunk.en2fa --config $BaseSMTFolder/conf/TargomanSMTServer.en2fa.ini --log-dont-show --out-silent\n"\
+            "ExecStart=$BaseSMTFolder/bin/TargomanSMTServer.trunk.en2fa --config $BaseSMTFolder/conf/TargomanSMTServer.en2fa.trunk.ini --log-dont-show --out-silent\n"\
             "Restart=always\n"\
             "\n"\
             "[Install]\n"\
@@ -281,16 +295,16 @@ function installSMTServer(){
         sed -i "s/^ //g" $BaseSMTFolder/scripts/services/targomansmtserver.trunk.en2fa.service
         runCommand cp $BaseSMTFolder/scripts/services/targomansmtserver.trunk.en2fa.service $BaseSMTFolder/scripts/services/targomansmtserver.trunk.fa2en.service
         sed -i -e "s/en2fa/fa2en/g" -e "s/English to Persian/Persian to English/g" $BaseSMTFolder/scripts/services/targomansmtserver.trunk.fa2en.service
-        runCommand ln -s /sbin/service /usr/sbin/rctargomansmtserver.trunk.en2fa
-        runCommand ln -s /sbin/service /usr/sbin/rctargomansmtserver.trunk.fa2en
-        runCommand ln -s $BaseSMTFolder/scripts/services/targomansmtserver.trunk.en2fa.service /usr/lib/systemd/system/
-        runCommand ln -s $BaseSMTFolder/scripts/services/targomansmtserver.trunk.fa2en.service /usr/lib/systemd/system/
+        runCommand ln -sfn /sbin/service /usr/sbin/rctargomansmtserver.trunk.en2fa
+        runCommand ln -sfn /sbin/service /usr/sbin/rctargomansmtserver.trunk.fa2en
+        runCommand ln -sfn $BaseSMTFolder/scripts/services/targomansmtserver.trunk.en2fa.service /usr/lib/systemd/system/
+        runCommand ln -sfn $BaseSMTFolder/scripts/services/targomansmtserver.trunk.fa2en.service /usr/lib/systemd/system/
 
         runCommand cp $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.en2fa.lr $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.trunk.lr
         sed -i "s/en2fa/trunk/g" $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.trunk.lr
-        ln -s $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.trunk.lr /etc/logrotate.d/
+        ln -sfn $BaseSMTFolder/scripts/logrotate.d/targomansmtserver.trunk.lr /etc/logrotate.d/
     fi
-    logSection "Finished. Now you must configure and copy model files"
+    logSection "Finished. Now you must configure and copy model files. Also take care of zabbix files if needed"
 }
 
 function main(){

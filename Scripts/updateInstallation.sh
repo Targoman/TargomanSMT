@@ -29,7 +29,7 @@ function usage() {
     log "\t\t  -v: Version string to be used for tagging instead of using Date-Time Tag. Not available using -t -b switches" 1>&2;
     log "\t\t  -c: Configure links and restart services" 1>&2;
     log "\t\t  -h: print this help" 1>&2;
-    exit -1;
+    exit 2;
 }
 
 function runCommand(){
@@ -45,13 +45,15 @@ function runOnRemote(){
                  SkipCreatingBasePath='$SkipCreatingBasePath';
                  RemoteUser='$RemoteUser';
                  RemoteGroup='$RemoteGroup';
+                 ConfigureAndRestart=$ConfigureAndRestart;
                  TagDir='$TagDir';
                  $(typeset -f);$*"
     Return=$?
-    if [ $Return -gt 10 ]; then
+    if [ $Return -gt 10 ] && [ $Return -lt 255 ]; then
         logError "function <$*> failed with code: $Return";
         exit $Return
     fi
+    return $Return
 }
 
 function name2Posix(){
@@ -65,7 +67,7 @@ function createTagPaths(){
         $RemoteInstallDir/Configs/TargomanCommon/$TagDir
         $RemoteInstallDir/Configs/TargomanApps/$TagDir
     "
-    runCommand install -v -g $RemoteGroup -m 2775 -d $InstallationDirs
+    runCommand install -v -o $RemoteUser -g $RemoteGroup -m 2775 -d $InstallationDirs
 }
 
 function testAccess(){
@@ -79,8 +81,9 @@ function testAccess(){
 function checkConnection(){
     runOnRemote testAccess
     if [ $? -ne 0 ];then
-        logError "Invalid access using <$SSHCommand>" 1>&2;
-        exit -1;
+        logError "Invalid access using <$SSHCommand>.";
+        logError "Maybe you have forgotten to create passwordless login for $RemoteUser"
+        exit 2;
     fi
 }
 
@@ -115,12 +118,10 @@ function sendBinaries(){
 function sendCommonConfigurations(){
     logInfo "Peparing ConfigFiles"
     runCommand mkdir -p $TempFolder/conf
-    for Bin in $*; do
-        runCommand cp -a ../out/conf/* $TempFolder/conf/
-    done
+    runCommand cp -a ../out/conf/* $TempFolder/conf/
     logInfo "Compressing Configurations"
-    pushd $TempFolder >/dev/null 2>&1
-    runCommand tar -cz conf -f conf.tgz
+    pushd $TempFolder/conf/ >/dev/null 2>&1
+    runCommand tar -cz * -f conf.tgz
     logInfo "Sending Configurations to remote"
     runCommand scp -P ${RemotePort} conf.tgz $RemoteUser@${RemoteHost}:$RemoteInstallDir/Configs/TargomanCommon/$TagDir
     popd >/dev/null 2>&1
@@ -128,21 +129,24 @@ function sendCommonConfigurations(){
 
 
 function unpackBinaries() {
-    runCommand cd $RemoteInstallDir/Binaries/$TagDir/;
+    runCommand pushd $RemoteInstallDir/Binaries/$TagDir/ >/dev/null 2>&1;
     logInfo "Extracting Binary Files"
-    runCommand tar -xzvf *.tgz;
-    runCommand rm *.tgz
+    runCommand tar -xzf "bin.tgz";
+    runCommand tar -xzf "libs.tgz";
+    runCommand rm "*.tgz"
+    runCommand popd  >/dev/null 2>&1
 }
 
 function unpackConfigs() {
-    runCommand cd $RemoteInstallDir/Configs/TargomanCommon/$TagDir
+    runCommand pushd $RemoteInstallDir/Configs/TargomanCommon/$TagDir >/dev/null 2>&1
     logInfo "Extracting Config Files"
-    runCommand tar -xzvf *.tgz;
-    runCommand rm *.tgz
+    runCommand tar -xzf "conf.tgz";
+    runCommand rm -rf *.tgz
+    runCommand popd >/dev/null 2>&1
 }
 
 function updateSymlinks() {
-    if [ $TagDir != "Trunk" ]; then
+    if [ $TagDir != "Trunk" ] && [ $ConfigureAndRestart -eq 1 ] ; then
         runCommand cd $RemoteInstallDir/Binaries/
         runCommand rm -v Active
         runCommand ln -sv $TagDir Active
@@ -150,16 +154,6 @@ function updateSymlinks() {
         runCommand rm -v Active
         runCommand ln -sv $TagDir Active
     fi
-}
-
-function doService() {
-    for Service in $2; do
-        rc$Service $1
-        if [ $? -ne 0 ];then
-            logError "service $1 not found. Please install it using baseinstall.sh script"
-            exit 110
-        fi
-    done
 }
 
 function updateBasePackages(){
@@ -178,13 +172,12 @@ function updateBasePackages(){
 }
 
 function updateLoadBalancer(){
-    exit -1;
     Libraries="QJsonRPC TargomanCommon"
     Binaries="TargomanLoadBalancer tsapasswd"
     if [ $TagDir == "Trunk" ];then
-        Services="targomanloadbalancer.master targomanloadbalancer.slave"
+        Services="targomanloadbalancer.trunk"
     else
-        Services="targomanloadbalancer.test"
+        Services="targomanloadbalancer.master targomanloadbalancer.slave"
     fi
 
     if [ -n "$TagString" ];then
@@ -206,17 +199,28 @@ function updateLoadBalancer(){
     logSection "Finished"
 }
 
+function doService() {
+    for Service in $2; do
+        if [ ! -f /usr/sbin/rc$Service ];then
+            logError "service $Service not found. Please install it using baseinstall.sh script"
+            exit 110
+        fi
+        logInfo "service $Service $1"
+        sudo service $Service $1
+    done
+}
+
 function updateSMTServer(){
     Libraries="QJsonRPC TargomanCommon TargomanLM TargomanSMT TargomanSWT TargomanTextProcessor"
     Binaries="TargomanSMTServer TargomanSMTConsole tsapasswd"
     if [ $TagDir == "Trunk" ];then
+        Services="targomansmtserver.trunk.en2fa
+                  targomansmtserver.trunk.fa2en"
+    else
         Services="targomansmtserver.master.en2fa
                   targomansmtserver.slave.en2fa
                   targomansmtserver.master.fa2en
                   targomansmtserver.slave.fa2en"
-    else
-        Services="targomansmtserver.test.en2fa
-                  targomansmtserver.test.en2fa"
     fi
 
     if [ -n "$TagString" ];then
@@ -225,17 +229,19 @@ function updateSMTServer(){
         logSection "Installing SMT Server"
     fi
 
-    runOnRemote doService status "$Services"
+    runOnRemote doService status "'$Services'"
 
     sendLibraries             "$Libraries"
     sendBinaries              "$Binaries"
     sendCommonConfigurations
 
-    runOnRemote doService stop "$Services"
+    runOnRemote doService stop "'$Services'"
     runOnRemote unpackBinaries
     runOnRemote unpackConfigs
     runOnRemote updateSymlinks
-    runOnRemote doService start "$Services"
+    runOnRemote doService start "'$Services'"
+    sleep 1
+    runOnRemote doService status "'$Services'"
 
     logSection "Finished"
 }
@@ -270,7 +276,7 @@ function main(){
     TempFolder=$(mktemp -d)
     if [ $? -ne 0 ];then
         logError "Unable to create temp directory!!!"
-        exit -1;
+        exit 2;
     fi
     trap "rm -rf $TempFolder" EXIT
 
@@ -279,7 +285,7 @@ function main(){
     if [ $IsTest -eq 1 ]; then
         if [ -n "$TagString" ]; then
             logError "tag string is not supported for test installation."
-            exit -1
+            exit 2
         fi
         TagString="Trunk"
         MakeTag=0

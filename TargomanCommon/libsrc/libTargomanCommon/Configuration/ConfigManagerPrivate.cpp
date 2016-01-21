@@ -181,7 +181,10 @@ bool confReadFunc(QIODevice &_device, QSettings::SettingsMap &_map){
             continue;
         }
 
-        throw std::exception();
+        TargomanError(QString("Invalid configuraton at line %1: %2").arg(LineNumber).arg(Line));
+        exit(-1);
+
+        throw exConfiguration(QString("Invalid configuraton at line %1: %2").arg(LineNumber).arg(Line));
     }
     return true;
 }
