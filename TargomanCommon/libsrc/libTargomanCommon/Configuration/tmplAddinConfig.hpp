@@ -59,10 +59,7 @@ public:
         this->AcceptableModuleScope = itmplAcceptableInterface::moduleScope();
     }
     virtual inline void setFromVariant(const QVariant& _var){
-        if (_var.canConvert(QVariant::StringList))
-            this->ActiveAddins = _var.toStringList();
-        else
-            this->ActiveAddins = _var.toString().split(',');
+        this->ActiveAddins = _var.toString().split(',');
     }
 
     virtual inline QVariant    toVariant() const{
