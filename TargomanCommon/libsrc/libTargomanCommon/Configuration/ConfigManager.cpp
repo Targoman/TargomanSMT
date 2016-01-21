@@ -207,7 +207,7 @@ void ConfigManager::init(const QString& _license,
 
                 QVariant Value = ConfigFile->value(Key);
                 if (ConfigItem->validate(Value, ErrorMessage) == false)
-                    throw exConfiguration(ErrorMessage);
+                    throw exConfiguration(QString("On <%1> : %2").arg(ConfigItem->configPath()).arg(ErrorMessage));
                 else{
                     ConfigItem->setFromVariant(Value);
                     ConfigItem->setIsConfigured();
@@ -602,13 +602,8 @@ QStringList ConfigManager::registeredModules(const QString &_moduleRoot){
     foreach(const QString& ModuleName, this->pPrivate->ModuleInstantiatorsByFullName.keys()){
         Q_ASSERT_X(ModuleName.split("::").size() > 1, "ConfigManager",
                    qPrintable("modules must have unique namespace: " + ModuleName));
-        if (ModuleName.mid(0,ModuleName.lastIndexOf("::")) == _moduleRoot){
-            QString ModuleNamespace=ModuleName.mid(ModuleName.lastIndexOf("::") + 2, -1);
-            Q_ASSERT_X(ModuleNamespace.startsWith("cls") || ModuleNamespace.startsWith("intf"),
-                       "ConfigManager",
-                       qPrintable("Invalid Namespace name starting with cls or intf: " + ModuleName));
+        if (ModuleName.mid(0,ModuleName.lastIndexOf("::")) == _moduleRoot)
             AcceptableModules.append(ModuleName.mid(ModuleName.lastIndexOf("::") + 2, -1));
-        }
     }
 
     return AcceptableModules;

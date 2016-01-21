@@ -231,7 +231,7 @@ public:
             Q_ASSERT_X(false, "Range based validator", "Invalid type on RangeBased configurable template");
         }
         if (IsInRange == false){
-            _errorMessage = QString("values must be between (%1 : %2)").arg(this->Min).arg(this->Max);
+            _errorMessage = QString("value must be between (%2 : %3)").arg(this->configPath()).arg(this->Min).arg(this->Max);
             return false;
         }
         _errorMessage.clear();
