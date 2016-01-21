@@ -78,7 +78,7 @@ tmplRangedConfigurable<quint8> clsSearchGraph::HardReorderingJumpLimit(
 tmplRangedConfigurable<quint8> clsSearchGraph::ReorderingConstraintMaximumRuns(
         MAKE_CONFIG_PATH("ReorderingConstraintMaximumRuns"),
         "IBM1 reordering constraint",
-        1,100,
+        0,100,
         2);
 
 tmplConfigurable<bool>   clsSearchGraph::DoComputePositionSpecificRestCosts(
