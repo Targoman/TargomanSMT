@@ -52,7 +52,7 @@ tmplRangedConfigurable<quint8> clsCardinalityHypothesisContainer::PrimaryCoverag
 tmplRangedConfigurable<double> clsCardinalityHypothesisContainer::SearchBeamWidth(
         MAKE_CONFIG_PATH("SearchBeamWidth"),
         "Maximum search beam width",
-        1,64,
+        0.5,64,
         5
         );
 
