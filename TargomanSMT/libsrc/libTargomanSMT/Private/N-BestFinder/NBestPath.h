@@ -21,54 +21,44 @@
 /**
  * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
  * @author Behrooz Vedadian <vedadian@targoman.com>
- * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
+ * @author Fatemeh Azadi <f.azadi@targoman.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_RULETABLE_CLSBINARYRULETABLE_H
-#define TARGOMAN_CORE_PRIVATE_RULETABLE_CLSBINARYRULETABLE_H
+#ifndef TARGOMAN_CORE_PRIVATE_NBESTFINDER_NBESTPATH_H
+#define TARGOMAN_CORE_PRIVATE_NBESTFINDER_NBESTPATH_H
 
+#include "libTargomanCommon/CmdIO.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/FStreamExtended.h"
-#include "intfRuleTable.hpp"
-#include "clsRuleNode.h"
+#include "libTargomanCommon/Types.h"
+#include "Private/SearchGraphBuilder/clsSearchGraph.h"
 
-namespace Targoman {
+
+namespace Targoman{
 namespace SMT {
-namespace Private {
-namespace RuleTable {
-
-TARGOMAN_ADD_EXCEPTION_HANDLER(exMosesPhraseTable, exRuleTable);
+namespace Private{
 
 /**
- * @brief The clsBinaryRuleTable class is used to load moses phrase and reordering table.
+ *  @brief NBest finder module
  */
-class clsBinaryRuleTable : public intfRuleTable
+namespace NBestFinder {
+
+class NBestPath
 {
 public:
-    explicit clsBinaryRuleTable();
-    ~clsBinaryRuleTable();
+    typedef QVector<QVector<SearchGraphBuilder::clsSearchGraphNode>> Container_t;
 
-    void initializeSchema();
-    void loadTableData();
+public:
+    static void retrieveNBestPaths(NBestPath::Container_t& _storage,
+                                   const SearchGraphBuilder::clsSearchGraph &_searchGraph,
+                                   const SearchGraphBuilder::clsCardinalityHypothesisContainer& _lastCardinality);
 
-private:
-    QScopedPointer<Common::clsIFStreamExtended> InputStream;
+    friend class UnitTestNameSpace::clsUnitTest;
 
-private:
-    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   FilePath;            /**< File name of phrase table. */
-    static Common::Configuration::tmplConfigurable<Common::PrefixTree::enuBinaryLoadMode::Type>  LoadMode;
-    static Common::Configuration::tmplRangedConfigurable<quint32>  MaxCachedItems;
-
-    TARGOMAN_DEFINE_MODULE(BinaryRuleTable);
 };
 
-
-
 }
 }
 }
 }
 
-ENUM_CONFIGURABLE(Targoman::Common::PrefixTree::enuBinaryLoadMode);
-
-#endif // TARGOMAN_CORE_PRIVATE_RULETABLE_CLSBINARYRULETABLE_H
+#endif // TARGOMAN_CORE_PRIVATE_NBESTFINDER_NBESTPATH_H

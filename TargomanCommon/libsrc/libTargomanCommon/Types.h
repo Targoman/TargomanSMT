@@ -110,6 +110,22 @@ struct stuPos : public QPair<qint32, qint32>{
 }
 }
 
+class QWildCard : public QRegExp{
+public:
+    QWildCard():
+        QRegExp()
+    {}
+    explicit QWildCard(const QString &pattern,
+                       Qt::CaseSensitivity cs = Qt::CaseSensitive,
+                       PatternSyntax syntax = RegExp):
+        QRegExp(pattern, cs, syntax)
+    { }
+
+    QWildCard(const QRegExp &rx):
+        QRegExp(rx)
+    { }
+};
+
 //qRegisterMetaType<Targoman::Common::stuPong>("Targoman::Common::stuPong");
 Q_DECLARE_METATYPE(Targoman::Common::stuPong)
 typedef Targoman::Common::clsFilePath FilePath_t;

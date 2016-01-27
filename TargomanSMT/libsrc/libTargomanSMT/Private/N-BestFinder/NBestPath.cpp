@@ -21,54 +21,25 @@
 /**
  * @author S. Mohammad M. Ziabary <ziabary@targoman.com>
  * @author Behrooz Vedadian <vedadian@targoman.com>
- * @author Saeed Torabzadeh <saeed.torabzadeh@targoman.com>
+ * @author Fatemeh Azadi <f.azadi@targoman.com>
  */
 
-#ifndef TARGOMAN_CORE_PRIVATE_RULETABLE_CLSBINARYRULETABLE_H
-#define TARGOMAN_CORE_PRIVATE_RULETABLE_CLSBINARYRULETABLE_H
+#include "NBestPath.h"
 
-#include "libTargomanCommon/Configuration/tmplConfigurable.h"
-#include "libTargomanCommon/FStreamExtended.h"
-#include "intfRuleTable.hpp"
-#include "clsRuleNode.h"
-
-namespace Targoman {
+namespace Targoman{
 namespace SMT {
-namespace Private {
-namespace RuleTable {
+namespace Private{
+namespace NBestFinder {
 
-TARGOMAN_ADD_EXCEPTION_HANDLER(exMosesPhraseTable, exRuleTable);
-
-/**
- * @brief The clsBinaryRuleTable class is used to load moses phrase and reordering table.
- */
-class clsBinaryRuleTable : public intfRuleTable
+void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
+                                const SearchGraphBuilder::clsSearchGraph &_searchGraph,
+                                const SearchGraphBuilder::clsCardinalityHypothesisContainer &_lastCardinality)
 {
-public:
-    explicit clsBinaryRuleTable();
-    ~clsBinaryRuleTable();
 
-    void initializeSchema();
-    void loadTableData();
-
-private:
-    QScopedPointer<Common::clsIFStreamExtended> InputStream;
-
-private:
-    static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   FilePath;            /**< File name of phrase table. */
-    static Common::Configuration::tmplConfigurable<Common::PrefixTree::enuBinaryLoadMode::Type>  LoadMode;
-    static Common::Configuration::tmplRangedConfigurable<quint32>  MaxCachedItems;
-
-    TARGOMAN_DEFINE_MODULE(BinaryRuleTable);
-};
-
+}
 
 
 }
 }
 }
 }
-
-ENUM_CONFIGURABLE(Targoman::Common::PrefixTree::enuBinaryLoadMode);
-
-#endif // TARGOMAN_CORE_PRIVATE_RULETABLE_CLSBINARYRULETABLE_H

@@ -57,7 +57,7 @@ public:
     static Common::Configuration::tmplConfigurable<QString>             InputFile;
     static Common::Configuration::tmplConfigurable<QString>             InputText;
     static Common::Configuration::tmplConfigurable<QString>             OutputFile;
-    static Common::Configuration::tmplConfigurable<quint8>              MaxThreads;
+    static Common::Configuration::tmplConfigurable<quint16>             MaxThreads;
 };
 
 }

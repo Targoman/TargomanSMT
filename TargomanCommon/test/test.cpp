@@ -34,7 +34,7 @@ tmplConfigurable<enuTestEnum::Type> TestE(
         "sdd",
         /*Targoman::Common::Configuration::*/enuTestEnum::B);
 
-tmplConfigurable<QRegExp,true>     WildPattern(
+tmplConfigurable<QWildCard>     WildPattern(
         clsConfigPath("IncludePattern"),
         "FilePatterns to include when converting (WildCard format)",
         "",
@@ -46,7 +46,7 @@ tmplConfigurable<QRegExp,true>     WildPattern(
             enuConfigSource::Arg  |
             enuConfigSource::File));
 
-tmplConfigurable<QRegExp,false>     RegexPattern(
+tmplConfigurable<QRegExp>     RegexPattern(
         clsConfigPath("RegexPattern"),
         "FilePatterns to include when converting (WildCard format)",
         "",

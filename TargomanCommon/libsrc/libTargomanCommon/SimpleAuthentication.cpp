@@ -36,7 +36,7 @@ using namespace Configuration;
 
 tmplConfigurable<FilePath_t> SimpleAuthentication::UserInfoFile(
         MAKE_CONFIG_PATH("UserInfoFile"),
-        "Path to file containing valid usernames and passwords",
+        "Path to file containing valid usernames and passwords. Relative to config file path unless specified as absolute path.",
         "",
         Validators::tmplPathAccessValidator<
             (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable),

@@ -48,6 +48,7 @@ class intfConfigurablePrivate;
 }
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exConfiguration, exTargomanBase);
+TARGOMAN_ADD_EXCEPTION_HANDLER(exCofigItemNotInitialized, exConfiguration);
 
 typedef std::function<void ()> fnAppInitializer_t;
 
@@ -70,7 +71,7 @@ public:
     void init(const QString &_license,
               const QStringList &_arguments = QStringList(),
               fnAppInitializer_t _appInitializer = [](){}, bool _minimal = false);
-    void save2File(const QString&  _fileName, bool _backup);
+    void save2File(const QString&  _fileName, bool _backup, int _wrapLine = 80);
     void addConfig(const QString _path, intfConfigurable* _item);
     void addModuleInstantiaor(const QString& _fullName, const QString& _name, const stuInstantiator& _instantiator);
     QStringList registeredModules(const QString& _moduleRoot);

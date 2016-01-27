@@ -143,7 +143,7 @@ public:
 struct stuServers{
     stuServers(const QString& _basePath) :
         Address(_basePath + "Address",
-                "kjkjkldfj"),
+                "kjkjkldfj sl s sm klsjflkdsl jaklfjkl jdsljfldskf klsjdklfjldskfjkldsl jdsklfjskl djlfjs friostjls jlskdfjklsdjf lksklfjdskl jkldsjfkljsfkljdsklfj dlfjldskfj dsklfjklj (sdfkdsfjkdsh jkdshfjdsf hsfjksh jks) skshfhdskjfhkd hfdsf;sd shfjhds jkfhjh fhsdjfh jksdhfsd fds j; dskjfklsdj"),
         Active(_basePath + "Active",
                "fdsfdf",
                true)

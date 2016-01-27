@@ -62,7 +62,7 @@ public:
 
 public:
     static Common::Configuration::tmplConfigurableMultiMap<stuServer> TranslationServers;
-    static Common::Configuration::tmplConfigurable<quint16>           MaxConcurrentClients;
+    static Common::Configuration::tmplRangedConfigurable<quint16>           MaxConcurrentClients;
     static Common::Configuration::tmplConfigurable<QString>           DBHost;
     static Common::Configuration::tmplConfigurable<quint16>           DBPort;
     static Common::Configuration::tmplConfigurable<QString>           DBUser;
