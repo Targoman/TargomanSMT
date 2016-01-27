@@ -140,7 +140,7 @@ function installWebServer(){
     if [ $AlsoTest -eq 1 ]; then
         echo -e "#!/bin/sh\n"\
             "export LD_LIBRARY_PATH=$InstallDir/Binaries/Trunk/libs\n"\
-            "$InstallDir/Binaries/Trunk/bin/TargomanLoadBalancer \$*\n"\
+            "$InstallDir/Binaries/Trunk/bin/TargomanLoadBalancer \$* >>/SMT/logs/TargomanSMTServer.trunk.log 2>&1\n"\
             > $BaseSMTFolder/bin/TargomanLoadBalancer.trunk
         sed -i "s/^ //g" $BaseSMTFolder/bin/TargomanLoadBalancer.trunk
         chmod a+x $BaseSMTFolder/bin/TargomanLoadBalancer.trunk
@@ -149,7 +149,7 @@ function installWebServer(){
             "After=network.target\n"\
             "\n"\
             "[Service]\n"\
-            "ExecStart=$BaseSMTFolder/bin/TargomanLoadBalancer.trunk --config $BaseSMTFolder/conf/TargomanLoadBalancer.trunk.ini --log-dont-show --out-silent\n"\
+            "ExecStart=$BaseSMTFolder/bin/TargomanLoadBalancer.trunk --config $BaseSMTFolder/conf/TargomanLoadBalancer.trunk.ini\n"\
             "Restart=always\n"\
             "\n"\
             "[Install]\n"\

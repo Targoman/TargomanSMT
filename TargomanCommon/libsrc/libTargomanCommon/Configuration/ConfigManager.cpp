@@ -430,6 +430,8 @@ void ConfigManager::save2File(const QString &_fileName, bool _backup, int _wrapL
             Configurable = this->pPrivate->Configs.value(Group + (Key.isEmpty() ? "" : "/"+Key) + '/');
         Q_ASSERT(Configurable);
 
+        if (testFlag(Configurable->configSources(), enuConfigSource::File) == false)
+            continue;
 
         if (LastGroup != Group){
             writeSection(Group);
