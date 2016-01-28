@@ -35,7 +35,9 @@ void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
                                 const SearchGraphBuilder::clsSearchGraph &_searchGraph,
                                 const SearchGraphBuilder::clsCardinalityHypothesisContainer &_lastCardinality)
 {
-
+    Q_UNUSED(_storage)
+    Q_UNUSED(_searchGraph)
+    Q_UNUSED(_lastCardinality)
 }
 
 

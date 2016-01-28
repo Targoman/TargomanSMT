@@ -90,7 +90,7 @@ public:
 
     virtual void newSentence(const InputDecomposer::Sentence_t &_inputSentence) {Q_UNUSED(_inputSentence)}
 
-    const QVector<Cost_t> getCostElements(SearchGraphBuilder::clsSearchGraphNode& _hypothesisNode){
+    const QVector<Cost_t> getCostElements(SearchGraphBuilder::clsSearchGraphNode& _hypothesisNode) const{
         return _hypothesisNode.featureFunctionDataAt(this->DataIndex)->costElements();
     }
 
