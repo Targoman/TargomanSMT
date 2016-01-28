@@ -171,6 +171,18 @@ function updateBasePackages(){
     fi
 }
 
+function doService() {
+    for Service in $2; do
+        if [ ! -f /usr/sbin/rc$Service ];then
+            logError "service $Service not found. Please install it using baseinstall.sh script"
+            exit 110
+        fi
+        logInfo "service $Service $1"
+        sudo service $Service $1
+    done
+}
+
+
 function updateLoadBalancer(){
     Libraries="QJsonRPC TargomanCommon"
     Binaries="TargomanLoadBalancer tsapasswd"
@@ -195,19 +207,10 @@ function updateLoadBalancer(){
     runOnRemote unpackBinaries
     runOnRemote updateSymlinks
     runOnRemote doService start "$Services"
+    sleep 1
+    runOnRemote doService status "'$Services'"
 
     logSection "Finished"
-}
-
-function doService() {
-    for Service in $2; do
-        if [ ! -f /usr/sbin/rc$Service ];then
-            logError "service $Service not found. Please install it using baseinstall.sh script"
-            exit 110
-        fi
-        logInfo "service $Service $1"
-        sudo service $Service $1
-    done
 }
 
 function updateSMTServer(){
@@ -248,7 +251,7 @@ function updateSMTServer(){
 
 function main(){
     IsTest=0
-    while getopts ":lstH:p:v:u:g:nkc" o; do
+    while getopts ":lbstH:p:v:u:g:nkc" o; do
         case "${o}" in
             l)  What2Install="$What2Install LoadBalancer";;
             b)  What2Install="LoadBalancer";IsTest=1;;

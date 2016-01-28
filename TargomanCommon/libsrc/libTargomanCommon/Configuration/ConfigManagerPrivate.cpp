@@ -161,7 +161,7 @@ bool confReadFunc(QIODevice &_device, QSettings::SettingsMap &_map){
     QTextStream Stream(&_device);
     quint64 LineNumber = 0;
     static QRegExp RxGroup("^\\s*\\[([%\\w]+)\\]\\b*",Qt::CaseSensitive, QRegExp::RegExp2);
-    static QRegExp RxKeyValue("^\\s*([%\\w\\\\/]+)\\s*=\\s*($|\"(.*)\"|[^\"#;][^#;]*)\\s*[#;]?",Qt::CaseSensitive, QRegExp::RegExp2);
+    static QRegExp RxKeyValue("^\\s*([%\\w\\\\/]+)\\s*=\\s*($|\"(.*)\"|([^\"#;][^#;]*))\\s*[#;]?",Qt::CaseSensitive, QRegExp::RegExp2);
     _map.clear();
     QString Group="General";
     while(Stream.atEnd() == false){
@@ -176,7 +176,7 @@ bool confReadFunc(QIODevice &_device, QSettings::SettingsMap &_map){
 
         if(RxKeyValue.indexIn(Line)!=-1){
             QString Key=RxKeyValue.cap(1).replace("\\","/");
-            QString Value = RxKeyValue.captureCount() == 4 ? RxKeyValue.cap(4) : (RxKeyValue.captureCount() == 3 ? RxKeyValue.cap(2) : "");
+            QString Value = (RxKeyValue.captureCount() == 4 ? (RxKeyValue.cap(4).isEmpty() ? RxKeyValue.cap(3) : RxKeyValue.cap(4) ): "");
             _map.insert(Group + "/" + Key, Value.trimmed());
             continue;
         }

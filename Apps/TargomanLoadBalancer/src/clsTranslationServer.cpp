@@ -50,9 +50,6 @@ clsTranslationServer::clsTranslationServer(const QString &_dir,
 
 void clsTranslationServer::connect()
 {
-    this->Socket->connectToHost(
-                this->Configs.Host.value(),
-                this->Configs.Port.value());
     this->Socket->setSocketOption(QTcpSocket::KeepAliveOption, true);
     QObject::connect(this->Socket.data(),&QTcpSocket::connected,
                      this, &clsTranslationServer::slotConnected, Qt::DirectConnection);
@@ -60,6 +57,12 @@ void clsTranslationServer::connect()
                      this, &clsTranslationServer::slotReadyRead, Qt::DirectConnection);
     QObject::connect(this->Socket.data(),&QTcpSocket::disconnected,
                      this, &clsTranslationServer::sigDisconnected, Qt::DirectConnection);
+    QObject::connect(this->Socket.data(),SIGNAL(error(QAbstractSocket::SocketError)),
+                     this, SLOT(slotError(QAbstractSocket::SocketError)),Qt::DirectConnection);
+    this->Socket->connectToHost(
+                this->Configs.Host.value(),
+                this->Configs.Port.value());
+
     QMutexLocker Locker(&this->ResponseLock);
     this->IsResponseReady = false;
 }
@@ -162,6 +165,12 @@ void clsTranslationServer::slotReadyRead()
         emit sigReadyForFirstRequest();
     }
 }
+
+void clsTranslationServer::slotError(QAbstractSocket::SocketError _socketError){
+    Q_UNUSED(_socketError)
+   TargomanError("[%s:%d]: %s",qPrintable(this->Configs.Host.value()),this->Configs.Port.value(),qPrintable(this->Socket->errorString()));
+}
+
 
 void clsTranslationServer::slotDisconnected()
 {
