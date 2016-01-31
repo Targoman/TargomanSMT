@@ -58,7 +58,13 @@ public:
 
     virtual intfFeatureFunctionData* copy() const = 0;
 
-    inline const QVector<Common::Cost_t>&     costElements(){return this->CostElements;}
+    inline const QVector<Common::Cost_t>&     costElements()const{return this->CostElements;}
+
+    inline void  setCostElements( QVector<Common::Cost_t>& _costs){
+        for(int i = 0; i < _costs.size(); i++)
+            CostElements.replace(i, _costs.at(i));
+
+    }
 
 public:
     QVector<Common::Cost_t>     CostElements;           /**< Feature fucntion stores its costs to this vector. */
@@ -84,6 +90,7 @@ public:
     inline Common::Cost_t getTotalCost() const;
     inline Common::Cost_t getCost() const;
 
+
     void swap(clsSearchGraphNode& _other);
 
     void recombine(clsSearchGraphNode& _node);
@@ -99,6 +106,7 @@ public:
     inline bool isInvalid() const;
     inline void setFeatureFunctionData(size_t _index, intfFeatureFunctionData* _data);
     inline const intfFeatureFunctionData* featureFunctionDataAt(size_t _index) const;
+    inline intfFeatureFunctionData& featureFunctionData(size_t _index);
 
     inline bool isFinal();
 
@@ -288,6 +296,11 @@ inline void clsSearchGraphNode::setFeatureFunctionData(size_t _index, intfFeatur
  */
 const intfFeatureFunctionData *clsSearchGraphNode::featureFunctionDataAt(size_t _index) const {
     return this->Data->FeatureFunctionsData.at(_index);
+}
+
+
+intfFeatureFunctionData& clsSearchGraphNode::featureFunctionData(size_t _index){
+    return *this->Data->FeatureFunctionsData[_index];
 }
 
 int compareSearchGraphNodeStates(const clsSearchGraphNode& _first, const clsSearchGraphNode& _second);
