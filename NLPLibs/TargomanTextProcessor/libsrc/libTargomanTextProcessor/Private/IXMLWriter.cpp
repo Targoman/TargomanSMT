@@ -130,8 +130,7 @@ IXMLWriter::IXMLWriter() :
 
 void IXMLWriter::init(const QString &_configFile)
 {
-    QString AbbreviationDetectionRegex =
-            QStringLiteral("\\b(Mr\\.");
+    QString AbbreviationDetectionRegex = QStringLiteral("\\b(Mr\\.");
 
     QFile AbbrF(_configFile);
     AbbrF.open(QIODevice::ReadOnly);
@@ -141,15 +140,17 @@ void IXMLWriter::init(const QString &_configFile)
     while (!AbbrF.atEnd())
     {
         DataLine = AbbrF.readLine().trimmed();
-        if (DataLine.isEmpty() || DataLine.startsWith("##"))
+        if (DataLine.isEmpty() || DataLine.startsWith("#"))
             continue;
         if ((CommentIndex = DataLine.indexOf("##")) >= 0)
             DataLine.truncate(CommentIndex);
-        AbbreviationDetectionRegex.append("|" + DataLine.replace(".", "\\."));
+        AbbreviationDetectionRegex.append("|" + DataLine.replace(".", "\\\\."));
     }
 
-    //        this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=[^\\w]|$)");
-    this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=\\b)");
+    this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=[^\\w]|$)");
+    //this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=\\b)");
+
+    qDebug()<<this->RxAbbrDic.pattern();
 }
 
 /**
