@@ -149,8 +149,6 @@ void IXMLWriter::init(const QString &_configFile)
 
     this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=[^\\w]|$)");
     //this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=\\b)");
-
-    qDebug()<<this->RxAbbrDic.pattern();
 }
 
 /**
