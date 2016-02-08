@@ -227,6 +227,8 @@ void clsSearchGraph::collectPhraseCandidates()
                     RuleNodes.append(SpecialRuleNode);
             }
 
+            RuleNodes.append(this->Data->Sentence.at(FirstPosition).temporaryRuleNode());
+
             if(RuleNodes.isEmpty())
                 RuleNodes.append(*clsSearchGraph::UnknownWordRuleNode);
 

@@ -60,10 +60,12 @@ void OOVHandler::initialize()
 {
 }
 
-TargetRulesContainer_t OOVHandler::gatherTargetRules(const QString &_token, QVariantMap &_attrs)
+TargetRulesContainer_t OOVHandler::gatherTargetRules(const QString &_token, QVariantMap &_attrs, bool _reusable)
 {
     TargetRulesContainer_t TargetRules;
     foreach(intfOOVHandlerModule* pOOVHandler, this->ActiveOOVHandlers){
+        if (pOOVHandler->isReusable() != _reusable)
+            continue;
         const clsTargetRule OOVHandlerTargetRule = pOOVHandler->process(_token, _attrs);
         if (OOVHandlerTargetRule.isInvalid() == false){
             TargetRules.append(OOVHandlerTargetRule);
@@ -106,12 +108,10 @@ QList<WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token, QVaria
             SpecialTokensRegistry::instance().getExpirableSpecialToken(_token);
 
     if (ExpirableSpecialToken.Data->NotSet){
-        TargetRulesContainer_t TargetRules = this->gatherTargetRules(_token, _attrs);
+        TargetRulesContainer_t TargetRules = this->gatherTargetRules(_token, _attrs, true);
 
-        if (TargetRules.isEmpty()){
-            //SpecialTokensRegistry::instance().insertExpirableSpecialToken(_token, SpecialTokensRegistry::clsExpirableSpecialToken(Constants::SrcVocabUnkWordIndex, _attrs));
-            return (QList<Common::WordIndex_t>() << Constants::SrcVocabUnkWordIndex); // There are no new handlers so keep it as unknown and cache result
-        }
+        if (TargetRules.isEmpty())
+            return QList<Common::WordIndex_t>(); // There are no handlers so keep it as unknown
 
         clsRuleNode RuleNode;
         RuleNode.detachInvalidData();
@@ -135,11 +135,12 @@ QList<WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token, QVaria
 
 }
 
-TargetRulesContainer_t OOVHandler::generateTargetRules(const QString &_token)
+/* was used in SearchGraph builder in order to create target rule for single words aligned to NULL
+  TargetRulesContainer_t OOVHandler::generateTargetRules(const QString &_token)
 {
     QVariantMap Dummy;
     return this->gatherTargetRules(_token, Dummy);
-}
+}*/
 
 
 }

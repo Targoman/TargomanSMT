@@ -51,6 +51,8 @@ public:
     }
     TARGOMAN_DEFINE_MODULE_SCOPE(intfOOVHandlerModule)
 
+    virtual bool isReusable(){return false;}
+
     virtual RuleTable::clsTargetRule process(const QString& _token, QVariantMap& _currAttrs) = 0;
 };
 
