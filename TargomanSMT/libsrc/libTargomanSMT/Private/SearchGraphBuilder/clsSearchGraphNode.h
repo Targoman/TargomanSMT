@@ -107,6 +107,7 @@ public:
     inline void setFeatureFunctionData(size_t _index, intfFeatureFunctionData* _data);
     inline const intfFeatureFunctionData* featureFunctionDataAt(size_t _index) const;
     inline intfFeatureFunctionData& featureFunctionData(size_t _index);
+    inline const QList<clsSearchGraphNode> getCombindedNodes() const;
 
     inline bool isFinal();
 
@@ -267,7 +268,7 @@ inline const Coverage_t&    clsSearchGraphNode::coverage() const{return this->Da
 inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecombined;}
 inline bool clsSearchGraphNode::isInvalid() const {return this->Data == InvalidSearchGraphNodeData;}
 inline bool clsSearchGraphNode::isFinal(){return this->Data->IsFinal;}
-
+inline const QList<clsSearchGraphNode> clsSearchGraphNode::getCombindedNodes() const {return this->Data->CombinedNodes;}
 #ifdef TARGOMAN_SHOW_DEBUG
 /**
  * @brief Returns a list of cost of all feature funcitons.
@@ -302,6 +303,7 @@ const intfFeatureFunctionData *clsSearchGraphNode::featureFunctionDataAt(size_t 
 intfFeatureFunctionData& clsSearchGraphNode::featureFunctionData(size_t _index){
     return *this->Data->FeatureFunctionsData[_index];
 }
+
 
 int compareSearchGraphNodeStates(const clsSearchGraphNode& _first, const clsSearchGraphNode& _second);
 

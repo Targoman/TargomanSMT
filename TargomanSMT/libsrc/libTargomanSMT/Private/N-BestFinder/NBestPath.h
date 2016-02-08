@@ -44,22 +44,24 @@ namespace Private{
 namespace NBestFinder {
 
 class clsTrellisPathData;
+class clsTrellisPathCollection;
 
 class clsTrellisPath {
 
 public:
+    clsTrellisPath(){}
     clsTrellisPath(const SearchGraphBuilder::clsSearchGraphNode& _node);
     clsTrellisPath(const clsTrellisPath& _prevPath, size_t _changedEdgeIndex, const SearchGraphBuilder::clsSearchGraphNode& _changedArc);
+    clsTrellisPath(const clsTrellisPath& _other) : Data(_other.Data) {}
 
     inline Common::Cost_t getTotalCost() const;
     inline const QVector<SearchGraphBuilder::clsSearchGraphNode>& getNodes() const;
-    inline size_t getPrevEdgeChanged() const;
+    inline int getPrevEdgeChanged() const;
     inline const SearchGraphBuilder::intfFeatureFunctionData * featureFunctionDataAt(size_t _index) const;
     inline void setFeatureFunctionData(size_t _index, QVector<Cost_t>& newCosts);
     inline void setFeatureFunctionData(size_t _index, SearchGraphBuilder::intfFeatureFunctionData* _data);
-
-
-    void createDeviantPaths(clsTrellisPathCollection &pathCollection);
+    inline size_t getSize() const;
+    inline QString getTranslation();
 
 
 
@@ -70,18 +72,18 @@ private:
 class clsTrellisPathData : public QSharedData{
 public:
     clsTrellisPathData() :
-        TotalCost(0),
-        PrevEdgeChanged(-1),
         Nodes(NULL),
+        PrevEdgeChanged(-1),
+        TotalCost(0),
         FeatureFunctionsData(SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL)
     {
     }
 
-    clsTrellisPathData(clsTrellisPathData& _other) :
+    clsTrellisPathData(const clsTrellisPathData& _other) :
         QSharedData(_other),
-        TotalCost(_other.TotalCost),
-        PrevEdgeChanged(_other.PrevEdgeChanged),
         Nodes(_other.Nodes),
+        PrevEdgeChanged(_other.PrevEdgeChanged),
+        TotalCost(_other.TotalCost),
         FeatureFunctionsData(_other.FeatureFunctionsData.size())
     {
         for(int i = 0; i < this->FeatureFunctionsData.size(); ++i)
@@ -97,7 +99,7 @@ public:
 
 public:
     QVector<SearchGraphBuilder::clsSearchGraphNode> Nodes;
-    size_t PrevEdgeChanged;
+    int PrevEdgeChanged;
     Common::Cost_t  TotalCost;
     QVector<SearchGraphBuilder::intfFeatureFunctionData*>   FeatureFunctionsData;
 
@@ -106,19 +108,27 @@ public:
 class clsTrellisPathCollection{
     QMultiMap<Cost_t, clsTrellisPath> Collection;
 
-    void add(clsTrellisPath _path){
-        Collection.insert(_path.getTotalCost(), _path);
+public:
+    void add(clsTrellisPath _path, size_t maxSize){
+
+        Collection.insertMulti(_path.getTotalCost(), _path);
+
+        while(Collection.size() > (int)maxSize && maxSize > 0){
+            QMutableMapIterator<Cost_t, clsTrellisPath> iter(Collection);
+            iter.toBack();
+            Collection.erase(iter.previous());
+        }
     }
 
-    clsTrellisPath pop(){
-        return Collection.begin().value();
+    clsTrellisPath pop() {
+        clsTrellisPath path = Collection.begin().value();
+        Collection.erase(Collection.begin());
+        return path;
     }
 
     size_t getSize(){
         return Collection.size();
     }
-
-    void prune(size_t _newSize);
 
 
 };
@@ -132,6 +142,8 @@ public:
     static void retrieveNBestPaths(NBestPath::Container_t& _storage,
                                    const SearchGraphBuilder::clsSearchGraph &_searchGraph,
                                    const SearchGraphBuilder::clsCardinalityHypothesisContainer& _lastCardinality);
+
+    static void createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPathCollection &_pathCollection, const size_t N);
 
     friend class UnitTestNameSpace::clsUnitTest;
 
@@ -153,12 +165,26 @@ inline const SearchGraphBuilder::intfFeatureFunctionData * clsTrellisPath::featu
     return this->Data->FeatureFunctionsData.at(_index);
 }
 
-inline size_t clsTrellisPath::getPrevEdgeChanged() const{
+inline int clsTrellisPath::getPrevEdgeChanged() const{
     return this->Data->PrevEdgeChanged;
+}
+inline size_t clsTrellisPath::getSize() const{
+    return this->Data->Nodes.size();
 }
 
 inline const QVector<SearchGraphBuilder::clsSearchGraphNode>& clsTrellisPath::getNodes() const{
     return this->Data->Nodes;
+}
+
+inline QString clsTrellisPath::getTranslation() {
+    QVector<SearchGraphBuilder::clsSearchGraphNode> PathNodes = this->getNodes();
+    QString Translation = "";
+    for(int i = PathNodes.size() - 1; i >= 0 ; i--){
+        ///@todo needing a function that gives the translation string for a SearchGraphNode
+     //   Translation += getTargetString(PathNodes[i].targetRule(),
+     //                       stuPos(PathNodes[i].sourceRangeBegin(), PathNodes[i].sourceRangeEnd()));
+    }
+    return Translation;
 }
 
 }

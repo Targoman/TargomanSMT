@@ -31,6 +31,7 @@ namespace SMT {
 namespace Private{
 namespace NBestFinder {
 
+
 clsTrellisPath::clsTrellisPath(const SearchGraphBuilder::clsSearchGraphNode &_node){
 
     for(size_t i = 0; i < SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount; ++i)
@@ -74,7 +75,7 @@ clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedE
             QVector<Cost_t> PrevArcCosts = _prevNodes.at(_changedEdgeIndex).featureFunctionDataAt(i)->costElements();
             QVector<Cost_t> NewArcCosts = _changedArc.featureFunctionDataAt(i)->costElements();
 
-            for(size_t CostsIter = 0; CostsIter < PrevArcCosts.size(); CostsIter++){
+            for(int CostsIter = 0; CostsIter < PrevArcCosts.size(); CostsIter++){
                 PrevPathCosts.replace(CostsIter, PrevPathCosts.at(CostsIter) - PrevArcCosts.at(CostsIter) + NewArcCosts.at(CostsIter));
             }
             setFeatureFunctionData(i, PrevPathCosts);
@@ -83,12 +84,33 @@ clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedE
 
 }
 
-void clsTrellisPath::createDeviantPaths(clsTrellisPathCollection &pathCollection){
 
-}
+void NBestPath::createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPathCollection &_pathCollection, const size_t N){
 
-void clsTrellisPathCollection::prune(size_t newSize){
+    QVector<SearchGraphBuilder::clsSearchGraphNode> pathNodes = _prevPath.getNodes();
+    if(_prevPath.getPrevEdgeChanged() == -1){
+        for(size_t currEdge = 0; currEdge < _prevPath.getSize(); currEdge++){
+            if(pathNodes.at(currEdge).isRecombined())
+                continue;
+             QList<SearchGraphBuilder::clsSearchGraphNode> combinedNodes = pathNodes.at(currEdge).getCombindedNodes();
+             for(int cn = 0; cn < combinedNodes.size(); cn++){
+                 clsTrellisPath newPath(_prevPath, currEdge, combinedNodes.at(cn));
+                 _pathCollection.add(newPath, N);
 
+             }
+        }
+    }else{
+        for(size_t currEdge = _prevPath.getPrevEdgeChanged() + 1; currEdge < _prevPath.getSize(); currEdge++){
+            if(pathNodes.at(currEdge).isRecombined())
+                continue;
+             QList<SearchGraphBuilder::clsSearchGraphNode> combinedNodes = pathNodes.at(currEdge).getCombindedNodes();
+             for(int cn = 0; cn < combinedNodes.size(); cn++){
+                 clsTrellisPath newPath(_prevPath, currEdge, combinedNodes.at(cn));
+                 _pathCollection.add(newPath, N);
+
+             }
+        }
+    }
 }
 
 void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
@@ -96,13 +118,35 @@ void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
                                 const SearchGraphBuilder::clsCardinalityHypothesisContainer &_lastCardinality)
 {
 
-    clsTrellisPath bestPath(_searchGraph.goalNode());
-    clsTrellisPathCollection bestPathsCollection;
+    int N = 100;
+    bool OnlyDistinct = false;
+    int NBestFactor = 1;
+    if (NBestFactor < 1) NBestFactor = 1000; // 0 = unlimited
+    ///@todo nbest-factor defines stopping point for distinct n-best list if too many candidates identical
 
-    bestPathsCollection.add(bestPath);
+    clsTrellisPath BestPath(_searchGraph.goalNode());
+    clsTrellisPathCollection BestPathsCollection;
+    QSet<QString> DistinctHypos;
 
+    BestPathsCollection.add(BestPath, N);
 
-    while(bestPathsCollection.getSize() > 0){
+    int iteration = 0;
+    while(BestPathsCollection.getSize() > 0 && _storage.size() < N && (iteration < N * NBestFactor)){
+
+        clsTrellisPath Path = BestPathsCollection.pop();
+        if(OnlyDistinct){
+            QString t = Path.getTranslation();
+            if(DistinctHypos.find(t) == DistinctHypos.end()){
+                _storage.push_back(Path);
+                DistinctHypos.insert(t);
+            }
+            createDeviantPaths(Path, BestPathsCollection, N * NBestFactor);
+        }else{
+            _storage.push_back(Path);
+            createDeviantPaths(Path, BestPathsCollection, N);
+        }
+
+        iteration++;
 
     }
 
