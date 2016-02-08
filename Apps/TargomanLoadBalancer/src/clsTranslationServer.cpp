@@ -140,6 +140,7 @@ void clsTranslationServer::slotConnected()
                                "login",
                                this->LastRequestUUID,
                                LoginArgs)).toUtf8());
+    TargomanLogInfo(4,"New connection to: "<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<" Stablished");
 }
 
 void clsTranslationServer::slotReadyRead()
@@ -180,6 +181,7 @@ void clsTranslationServer::slotDisconnected()
                 JSONConversationProtocol::stuResponse::Pong,
                 SERVER_DISCONNECTED);
     emit this->sigDisconnected();
+    TargomanLogWarn(4,"Connection to: "<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<" Closed");
 }
 
 }
