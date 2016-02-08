@@ -23,6 +23,7 @@
  */
 
 #include "Configs.h"
+#include "ISO639.h"
 
 namespace Targoman {
 namespace Apps {
@@ -32,7 +33,7 @@ using namespace Common::Configuration;
 
 tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
         gConfigs::appConfig("Mode"),
-        "Working Mode of the application. Can be [" + enuAppMode::options().join("|")+"]",
+        "Application working mode",
         enuAppMode::Text2IXML,
         ReturnTrueCrossValidator,
         "m",
@@ -44,9 +45,14 @@ tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
 
 tmplConfigurable<QString> gConfigs::Language(
         gConfigs::appConfig("Language"),
-        "Language of source text in ISO639 format",
+        "Source text language in ISO639 format",
         "",
-        ReturnTrueCrossValidator,
+        [](const Targoman::Common::Configuration::intfConfigurable& _item,QString& _errorMessage){
+            if (ISO639isValid(_item.toVariant().toString().toUtf8().constData()))
+               return true;
+            _errorMessage = _item.toVariant().toString() + " is not in ISO639 format";
+            return false;
+        },
         "l",
         "LANGUAGE",
         "lang",
@@ -66,7 +72,7 @@ tmplConfigurable<QString> gConfigs::Input(
 
 tmplConfigurable<FilePath_t>     gConfigs::InputFile(
         gConfigs::appConfig("InputFile"),
-        "Input file path to convert",
+        "Input file path to convert. Relative to config file path unless specified as absolute path.",
         "",
         Validators::tmplPathAccessValidator<
         (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable),
@@ -80,7 +86,7 @@ tmplConfigurable<FilePath_t>     gConfigs::InputFile(
 
 tmplConfigurable<FilePath_t>     gConfigs::InputDir(
         gConfigs::appConfig("InputDir"),
-        "Input directory to convert",
+        "Input directory to convert. Relative to config file path unless specified as absolute path.",
         "",
         Validators::tmplPathAccessValidator<
         (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Readable),
@@ -94,7 +100,7 @@ tmplConfigurable<FilePath_t>     gConfigs::InputDir(
 
 tmplConfigurable<FilePath_t>     gConfigs::OutputDir(
         gConfigs::appConfig("Output"),
-        "output path to write converted file/files. Defaults to standard output",
+        "Output path to write converted file/files. Defaults to standard output",
         "",
         Validators::tmplPathAccessValidator<
         (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Writeatble),
@@ -106,7 +112,7 @@ tmplConfigurable<FilePath_t>     gConfigs::OutputDir(
             enuConfigSource::Arg  |
             enuConfigSource::File));
 
-tmplConfigurable<QRegExp,true>     gConfigs::IncludePattern(
+tmplConfigurable<QWildCard>     gConfigs::IncludePattern(
         gConfigs::appConfig("IncludePattern"),
         "FilePatterns to include when converting (WildCard format)",
         "",

@@ -47,14 +47,14 @@ public:
         bool PrintMessage = true;
         do{
             if (!this->Server->listen(this->AdminLocal.value() ? QHostAddress::LocalHost : QHostAddress::Any,
-                              this->ListenPort.value())){
+                              this->Port.value())){
                 if (this->WaitPortReady.value() == false)
                     throw exConfigOverNet(QString("Unable to Start Server on: %1:%2").arg(
                                                     this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
-                                                    this->ListenPort.value()));
+                                                    this->Port.value()));
                 else{
                     if (PrintMessage && _justCheck == false){
-                        TargomanLogInfo(5, "Waiting for port "<<this->ListenPort.value()<<" to become ready...");
+                        TargomanLogInfo(5, "Waiting for port "<<this->Port.value()<<" to become ready...");
                         PrintMessage = false;
                     }
                     usleep(500000);
@@ -68,7 +68,7 @@ public:
         else
             TargomanInfo(5, QString("Administration server has been started on %1:%2").arg(
                              this->AdminLocal.value() ? "localhost" : "0.0.0.0").arg(
-                             this->ListenPort.value()))
+                             this->Port.value()))
     }
 
     inline void checkPortAvailable(){  this->start(true); }
@@ -77,11 +77,11 @@ protected:
     QScopedPointer<QTcpServer>        Server;
 
 public:
-    static tmplConfigurable<int>      ListenPort;
+    static tmplRangedConfigurable<unsigned>      Port;
     static tmplConfigurable<bool>     WaitPortReady;
     static tmplConfigurable<bool>     AdminLocal;
-    static tmplConfigurable<int>      MaxSessionTime;
-    static tmplConfigurable<int>      MaxIdleTime;
+    static tmplRangedConfigurable<int>      MaxSessionTime;
+    static tmplRangedConfigurable<int>      MaxIdleTime;
     static tmplConfigurable<quint16>  MaxConnections;
 };
 

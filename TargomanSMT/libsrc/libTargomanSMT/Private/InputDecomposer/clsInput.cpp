@@ -49,10 +49,10 @@ Configuration::tmplConfigurable<QString>  clsInput::UserDefinedTags(
         "Valid user defined XML tags that must be stored with their attributes."
         "These must not overlap with predefined XML Tags",
         ""
-        /*TODO add lambda to check overlap*/);
+        /* TODO add lambda to check overlap*/);
 Configuration::tmplConfigurable<QString>  clsInput::TagSeparator(
         MAKE_CONFIG_PATH("TagSeparator"),
-        "Separator string between tags."
+        "Separator string between tags.",
         ";:;");
 
 Configuration::tmplConfigurable<bool>    clsInput::IsIXML(
@@ -360,8 +360,15 @@ void clsInput::makeSentence()
                         TokenInfo.Str, Constants::SrcVocabUnkWordIndex);
             if (WordIndex == Constants::SrcVocabUnkWordIndex){
                 WordIndexes = OOVHandler::instance().getWordIndexOptions(TokenInfo.Str, TokenInfo.Attrs);
-                if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
-                    return; // OOVHandler says that I must ignore this word when decoding
+                if (WordIndexes.isEmpty()){
+                    RuleTable::TargetRulesContainer_t TargetRules = OOVHandler::instance().gatherTemporaryTargetRules(TokenInfo.Str, TokenInfo.Attrs);
+                    if (TargetRules.size()){
+                        TokenInfo.TemporaryRuleNode.detachInvalidData();
+                        TokenInfo.TemporaryRuleNode.targetRules().append(TargetRules);
+                    }
+                    if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
+                        return; // OOVHandler says that I must ignore this word when decoding
+                }
             }else
                 WordIndexes.append(WordIndex);
         }

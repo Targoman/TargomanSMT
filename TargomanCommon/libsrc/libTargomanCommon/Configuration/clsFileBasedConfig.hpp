@@ -38,10 +38,11 @@ namespace Configuration {
  */
 class clsFileBasedConfig : public intfConfigurable{
 public:
-    clsFileBasedConfig(const clsConfigPath&  _configPath) :
+    clsFileBasedConfig(const clsConfigPath&  _configPath,
+                       const QString& _description) :
         intfConfigurable(enuConfigType::FileBased,
                          _configPath,
-                         "OPTIONAL_CONFIGS_IN_FILE",
+                         _description,
                          "",
                          "",
                          "",
@@ -71,7 +72,7 @@ public:
     }
 
     virtual QString validValues() const{
-        return "";
+        return "See description in the documents";
     }
 };
 

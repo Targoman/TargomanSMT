@@ -94,23 +94,23 @@ QMap<QString, FeatureFunction::intfFeatureFunction*>       stuGlobalConfigs::Act
 
 tmplModuleConfig<Proxies::LanguageModel::intfLMSentenceScorer>         stuGlobalConfigs::LM(
         MAKE_CONFIG_PATH("Modules/LM"),
-        "TODO Desc",
-        "KenLMProxy");
+        "Proxy to be used for Language model scoring",
+        "clsKenLMProxy");
 // There is no transliteration for anything but Statistical Machine Translation!
 #ifndef SMT
 tmplModuleConfig<Proxies::Transliteration::intfTransliterator>         stuGlobalConfigs::Transliterator(
         MAKE_CONFIG_PATH("Modules/Transliterator"),
-        "TODO Desc",
+        "Proxy to be used for Transliteration",
         "TargomanTransliteratorProxy");
 tmplModuleConfig<Proxies::NamedEntityRecognition::intfNamedEntityRecognizer>         stuGlobalConfigs::NER(
         MAKE_CONFIG_PATH("Modules/NamedEntityRecognizer"),
-        "TODO Desc",
+        "Proxy to be used for Named Entity Recognition",
         "ZhangMaxEntProxy");
 #endif
 tmplModuleConfig<RuleTable::intfRuleTable>         stuGlobalConfigs::RuleTable(
         MAKE_CONFIG_PATH("Modules/RuleTable"),
-        "TODO Desc",
-        "BinaryRuleTable");
+        "Type of RuleTable",
+        "clsBinaryRuleTable");
 
 QScopedPointer<Targoman::SMT::Private::Proxies::LanguageModel::intfLMSentenceScorer>
     stuGlobalConfigs::EmptyLMScorer;

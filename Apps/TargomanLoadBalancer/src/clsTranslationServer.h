@@ -75,6 +75,7 @@ private slots:
     void slotConnected();
     void slotReadyRead();
     void slotDisconnected();
+    void slotError(QAbstractSocket::SocketError _socketError);
 
 public:
     quint16            TotalScore;

@@ -97,7 +97,7 @@ tmplConfigurable<bool> ActionChangeParams(
 
 tmplConfigurable<FilePath_t> UserInfoFile(
         clsConfigPath("File/Path"),
-        "File to where store information",
+        "File path to store information. Relative to config file path unless specified as absolute path.",
         "./tsa.ini",
         Validators::tmplPathAccessValidator<
             (enuPathAccess::Type)(enuPathAccess::Writeatble),

@@ -31,11 +31,12 @@ namespace Apps {
 using namespace Common;
 using namespace Common::Configuration;
 
-tmplConfigurable<quint8>     gConfigs::MaxThreads(
+tmplRangedConfigurable<quint16>     gConfigs::MaxThreads(
         gConfigs::appConfig("MaxThreads"),
         "Maximum Concurrent Translations",
+        0,255,
         64,
-        Validators::tmplNumericValidator<quint8, 0, 64>,
+        ReturnTrueCrossValidator,
         "t",
         "MAX_THREADS",
         "max-threads");

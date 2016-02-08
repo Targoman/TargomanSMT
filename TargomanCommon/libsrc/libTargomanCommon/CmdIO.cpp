@@ -78,7 +78,7 @@ tmplConfigurable<bool> Full(
 
 tmplConfigurable<QStringList> DebugDetail(
         clsConfigPath(CmdIO::moduleName() + "/" + "DebugDetail"),
-        "Set Details to be shown for debug",
+        "Set details to be shown for debug. {SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE}",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -99,9 +99,10 @@ tmplConfigurable<QStringList> DebugDetail(
         false
         );
 
-tmplConfigurable<quint8> DebugLevel(
+tmplRangedConfigurable<quint8> DebugLevel(
         clsConfigPath(CmdIO::moduleName() + "/" + "DebugLevel"),
         "Set Debug level",
+        0,9,
         0,
         [] (const intfConfigurable& _item, QString&){
             TARGOMAN_IO_SETTINGS.Debug.setLevel(_item.toVariant().toUInt());
@@ -116,7 +117,7 @@ tmplConfigurable<quint8> DebugLevel(
 
 tmplConfigurable<QStringList> InfoDetail(
         clsConfigPath(CmdIO::moduleName() + "/" + "InfoDetail"),
-        "Set Details to be shown for Info",
+        "Set details to be shown for Info. {SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE}",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -137,9 +138,10 @@ tmplConfigurable<QStringList> InfoDetail(
         false
         );
 
-tmplConfigurable<quint8> InfoLevel(
+tmplRangedConfigurable<quint8> InfoLevel(
         clsConfigPath(CmdIO::moduleName() + "/" + "InfoLevel"),
         "Set Info level",
+        0,9,
         5,
         [] (const intfConfigurable& _item, QString&){
             TARGOMAN_IO_SETTINGS.Info.setLevel(_item.toVariant().toUInt());
@@ -154,7 +156,7 @@ tmplConfigurable<quint8> InfoLevel(
 
 tmplConfigurable<QStringList> WarningDetail(
         clsConfigPath(CmdIO::moduleName() + "/" + "WarningDetail"),
-        "Set Details to be shown for Warning",
+        "Set details to be shown for Warning. {SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE}",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -175,9 +177,10 @@ tmplConfigurable<QStringList> WarningDetail(
         false
         );
 
-tmplConfigurable<quint8> WarningLevel(
+tmplRangedConfigurable<quint8> WarningLevel(
         clsConfigPath(CmdIO::moduleName() + "/" + "WarningLevel"),
         "Set Warning level",
+        0,9,
         5,
         [] (const intfConfigurable& _item, QString&){
             TARGOMAN_IO_SETTINGS.Warning.setLevel(_item.toVariant().toUInt());
@@ -192,7 +195,7 @@ tmplConfigurable<quint8> WarningLevel(
 
 tmplConfigurable<QStringList> ErrorDetail(
         clsConfigPath(CmdIO::moduleName() + "/" + "ErrorDetail"),
-        "Set Details to be shown for Error",
+        "Set details to be shown for Error. {SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE}",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -215,7 +218,7 @@ tmplConfigurable<QStringList> ErrorDetail(
 
 tmplConfigurable<QStringList> HappyDetail(
         clsConfigPath(CmdIO::moduleName() + "/" + "HappyDetail"),
-        "Set Details to be shown for Happy",
+        "Set details to be shown for Happy. {SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE}",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -236,9 +239,10 @@ tmplConfigurable<QStringList> HappyDetail(
         false
         );
 
-tmplConfigurable<quint8> HappyLevel(
+tmplRangedConfigurable<quint8> HappyLevel(
         clsConfigPath(CmdIO::moduleName() + "/" + "HappyLevel"),
         "Set Happy level",
+        0,9,
         5,
         [] (const intfConfigurable& _item, QString&){
             TARGOMAN_IO_SETTINGS.Happy.setLevel(_item.toVariant().toUInt());
@@ -253,7 +257,7 @@ tmplConfigurable<quint8> HappyLevel(
 
 tmplConfigurable<QStringList> NormalDetail(
         clsConfigPath(CmdIO::moduleName() + "/" + "NormalDetail"),
-        "Set details to be shown for Normal",
+        "Set details to be shown for Normal. {SHOW_TIME,SHOW_FUNC,SHOW_LINE,SHOW_FILE}",
         QStringList()<<"true"<<"false"<<"false"<<"false",
         [] (const intfConfigurable& _item, QString& _errorMessage){
             QStringList Params = _item.toVariant().toString().split(",");
@@ -274,9 +278,10 @@ tmplConfigurable<QStringList> NormalDetail(
         false
         );
 
-tmplConfigurable<quint8> NormalLevel(
+tmplRangedConfigurable<quint8> NormalLevel(
         clsConfigPath(CmdIO::moduleName() + "/" + "NormalLevel"),
         "Set Normal level",
+        0,9,
         5,
         [] (const intfConfigurable& _item, QString&){
             TARGOMAN_IO_SETTINGS.Normal.setLevel(_item.toVariant().toUInt());

@@ -36,20 +36,22 @@ using namespace Common;
 using namespace Common::Configuration;
 
 
-tmplConfigurable<quint16> TSManager::MaxTranslationTime(
+tmplRangedConfigurable<quint16> TSManager::MaxTranslationTime(
         MAKE_CONFIG_PATH("MaxTranslationTime"),
         "Maximum time to wait for a translation response in seconds",
+        1,5*60,
         120,
-        Validators::tmplNumericValidator<quint32,1,5*60>,
+        ReturnTrueCrossValidator,
         "","","",
         Common::Configuration::enuConfigSource::File
         );
 
-tmplConfigurable<quint8> TSManager::MaxRetries(
+tmplRangedConfigurable<quint8> TSManager::MaxRetries(
         MAKE_CONFIG_PATH("MaxRetries"),
         "Maximum tries to translate if disconnected from server",
+        1,30,
         5,
-        Validators::tmplNumericValidator<quint16,1,30>,
+        ReturnTrueCrossValidator,
         "","","",
         Common::Configuration::enuConfigSource::File
         );

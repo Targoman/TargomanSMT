@@ -107,7 +107,7 @@ public: \
        return new cls##_name;} \
 private: \
     static Targoman::Common::Configuration::clsModuleRegistrar Registrar; \
-    static QAtomicInt Instances;
+    static QAtomicInt Instances
 
 /**
  * @def TARGOMAN_DEFINE_SINGLETON_MODULE adds three function and two data member to singleton module classes.
@@ -122,7 +122,7 @@ public: \
     static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(_name));}  \
 private: \
     Q_DISABLE_COPY(_name) \
-    static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
+    static Targoman::Common::Configuration::clsModuleRegistrar Registrar
 
 #define TARGOMAN_DEFINE_SINGLETONSUBMODULE(_module, _name) \
 public: \
@@ -133,7 +133,7 @@ public: \
     static QString moduleName(){return QStringLiteral(TARGOMAN_M2STR(TARGOMAN_CAT_BY_SLASH(_module,_name)));}  \
 private: \
     Q_DISABLE_COPY(_name) \
-    static Targoman::Common::Configuration::clsModuleRegistrar Registrar;
+    static Targoman::Common::Configuration::clsModuleRegistrar Registrar
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for non singleton classes.
@@ -143,7 +143,7 @@ private: \
          _class::moduleFullNameStatic(), \
          MAKE_ABSOLUTE_MODULE_NAME, \
          Targoman::Common::Configuration::stuInstantiator(_class::instantiator,false)); \
-    QAtomicInt _class::Instances;
+    QAtomicInt _class::Instances
 
 /**
  * @def TARGOMAN_REGISTER_MODULE initialization of Registrar member for singleton classes. Also makes a null instance of class.
@@ -152,7 +152,7 @@ private: \
     Targoman::Common::Configuration::clsModuleRegistrar _class::Registrar(\
         _class::moduleFullNameStatic(), \
         MAKE_ABSOLUTE_MODULE_NAME, \
-        Targoman::Common::Configuration::stuInstantiator(_class::moduleInstance,true));
+        Targoman::Common::Configuration::stuInstantiator(_class::moduleInstance,true))
 }
 }
 }
