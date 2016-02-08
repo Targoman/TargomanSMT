@@ -31,6 +31,29 @@ namespace SMT {
 namespace Private{
 namespace NBestFinder {
 
+using namespace Configuration;
+
+TARGOMAN_REGISTER_SINGLETON_MODULE(NBestPath);
+
+tmplRangedConfigurable<int> NBestPath::NBestPathSize(
+        MAKE_CONFIG_PATH("NBestPathSize"),
+        "Number of best paths to return",
+        0, 1024,
+        128
+        );
+
+tmplRangedConfigurable<int> NBestPath::NBestFactor(
+        MAKE_CONFIG_PATH("NBestFactor"),
+        "Pruning factor for `Distinct` paths case",
+        0, 1024,
+        512
+        );
+
+tmplConfigurable<bool> NBestPath::IsDistinct(
+        MAKE_CONFIG_PATH("IsDistinct"),
+        "Determines whether only distinct paths are to be obtained",
+        true
+        );
 
 clsTrellisPath::clsTrellisPath(const SearchGraphBuilder::clsSearchGraphNode &_node){
 
@@ -50,10 +73,10 @@ clsTrellisPath::clsTrellisPath(const SearchGraphBuilder::clsSearchGraphNode &_no
 
 clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedEdgeIndex, const SearchGraphBuilder::clsSearchGraphNode &_changedArc): Data(_prevPath.Data){
 
-    QVector<SearchGraphBuilder::clsSearchGraphNode> _prevNodes = _prevPath.getNodes();
-    this->Data->Nodes.reserve(_prevNodes.size());
+    QVector<SearchGraphBuilder::clsSearchGraphNode> PrevNodes = _prevPath.getNodes();
+    this->Data->Nodes.reserve(PrevNodes.size());
     for (size_t currEdge = 0; currEdge < _changedEdgeIndex; currEdge++){
-        this->Data->Nodes.push_back(_prevNodes.at(currEdge));
+        this->Data->Nodes.push_back(PrevNodes.at(currEdge));
     }
     this->Data->Nodes.push_back(_changedArc);
 
@@ -65,14 +88,14 @@ clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedE
     }
 
     this->Data->TotalCost = _prevPath.getTotalCost();
-    this->Data->TotalCost -= _prevNodes.at(_changedEdgeIndex).getCost();
+    this->Data->TotalCost -= PrevNodes.at(_changedEdgeIndex).getCost();
     this->Data->TotalCost += _changedArc.getCost();
 
     for(size_t i = 0; i < SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount; ++i){
         if(_prevPath.featureFunctionDataAt(i) != NULL){
             //this->Data->FeatureFunctionsData.append(_prevPath.featureFunctionDataAt(i)->copy());
             QVector<Cost_t> PrevPathCosts = _prevPath.featureFunctionDataAt(i)->costElements();
-            QVector<Cost_t> PrevArcCosts = _prevNodes.at(_changedEdgeIndex).featureFunctionDataAt(i)->costElements();
+            QVector<Cost_t> PrevArcCosts = PrevNodes.at(_changedEdgeIndex).featureFunctionDataAt(i)->costElements();
             QVector<Cost_t> NewArcCosts = _changedArc.featureFunctionDataAt(i)->costElements();
 
             for(int CostsIter = 0; CostsIter < PrevArcCosts.size(); CostsIter++){
@@ -87,26 +110,26 @@ clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedE
 
 void NBestPath::createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPathCollection &_pathCollection, const size_t N){
 
-    QVector<SearchGraphBuilder::clsSearchGraphNode> pathNodes = _prevPath.getNodes();
+    QVector<SearchGraphBuilder::clsSearchGraphNode> PathNodes = _prevPath.getNodes();
     if(_prevPath.getPrevEdgeChanged() == -1){
         for(size_t currEdge = 0; currEdge < _prevPath.getSize(); currEdge++){
-            if(pathNodes.at(currEdge).isRecombined())
+            if(PathNodes.at(currEdge).isRecombined())
                 continue;
-             QList<SearchGraphBuilder::clsSearchGraphNode> combinedNodes = pathNodes.at(currEdge).getCombindedNodes();
-             for(int cn = 0; cn < combinedNodes.size(); cn++){
-                 clsTrellisPath newPath(_prevPath, currEdge, combinedNodes.at(cn));
-                 _pathCollection.add(newPath, N);
+             QList<SearchGraphBuilder::clsSearchGraphNode> CombinedNodes = PathNodes.at(currEdge).getCombindedNodes();
+             for(int cn = 0; cn < CombinedNodes.size(); cn++){
+                 clsTrellisPath NewPath(_prevPath, currEdge, CombinedNodes.at(cn));
+                 _pathCollection.add(NewPath, N);
 
              }
         }
     }else{
         for(size_t currEdge = _prevPath.getPrevEdgeChanged() + 1; currEdge < _prevPath.getSize(); currEdge++){
-            if(pathNodes.at(currEdge).isRecombined())
+            if(PathNodes.at(currEdge).isRecombined())
                 continue;
-             QList<SearchGraphBuilder::clsSearchGraphNode> combinedNodes = pathNodes.at(currEdge).getCombindedNodes();
-             for(int cn = 0; cn < combinedNodes.size(); cn++){
-                 clsTrellisPath newPath(_prevPath, currEdge, combinedNodes.at(cn));
-                 _pathCollection.add(newPath, N);
+             QList<SearchGraphBuilder::clsSearchGraphNode> CombinedNodes = PathNodes.at(currEdge).getCombindedNodes();
+             for(int cn = 0; cn < CombinedNodes.size(); cn++){
+                 clsTrellisPath NewPath(_prevPath, currEdge, CombinedNodes.at(cn));
+                 _pathCollection.add(NewPath, N);
 
              }
         }
@@ -115,20 +138,29 @@ void NBestPath::createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPa
 
 void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
                                 const SearchGraphBuilder::clsSearchGraph &_searchGraph,
-                                const SearchGraphBuilder::clsCardinalityHypothesisContainer &_lastCardinality)
+                                SearchGraphBuilder::clsCardinalityHypothesisContainer &_lastCardinality)
 {
 
-    int N = 100;
-    bool OnlyDistinct = false;
-    int NBestFactor = 1;
-    if (NBestFactor < 1) NBestFactor = 1000; // 0 = unlimited
-    ///@todo nbest-factor defines stopping point for distinct n-best list if too many candidates identical
+    int N = NBestPath::NBestPathSize.value();
+    bool OnlyDistinct = NBestPath::IsDistinct.value();
+    int NBestFactor = NBestPath::NBestFactor.value();    /// nbest-factor defines stopping point for distinct n-best list if too many candidates identical
 
-    clsTrellisPath BestPath(_searchGraph.goalNode());
+    if (NBestFactor < 1) NBestFactor = 1000; /// 0 = unlimited
+
     clsTrellisPathCollection BestPathsCollection;
     QSet<QString> DistinctHypos;
 
-    BestPathsCollection.add(BestPath, N);
+    Coverage_t FullCoverage =_searchGraph.goalNode().coverage();
+
+    SearchGraphBuilder::clsLexicalHypoNodeSet BestNodeSet = _lastCardinality[FullCoverage].nodes();
+
+    for(int i = 0; i < BestNodeSet.size(); i++){
+        clsTrellisPath BestPath(BestNodeSet.at(i));
+        if(OnlyDistinct)
+            BestPathsCollection.add(BestPath, N * NBestFactor);
+        else
+            BestPathsCollection.add(BestPath, N);
+    }
 
     int iteration = 0;
     while(BestPathsCollection.getSize() > 0 && _storage.size() < N && (iteration < N * NBestFactor)){

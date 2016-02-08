@@ -30,9 +30,12 @@
 #include "libTargomanCommon/CmdIO.h"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
 #include "libTargomanCommon/Types.h"
+#include "Private/SearchGraphBuilder/clsLexicalHypothesis.h"
+#include "Private/SearchGraphBuilder/clsCardinality.h"
 #include "Private/SearchGraphBuilder/clsSearchGraph.h"
 #include "Private/SearchGraphBuilder/clsSearchGraphNode.h"
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
+#include "libTargomanCommon/Configuration/tmplConfigurable.h"
 
 namespace Targoman{
 namespace SMT {
@@ -72,7 +75,7 @@ private:
 class clsTrellisPathData : public QSharedData{
 public:
     clsTrellisPathData() :
-        Nodes(NULL),
+        Nodes(0),
         PrevEdgeChanged(-1),
         TotalCost(0),
         FeatureFunctionsData(SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL)
@@ -133,7 +136,7 @@ public:
 
 };
 
-class NBestPath
+class NBestPath : public Configuration::intfModule
 {
 public:
     typedef QVector<clsTrellisPath> Container_t;
@@ -141,12 +144,22 @@ public:
 public:
     static void retrieveNBestPaths(NBestPath::Container_t& _storage,
                                    const SearchGraphBuilder::clsSearchGraph &_searchGraph,
-                                   const SearchGraphBuilder::clsCardinalityHypothesisContainer& _lastCardinality);
+                                   SearchGraphBuilder::clsCardinalityHypothesisContainer& _lastCardinality);
 
     static void createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPathCollection &_pathCollection, const size_t N);
 
-    friend class UnitTestNameSpace::clsUnitTest;
+private:
+    static Configuration::tmplRangedConfigurable<int> NBestPathSize;
+    static Configuration::tmplConfigurable<bool> IsDistinct;
+    static Configuration::tmplRangedConfigurable<int> NBestFactor;
 
+    TARGOMAN_DEFINE_SINGLETON_MODULE(NBestPath);
+
+private:
+    NBestPath() {
+    }
+
+    friend class UnitTestNameSpace::clsUnitTest;
 };
 
 inline Common::Cost_t clsTrellisPath::getTotalCost() const{
@@ -180,9 +193,9 @@ inline QString clsTrellisPath::getTranslation() {
     QVector<SearchGraphBuilder::clsSearchGraphNode> PathNodes = this->getNodes();
     QString Translation = "";
     for(int i = PathNodes.size() - 1; i >= 0 ; i--){
-        ///@todo needing a function that gives the translation string for a SearchGraphNode
-     //   Translation += getTargetString(PathNodes[i].targetRule(),
-     //                       stuPos(PathNodes[i].sourceRangeBegin(), PathNodes[i].sourceRangeEnd()));
+        if(Translation.length() > 0)
+            Translation += ' ';
+        Translation += PathNodes[i].targetRule().toStr();
     }
     return Translation;
 }
