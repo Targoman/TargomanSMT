@@ -116,9 +116,11 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
             TargomanLogInfo(4,"Returning response from: "<<Dir<<BestServer->configIndex());
             return Response;
         }catch(exTSMonitor &e){
-            throw exTSManager("No resources available");
+            TargomanLogWarn(4,"["<<Dir<<":"<<PreferedServerInex<<"]: "<<e.what());
+            throw exTSManager("No resources available: "+ e.what());
         }
     }
+    TargomanLogWarn(4,"["<<Dir<<":"<<PreferedServerInex<<"]: Unable to translate because max tries failed");
     throw exTSManager("Unable to translate because max tries failed");
 }
 
