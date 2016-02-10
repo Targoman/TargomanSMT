@@ -66,7 +66,9 @@ function createTagPaths(){
         $RemoteInstallDir/Configs/TargomanApps/$TagDir
     "
     runCommand install -v -o $RemoteUser -g $RemoteGroup -m 2775 -d $InstallationDirs
-    runCommand cp -r $RemoteInstallDir/Configs/TargomanApps/Active/* $RemoteInstallDir/Configs/TargomanApps/$TagDir
+    if [ $TagDir != "Trunk" ]; then
+        runCommand cp -r $RemoteInstallDir/Configs/TargomanApps/Active/* $RemoteInstallDir/Configs/TargomanApps/$TagDir
+    fi
 }
 
 function testAccess(){
