@@ -4,7 +4,6 @@ RemoteInstallDir=/SMT/Versions
 RemoteUser=installer
 RemoteGroup=support
 RemotePort=22
-MakeTag=0
 TagString=""
 SkipCreatingBasePath=0
 
@@ -25,8 +24,7 @@ function usage() {
     log "\t\t  -p: SSH port used to ssh to remote host (default=$RemotePort)" 1>&2;
     log "\t\t  -u: Username used to login and install into remote host (default=$RemoteUser)" 1>&2;
     log "\t\t  -g: Groupname used to login and install into remote host (default=$RemoteGroup)" 1>&2;
-    log "\t\t  -n: Commit as new tag" 1>&2;
-    log "\t\t  -v: Version string to be used for tagging instead of using Date-Time Tag. Not available using -t -b switches" 1>&2;
+    log "\t\t  -v: Version string to be used instead of parent folder name. Not available using -t -b switches" 1>&2;
     log "\t\t  -c: Configure links and restart services" 1>&2;
     log "\t\t  -h: print this help" 1>&2;
     exit 2;
@@ -68,6 +66,7 @@ function createTagPaths(){
         $RemoteInstallDir/Configs/TargomanApps/$TagDir
     "
     runCommand install -v -o $RemoteUser -g $RemoteGroup -m 2775 -d $InstallationDirs
+    runCommand cp -r $RemoteInstallDir/Configs/TargomanApps/Active/* $RemoteInstallDir/Configs/TargomanApps/$TagDir
 }
 
 function testAccess(){
@@ -146,13 +145,15 @@ function unpackConfigs() {
 }
 
 function updateSymlinks() {
+    logInfo "Updating symlinks"
+
     if [ $TagDir != "Trunk" ] && [ $ConfigureAndRestart -eq 1 ] ; then
         runCommand cd $RemoteInstallDir/Binaries/
-        runCommand rm -v Active
-        runCommand ln -sv $TagDir Active
+        runCommand ln -sfn $TagDir Active
         runCommand cd $RemoteInstallDir/Configs/TargomanCommon/
-        runCommand rm -v Active
-        runCommand ln -sv $TagDir Active
+        runCommand ln -sfn $TagDir Active
+        runCommand cd $RemoteInstallDir/Configs/TargomanApps/
+        runCommand ln -sfn $TagDir Active
     fi
 }
 
@@ -198,15 +199,15 @@ function updateLoadBalancer(){
         logSection "Installing Load Balancer"
     fi
 
-    runOnRemote doService status "$Services"
+    runOnRemote doService status "'$Services'"
 
     sendLibraries             "$Libraries"
     sendBinaries              "$Binaries"
 
-    runOnRemote doService stop "$Services"
+    runOnRemote doService stop "'$Services'"
     runOnRemote unpackBinaries
     runOnRemote updateSymlinks
-    runOnRemote doService start "$Services"
+    runOnRemote doService start "'$Services'"
     sleep 1
     runOnRemote doService status "'$Services'"
 
@@ -236,11 +237,9 @@ function updateSMTServer(){
 
     sendLibraries             "$Libraries"
     sendBinaries              "$Binaries"
-    sendCommonConfigurations
 
     runOnRemote doService stop "'$Services'"
     runOnRemote unpackBinaries
-    runOnRemote unpackConfigs
     runOnRemote updateSymlinks
     runOnRemote doService start "'$Services'"
     sleep 1
@@ -251,6 +250,8 @@ function updateSMTServer(){
 
 function main(){
     IsTest=0
+    ConfigureAndRestart=0
+    cd $(dirname $0)
     while getopts ":lbstH:p:v:u:g:nkc" o; do
         case "${o}" in
             l)  What2Install="$What2Install LoadBalancer";;
@@ -261,7 +262,6 @@ function main(){
             p)  RemotePort=${OPTARG}; ((Port < 10 || Port > 65535)) || usage ;;
             u)  RemoteUser=${OPTARG};;
             g)  RemoteGroup=${OPTARG};;
-            n)  MakeTag=1;;
             k)  SkipCreatingBasePath=1;;
             v)  TagString=${OPTARG};;
             c)  ConfigureAndRestart=1;;
@@ -291,21 +291,16 @@ function main(){
             exit 2
         fi
         TagString="Trunk"
-        MakeTag=0
     elif [ -z "$TagString" ]; then
-        TagString=$(date +"%Y%b%d_%H:%M:%S")
-    fi
-
-    if [ $MakeTag -eq 1 ];then
-        logInfo "creting new tag version as <$TagString>"
-        logError "Tagging has not been implemented"
-    #TODO make a new tag version if there are changes
+        TagString=`pwd | rev | cut -d '/' -f 2 |rev`
     fi
 
     TagDir=`name2Posix "$TagString"`
 
     runOnRemote updateBasePackages
     runOnRemote createTagPaths
+    sendCommonConfigurations
+    runOnRemote unpackConfigs
 
     for Ins in $What2Install; do
         update$Ins

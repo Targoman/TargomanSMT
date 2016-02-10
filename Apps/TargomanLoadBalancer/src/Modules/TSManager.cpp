@@ -77,14 +77,14 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
                         PreferedServerInex).constData().Active.value() == false)
                 PreferedServerInex = Modules::TSMonitor::instance().bestServerIndex(Dir);
 
-            clsTranslationServer* BestServer = new clsTranslationServer(
+            QScopedPointer<clsTranslationServer> BestServer(new clsTranslationServer(
                         Dir,
                         PreferedServerInex,
                         "rpcTranslate",
-                        _args);
-            TargomanLogInfo(4,"Trying to translate using Server: "<<Dir<<BestServer->configIndex());
-            connect(BestServer, &clsTranslationServer::sigReadyForFirstRequest,
-                    BestServer, &clsTranslationServer::slotSendPredefinedRequest,
+                        _args));
+            TargomanLogInfo(4,"Trying to translate using Server: "<<Dir<<":"<<BestServer->configIndex());
+            connect(BestServer.data(), &clsTranslationServer::sigReadyForFirstRequest,
+                    BestServer.data(), &clsTranslationServer::slotSendPredefinedRequest,
                     Qt::DirectConnection);
             BestServer->connect();
 
@@ -112,6 +112,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
             BestServer->deleteLater();
 
             Response.Args.insert("Server",BestServer->configIndex());
+
             TargomanLogInfo(4,"Returning response from: "<<Dir<<BestServer->configIndex());
             return Response;
         }catch(exTSMonitor &e){

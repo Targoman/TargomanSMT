@@ -181,7 +181,7 @@ void clsTranslationServer::slotDisconnected()
                 JSONConversationProtocol::stuResponse::Pong,
                 SERVER_DISCONNECTED);
     emit this->sigDisconnected();
-    TargomanLogWarn(4,"Connection to: "<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<" Closed");
+    TargomanWarn(4,"Connection to: "<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<" Closed");
 }
 
 }

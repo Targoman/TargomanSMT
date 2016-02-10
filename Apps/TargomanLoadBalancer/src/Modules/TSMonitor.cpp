@@ -180,6 +180,7 @@ void TSMonitorPrivate::slotServerDisconnected()
         QMutexLocker Locker(&this->ListLock);
         Server->reset();
         Locker.unlock();
+        TargomanLogWarn(4,"Connection to "<<Server->dir()<<":"<<Server->configIndex()<<" has been lost.")
     }
 }
 
