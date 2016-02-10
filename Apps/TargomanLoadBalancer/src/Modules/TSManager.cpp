@@ -113,7 +113,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
 
             Response.Args.insert("Server",BestServer->configIndex());
 
-            TargomanLogInfo(4,"Returning response from: "<<Dir<<BestServer->configIndex());
+            TargomanLogInfo(4,"Returning response from: "<<Dir<<":"<<BestServer->configIndex());
             return Response;
         }catch(exTSMonitor &e){
             TargomanLogWarn(4,"["<<Dir<<":"<<PreferedServerInex<<"]: "<<e.what());

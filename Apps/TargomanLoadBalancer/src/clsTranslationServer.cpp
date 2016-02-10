@@ -91,7 +91,7 @@ qint64 clsTranslationServer::sendRequest(const QString& _rpc, const QVariantMap&
                     _rpc,
                     (this->LastRequestUUID = QUuid::createUuid().toString()),
                     _args)).toUtf8();
-    TargomanDebug(8,"SentTo["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<Data);
+    TargomanDebug(9,"SentTo["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<Data);
     return this->Socket->write(Data);
 }
 
@@ -148,7 +148,7 @@ void clsTranslationServer::slotReadyRead()
     QByteArray ReceivedBytes = this->Socket->readLine();
     if (ReceivedBytes.trimmed().isEmpty())
         return;
-    TargomanDebug(8,"Received["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<ReceivedBytes);
+    TargomanDebug(9,"Received["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<ReceivedBytes);
     JSONConversationProtocol::stuResponse Response =
             JSONConversationProtocol::parseResponse(ReceivedBytes);
 
