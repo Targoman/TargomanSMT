@@ -42,7 +42,7 @@ public:
         return Common::Configuration::clsConfigPath("App/" + _name);
     }
 
-    static Common::Configuration::tmplConfigurable<quint8>           MaxThreads;
+    static Common::Configuration::tmplRangedConfigurable<quint16>           MaxThreads;
 };
 
 }

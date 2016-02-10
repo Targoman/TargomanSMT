@@ -74,9 +74,9 @@ private:
     }
 
 private:
-    static Common::Configuration::tmplConfigurable<double> ScalingFactor;
+    static Common::Configuration::tmplRangedConfigurable<double> ScalingFactor;
     //TODO: change name.
-    static Common::Configuration::tmplConfigurable<quint8> MaximumJumpWidth;
+    static Common::Configuration::tmplRangedConfigurable<quint8> MaximumJumpWidth;
 
     friend class UnitTestNameSpace::clsUnitTest;
 

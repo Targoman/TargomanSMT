@@ -38,7 +38,7 @@ stuConfigs Configs;
 
 tmplConfigurable<FilePath_t> stuConfigs::AbbreviationFile(
         MAKE_CONFIG_PATH("AbbreviationFile"),
-        "File path where abbreviations are stored",
+        "File path to abbreviations table file. Relative to config file path if not specified as absolute.",
         "",
         Validators::tmplPathAccessValidator<
         (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable),
@@ -46,7 +46,7 @@ tmplConfigurable<FilePath_t> stuConfigs::AbbreviationFile(
         );
 tmplConfigurable<FilePath_t> stuConfigs::NormalizationFile(
         MAKE_CONFIG_PATH("NormalizationFile"),
-        "File path where normalization rules are stored",
+        "File path to normalization rules file. Relative to config file path if not specified as absolute.",
         "",
         Validators::tmplPathAccessValidator<
         (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable),
@@ -54,14 +54,15 @@ tmplConfigurable<FilePath_t> stuConfigs::NormalizationFile(
         );
 tmplConfigurable<FilePath_t> stuConfigs::SpellCorrectorBaseConfigPath(
         MAKE_CONFIG_PATH("SpellCorrectorBaseConfigPath"),
-        "File path where spell correction dics are stored",
+        "Directory path to spell correction specific files. Relative to config file path if not specified as absolute.",
         "",
         Validators::tmplPathAccessValidator<
         (enuPathAccess::Type)(enuPathAccess::Dir | enuPathAccess::Readable),
         false>
         );
 clsFileBasedConfig       stuConfigs::SpellCorrectorLanguageBasedConfigs(
-        MAKE_CONFIG_PATH("SpellCorrectorLanguageBasedConfigs")
+        MAKE_CONFIG_PATH("SpellCorrectorLanguageBasedConfigs"),
+        "Specific configurations for each language. See TargomanTextProcessor documents for more info."
         );
 
 }

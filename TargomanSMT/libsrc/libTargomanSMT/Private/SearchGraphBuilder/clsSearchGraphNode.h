@@ -58,7 +58,7 @@ public:
 
     virtual intfFeatureFunctionData* copy() const = 0;
 
-    inline const QVector<Common::Cost_t>&     costElements(){return this->CostElements;}
+    inline const QVector<Common::Cost_t>&     costElements() const {return this->CostElements;}
 
 public:
     QVector<Common::Cost_t>     CostElements;           /**< Feature fucntion stores its costs to this vector. */

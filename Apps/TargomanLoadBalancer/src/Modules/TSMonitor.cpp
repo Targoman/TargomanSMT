@@ -34,28 +34,30 @@ namespace Modules {
 using namespace Common;
 using namespace Common::Configuration;
 
-tmplConfigurable<quint16> TSMonitor::UpdateInterval(
+tmplRangedConfigurable<quint16> TSMonitor::UpdateInterval(
         MAKE_CONFIG_PATH("UpdateInterval"),
         "Interval to collect information from servers in seconds must be less than 100",
+        1,100,
         1,
-        Validators::tmplNumericValidator<quint8,1,100>,
+        ReturnTrueCrossValidator,
         "","","",
         Common::Configuration::enuConfigSource::File
         );
 
-tmplConfigurable<quint16> TSMonitor::WaitOnUpdtae(
+tmplRangedConfigurable<quint16> TSMonitor::WaitOnUpdtae(
         MAKE_CONFIG_PATH("WaitOnUpdtae"),
         "miliseconds to wait before new update request this must be less than half of UpdateInterval",
+        0,50000,
         300,
         [] (const Common::Configuration::intfConfigurable& _item, QString& _errorMessage) {
-    if(_item.toVariant().toUInt() < TSMonitor::UpdateInterval.value() * 500)
-        return true;
-    _errorMessage = _item.configPath() + " must be less than half of UpdateInterval";
-    return false;
-},
-"","","",
-Common::Configuration::enuConfigSource::File
-);
+            if(_item.toVariant().toUInt() < TSMonitor::UpdateInterval.value() * 500)
+                return true;
+            _errorMessage = _item.configPath() + " must be less than half of UpdateInterval";
+            return false;
+        },
+        "","","",
+        Common::Configuration::enuConfigSource::File
+        );
 
 //TODO when No network is active application starts but does not work
 void TSMonitor::run()
@@ -178,6 +180,7 @@ void TSMonitorPrivate::slotServerDisconnected()
         QMutexLocker Locker(&this->ListLock);
         Server->reset();
         Locker.unlock();
+        TargomanLogWarn(4,"Connection to "<<Server->dir()<<":"<<Server->configIndex()<<" has been lost.")
     }
 }
 

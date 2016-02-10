@@ -116,11 +116,12 @@ tmplConfigurableMultiMap<gConfigs::stuServer> gConfigs::TranslationServers(
         clsConfigPath("TranslationServers"),
         "List of valid translation servers to connect to them separated by their translation direction");
 
-tmplConfigurable<quint16>     gConfigs::MaxConcurrentClients(
+tmplRangedConfigurable<quint16>     gConfigs::MaxConcurrentClients(
         gConfigs::appConfig("MaxConcurrentClients"),
         "Maximum Concurrent Clients",
+        1,1000,
         1000,
-        Validators::tmplNumericValidator<quint8, 1, 1000>,
+        ReturnTrueCrossValidator,
         "m",
         "MAX_CONCURRENT",
         "max-concurrent",
@@ -141,7 +142,7 @@ tmplConfigurable<QString>     gConfigs::DBHost(
 tmplConfigurable<quint16>     gConfigs::DBPort(
         gConfigs::appConfig("DB/Port"),
         "Database connection port",
-        "3306",
+        3306,
         ReturnTrueCrossValidator,
         "",
         "DB_PORT",

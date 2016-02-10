@@ -107,7 +107,10 @@ void clsClientThread::slotReadyRead()
             this->sendError(enuReturnType::InvalidStream,"Stream Data is too long");
 
         QByteArray ReceivedBytes =this->Socket->readLine().trimmed();
-        TargomanDebug(9,"Received: "+  ReceivedBytes);
+        TargomanDebug(9,"Received["<<
+                      this->ActorName<<"@"<<
+                      this->Socket->peerAddress().toString()<<":"<<
+                      this->Socket->peerPort()<<"]: "<<ReceivedBytes);
 
         if(ReceivedBytes.isEmpty())
             return;
@@ -339,10 +342,10 @@ void clsClientThread::sendError(enuReturnType::Type _type, const QString& _messa
             JSONConversationProtocol::prepareError("", "", _type, _message);
     this->Socket->write(Message.toUtf8());
 
-    TargomanDebug(8,"Sent and disconnected ("<<
+    TargomanDebug(8,"Sent and disconnected ["<<
                   this->ActorName<<"@"<<
                   this->Socket->peerAddress().toString()<<":"<<
-                  this->Socket->peerPort()<<"): "<<Message);
+                  this->Socket->peerPort()<<"]: "<<Message);
     this->Socket->disconnectFromHost();
     this->Socket->waitForDisconnected();
 }
@@ -350,10 +353,10 @@ void clsClientThread::sendError(enuReturnType::Type _type, const QString& _messa
 void clsClientThread::sendResult(const QString &_data)
 {
     this->Socket->write(_data.toUtf8());
-    TargomanDebug(8, "Sent to Client ("<<
+    TargomanDebug(9, "SentTo["<<
                   this->ActorName<<"@"<<
                   this->Socket->peerAddress().toString()<<":"<<
-                  this->Socket->peerPort()<<"): "<<_data);
+                  this->Socket->peerPort()<<"]: "<<_data);
 }
 
 }

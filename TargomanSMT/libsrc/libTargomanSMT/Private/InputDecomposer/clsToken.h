@@ -30,6 +30,7 @@
 #include <QHash>
 #include "libTargomanCommon/Types.h"
 #include "libTargomanCommon/CmdIO.h"
+#include "Private/RuleTable/clsRuleNode.h"
 
 #ifdef TARGOMAN_SHOW_DEBUG
 #include <QTextStream>
@@ -58,6 +59,7 @@ public:
         QString Str;
         QString TagStr;
         QVariantMap Attrs;
+        RuleTable::clsRuleNode TemporaryRuleNode;
         stuInfo(const QString &_str = "",
                      const QString &_tagStr = "",
                      const QVariantMap &_attrs = QVariantMap()):
@@ -84,6 +86,7 @@ public:
     inline const QList<Common::WordIndex_t>& wordIndexes() const {return this->WordIndexes;}
     inline const QString& tagStr() const {return this->Info.TagStr;}
     inline const QVariantMap& attrs() const {return this->Info.Attrs;}
+    inline const RuleTable::clsRuleNode temporaryRuleNode() const {return this->Info.TemporaryRuleNode;}
 
 private:
     stuInfo Info;

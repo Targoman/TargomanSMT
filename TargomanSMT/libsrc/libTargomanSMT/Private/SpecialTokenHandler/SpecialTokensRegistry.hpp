@@ -39,7 +39,6 @@ namespace SpecialTokenHandler {
 
 class SpecialTokensRegistry
 {
-
 public:
     class clsExpirableSpecialTokenData : public QSharedData {
     public:

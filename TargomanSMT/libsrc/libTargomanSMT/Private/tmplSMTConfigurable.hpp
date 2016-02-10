@@ -66,9 +66,9 @@ public:
                 throw exTargomanInitialization("Invalid default value for: " + _configPath + ": " + ErrorMessage);
             }
             this->setFromVariant(_default);
-            if (this->ShortHelp.size()){
+            /*if (this->ShortHelp.size()){
                 this->Description.append(" ( default= '" + this->toVariant().toString() + "' )");
-            }
+            }*/
             this->CrossValidator = _crossValidator;
         }catch(exTargomanBase &e){
             TargomanError(e.what());
