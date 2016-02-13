@@ -107,6 +107,29 @@ clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedE
 
 }
 
+QString clsTrellisPath::printPath(){
+
+
+    QString res = getTranslation();
+    res += " |||";
+
+
+    for(size_t i = 0; i < SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount; ++i){
+        if(this->featureFunctionDataAt(i) != NULL){
+            //// TODO: get feature names
+
+            res += " Feature" + QString::number(i) + "=";
+            QVector<Cost_t> costs = this->featureFunctionDataAt(i)->costElements();
+            for(int j = 0; j < costs.size(); j++){
+                res += " " + QString::number(costs.at(j));
+            }
+        }
+    }
+    res += " ||| " + QString::number(getTotalCost());
+
+    return res;
+}
+
 
 void NBestPath::createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPathCollection &_pathCollection, const size_t N){
 
@@ -137,9 +160,10 @@ void NBestPath::createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPa
 }
 
 void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
-                                const SearchGraphBuilder::clsSearchGraph &_searchGraph,
-                                SearchGraphBuilder::clsCardinalityHypothesisContainer &_lastCardinality)
+                                const SearchGraphBuilder::clsSearchGraph &_searchGraph)
+                                //,SearchGraphBuilder::clsCardinalityHypothesisContainer &_lastCardinality)
 {
+
 
     int N = NBestPath::NBestPathSize.value();
     bool OnlyDistinct = NBestPath::IsDistinct.value();
@@ -152,7 +176,7 @@ void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
 
     Coverage_t FullCoverage =_searchGraph.goalNode().coverage();
 
-    SearchGraphBuilder::clsLexicalHypoNodeSet BestNodeSet = _lastCardinality[FullCoverage].nodes();
+    SearchGraphBuilder::clsLexicalHypoNodeSet BestNodeSet = _searchGraph.getSameCoverageNodes(FullCoverage);
 
     for(int i = 0; i < BestNodeSet.size(); i++){
         clsTrellisPath BestPath(BestNodeSet.at(i));
@@ -183,6 +207,7 @@ void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
     }
 
 }
+
 
 
 }

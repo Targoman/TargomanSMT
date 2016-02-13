@@ -105,26 +105,26 @@ if [ ${#MaxTargetPhraseCount[@]} -ne 1 ]; then
     echo -e "Max target phrase count must be a single number but is ${#MaxTargetPhraseCount[@]}\n" >&2
     exit -1
 fi
-FeatureFunctionContent="LanguageModel\ScalingFactor=${LanguageModelLambdas[0]}"
+FeatureFunctionContent="LanguageModel\\ScalingFactor=${LanguageModelLambdas[0]}"
 for((i=0; i < ${#PhraseTableLambdas[@]}; ++i)); do
-    FeatureFunctionContent="$FeatureFunctionContent\nPhraseTable\ScalingFactors\PhraseFeature$i=${PhraseTableLambdas[i]}"
+    FeatureFunctionContent="$FeatureFunctionContent\nPhraseTable\\ScalingFactors\\PhraseFeature$i=${PhraseTableLambdas[i]}"
 done
 if [ ${#LexicalReorderingLambdas[@]} -eq 7 ]; then
     ReorderingIsBidirectional="true"
 else
     ReorderingIsBidirectional="false"
 fi
-FeatureFunctionContent="$FeatureFunctionContent\nReorderingJump\MaximumJumpWidth=${MaxReorderingJump[0]}"
-FeatureFunctionContent="$FeatureFunctionContent\nReorderingJump\ScalingFactor=${LexicalReorderingLambdas[0]}"
-FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\IsBidirectional=$ReorderingIsBidirectional"
-FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\ForwardMonotone=${LexicalReorderingLambdas[4]}"
-FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\ForwardSwap=${LexicalReorderingLambdas[5]}"
-FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\ForwardDiscontinous=${LexicalReorderingLambdas[6]}"
-FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\BackwardMonotone=${LexicalReorderingLambdas[1]}"
-FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\BackwardSwap=${LexicalReorderingLambdas[2]}"
-FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\BackwardDiscontinous=${LexicalReorderingLambdas[3]}"
-FeatureFunctionContent="$FeatureFunctionContent\nWordPenalty\ScalingFactor=${WordPenaltyLambdas[0]}"
-FeatureFunctionContent="$FeatureFunctionContent\nUnknownWordPenalty\ScalingFactor=1.0"
+FeatureFunctionContent="$FeatureFunctionContent\nReorderingJump\\MaximumJumpWidth=${MaxReorderingJump[0]}"
+FeatureFunctionContent="$FeatureFunctionContent\nReorderingJump\\ScalingFactor=${LexicalReorderingLambdas[0]}"
+FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\\IsBidirectional=$ReorderingIsBidirectional"
+FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\\ForwardMonotone=${LexicalReorderingLambdas[4]}"
+FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\\ForwardSwap=${LexicalReorderingLambdas[5]}"
+FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\\ForwardDiscontinous=${LexicalReorderingLambdas[6]}"
+FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\\BackwardMonotone=${LexicalReorderingLambdas[1]}"
+FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\\BackwardSwap=${LexicalReorderingLambdas[2]}"
+FeatureFunctionContent="$FeatureFunctionContent\nLexicalReordering\\BackwardDiscontinous=${LexicalReorderingLambdas[3]}"
+FeatureFunctionContent="$FeatureFunctionContent\nWordPenalty\\ScalingFactor=${WordPenaltyLambdas[0]}"
+FeatureFunctionContent="$FeatureFunctionContent\nUnknownWordPenalty\\ScalingFactor=1.0"
 
 FeatureFunctionContent=$(echo -e $FeatureFunctionContent | perl -pe 's%\n%\\\\n%g')
 

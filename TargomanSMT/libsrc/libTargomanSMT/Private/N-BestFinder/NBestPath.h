@@ -66,6 +66,7 @@ public:
     inline size_t getSize() const;
     inline QString getTranslation();
 
+    QString printPath();
 
 
 private:
@@ -143,8 +144,8 @@ public:
 
 public:
     static void retrieveNBestPaths(NBestPath::Container_t& _storage,
-                                   const SearchGraphBuilder::clsSearchGraph &_searchGraph,
-                                   SearchGraphBuilder::clsCardinalityHypothesisContainer& _lastCardinality);
+                                   const SearchGraphBuilder::clsSearchGraph &_searchGraph);
+                                   //, SearchGraphBuilder::clsCardinalityHypothesisContainer& _lastCardinality);
 
     static void createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPathCollection &_pathCollection, const size_t N);
 

@@ -25,6 +25,7 @@
 #include "clsTranslationJob.h"
 #include "libTargomanSMT/Translator.h"
 #include "TranslationWriter.h"
+#include "Configs.h"
 
 namespace Targoman {
 namespace Apps {
@@ -42,6 +43,7 @@ void clsTranslationJob::run()
     TranslationWriter::instance().writeTranslation(
                 this->Index,
                 Translator::translate(this->SourceString,true).Translation);
+    Translator::printNBestPath(gConfigs::InputText.value(), gConfigs::OutputFile.value() + ".nbest", this->Index);
 }
 
 }

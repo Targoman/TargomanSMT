@@ -35,6 +35,8 @@
 // TODO: This header must be included in OOVHandler module
 #include "Private/Proxies/Transliteration/intfTransliterator.h"
 #include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
+#include "Private/N-BestFinder/NBestPath.h"
+
 
 namespace Targoman{
 /**
@@ -47,6 +49,7 @@ using namespace NLPLibs;
 using namespace Private::SpecialTokenHandler::OOV;
 using namespace Private::SpecialTokenHandler::IXMLTagHandler;
 using namespace SearchGraphBuilder;
+
 
 static bool TranslatorInitialized = false;
 
@@ -98,6 +101,34 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
                      InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
 #endif
     return Output;
+}
+
+void Translator::printNBestPath(const QString &_inputStr, QString _outputFileName, int _sentenceNum, bool _isIXML)
+{
+    if (TranslatorInitialized == false)
+        throw exTargomanCore("Translator is not initialized");
+
+   // QTime start = QTime::currentTime();
+
+    InputDecomposer::clsInput Input(_inputStr, _isIXML);
+    SearchGraphBuilder::clsSearchGraph  SearchGraph(Input.tokens());
+
+    QFile OutFile(_outputFileName);
+    if (OutFile.open(QFile::Append), OutFile.isWritable() == false)
+        throw exTargomanCore("Unable to open: "+ OutFile.fileName() + " for Writing");
+
+    QTextStream Stream(&OutFile);
+
+    Stream.setCodec("UTF-8");
+    NBestFinder::NBestPath::Container_t Storage;
+
+    NBestFinder::NBestPath::retrieveNBestPaths(Storage, SearchGraph);
+
+    for(int i = 0; i < Storage.size(); i++){
+        Stream<< QString::number(_sentenceNum) << " ||| " << Storage.takeAt(i).printPath() <<"\n";
+    }
+
+
 }
 
 void Translator::saveBinaryRuleTable(const QString &_filePath)
