@@ -243,7 +243,7 @@ QString TargomanTextProcessor::ixml2Text(const QString &_ixml, const QString& _l
 
         if (LangCode && (!strcmp(LangCode, "fa") || !strcmp(LangCode,"ar"))){
             static QString ArabicCharacters=QStringLiteral("۰۱۲۳۴۵۶۷۸۹؟؛،");
-            for (int j=0; j<Lines[j].size(); ++j){
+            for (int j=0; j<Lines[i].size(); ++j){
                 switch(Lines[i][j].unicode()){
                 case '0': Lines[i][j]=ArabicCharacters.at(0);break;
                 case '1': Lines[i][j]=ArabicCharacters.at(1);break;

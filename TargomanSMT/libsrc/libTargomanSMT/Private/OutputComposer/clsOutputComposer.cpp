@@ -59,7 +59,7 @@ stuTranslationOutput clsOutputComposer::translationOutput()
         QStringList TargetOptions;
         foreach(const clsTargetRule& TargetRule, NBestIter.value().TargetRules){
             QString TargetString = this->getTargetString(TargetRule, NBestIter.key());
-                if (TargetOptions.contains(TargetString) == false)
+            if (TargetOptions.contains(TargetString) == false)
                 TargetOptions.append(TargetString);
         }
 
