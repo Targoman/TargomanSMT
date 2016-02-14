@@ -685,12 +685,6 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
     pPrivate(new Private::intfConfigurablePrivate)
 {
     try{
-        if (testFlag(_configSources, enuConfigSource::Arg) && _shortSwitch == "" && _longSwitch == "")
-            throw exConfiguration(_configPath + " defined to be configured by argument but no switch provided");
-
-        if (_shortSwitch.size() || _longSwitch.size())
-            _configSources = (enuConfigSource::Type)(_configSources | enuConfigSource::Arg);
-
         this->ConfigType  = _configType;
         this->Description = _description;
         this->ShortSwitch = _shortSwitch;
@@ -710,6 +704,13 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
             _configType == enuConfigType::MultiMap)
             if (this->ConfigPath.endsWith("/") == false)
                 this->ConfigPath.append("/");
+
+        if (testFlag(_configSources, enuConfigSource::Arg) && _shortSwitch == "" && _longSwitch == "")
+            throw exConfiguration(this->configPath() + " defined to be configured by argument but no switch provided");
+
+        if (_shortSwitch.size() || _longSwitch.size())
+            _configSources = (enuConfigSource::Type)(_configSources | enuConfigSource::Arg);
+
         this->ArgCount = this->shortHelp().size() ? this->ShortHelp.split(" ").size() : 0;
         this->WasConfigured = false;
         this->ConfigSources = _configSources;
