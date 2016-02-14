@@ -220,9 +220,8 @@ void TSMonitorPrivate::slotProcessResponse(Common::JSONConversationProtocol::stu
                     FreeMem;
 
             Server->updateStatistics(Load1min, Load15min, FreeMem, TranslationQueue, Score);
-            TargomanDebug(9, "slotProcessResponse()["<<Server->dir()<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
+            TargomanDebug(9, "slotProcessResponse("<<(void*)Server<<")["<<Server->dir()<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
        }
-
     }catch(exTargomanBase &e){
         TargomanError(e.what());
     }catch(...){
