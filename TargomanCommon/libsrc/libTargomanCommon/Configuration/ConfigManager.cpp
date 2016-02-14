@@ -686,7 +686,7 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
 {
     try{
         if (testFlag(_configSources, enuConfigSource::Arg) && _shortSwitch == "" && _longSwitch == "")
-            throw exConfiguration(this->configPath() + " defined to be configured by argument but no switch provided");
+            throw exConfiguration(_configPath + " defined to be configured by argument but no switch provided");
 
         if (_shortSwitch.size() || _longSwitch.size())
             _configSources = (enuConfigSource::Type)(_configSources | enuConfigSource::Arg);
