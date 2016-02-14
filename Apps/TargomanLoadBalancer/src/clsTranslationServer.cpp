@@ -67,6 +67,11 @@ void clsTranslationServer::connect()
     this->IsResponseReady = false;
 }
 
+void clsTranslationServer::disconnectFromHost()
+{
+    this->Socket->disconnectFromHost();
+}
+
 bool clsTranslationServer::isConnected()
 {
     return this->Socket->isValid() && this->Socket->state() == QTcpSocket::ConnectedState;

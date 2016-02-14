@@ -43,6 +43,7 @@ public:
                          const QVariantMap& _requestArgs = QVariantMap());
 
     void connect();
+    void disconnectFromHost();
     bool isConnected();
 
     inline void setRequestRPC(const QString& _requestRPC){this->RequestRPC = _requestRPC;}

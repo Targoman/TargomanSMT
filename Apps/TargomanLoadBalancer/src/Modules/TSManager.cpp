@@ -109,6 +109,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
                 continue;
             }
             BestServer->blockSignals(true);
+            BestServer->disconnectFromHost();
             BestServer->deleteLater();
 
             Response.Args.insert("Server",BestServer->configIndex());
