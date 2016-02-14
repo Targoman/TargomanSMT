@@ -44,7 +44,6 @@ public:
                      const QString&  _shortHelp = "",
                      const QString&  _LongSwitch = "",
                      enuConfigSource::Type _configSources = (enuConfigSource::Type)(
-                enuConfigSource::Arg  |
                 enuConfigSource::File |
                 enuConfigSource::Net ),
                      bool _remoteView = true,
@@ -66,9 +65,9 @@ public:
                 throw exTargomanInitialization("Invalid default value for: " + _configPath + ": " + ErrorMessage);
             }
             this->setFromVariant(_default);
-            if (this->ShortHelp.size()){
+            /*if (this->ShortHelp.size()){
                 this->Description.append(" ( default= '" + this->toVariant().toString() + "' )");
-            }
+            }*/
             this->CrossValidator = _crossValidator;
         }catch(exTargomanBase &e){
             TargomanError(e.what());

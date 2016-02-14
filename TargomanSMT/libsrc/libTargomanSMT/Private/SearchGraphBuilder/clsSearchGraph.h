@@ -79,7 +79,7 @@ public:
     Common::Cost_t BestApproximateCost;
 
 private:
-    static Common::Configuration::tmplConfigurable<quint8> MaxTargetPhraseCount;
+    static Common::Configuration::tmplRangedConfigurable<quint8> MaxTargetPhraseCount;
 
     friend class UnitTestNameSpace::clsUnitTest;
 };
@@ -261,8 +261,8 @@ private:
     static RuleTable::intfRuleTable*                        pRuleTable;                          /**< Rule table loader e.g. Jane phrase Table loader */
     static FeatureFunction::intfFeatureFunction*            pPhraseTable;
     static RuleTable::clsRuleNode*                          UnknownWordRuleNode;                 /**< An instance of rule node for unknown word.*/
-    static Common::Configuration::tmplConfigurable<quint8>  HardReorderingJumpLimit;
-    static Common::Configuration::tmplConfigurable<quint8>  ReorderingConstraintMaximumRuns;     /**< A threshold that will be used in IBM1 constrains.*/
+    static Common::Configuration::tmplRangedConfigurable<quint8>  HardReorderingJumpLimit;
+    static Common::Configuration::tmplRangedConfigurable<quint8>  ReorderingConstraintMaximumRuns;     /**< A threshold that will be used in IBM1 constrains.*/
     static Common::Configuration::tmplConfigurable<bool>    DoComputePositionSpecificRestCosts;
     static Common::Configuration::tmplConfigurable<bool>    DoPrunePreInsertion;
 

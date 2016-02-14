@@ -42,12 +42,12 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(ZhangMaxEntProxy);
 
 tmplConfigurable<FilePath_t> ZhangMaxEntProxy::FilePath(
         MAKE_CONFIG_PATH("FilePath"),
-        "File path of binary maxent model",
+        "File path of binary maxent model. Relative to config file path unless specified as absolute path.",
         ""
         );
 tmplConfigurable<FilePath_t> ZhangMaxEntProxy::RareWordsPath(
         MAKE_CONFIG_PATH("RareWordsPath"),
-        "Path of the file containing rare words",
+        "Path to the file containing rare words. Relative to config file path unless specified as absolute path.",
         ""
         );
 maxent::MaxentModel ZhangMaxEntProxy::Model;

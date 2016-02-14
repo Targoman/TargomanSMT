@@ -32,7 +32,7 @@ using namespace Common::Configuration;
 
 tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
         gConfigs::appConfig("Mode"),
-        "Working Mode of the application. Can be [" + enuAppMode::options().join("|")+"]",
+        "Application working mode.",
         enuAppMode::Translation,
         [] (const intfConfigurable& _item, QString& _errorMessage) {
             switch(enuAppMode::toEnum(_item.toVariant().toString().toLatin1().constData())){
@@ -63,7 +63,7 @@ tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
 
 tmplConfigurable<QString>     gConfigs::InputFile(
         gConfigs::appConfig("InputFile"),
-        "Input file path to convert",
+        "Input file path to convert. Relative to execution path if not specified as absolute",
         "",
         Validators::tmplPathAccessValidator<
             (enuPathAccess::Type)(enuPathAccess::File | enuPathAccess::Readable),
@@ -83,7 +83,7 @@ tmplConfigurable<QString>     gConfigs::InputText(
 
 tmplConfigurable<QString>     gConfigs::OutputFile(
         gConfigs::appConfig("Output"),
-        "output path to write translation",
+        "Output path to write translation. Relative to execution path if not specified as absolute.",
         "",
         Validators::tmplPathAccessValidator<
             (enuPathAccess::Type)(enuPathAccess::Writeatble),
@@ -92,11 +92,11 @@ tmplConfigurable<QString>     gConfigs::OutputFile(
         "FILE_PATH",
         "output-file");
 
-tmplConfigurable<quint8>     gConfigs::MaxThreads(
+tmplConfigurable<quint16>     gConfigs::MaxThreads(
         gConfigs::appConfig("MaxThreads"),
-        "Maximum Concurrent Translations",
+        "Maximum concurrent translations",
         5,
-        Validators::tmplNumericValidator<quint8, 0, 255>,
+        ReturnTrueCrossValidator,
         "t",
         "MAX_THREADS",
         "max-threads");

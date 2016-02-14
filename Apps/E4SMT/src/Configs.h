@@ -63,7 +63,7 @@ public:
     static Common::Configuration::tmplConfigurable<FilePath_t>          InputFile;
     static Common::Configuration::tmplConfigurable<FilePath_t>          InputDir;
     static Common::Configuration::tmplConfigurable<FilePath_t>          OutputDir;
-    static Common::Configuration::tmplConfigurable<QRegExp,true>        IncludePattern;
+    static Common::Configuration::tmplConfigurable<QWildCard>           IncludePattern;
     static Common::Configuration::tmplConfigurable<FilePath_t>          DTDFilePath;
     static Common::Configuration::tmplConfigurable<bool>                Overwrite;
     static Common::Configuration::tmplConfigurable<bool>                KeepTitles;
