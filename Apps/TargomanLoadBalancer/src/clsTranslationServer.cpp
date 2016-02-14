@@ -177,7 +177,6 @@ void clsTranslationServer::slotError(QAbstractSocket::SocketError _socketError){
     Q_UNUSED(_socketError)
    TargomanWarn(4,"(%p)[%s:%d]: %s",(void*)this,qPrintable(this->Configs.Host.value()),this->Configs.Port.value(),qPrintable(this->Socket->errorString()));
    this->disconnectFromHost();
-   this->deleteLater();
 }
 
 
@@ -190,7 +189,6 @@ void clsTranslationServer::slotDisconnected()
                 SERVER_DISCONNECTED);
     emit this->sigDisconnected();
     TargomanWarn(4,"Connection to: "<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<" Closed");
-    this->deleteLater();
 }
 
 }
