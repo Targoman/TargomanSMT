@@ -109,6 +109,7 @@ void clsTranslationServer::resetScore() {
 }
 
 void clsTranslationServer::reset(){
+    this->Socket->disconnectFromHost();
     this->Socket.take()->deleteLater();
     this->Socket.reset(new QTcpSocket);
     this->LoggedIn = false;
