@@ -304,7 +304,7 @@ void Logger::write(const QString &_callerFuncName,
     LogMessage+= QString("[%1]").arg(enuLogType::toStr(_type));
     LogMessage += "[" + QString::number(_level) + "]: ";
     if (Identifier.value().size())
-        LogMessage+= QString("[%1]").arg(Identifier);
+        LogMessage+= QString("[%1]").arg(Identifier.value());
 
     if (_newLine)
         LogMessage += _message+"\n";

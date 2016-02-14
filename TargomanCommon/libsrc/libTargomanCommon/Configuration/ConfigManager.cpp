@@ -379,7 +379,7 @@ void ConfigManager::save2File(const QString &_fileName, bool _backup, int _wrapL
     QTextStream ConfigStream(&ConfigFile);
 
     auto writeComments = [&](const QString& _comment) {
-        static QRegExp RxDelimiter("\\b");
+        thread_local static QRegExp RxDelimiter("\\b");
 
         QString Prepared = _comment;
         while(Prepared.size() > _wrapLine){

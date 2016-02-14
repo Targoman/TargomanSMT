@@ -126,10 +126,9 @@ void TSMonitor::wait4AtLeastOneServerAvailable()
             if (Server->totalScore() > 0){
                 TargomanLogInfo(
                             1,
-                            "Server ID: "<<
-                            Server->configIndex()<<
-                            " :"<<
-                            gConfigs::TranslationServers[Server->dir()][Server->configIndex()].Host.value()<<
+                            "Server "<<Server->dir()<<
+                            " ID: "<<Server->configIndex()<<
+                            " :"<<gConfigs::TranslationServers[Server->dir()][Server->configIndex()].Host.value()<<
                             " is ready");
                 ++ReadyServers;
             }

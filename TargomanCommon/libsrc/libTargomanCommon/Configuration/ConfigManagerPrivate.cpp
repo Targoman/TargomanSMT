@@ -160,8 +160,8 @@ clsConfigManagerPrivate::~clsConfigManagerPrivate()
 bool confReadFunc(QIODevice &_device, QSettings::SettingsMap &_map){
     QTextStream Stream(&_device);
     quint64 LineNumber = 0;
-    static QRegExp RxGroup("^\\s*\\[([%\\w]+)\\]\\b*",Qt::CaseSensitive, QRegExp::RegExp2);
-    static QRegExp RxKeyValue("^\\s*([%\\w\\\\/]+)\\s*=\\s*($|\"(.*)\"|([^\"#;][^#;]*))\\s*[#;]?",Qt::CaseSensitive, QRegExp::RegExp2);
+    thread_local static QRegExp RxGroup("^\\s*\\[([%\\w]+)\\]\\b*",Qt::CaseSensitive, QRegExp::RegExp2);
+    thread_local static QRegExp RxKeyValue("^\\s*([%\\w\\\\/]+)\\s*=\\s*($|\"(.*)\"|([^\"#;][^#;]*))\\s*[#;]?",Qt::CaseSensitive, QRegExp::RegExp2);
     _map.clear();
     QString Group="General";
     while(Stream.atEnd() == false){
