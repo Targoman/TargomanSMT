@@ -51,9 +51,7 @@ public:
                          _shortSwitch,
                          _shortHelp,
                          _LongSwitch,
-                         (enuConfigSource::Type)(
-                             enuConfigSource::Arg  |
-                             enuConfigSource::File),
+                         enuConfigSource::File,
                          false){
         this->ActiveAddins = _default;
         this->AcceptableModuleScope = itmplAcceptableInterface::moduleScope();

@@ -95,7 +95,7 @@ void clsCmdProgressBar::setValue(quint32 _value)
             ioctl(1, TIOCGWINSZ, &w);
 
             QString ProgressPrefix = this->Message + QString(" [%1][%2][").arg(_value).arg(ProgressIndicator);
-            quint16 ProgressBarMaxWidth = w.ws_col - ProgressPrefix.size() - 10;
+            quint16 ProgressBarMaxWidth = qMin((quint16)w.ws_col, (quint16)400) - ProgressPrefix.size() - 10;
             cerr<<QString("%1%2]\r").arg(ProgressPrefix).arg(
                    QString(this->LastProgressValue % (ProgressBarMaxWidth - 3), ' ')+"###",-ProgressBarMaxWidth).toUtf8().constData()<<flush;
             ++this->LastProgressValue;
@@ -125,7 +125,7 @@ void clsCmdProgressBar::setValue(quint32 _value)
             struct winsize w;
             ioctl(1, TIOCGWINSZ, &w);
             QString ProgressPrefix = this->Message + QString(" [%1][%2%][").arg(_value).arg(ProgressVal,3);
-            quint16 ProgressBarMaxWidth = w.ws_col - ProgressPrefix.size() - 10;
+            quint16 ProgressBarMaxWidth = qMin((quint16)w.ws_col, (quint16)400) - ProgressPrefix.size() - 10;
             cerr<<QString("%1%2]\r").arg(ProgressPrefix).arg(
                    QString((ProgressVal*ProgressBarMaxWidth)/100, '#'),-ProgressBarMaxWidth).toUtf8().constData()<<flush;
             this->LastProgressValue = ProgressVal;
@@ -165,7 +165,7 @@ void clsCmdProgressBar::finalize(bool _change2full, qint64 _finalValue)
         struct winsize w;
         ioctl(1, TIOCGWINSZ, &w);
         QString ProgressPrefix = this->Message + QString(" [%1][100%][").arg(_finalValue == -1 ? this->Maximum : _finalValue);
-        quint16 ProgressBarMaxWidth = w.ws_col - ProgressPrefix.size() - 10;
+        quint16 ProgressBarMaxWidth = qMin((quint16)w.ws_col, (quint16)400) - ProgressPrefix.size() - 10;
         cerr<<(ProgressPrefix +
                QString(ProgressBarMaxWidth, '#') + "]").toUtf8().constData()<<flush;
     }
