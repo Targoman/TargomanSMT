@@ -685,6 +685,12 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
     pPrivate(new Private::intfConfigurablePrivate)
 {
     try{
+        if (testFlag(_configSources, enuConfigSource::Arg) && _shortSwitch == "" && _longSwitch == "")
+            throw exConfiguration(this->configPath() + " defined to be configured by argument but no switch provided");
+
+        if (_shortSwitch.size() || _longSwitch.size())
+            _configSources = (enuConfigSource::Type)(_configSources | enuConfigSource::Arg);
+
         this->ConfigType  = _configType;
         this->Description = _description;
         this->ShortSwitch = _shortSwitch;
@@ -709,8 +715,6 @@ intfConfigurable::intfConfigurable(enuConfigType::Type _configType,
         this->ConfigSources = _configSources;
         this->RemoteViewAllowed = _remoteView;
 
-        if (testFlag(_configSources, enuConfigSource::Arg) && _shortSwitch == "" && _longSwitch == "")
-            throw exConfiguration(this->configPath() + " defined to be configured by argument but no switch provided");
 
         ConfigManager::instance().addConfig(this->ConfigPath, this);
     }catch(exTargomanBase &e){

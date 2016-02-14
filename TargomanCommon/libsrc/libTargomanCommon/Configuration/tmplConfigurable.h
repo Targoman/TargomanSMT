@@ -58,7 +58,6 @@ public:
                      const QString&  _shortHelp = "",
                      const QString&  _LongSwitch = "",
                      enuConfigSource::Type _configSources = (enuConfigSource::Type)(
-                enuConfigSource::Arg  |
                 enuConfigSource::File |
                 enuConfigSource::Net ),
                      bool _remoteView = true,
@@ -170,7 +169,6 @@ public:
                      const QString&  _shortHelp = "",
                      const QString&  _LongSwitch = "",
                      enuConfigSource::Type _configSources = (enuConfigSource::Type)(
-                enuConfigSource::Arg  |
                 enuConfigSource::File |
                 enuConfigSource::Net ),
                      bool _remoteView = true,
