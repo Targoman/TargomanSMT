@@ -99,7 +99,7 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
             BestServerIndex = Server->configIndex();
             BestServerScore = Server->totalScore();
         }
-        TargomanDebug(9, "["<<_dir<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
+        TargomanDebug(9, "bestServerIndex()["<<_dir<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
     }
 
     if (BestServerScore == 0)
@@ -220,7 +220,7 @@ void TSMonitorPrivate::slotProcessResponse(Common::JSONConversationProtocol::stu
                     FreeMem;
 
             Server->updateStatistics(Load1min, Load15min, FreeMem, TranslationQueue, Score);
-            TargomanDebug(9, "["<<Server->dir()<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
+            TargomanDebug(9, "slotProcessResponse()["<<Server->dir()<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
        }
 
     }catch(exTargomanBase &e){

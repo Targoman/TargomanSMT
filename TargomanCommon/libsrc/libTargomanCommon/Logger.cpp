@@ -92,7 +92,7 @@ tmplConfigurable<bool> Disable(
 tmplConfigurable<QString> Identifier(
         clsConfigPath(Logger::moduleName() + "/" + "Identifier"),
         "An identifier to be printed on every log line. used to distinguish between master and slave logs",
-        false,
+        "",
         ReturnTrueCrossValidator,
         "",
         "",
@@ -302,9 +302,10 @@ void Logger::write(const QString &_callerFuncName,
     QByteArray LogMessage= LogSettings[_type].details(_callerFuncName).toLatin1();
 
     LogMessage+= QString("[%1]").arg(enuLogType::toStr(_type));
-    LogMessage += "[" + QString::number(_level) + "]: ";
+    LogMessage += "[" + QString::number(_level) + "]";
     if (Identifier.value().size())
         LogMessage+= QString("[%1]").arg(Identifier.value());
+    LogMessage +=": ";
 
     if (_newLine)
         LogMessage += _message+"\n";
