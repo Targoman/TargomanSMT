@@ -185,10 +185,11 @@ QStringList getIXMLLines(QString& _data)
  * @param _ixml
  * @return
  */
-QString TargomanTextProcessor::ixml2Text(const QString &_ixml) const
+QString TargomanTextProcessor::ixml2Text(const QString &_ixml, const QString& _lang) const
 {
     if (!Initialized)
         throw exTextProcessor("Text Processor has not been initialized");
+    const char* LangCode = ISO639getAlpha2(_lang.toLatin1().constData());
 
     thread_local static QRegExp RxSuffixes = QRegExp(
                 QString("(?: )('[%1])(?: )").arg(IXMLWriter::instance().supportedSuffixes()));
@@ -239,6 +240,27 @@ QString TargomanTextProcessor::ixml2Text(const QString &_ixml) const
         Lines[i] = Lines[i].replace (" )", ")");
         Lines[i] = Lines[i].replace (") ", ")");
         Lines[i] = Lines[i].replace ("( ", "(");
+
+        if (LangCode && (!strcmp(LangCode, "fa") || !strcmp(LangCode,"ar"))){
+            static QString ArabicCharacters=QStringLiteral("۰۱۲۳۴۵۶۷۸۹؟؛،");
+            for (int j=0; j<Lines[j].size(); ++j){
+                switch(Lines[i][j].unicode()){
+                case '0': Lines[i][j]=ArabicCharacters.at(0);break;
+                case '1': Lines[i][j]=ArabicCharacters.at(1);break;
+                case '2': Lines[i][j]=ArabicCharacters.at(2);break;
+                case '3': Lines[i][j]=ArabicCharacters.at(3);break;
+                case '4': Lines[i][j]=ArabicCharacters.at(4);break;
+                case '5': Lines[i][j]=ArabicCharacters.at(5);break;
+                case '6': Lines[i][j]=ArabicCharacters.at(6);break;
+                case '7': Lines[i][j]=ArabicCharacters.at(7);break;
+                case '8': Lines[i][j]=ArabicCharacters.at(8);break;
+                case '9': Lines[i][j]=ArabicCharacters.at(9);break;
+                case '?': Lines[i][j]=ArabicCharacters.at(10);break;
+                case ';': Lines[i][j]=ArabicCharacters.at(11);break;
+                case ',': Lines[i][j]=ArabicCharacters.at(12);break;
+                }
+            }
+        }
     }
     return Lines.join("\n");
 }

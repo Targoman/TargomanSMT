@@ -83,6 +83,7 @@ size_t NBestSuggestions::fillBestOptions(NBestSuggestions::Container_t& _storage
         if (Node.sourceRangeBegin() == _currNode.sourceRangeBegin() &&
             Node.sourceRangeEnd() == _currNode.sourceRangeEnd())
             //_node.targetRule has been appended before so take care to not append it twice
+            //TODO check why this does not work correctly and produces same target options
             if (Node.targetRule().isSame(_currNode.targetRule()) == false)
                 TargetRules.append(Node.targetRule());
 

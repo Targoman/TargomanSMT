@@ -49,6 +49,7 @@ private:
 
 public:
     static QString SourceLanguage; // Just for speed optimization
+    static QString TargetLanguage; // Just for speed optimization
 };
 
 }

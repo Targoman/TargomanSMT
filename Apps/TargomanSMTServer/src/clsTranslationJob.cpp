@@ -39,6 +39,7 @@ using namespace NLPLibs;
 using namespace Common::Configuration;
 
 QString clsTranslationJob::SourceLanguage;
+QString clsTranslationJob::TargetLanguage;
 
 clsTranslationJob::clsTranslationJob(bool _brief, bool _keepAsSource)
 {
@@ -153,7 +154,8 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
             }
 
             PhraseIndexMap.insert(MetaInfo.TargetWordsPos.start(),
-                                   TargomanTextProcessor::instance().ixml2Text(TargetPhrase));
+                                   TargomanTextProcessor::instance().ixml2Text(TargetPhrase,
+                                                                               clsTranslationJob::TargetLanguage));
 
             QString SourcePhrase;
             if((size_t)SourceWords.size() > MetaInfo.SourceWordsPos.start()){

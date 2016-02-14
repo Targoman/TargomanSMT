@@ -99,6 +99,7 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
             BestServerIndex = Server->configIndex();
             BestServerScore = Server->totalScore();
         }
+        TargomanDebug(9, "["<<_dir<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
     }
 
     if (BestServerScore == 0)
@@ -107,7 +108,7 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
     QMutexLocker Locker(&LastUsedServerLock);
     LastUsedServer.insert(_dir, LastUsedServer.value(_dir,-1) == BestServerIndex ?
                 (NextBestServerIndex < 0 ? BestServerIndex : NextBestServerIndex) : BestServerIndex);
-    return LastUsedServer.value(_dir);
+    return LastUsedServer.value(_dir, 0);
 }
 
 void TSMonitor::wait4AtLeastOneServerAvailable()
@@ -220,6 +221,7 @@ void TSMonitorPrivate::slotProcessResponse(Common::JSONConversationProtocol::stu
                     FreeMem;
 
             Server->updateStatistics(Load1min, Load15min, FreeMem, TranslationQueue, Score);
+            TargomanDebug(9, "["<<Server->dir()<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
        }
 
     }catch(exTargomanBase &e){

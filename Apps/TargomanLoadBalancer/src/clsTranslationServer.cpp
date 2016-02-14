@@ -169,7 +169,7 @@ void clsTranslationServer::slotReadyRead()
 
 void clsTranslationServer::slotError(QAbstractSocket::SocketError _socketError){
     Q_UNUSED(_socketError)
-   TargomanError("[%s:%d]: %s",qPrintable(this->Configs.Host.value()),this->Configs.Port.value(),qPrintable(this->Socket->errorString()));
+   TargomanWarn(4,"[%s:%d]: %s",qPrintable(this->Configs.Host.value()),this->Configs.Port.value(),qPrintable(this->Socket->errorString()));
 }
 
 

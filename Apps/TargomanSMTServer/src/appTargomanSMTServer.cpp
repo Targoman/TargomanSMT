@@ -56,6 +56,8 @@ void appTargomanSMTServer::slotExecute()
 
         clsTranslationJob::SourceLanguage =
                 ConfigManager::instance().getConfig("/Common/Language/Source").toString();
+        clsTranslationJob::TargetLanguage =
+                ConfigManager::instance().getConfig("/Common/Language/Destination").toString();
 
         Targoman::SMT::Translator::init(ConfigManager::instance().configSettings());
         Targoman::NLPLibs::TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());

@@ -70,7 +70,8 @@ public:
 
     void init(const QString &_license,
               const QStringList &_arguments = QStringList(),
-              fnAppInitializer_t _appInitializer = [](){}, bool _minimal = false);
+              fnAppInitializer_t _appInitializer = [](){},
+              bool _minimal = false);
     void save2File(const QString&  _fileName, bool _backup, int _wrapLine = 80);
     void addConfig(const QString _path, intfConfigurable* _item);
     void addModuleInstantiaor(const QString& _fullName, const QString& _name, const stuInstantiator& _instantiator);

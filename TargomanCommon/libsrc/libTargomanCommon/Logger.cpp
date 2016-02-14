@@ -89,6 +89,18 @@ tmplConfigurable<bool> Disable(
         false
         );
 
+tmplConfigurable<QString> Identifier(
+        clsConfigPath(Logger::moduleName() + "/" + "Identifier"),
+        "An identifier to be printed on every log line. used to distinguish between master and slave logs",
+        false,
+        ReturnTrueCrossValidator,
+        "",
+        "",
+        "log-identifier",
+        enuConfigSource::Arg,
+        false
+        );
+
 static clsLogSettings* LogSettings = new clsLogSettings[enuLogType::getCount()];
 
 tmplConfigurable<QStringList> LogDebugDetail(

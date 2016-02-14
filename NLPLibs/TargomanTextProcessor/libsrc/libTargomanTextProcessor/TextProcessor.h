@@ -79,7 +79,7 @@ public:
                       bool _useSpellCorrector = true,
                       QList<enuTextTags::Type> _removingTags = QList<enuTextTags::Type>()) const;
 
-    QString ixml2Text(const QString& _ixml) const;
+    QString ixml2Text(const QString& _ixml, const QString& _lang = "") const;
 
     inline QString normalizeText(const QString _input,
                                  bool _interactive,

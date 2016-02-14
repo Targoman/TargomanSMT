@@ -57,8 +57,11 @@ stuTranslationOutput clsOutputComposer::translationOutput()
         NBestIter != NBestSuggestions.constEnd();
         ++NBestIter){
         QStringList TargetOptions;
-        foreach(const clsTargetRule& TargetRule, NBestIter.value().TargetRules)
-                TargetOptions.append(this->getTargetString(TargetRule, NBestIter.key()));
+        foreach(const clsTargetRule& TargetRule, NBestIter.value().TargetRules){
+            QString TargetString = this->getTargetString(TargetRule, NBestIter.key());
+                if (TargetOptions.contains(TargetString) == false)
+                TargetOptions.append(TargetString);
+        }
 
         Output.MetaInfo.append(
                     TranslationMetaInfo_t(
