@@ -53,7 +53,7 @@ public:
     bool                           InfoUpdated;
     size_t                         ConnectedServers;
     QMutex                         ListLock;
-    QMultiMap<QString, clsTranslationServer*>    Servers;
+    QMultiMap<QString, QPointer<clsTranslationServer>>    Servers;
 };
 
 class TSMonitor : public QThread, public Common::Configuration::intfModule

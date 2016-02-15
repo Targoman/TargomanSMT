@@ -104,6 +104,7 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
             if (Response.Type == JSONConversationProtocol::stuResponse::Pong &&
                     Response.Result.toString() == SERVER_DISCONNECTED){
                 BestServer->blockSignals(true);
+                BestServer->disconnectFromHost();
                 BestServer->deleteLater();
                 PreferedServerInex = -1;
                 continue;

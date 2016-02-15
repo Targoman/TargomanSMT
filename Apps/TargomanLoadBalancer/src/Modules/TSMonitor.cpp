@@ -68,8 +68,19 @@ void TSMonitor::run()
             const tmplConfigurableArray<gConfigs::stuServer>& ServersConfig =
                     gConfigs::TranslationServers.values(Key);
             QMutexLocker Locker(&this->pPrivate->ListLock);
-            for(size_t i=0; i<ServersConfig.size(); ++i)
-                    this->pPrivate->Servers.insertMulti(Key,new clsTranslationServer(Key,i));
+            for(size_t i=0; i<ServersConfig.size(); ++i){
+                QPointer<clsTranslationServer> Server(new clsTranslationServer(Key, i));
+                connect(Server.data(),&clsTranslationServer::sigResponse,
+                        this->pPrivate.data(), &TSMonitorPrivate::slotProcessResponse,
+                        Qt::DirectConnection);
+                connect(Server.data(),&clsTranslationServer::sigDisconnected,
+                        this->pPrivate.data(), &TSMonitorPrivate::slotServerDisconnected);
+                connect(Server.data(), &clsTranslationServer::sigReadyForFirstRequest,
+                        this->pPrivate.data(), &TSMonitorPrivate::slotSendRequest,
+                        Qt::DirectConnection);
+
+                this->pPrivate->Servers.insertMulti(Key,Server);
+            }
             Locker.unlock();
         }
         this->pPrivate->slotUpdateInfo();
@@ -151,14 +162,6 @@ void TSMonitorPrivate::slotUpdateInfo()
             Server->TotalScore = 0;
             if (Server->isConnected() == false) {
                 Server->reset();
-                connect(Server,&clsTranslationServer::sigResponse,
-                        this, &TSMonitorPrivate::slotProcessResponse,
-                        Qt::DirectConnection);
-                connect(Server,&clsTranslationServer::sigDisconnected,
-                        this, &TSMonitorPrivate::slotServerDisconnected);
-                connect(Server, &clsTranslationServer::sigReadyForFirstRequest,
-                        this, &TSMonitorPrivate::slotSendRequest,
-                        Qt::DirectConnection);
                 Server->connect();
             }else if (Server->isLoggedIn()){
                 emit Server->sigReadyForFirstRequest();

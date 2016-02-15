@@ -44,8 +44,11 @@ clsTranslationServer::clsTranslationServer(const QString &_dir,
     RequestRPC(_requestRPC),
     RequestArgs(_requestArgs)
 {
-    int a=2;
-    a++;
+}
+
+clsTranslationServer::~clsTranslationServer()
+{
+    this->reset();
 }
 
 void clsTranslationServer::connect()

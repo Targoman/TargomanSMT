@@ -49,6 +49,8 @@ public:
                          const QString& _requestRPC = "",
                          const QVariantMap& _requestArgs = QVariantMap());
 
+    ~clsTranslationServer();
+
     void connect();
     void disconnectFromHost();
     bool isConnected();
