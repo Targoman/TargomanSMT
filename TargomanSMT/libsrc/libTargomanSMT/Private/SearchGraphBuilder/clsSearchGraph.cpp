@@ -63,33 +63,38 @@ using namespace InputDecomposer;
 using namespace SpecialTokenHandler;
 using namespace SpecialTokenHandler::OOV;
 
-tmplConfigurable<quint8> clsSearchGraph::HardReorderingJumpLimit(
+tmplRangedConfigurable<quint8> clsSearchGraph::HardReorderingJumpLimit(
         MAKE_CONFIG_PATH("HardReorderingJumpLimit"),
-        "TODO Desc",
+        "Maximum jump width limit. Hard constrain.",
+        1,64,
         6,
         [] (const intfConfigurable& _item, QString&) {
-    clsCardinalityHypothesisContainer::setHardReorderingJumpLimit(
-            _item.toVariant().Int
+            clsCardinalityHypothesisContainer::setHardReorderingJumpLimit(
+                    _item.toVariant().Int
             );
-    return true;
-});
+            return true;
+        });
 
-tmplConfigurable<quint8> clsSearchGraph::ReorderingConstraintMaximumRuns(
+tmplRangedConfigurable<quint8> clsSearchGraph::ReorderingConstraintMaximumRuns(
         MAKE_CONFIG_PATH("ReorderingConstraintMaximumRuns"),
         "IBM1 reordering constraint",
+        0,100,
         2);
+
 tmplConfigurable<bool>   clsSearchGraph::DoComputePositionSpecificRestCosts(
         MAKE_CONFIG_PATH("DoComputePositionSpecificRestCosts"),
-        "TODO Desc",
+        "Compute position specific RestCosts (default) or not",
         true);
-tmplConfigurable<quint8> clsPhraseCandidateCollectionData::MaxTargetPhraseCount(
+
+tmplRangedConfigurable<quint8> clsPhraseCandidateCollectionData::MaxTargetPhraseCount(
         MAKE_CONFIG_PATH("MaxTargetPhraseCount"),
-        "TODO Desc",
+        "Maximum target phrases collected before decoding",
+        1,254,
         100);
 
 tmplConfigurable<bool>   clsSearchGraph::DoPrunePreInsertion(
         MAKE_CONFIG_PATH("PrunePreInsertion"),
-        "TODO Desc",
+        "Prune hypotheses before insertion(default) or not",
         true);
 
 FeatureFunction::intfFeatureFunction*  clsSearchGraph::pPhraseTable = NULL;
@@ -221,6 +226,8 @@ void clsSearchGraph::collectPhraseCandidates()
                 if(SpecialRuleNode.isInvalid() == false)
                     RuleNodes.append(SpecialRuleNode);
             }
+
+            RuleNodes.append(this->Data->Sentence.at(FirstPosition).temporaryRuleNode());
 
             if(RuleNodes.isEmpty())
                 RuleNodes.append(*clsSearchGraph::UnknownWordRuleNode);

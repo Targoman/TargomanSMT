@@ -42,7 +42,10 @@ public:
                          const QString& _requestRPC = "",
                          const QVariantMap& _requestArgs = QVariantMap());
 
+    ~clsTranslationServer();
+
     void connect();
+    void disconnectFromHost();
     bool isConnected();
 
     inline void setRequestRPC(const QString& _requestRPC){this->RequestRPC = _requestRPC;}
@@ -75,6 +78,7 @@ private slots:
     void slotConnected();
     void slotReadyRead();
     void slotDisconnected();
+    void slotError(QAbstractSocket::SocketError _socketError);
 
 public:
     quint16            TotalScore;

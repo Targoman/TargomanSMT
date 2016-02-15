@@ -94,8 +94,11 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
                      _inputStr << " => " << Output.Translation);
 #else
     QString InputWord = _inputStr;
+    Output.Translation.replace(" ", "");
+    if (Output.Translation.size())
+        Output.Translation[0] = Output.Translation[0].toUpper();
     TargomanLogInfo(7, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
-                     InputWord.replace(" ", "") << " => " << Output.Translation.replace(" ", ""));
+                     InputWord.replace(" ", "") << " => " << Output.Translation);
 #endif
     return Output;
 }

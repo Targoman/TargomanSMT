@@ -90,6 +90,10 @@ public:
 
     virtual void newSentence(const InputDecomposer::Sentence_t &_inputSentence) {Q_UNUSED(_inputSentence)}
 
+    const QVector<Cost_t> getCostElements(SearchGraphBuilder::clsSearchGraphNode& _hypothesisNode) const{
+        return _hypothesisNode.featureFunctionDataAt(this->DataIndex)->costElements();
+    }
+
     /**
      * @brief This can be called to score the new hypothesis and initialize its state correctly.
      * The first secondary model will encounter an uninitialized hypothesis state, thus don't forget to call

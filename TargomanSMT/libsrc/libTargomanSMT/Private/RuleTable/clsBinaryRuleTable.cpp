@@ -42,7 +42,7 @@ using namespace FeatureFunction;
 
 tmplConfigurable<FilePath_t> clsBinaryRuleTable::FilePath(
         MAKE_CONFIG_PATH("FilePath"),
-        "FilePath where rule table is stored",
+        "FilePath to rule table. Relative to config file path unless specified as absolute path.",
         "",
         ConditionalPathValidator(
             gConfigs.RuleTable.toVariant().toString() == clsBinaryRuleTable::moduleName(),
@@ -51,13 +51,14 @@ tmplConfigurable<FilePath_t> clsBinaryRuleTable::FilePath(
 
 tmplConfigurable<enuBinaryLoadMode::Type> clsBinaryRuleTable::LoadMode(
         MAKE_CONFIG_PATH("LoadMode"),
-        "Binary file load mode. Can be [" + enuBinaryLoadMode::options().join("|")+"]",
+        "Binary file load mode.",
         enuBinaryLoadMode::OnDemand,
         ReturnTrueCrossValidator);
 
-tmplConfigurable<quint32> clsBinaryRuleTable::MaxCachedItems(
+tmplRangedConfigurable<quint32> clsBinaryRuleTable::MaxCachedItems(
         MAKE_CONFIG_PATH("MaxCachedItems"),
         "Maximum items to be cached",
+        1,100000000,
         100000,
         ReturnTrueCrossValidator);
 

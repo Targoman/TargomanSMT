@@ -109,7 +109,6 @@ public:
                      const QString&  _longSwitch = "",
                      enuConfigSource::Type _configSources =
                         (enuConfigSource::Type)(
-                            enuConfigSource::Arg  |
                             enuConfigSource::File |
                             enuConfigSource::Net ),
                      bool _remoteView = true,

@@ -52,23 +52,23 @@ tmplConfigurable<double>    LexicalReordering::ScalingFactors[] = {
     1),
     tmplConfigurable<double>(
     MAKE_CONFIG_PATH("ForwardSwap"),
-    "Scaling factor for ForwardMonotone reordering score",
+    "Scaling factor for ForwardSwap reordering score",
     1),
     tmplConfigurable<double>(
     MAKE_CONFIG_PATH("ForwardDiscontinous"),
-    "Scaling factor for ForwardMonotone reordering score",
+    "Scaling factor for ForwardDiscontinous reordering score",
     1),
     tmplConfigurable<double>(
     MAKE_CONFIG_PATH("BackwardMonotone"),
-    "Scaling factor for ForwardMonotone reordering score",
+    "Scaling factor for BackwardMonotone reordering score",
     1),
     tmplConfigurable<double>(
     MAKE_CONFIG_PATH("BackwardSwap"),
-    "Scaling factor for ForwardMonotone reordering score",
+    "Scaling factor for BackwardSwap reordering score",
     1),
     tmplConfigurable<double>(
     MAKE_CONFIG_PATH("BackwardDiscontinous"),
-    "Scaling factor for ForwardMonotone reordering score",
+    "Scaling factor for BackwardDiscontinous reordering score",
     1)
 };
 

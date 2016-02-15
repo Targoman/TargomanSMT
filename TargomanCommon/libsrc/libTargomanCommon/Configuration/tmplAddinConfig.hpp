@@ -51,18 +51,13 @@ public:
                          _shortSwitch,
                          _shortHelp,
                          _LongSwitch,
-                         (enuConfigSource::Type)(
-                             enuConfigSource::Arg  |
-                             enuConfigSource::File),
+                         enuConfigSource::File,
                          false){
         this->ActiveAddins = _default;
-        this->AcceptableModule = itmplAcceptableInterface::moduleScope();
+        this->AcceptableModuleScope = itmplAcceptableInterface::moduleScope();
     }
     virtual inline void setFromVariant(const QVariant& _var){
-        if (_var.canConvert(QVariant::StringList))
-            this->ActiveAddins = _var.toStringList();
-        else
-            this->ActiveAddins = _var.toString().split(',');
+        this->ActiveAddins = _var.toString().split(',');
     }
 
     virtual inline QVariant    toVariant() const{
@@ -81,7 +76,7 @@ public:
         foreach (const QString& Addin, this->ActiveAddins){
             bool IsSingleton;
             ConfigManager::instance().getInstantiator(
-                        this->AcceptableModule + "::" + Addin,
+                        this->AcceptableModuleScope + "::" + Addin,
                         this->Instantiatior,
                         IsSingleton);
             if (this->Instantiatior == NULL){
@@ -118,28 +113,30 @@ public:
     virtual QString validValues() const{
         QStringList AcceptableAddins;
         foreach(const QString CheckingAddin,
-                ConfigManager::instance().registeredModules(this->AcceptableModule)){
+                ConfigManager::instance().registeredModules(this->AcceptableModuleScope)){
             try{
                 fpModuleInstantiator_t Instantiator;
                 bool IsSingleton;
                 ConfigManager::instance().getInstantiator(
-                            this->AcceptableModule + "::" + CheckingAddin,
+                            this->AcceptableModuleScope + "::" + CheckingAddin,
                             Instantiator,
                             IsSingleton);
                 intfModule* Instance = Instantiator();
                 if(dynamic_cast<itmplAcceptableInterface*>(Instance) != NULL)
                     AcceptableAddins.append(CheckingAddin);
+            }catch(exCofigItemNotInitialized &e){
+                AcceptableAddins.append(CheckingAddin);
             }catch(exConfiguration &e){
                 //Ignore exception on non-singleton modules
             }
         }
-        return AcceptableAddins.join('|');
+        return AcceptableAddins.join(',');
     }
 
 private:
-    QStringList ActiveAddins;           /**< Module name which will be set by setFromVariant(const QVariant&)*/
+    QStringList ActiveAddins;
     fpModuleInstantiator_t Instantiatior;   /**< Pointer to the Instantiator function of module.*/
-    QString AcceptableModule;
+    QString AcceptableModuleScope;
 };
 
 }

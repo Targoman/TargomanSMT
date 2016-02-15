@@ -68,7 +68,7 @@ private:
                                   const SearchGraphBuilder::clsSearchGraphNode& _currNode);
 
 private:
-    static Common::Configuration::tmplConfigurable<quint8> MaxSuggestions;
+    static Common::Configuration::tmplRangedConfigurable<quint8> MaxSuggestions;
     friend class UnitTestNameSpace::clsUnitTest;
 
 };

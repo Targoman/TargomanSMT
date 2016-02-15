@@ -36,20 +36,22 @@ using namespace Common;
 using namespace Common::Configuration;
 
 
-tmplConfigurable<quint16> TSManager::MaxTranslationTime(
+tmplRangedConfigurable<quint16> TSManager::MaxTranslationTime(
         MAKE_CONFIG_PATH("MaxTranslationTime"),
         "Maximum time to wait for a translation response in seconds",
+        1,5*60,
         120,
-        Validators::tmplNumericValidator<quint32,1,5*60>,
+        ReturnTrueCrossValidator,
         "","","",
         Common::Configuration::enuConfigSource::File
         );
 
-tmplConfigurable<quint8> TSManager::MaxRetries(
+tmplRangedConfigurable<quint8> TSManager::MaxRetries(
         MAKE_CONFIG_PATH("MaxRetries"),
         "Maximum tries to translate if disconnected from server",
+        1,30,
         5,
-        Validators::tmplNumericValidator<quint16,1,30>,
+        ReturnTrueCrossValidator,
         "","","",
         Common::Configuration::enuConfigSource::File
         );
@@ -75,14 +77,14 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
                         PreferedServerInex).constData().Active.value() == false)
                 PreferedServerInex = Modules::TSMonitor::instance().bestServerIndex(Dir);
 
-            clsTranslationServer* BestServer = new clsTranslationServer(
+            QScopedPointer<clsTranslationServer> BestServer(new clsTranslationServer(
                         Dir,
                         PreferedServerInex,
                         "rpcTranslate",
-                        _args);
-            TargomanLogInfo(4,"Trying to translate using Server: "<<Dir<<BestServer->configIndex());
-            connect(BestServer, &clsTranslationServer::sigReadyForFirstRequest,
-                    BestServer, &clsTranslationServer::slotSendPredefinedRequest,
+                        _args));
+            TargomanLogInfo(4,"Trying to translate using Server: "<<Dir<<":"<<BestServer->configIndex());
+            connect(BestServer.data(), &clsTranslationServer::sigReadyForFirstRequest,
+                    BestServer.data(), &clsTranslationServer::slotSendPredefinedRequest,
                     Qt::DirectConnection);
             BestServer->connect();
 
@@ -102,20 +104,25 @@ Common::JSONConversationProtocol::stuResponse TSManager::baseTranslation(const Q
             if (Response.Type == JSONConversationProtocol::stuResponse::Pong &&
                     Response.Result.toString() == SERVER_DISCONNECTED){
                 BestServer->blockSignals(true);
+                BestServer->disconnectFromHost();
                 BestServer->deleteLater();
                 PreferedServerInex = -1;
                 continue;
             }
             BestServer->blockSignals(true);
+            BestServer->disconnectFromHost();
             BestServer->deleteLater();
 
             Response.Args.insert("Server",BestServer->configIndex());
-            TargomanLogInfo(4,"Returning response from: "<<Dir<<BestServer->configIndex());
+
+            TargomanLogInfo(4,"Returning response from: "<<Dir<<":"<<BestServer->configIndex());
             return Response;
         }catch(exTSMonitor &e){
-            throw exTSManager("No resources available");
+            TargomanLogWarn(4,"["<<Dir<<":"<<PreferedServerInex<<"]: "<<e.what());
+            throw exTSManager("No resources available: "+ e.what());
         }
     }
+    TargomanLogWarn(4,"["<<Dir<<":"<<PreferedServerInex<<"]: Unable to translate because max tries failed");
     throw exTSManager("Unable to translate because max tries failed");
 }
 

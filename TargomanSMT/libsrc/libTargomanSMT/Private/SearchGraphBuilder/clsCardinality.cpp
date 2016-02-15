@@ -37,19 +37,22 @@ using namespace Common;
 using namespace Common::Configuration;
 
 
-tmplConfigurable<quint16> clsCardinalityHypothesisContainer::MaxCardinalityContainerSize(
+tmplRangedConfigurable<quint16> clsCardinalityHypothesisContainer::MaxCardinalityContainerSize(
         MAKE_CONFIG_PATH("MaxCardinalityContainerSize"),
-        "TODO Desc",
+        "Maximum number of hypotheses that each cardinality can store.",
+        1,1024,
         100);
-tmplConfigurable<quint8> clsCardinalityHypothesisContainer::PrimaryCoverageShare(
+tmplRangedConfigurable<quint8> clsCardinalityHypothesisContainer::PrimaryCoverageShare(
         MAKE_CONFIG_PATH("PrimaryCoverageShare"),
-        "TODO Desc",
+        "Maximum size of each coverage",
+        0,100,
         0
         );
 
-tmplConfigurable<double> clsCardinalityHypothesisContainer::SearchBeamWidth(
+tmplRangedConfigurable<double> clsCardinalityHypothesisContainer::SearchBeamWidth(
         MAKE_CONFIG_PATH("SearchBeamWidth"),
-        "TODO Desc",
+        "Maximum search beam width",
+        0.5,64,
         5
         );
 

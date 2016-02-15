@@ -53,7 +53,7 @@ public:
     bool                           InfoUpdated;
     size_t                         ConnectedServers;
     QMutex                         ListLock;
-    QMultiMap<QString, clsTranslationServer*>    Servers;
+    QMultiMap<QString, QPointer<clsTranslationServer>>    Servers;
 };
 
 class TSMonitor : public QThread, public Common::Configuration::intfModule
@@ -68,12 +68,13 @@ private:
     void run();
     TSMonitor() {}
 
-    TARGOMAN_DEFINE_SINGLETON_MODULE(TSMonitor)
+    TARGOMAN_DEFINE_SINGLETON_MODULE(TSMonitor);
+
 private:
     QScopedPointer<TSMonitorPrivate> pPrivate;
 
-    static Common::Configuration::tmplConfigurable<quint16> UpdateInterval;
-    static Common::Configuration::tmplConfigurable<quint16> WaitOnUpdtae;
+    static Common::Configuration::tmplRangedConfigurable<quint16> UpdateInterval;
+    static Common::Configuration::tmplRangedConfigurable<quint16> WaitOnUpdtae;
     friend class TSMonitorPrivate;
 };
 

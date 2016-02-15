@@ -48,7 +48,10 @@ namespace Configuration {
         QString ErrorMessage; \
         if (this->validate(_value, ErrorMessage)) this->Value = _value.value<_type>(); \
         else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);\
-    }
+    }\
+    template <> \
+    QString tmplConfigurable<_type>::validValues() const { return QString("%1 to %2").arg(_min).arg(_max); }
+
 
 /***************************************************************************************/
 _NUMERIC_CONFIGURABLE_IMPL("qint8",QVariant::Int,qint8,qint16, CHAR_MIN,CHAR_MAX)
@@ -82,6 +85,8 @@ template <>
 bool tmplConfigurable<QString>::validate(const QVariant&, QString& )const { return true; }
 template <>
 void tmplConfigurable<QString>::setFromVariant(const QVariant& _value){ this->Value = _value.toString(); }
+template <>
+QString tmplConfigurable<QString>::validValues() const { return ""; }
 
 //////FilePath_t
 template <>
@@ -90,13 +95,14 @@ template <>
 void tmplConfigurable<FilePath_t>::setFromVariant(const QVariant& _value){
     this->Value = ConfigManager::instance().getAbsolutePath(_value.toString());
 }
+template <>
+QString tmplConfigurable<FilePath_t>::validValues() const { return "valid path according to description"; }
 
 //////QStringList
 template <>
 bool tmplConfigurable<QStringList>::validate(const QVariant& , QString&  )const {
     return true;
 }
-
 template <>
 void tmplConfigurable<QStringList>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
@@ -113,6 +119,8 @@ template <>
 QVariant tmplConfigurable<QStringList>::toVariant() const{
     return this->Value.join(",");
 }
+template <>
+QString tmplConfigurable<QStringList>::validValues() const { return "Comma separated strings according to description"; }
 
 
 //////bool
@@ -130,10 +138,12 @@ void tmplConfigurable<bool>::setFromVariant(const QVariant& _value){
     if (this->validate(_value, ErrorMessage)) this->Value = _value.value<bool>();
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
+template <>
+QString tmplConfigurable<bool>::validValues() const { return "true|false|0|1"; }
 
 //////QRegExp
 template <>
-bool tmplConfigurable<QRegExp, false>::validate(const QVariant& _value, QString& _errorMessage) const{
+bool tmplConfigurable<QRegExp>::validate(const QVariant& _value, QString& _errorMessage) const{
     if (_value.toString().size()){
         QRegExp TempRegex(_value.toString(), Qt::CaseSensitive, QRegExp::RegExp);
         if (TempRegex.isValid() == false){
@@ -144,7 +154,7 @@ bool tmplConfigurable<QRegExp, false>::validate(const QVariant& _value, QString&
     return true;
 }
 template <>
-void tmplConfigurable<QRegExp, false>::setFromVariant(const QVariant& _value){
+void tmplConfigurable<QRegExp>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
     if (this->validate(_value, ErrorMessage)) this->Value = QRegExp(_value.value<QString>(),
                                                                     Qt::CaseSensitive,
@@ -153,15 +163,17 @@ void tmplConfigurable<QRegExp, false>::setFromVariant(const QVariant& _value){
 }
 
 template <>
-QVariant tmplConfigurable<QRegExp, false>::toVariant() const{
+QVariant tmplConfigurable<QRegExp>::toVariant() const{
     return this->Value.pattern();
 }
-
-//////QRegExp when used as wildcard
 template <>
-bool tmplConfigurable<QRegExp, true>::validate(const QVariant& _value, QString& _errorMessage) const{
+QString tmplConfigurable<QRegExp>::validValues() const { return "Valid regular expression"; }
+
+/////////////////////////////////////////////////////////////////////////////////////
+template <>
+bool tmplConfigurable<QWildCard>::validate(const QVariant& _value, QString& _errorMessage) const{
     if (_value.toString().size()){
-        QRegExp TempRegex(_value.toString(), Qt::CaseSensitive, QRegExp::WildcardUnix);
+        QWildCard TempRegex(_value.toString(), Qt::CaseSensitive, QWildCard::WildcardUnix);
         if (TempRegex.isValid() == false){
             _errorMessage = "Invalid wildcard pattern: " + TempRegex.errorString();
             return false;
@@ -170,18 +182,20 @@ bool tmplConfigurable<QRegExp, true>::validate(const QVariant& _value, QString& 
     return true;
 }
 template <>
-void tmplConfigurable<QRegExp, true>::setFromVariant(const QVariant& _value){
+void tmplConfigurable<QWildCard>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
-    if (this->validate(_value, ErrorMessage))this->Value = QRegExp(_value.value<QString>(),
+    if (this->validate(_value, ErrorMessage))this->Value = QWildCard(_value.value<QString>(),
                                                                    Qt::CaseSensitive,
-                                                                   QRegExp::WildcardUnix);
+                                                                   QWildCard::WildcardUnix);
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
 
 template <>
-QVariant tmplConfigurable<QRegExp, true>::toVariant() const{
+QVariant tmplConfigurable<QWildCard>::toVariant() const{
     return this->Value.pattern();
 }
+template <>
+QString tmplConfigurable<QWildCard>::validValues() const { return "Valid wildcard expression"; }
 
 }
 }

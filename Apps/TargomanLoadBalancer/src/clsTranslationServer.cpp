@@ -44,15 +44,15 @@ clsTranslationServer::clsTranslationServer(const QString &_dir,
     RequestRPC(_requestRPC),
     RequestArgs(_requestArgs)
 {
-    int a=2;
-    a++;
+}
+
+clsTranslationServer::~clsTranslationServer()
+{
+    this->reset();
 }
 
 void clsTranslationServer::connect()
 {
-    this->Socket->connectToHost(
-                this->Configs.Host.value(),
-                this->Configs.Port.value());
     this->Socket->setSocketOption(QTcpSocket::KeepAliveOption, true);
     QObject::connect(this->Socket.data(),&QTcpSocket::connected,
                      this, &clsTranslationServer::slotConnected, Qt::DirectConnection);
@@ -60,8 +60,19 @@ void clsTranslationServer::connect()
                      this, &clsTranslationServer::slotReadyRead, Qt::DirectConnection);
     QObject::connect(this->Socket.data(),&QTcpSocket::disconnected,
                      this, &clsTranslationServer::sigDisconnected, Qt::DirectConnection);
+    QObject::connect(this->Socket.data(),SIGNAL(error(QAbstractSocket::SocketError)),
+                     this, SLOT(slotError(QAbstractSocket::SocketError)),Qt::DirectConnection);
+    this->Socket->connectToHost(
+                this->Configs.Host.value(),
+                this->Configs.Port.value());
+
     QMutexLocker Locker(&this->ResponseLock);
     this->IsResponseReady = false;
+}
+
+void clsTranslationServer::disconnectFromHost()
+{
+    this->Socket->disconnectFromHost();
 }
 
 bool clsTranslationServer::isConnected()
@@ -88,7 +99,7 @@ qint64 clsTranslationServer::sendRequest(const QString& _rpc, const QVariantMap&
                     _rpc,
                     (this->LastRequestUUID = QUuid::createUuid().toString()),
                     _args)).toUtf8();
-    TargomanDebug(8,"SentTo["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<Data);
+    TargomanDebug(9,"SentTo["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<Data);
     return this->Socket->write(Data);
 }
 
@@ -101,6 +112,7 @@ void clsTranslationServer::resetScore() {
 }
 
 void clsTranslationServer::reset(){
+    this->Socket->disconnectFromHost();
     this->Socket.take()->deleteLater();
     this->Socket.reset(new QTcpSocket);
     this->LoggedIn = false;
@@ -137,6 +149,7 @@ void clsTranslationServer::slotConnected()
                                "login",
                                this->LastRequestUUID,
                                LoginArgs)).toUtf8());
+    TargomanLogInfo(4,"New connection to: "<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<" Stablished");
 }
 
 void clsTranslationServer::slotReadyRead()
@@ -144,7 +157,7 @@ void clsTranslationServer::slotReadyRead()
     QByteArray ReceivedBytes = this->Socket->readLine();
     if (ReceivedBytes.trimmed().isEmpty())
         return;
-    TargomanDebug(8,"Received["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<ReceivedBytes);
+    TargomanDebug(9,"Received["<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<"]: "<<ReceivedBytes);
     JSONConversationProtocol::stuResponse Response =
             JSONConversationProtocol::parseResponse(ReceivedBytes);
 
@@ -163,6 +176,13 @@ void clsTranslationServer::slotReadyRead()
     }
 }
 
+void clsTranslationServer::slotError(QAbstractSocket::SocketError _socketError){
+    Q_UNUSED(_socketError)
+   TargomanWarn(4,"(%p)[%s:%d]: %s",(void*)this,qPrintable(this->Configs.Host.value()),this->Configs.Port.value(),qPrintable(this->Socket->errorString()));
+   this->disconnectFromHost();
+}
+
+
 void clsTranslationServer::slotDisconnected()
 {
     QMutexLocker Locker(&this->ResponseLock);
@@ -171,6 +191,7 @@ void clsTranslationServer::slotDisconnected()
                 JSONConversationProtocol::stuResponse::Pong,
                 SERVER_DISCONNECTED);
     emit this->sigDisconnected();
+    TargomanWarn(4,"Connection to: "<<this->Configs.Host.value()<<":"<<this->Configs.Port.value()<<" Closed");
 }
 
 }

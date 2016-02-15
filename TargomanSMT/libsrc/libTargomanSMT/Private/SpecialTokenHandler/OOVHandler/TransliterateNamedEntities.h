@@ -75,6 +75,8 @@ public:
         return RuleTable::clsTargetRule::createZeroCostTargetRule(TargetPhrase, true);
     }
 
+    bool isReusable() {return true;}
+
 private:
     Proxies::Transliteration::intfTransliterator& refTransliterator;
     TARGOMAN_DEFINE_SINGLETON_MODULE(TransliterateNamedEntities);

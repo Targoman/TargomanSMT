@@ -42,12 +42,12 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(ZhangMaxEntProxy);
 
 tmplConfigurable<FilePath_t> ZhangMaxEntProxy::FilePath(
         MAKE_CONFIG_PATH("FilePath"),
-        "File path of binary maxent model",
+        "File path of binary maxent model. Relative to config file path unless specified as absolute path.",
         ""
         );
 tmplConfigurable<FilePath_t> ZhangMaxEntProxy::RareWordsPath(
         MAKE_CONFIG_PATH("RareWordsPath"),
-        "Path of the file containing rare words",
+        "Path to the file containing rare words. Relative to config file path unless specified as absolute path.",
         ""
         );
 maxent::MaxentModel ZhangMaxEntProxy::Model;
@@ -97,28 +97,28 @@ vector<string> ZhangMaxEntProxy::getMaxEntContext(
             s.append(w.mid(wl - i - 1, i + 1));
         }
     };
-    static QRegExp re_number = QRegExp("[0-9]");
-    static QRegExp re_hyphen = QRegExp("-");
-    static QRegExp re_uppercase = QRegExp("[A-Z]");
+    thread_local static QRegExp re_number = QRegExp("[0-9]");
+    thread_local static QRegExp re_hyphen = QRegExp("-");
+    thread_local static QRegExp re_uppercase = QRegExp("[A-Z]");
     auto get_context_english = [&] (const QList<InputDecomposer::clsToken::stuInfo>& words, const QStringList& pos, int i, bool rare_word) {
         QList<QString> context;
-        QString w = words[i].Str;
+        QString Word = words[i].Str;
         int n = words.size();
         if(rare_word) {
             QStringList prefix, suffix;
-            get_prefix_suffix_english(w, 4, prefix, suffix);
+            get_prefix_suffix_english(Word, 4, prefix, suffix);
             foreach(const QString& p, prefix)
                 context.append("prefix=" + p);
             foreach(const QString& s, suffix)
                 context.append("suffix=" + s);
-            if(w.contains(re_number))
+            if(Word.contains(re_number))
                 context.append("numeric");
-            if(w.contains(re_uppercase))
+            if(Word.contains(re_uppercase))
                 context.append("uppercase");
-            if(w.contains(re_hyphen))
+            if(Word.contains(re_hyphen))
                 context.append("hyphen");
         } else {
-            context.append("curword=" + w);
+            context.append("curword=" + Word);
         }
 
         if(i > 0) {

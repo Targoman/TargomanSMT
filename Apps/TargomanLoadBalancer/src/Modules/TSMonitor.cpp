@@ -34,28 +34,30 @@ namespace Modules {
 using namespace Common;
 using namespace Common::Configuration;
 
-tmplConfigurable<quint16> TSMonitor::UpdateInterval(
+tmplRangedConfigurable<quint16> TSMonitor::UpdateInterval(
         MAKE_CONFIG_PATH("UpdateInterval"),
         "Interval to collect information from servers in seconds must be less than 100",
+        1,100,
         1,
-        Validators::tmplNumericValidator<quint8,1,100>,
+        ReturnTrueCrossValidator,
         "","","",
         Common::Configuration::enuConfigSource::File
         );
 
-tmplConfigurable<quint16> TSMonitor::WaitOnUpdtae(
+tmplRangedConfigurable<quint16> TSMonitor::WaitOnUpdtae(
         MAKE_CONFIG_PATH("WaitOnUpdtae"),
         "miliseconds to wait before new update request this must be less than half of UpdateInterval",
+        0,50000,
         300,
         [] (const Common::Configuration::intfConfigurable& _item, QString& _errorMessage) {
-    if(_item.toVariant().toUInt() < TSMonitor::UpdateInterval.value() * 500)
-        return true;
-    _errorMessage = _item.configPath() + " must be less than half of UpdateInterval";
-    return false;
-},
-"","","",
-Common::Configuration::enuConfigSource::File
-);
+            if(_item.toVariant().toUInt() < TSMonitor::UpdateInterval.value() * 500)
+                return true;
+            _errorMessage = _item.configPath() + " must be less than half of UpdateInterval";
+            return false;
+        },
+        "","","",
+        Common::Configuration::enuConfigSource::File
+        );
 
 //TODO when No network is active application starts but does not work
 void TSMonitor::run()
@@ -66,8 +68,19 @@ void TSMonitor::run()
             const tmplConfigurableArray<gConfigs::stuServer>& ServersConfig =
                     gConfigs::TranslationServers.values(Key);
             QMutexLocker Locker(&this->pPrivate->ListLock);
-            for(size_t i=0; i<ServersConfig.size(); ++i)
-                    this->pPrivate->Servers.insertMulti(Key,new clsTranslationServer(Key,i));
+            for(size_t i=0; i<ServersConfig.size(); ++i){
+                QPointer<clsTranslationServer> Server(new clsTranslationServer(Key, i));
+                connect(Server.data(),&clsTranslationServer::sigResponse,
+                        this->pPrivate.data(), &TSMonitorPrivate::slotProcessResponse,
+                        Qt::DirectConnection);
+                connect(Server.data(),&clsTranslationServer::sigDisconnected,
+                        this->pPrivate.data(), &TSMonitorPrivate::slotServerDisconnected);
+                connect(Server.data(), &clsTranslationServer::sigReadyForFirstRequest,
+                        this->pPrivate.data(), &TSMonitorPrivate::slotSendRequest,
+                        Qt::DirectConnection);
+
+                this->pPrivate->Servers.insertMulti(Key,Server);
+            }
             Locker.unlock();
         }
         this->pPrivate->slotUpdateInfo();
@@ -97,6 +110,7 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
             BestServerIndex = Server->configIndex();
             BestServerScore = Server->totalScore();
         }
+        TargomanDebug(9, "bestServerIndex()["<<_dir<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
     }
 
     if (BestServerScore == 0)
@@ -105,7 +119,7 @@ quint16 TSMonitor::bestServerIndex(const QString &_dir)
     QMutexLocker Locker(&LastUsedServerLock);
     LastUsedServer.insert(_dir, LastUsedServer.value(_dir,-1) == BestServerIndex ?
                 (NextBestServerIndex < 0 ? BestServerIndex : NextBestServerIndex) : BestServerIndex);
-    return LastUsedServer.value(_dir);
+    return LastUsedServer.value(_dir, 0);
 }
 
 void TSMonitor::wait4AtLeastOneServerAvailable()
@@ -123,10 +137,9 @@ void TSMonitor::wait4AtLeastOneServerAvailable()
             if (Server->totalScore() > 0){
                 TargomanLogInfo(
                             1,
-                            "Server ID: "<<
-                            Server->configIndex()<<
-                            " :"<<
-                            gConfigs::TranslationServers[Server->dir()][Server->configIndex()].Host.value()<<
+                            "Server "<<Server->dir()<<
+                            " ID: "<<Server->configIndex()<<
+                            " :"<<gConfigs::TranslationServers[Server->dir()][Server->configIndex()].Host.value()<<
                             " is ready");
                 ++ReadyServers;
             }
@@ -149,14 +162,6 @@ void TSMonitorPrivate::slotUpdateInfo()
             Server->TotalScore = 0;
             if (Server->isConnected() == false) {
                 Server->reset();
-                connect(Server,&clsTranslationServer::sigResponse,
-                        this, &TSMonitorPrivate::slotProcessResponse,
-                        Qt::DirectConnection);
-                connect(Server,&clsTranslationServer::sigDisconnected,
-                        this, &TSMonitorPrivate::slotServerDisconnected);
-                connect(Server, &clsTranslationServer::sigReadyForFirstRequest,
-                        this, &TSMonitorPrivate::slotSendRequest,
-                        Qt::DirectConnection);
                 Server->connect();
             }else if (Server->isLoggedIn()){
                 emit Server->sigReadyForFirstRequest();
@@ -178,6 +183,7 @@ void TSMonitorPrivate::slotServerDisconnected()
         QMutexLocker Locker(&this->ListLock);
         Server->reset();
         Locker.unlock();
+        TargomanLogWarn(4,(void*)Server<<"Connection to "<<Server->dir()<<":"<<Server->configIndex()<<" has been lost.")
     }
 }
 
@@ -217,8 +223,8 @@ void TSMonitorPrivate::slotProcessResponse(Common::JSONConversationProtocol::stu
                     FreeMem;
 
             Server->updateStatistics(Load1min, Load15min, FreeMem, TranslationQueue, Score);
+            TargomanDebug(9, "slotProcessResponse("<<(void*)Server<<")["<<Server->dir()<<":"<<Server->configIndex()<<"] TotalScore:"<<Server->totalScore());
        }
-
     }catch(exTargomanBase &e){
         TargomanError(e.what());
     }catch(...){
