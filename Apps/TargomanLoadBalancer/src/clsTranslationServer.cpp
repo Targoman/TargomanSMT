@@ -37,7 +37,7 @@ clsTranslationServer::clsTranslationServer(const QString &_dir,
     TotalScore(0),
     IsResponseReady(false),
     Configs(gConfigs::TranslationServers[_dir][_configIndex].data()),
-    Socket(new clsMyTcpSocket),
+    Socket(new QTcpSocket),
     ConfigIndex(_configIndex),
     Dir(_dir),
     LoggedIn(false),
@@ -114,7 +114,7 @@ void clsTranslationServer::resetScore() {
 void clsTranslationServer::reset(){
     this->Socket->disconnectFromHost();
     this->Socket.take()->deleteLater();
-    this->Socket.reset(new clsMyTcpSocket);
+    this->Socket.reset(new QTcpSocket);
     this->LoggedIn = false;
     this->resetScore();
 }

@@ -32,13 +32,6 @@
 namespace Targoman {
 namespace Apps{
 
-class clsMyTcpSocket : public QTcpSocket{
-public:
-    ~clsMyTcpSocket(){
-        TargomanDebug(9,(void*)this<<"---------------------DELETED")
-    }
-};
-
 class clsTranslationServer : public QObject
 {
     Q_OBJECT
@@ -97,7 +90,7 @@ private:
     bool               IsResponseReady;
     gConfigs::stuServer& Configs;
     QString    LastRequestUUID;
-    QScopedPointer<clsMyTcpSocket> Socket;
+    QScopedPointer<QTcpSocket> Socket;
     quint32    ConfigIndex;
     QString    Dir;
     bool       LoggedIn;
