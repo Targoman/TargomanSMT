@@ -82,7 +82,7 @@ private:
 
 
     QString markByRegex(const QString &_phrase,
-                        QRegExp& _regex,
+                        QRegExp _regex,
                         const QString &_mark,
                         QStringList *_listOfMatches,
                         quint8 _capID = 0);
