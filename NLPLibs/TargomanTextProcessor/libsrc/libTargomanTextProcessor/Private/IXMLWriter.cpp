@@ -44,11 +44,9 @@ IXMLWriter::IXMLWriter() :
  * @param _configFile abbriviation file address.
  */
 
-thread_local static QRegExp RxAbbrDic;
-
 void IXMLWriter::init(const QString &_configFile)
 {
-    QString AbbreviationDetectionRegex = QStringLiteral("\\b(Mr\\.");
+    this->AbbreviationDetectionRegexPattern = QStringLiteral("\\b(Mr\\.");
 
     QFile AbbrF(_configFile);
     AbbrF.open(QIODevice::ReadOnly);
@@ -62,10 +60,9 @@ void IXMLWriter::init(const QString &_configFile)
             continue;
         if ((CommentIndex = DataLine.indexOf("##")) >= 0)
             DataLine.truncate(CommentIndex);
-        AbbreviationDetectionRegex.append("|" + DataLine.replace(".", "\\\\."));
+        this->AbbreviationDetectionRegexPattern.append("|" + DataLine.replace(".", "\\\\."));
     }
 
-    RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=[^\\w]|$)");
     //this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=\\b)");
 }
 
@@ -88,7 +85,8 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
 {
 
     // Email detection
-    thread_local QRegExp RxEmail = QRegExp("([A-Za-z0-9._%+-][A-Za-z0-9._%+-]*@[A-Za-z0-9.-][A-Za-z0-9.-]*\\.[A-Za-z]{2,4})");
+    thread_local static QRegExp RxEmail = QRegExp("([A-Za-z0-9._%+-][A-Za-z0-9._%+-]*@[A-Za-z0-9.-][A-Za-z0-9.-]*\\.[A-Za-z]{2,4})");
+    thread_local static QRegExp RxAbbrDic = QRegExp (this->AbbreviationDetectionRegexPattern + ")(?=[^\\w]|$)");
 
     QStringList AllowedFarsiDomainNames = {
         QStringLiteral("کام"),

@@ -108,7 +108,7 @@ private:
     QTextStream* TempStream;
     QTextStream* InStream;
     QTextStream* FinalOutStream;
-
+    QString      AbbreviationDetectionRegexPattern;
     Normalizer& NormalizerInstance;         /** An instance of Normalizer class for faster access */
     SpellCorrector& SpellCorrectorInstance; /** An instance of SpellCorrector class for faster access */
 };
