@@ -46,8 +46,9 @@ tmplConfigurable<FilePath_t> SimpleAuthentication::UserInfoFile(
         false*/
         );
 
-QRegExp rxValidUser("^[a-z][a-z0-9_]+");
-QRegExp rxValidCIDR("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$");
+thread_local static QRegExp RxValidUser("^[a-z][a-z0-9_]+");
+thread_local static QRegExp RxValidCIDR(
+        "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$");
 
 QString SimpleAuthentication::hashPass(const QString& _user, const QString &_pass, const QString &_salt)
 {
@@ -102,12 +103,12 @@ void SimpleAuthentication::registerUser(const QString &_user, const QString &_pa
                                      SimpleAuthentication::UserInfoFile.value() +
                                      "> for writing");
     QString User = _user.toLower();
-    if (rxValidUser.exactMatch(User) == false)
+    if (RxValidUser.exactMatch(User) == false)
         throw exSimpleAuthentication("Invalid username: <"+ User + ">");
     if (Settings.contains(User+"/"+"Pass"))
         throw exSimpleAuthentication("User <" + _user + "> Was registered before.");
 
-    if (rxValidCIDR.exactMatch(_cidr) == false)
+    if (RxValidCIDR.exactMatch(_cidr) == false)
         throw exSimpleAuthentication("Invalid CIDR format");
 
     Settings.setValue(User + "/Pass",
@@ -148,7 +149,7 @@ void SimpleAuthentication::updateUser(const QString &_user,
     if (Settings.contains(User+"/"+"Pass") == false)
         throw exSimpleAuthentication("User <" + _user + "> Not found.");
 
-    if (_cidr.size() && rxValidCIDR.exactMatch(_cidr) == false)
+    if (_cidr.size() && RxValidCIDR.exactMatch(_cidr) == false)
         throw exSimpleAuthentication("Invalid CIDR format");
 
     if (_pass.size())

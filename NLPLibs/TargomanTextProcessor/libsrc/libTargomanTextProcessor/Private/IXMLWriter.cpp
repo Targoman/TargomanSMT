@@ -32,101 +32,19 @@ namespace NLPLibs {
 namespace TargomanTP{
 namespace Private {
 
-IXMLWriter* IXMLWriter::Instance = NULL;
-
 #define TGMN_SUFFIXES "t|ll|ve|s|m|re|d" //these terms can come after apostrofe
 
 IXMLWriter::IXMLWriter() :
     NormalizerInstance(Normalizer::instance()),
     SpellCorrectorInstance(SpellCorrector::instance())
-{
-    // Email detection
-    this->RxEmail = QRegExp("([A-Za-z0-9._%+-][A-Za-z0-9._%+-]*@[A-Za-z0-9.-][A-Za-z0-9.-]*\\.[A-Za-z]{2,4})");
-
-    QStringList AllowedFarsiDomainNames = {
-        QStringLiteral("کام"),
-        QStringLiteral("نت"),
-        QStringLiteral("ارگ"),
-        QStringLiteral("آی‌آر")
-    };
-
-    this->RxURL = QRegExp(QStringLiteral("(?:(?:https?|ftp)://)?"
-                                            "(?:(?!10(?:\\.\\d{1,3}){3})"
-                                            //      "(?!127(?:\\.\\d{1,3}){3})"
-                                            //      "(?!169\\.254(?:\\.\\d{1,3}){2})"
-                                            //      "(?!192\\.168(?:\\.\\d{1,3}){2})"
-                                            //      "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})"
-                                            "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])"
-                                            "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}"
-                                            "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))"
-                                            "|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)"
-                                            "(?:\\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*"
-                                            "(?:\\.(?:[a-z]{2,4}|") +
-                          AllowedFarsiDomainNames.join("|") +
-                          QStringLiteral(")))(?::\\d{2,5})?(?:/[^\\s]*)?"),
-                          Qt::CaseInsensitive);
-
-    this->RxURLValidator = QRegExp("^" + this->RxURL.pattern() + "$");
-
-    // Abbreviations
-    {
-        this->RxAbbr = QRegExp("\\b([A-Z]\\.(?:[A-Z\\d]\\.)(?:[A-Z\\d]\\.)*)(?=[^\\w]|$)");
-        this->RxAbbrDotless = QRegExp("\\b([A-Z]\\.[A-Z\\d](?:\\.[A-Z\\d])*)\\b");
-
-        this->RxMultiDots = QRegExp(QStringLiteral("(\\.\\.(\\.)*)"));
-    }
-
-    // suffixes
-    this->RxSuffix = QRegExp(QStringLiteral("((?:'(?:%1))\\b)").arg(TGMN_SUFFIXES));
-
-    //zhnDebug: what is this?
-    // Dates
-    this->RxDate = QRegExp(QStringLiteral("^$"));
-    // Times
-    this->RxTime = QRegExp(QStringLiteral("^$"));
-    // Numbers
-    this->RxDashSeparator = QRegExp("(\\w)\\-(\\w)");
-    this->RxUnderlineSeparator = QRegExp("(\\w)\\_(\\w)");
-    this->RxSpecialNumber = QRegExp("(\\d+\\.\\d+\\.(?:\\d+\\.?)*|^\\d+\\.)");
-
-    //((?:(?:(?:\\b)(:num:))|(?:(?::num:)(?:\\b)))(?=([^\\.\\d]|\\.(?:[^\\d]|$))))
-    this->RxNumberLeft = QRegExp("((?:(?:\\b)(" +
-                                 QStringLiteral("[\\+\\-]?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
-                                                   "[\\+\\-]?[0-9][0-9]*(?:\\.[0-9][0-9]*)?") +
-                                 "))(?=([^\\.\\d]|\\.(?:[^\\d]|$))))");
-
-    this->RxNumberRight = QRegExp("(?:([^a-zA-Z0-9])(" +
-                                  QStringLiteral("(?:[\\+\\-])?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
-                                                    "(?:[\\+\\-])?[0-9][0-9]*(?:\\.[0-9][0-9]*)?") +
-                                  +")(?:\\b))(?=([^\\.\\d]|\\.(?:[^\\d]|$)))");
-
-    this->RxNumberValidator =
-            QRegExp("^[\\+\\-]?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
-                    "[\\+\\-]?[0-9][0-9]*(?:\\.[0-9][0-9]*)?$");
-
-    this->RxNumbering = QRegExp(QStringLiteral("^((?:\\s)*(?:[\"'\\(\\[`])?(?:\\s)*"
-                                                  "(?:(?:\\d+)|"
-                                                  "(?:M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3}))|"
-                                                  "(?:الف|[a-zA-Z]|[ابپتثجچهخدذرزژسشصضطظعغفقکگلمنوهی])"
-                                                  ")(?:"
-                                                  "(?:[\\-\\.])"
-                                                  "(?:(?:\\d+)|"
-                                                  "(?:M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3}))|"
-                                                  "(?:الف|[a-zA-Z]|[ابپتثجچهخدذرزژسشصضطظعغفقکگلمنوهی])"
-                                                  "))*"
-                                                  "(?:[\\-\\.\\s\\)>])"
-                                                  ")"));
-
-    this->RxOrdinalNumber = QRegExp("((?:\\b)(?:1st|2nd|3rd|\\d+th)(?:\\b))");
-    this->RxPersianLatin = QRegExp(QStringLiteral("([\u0600-\u06ff])(\\d+)?([a-zA-Z])"));
-    this->RxLatinPersian = QRegExp(QStringLiteral("([a-zA-Z])(\\d+)?([\u0600-\u06ff])"));
-    this->RxPersianNumber = QRegExp(QStringLiteral("([\u0600-\u06ff])(\\d+)"));
-}
+{}
 
 /**
  * @brief Reads abbriviation from file and adds them to #RxAbbrDic
  * @param _configFile abbriviation file address.
  */
+
+thread_local static QRegExp RxAbbrDic;
 
 void IXMLWriter::init(const QString &_configFile)
 {
@@ -147,7 +65,7 @@ void IXMLWriter::init(const QString &_configFile)
         AbbreviationDetectionRegex.append("|" + DataLine.replace(".", "\\\\."));
     }
 
-    this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=[^\\w]|$)");
+    RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=[^\\w]|$)");
     //this->RxAbbrDic = QRegExp (AbbreviationDetectionRegex + ")(?=\\b)");
 }
 
@@ -168,6 +86,89 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
                                  bool _interactive,
                                  bool _useSpellCorrector)
 {
+
+    // Email detection
+    thread_local QRegExp RxEmail = QRegExp("([A-Za-z0-9._%+-][A-Za-z0-9._%+-]*@[A-Za-z0-9.-][A-Za-z0-9.-]*\\.[A-Za-z]{2,4})");
+
+    QStringList AllowedFarsiDomainNames = {
+        QStringLiteral("کام"),
+        QStringLiteral("نت"),
+        QStringLiteral("ارگ"),
+        QStringLiteral("آی‌آر")
+    };
+
+    static QString URLRegExPattern= QStringLiteral("(?:(?:https?|ftp)://)?"
+                                                   "(?:(?!10(?:\\.\\d{1,3}){3})"
+                                                   //      "(?!127(?:\\.\\d{1,3}){3})"
+                                                   //      "(?!169\\.254(?:\\.\\d{1,3}){2})"
+                                                   //      "(?!192\\.168(?:\\.\\d{1,3}){2})"
+                                                   //      "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})"
+                                                   "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])"
+                                                   "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}"
+                                                   "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))"
+                                                   "|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)"
+                                                   "(?:\\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*"
+                                                   "(?:\\.(?:[a-z]{2,4}|") +
+                                                   AllowedFarsiDomainNames.join("|") +
+                                                   QStringLiteral(")))(?::\\d{2,5})?(?:/[^\\s]*)?");
+
+    thread_local static QRegExp RxURL = QRegExp(URLRegExPattern, Qt::CaseInsensitive);
+
+    thread_local static QRegExp RxURLValidator = QRegExp("^" + URLRegExPattern + "$",  Qt::CaseInsensitive);
+
+    // Abbreviations
+    thread_local static QRegExp RxAbbr = QRegExp("\\b([A-Z]\\.(?:[A-Z\\d]\\.)(?:[A-Z\\d]\\.)*)(?=[^\\w]|$)");
+    thread_local static QRegExp RxAbbrDotless = QRegExp("\\b([A-Z]\\.[A-Z\\d](?:\\.[A-Z\\d])*)\\b");
+    thread_local static QRegExp RxMultiDots = QRegExp(QStringLiteral("(\\.\\.(\\.)*)"));
+
+    // suffixes
+    thread_local static QRegExp RxSuffix = QRegExp(QStringLiteral("((?:'(?:%1))\\b)").arg(TGMN_SUFFIXES));
+
+    //TODO: complete these regexes
+    // Dates
+    thread_local static QRegExp RxDate = QRegExp(QStringLiteral("^$"));
+    // Times
+    thread_local static QRegExp RxTime = QRegExp(QStringLiteral("^$"));
+
+    // Numbers
+    thread_local static QRegExp RxDashSeparator = QRegExp("(\\w)\\-(\\w)");
+    thread_local static QRegExp RxUnderlineSeparator = QRegExp("(\\w)\\_(\\w)");
+    thread_local static QRegExp RxSpecialNumber = QRegExp("(\\d+\\.\\d+\\.(?:\\d+\\.?)*|^\\d+\\.)");
+
+    //((?:(?:(?:\\b)(:num:))|(?:(?::num:)(?:\\b)))(?=([^\\.\\d]|\\.(?:[^\\d]|$))))
+    thread_local static QRegExp RxNumberLeft = QRegExp("((?:(?:\\b)(" +
+                                 QStringLiteral("[\\+\\-]?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
+                                                   "[\\+\\-]?[0-9][0-9]*(?:\\.[0-9][0-9]*)?") +
+                                 "))(?=([^\\.\\d]|\\.(?:[^\\d]|$))))");
+
+    thread_local static QRegExp RxNumberRight = QRegExp("(?:([^a-zA-Z0-9])(" +
+                                  QStringLiteral("(?:[\\+\\-])?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
+                                                    "(?:[\\+\\-])?[0-9][0-9]*(?:\\.[0-9][0-9]*)?") +
+                                  +")(?:\\b))(?=([^\\.\\d]|\\.(?:[^\\d]|$)))");
+
+    thread_local static QRegExp RxNumberValidator =
+            QRegExp("^[\\+\\-]?[0-9]{1,3}[',](?:[0-9]{3}[',])*[0-9]{3}(?:\\.[0-9][0-9]*)?|"
+                    "[\\+\\-]?[0-9][0-9]*(?:\\.[0-9][0-9]*)?$");
+
+    thread_local static QRegExp RxNumbering = QRegExp(QStringLiteral("^((?:\\s)*(?:[\"'\\(\\[`])?(?:\\s)*"
+                                                  "(?:(?:\\d+)|"
+                                                  "(?:M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3}))|"
+                                                  "(?:الف|[a-zA-Z]|[ابپتثجچهخدذرزژسشصضطظعغفقکگلمنوهی])"
+                                                  ")(?:"
+                                                  "(?:[\\-\\.])"
+                                                  "(?:(?:\\d+)|"
+                                                  "(?:M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3}))|"
+                                                  "(?:الف|[a-zA-Z]|[ابپتثجچهخدذرزژسشصضطظعغفقکگلمنوهی])"
+                                                  "))*"
+                                                  "(?:[\\-\\.\\s\\)>])"
+                                                  ")"));
+
+    thread_local static QRegExp RxOrdinalNumber = QRegExp("((?:\\b)(?:1st|2nd|3rd|\\d+th)(?:\\b))");
+    thread_local static QRegExp RxPersianLatin = QRegExp(QStringLiteral("([\u0600-\u06ff])(\\d+)?([a-zA-Z])"));
+    thread_local static QRegExp RxLatinPersian = QRegExp(QStringLiteral("([a-zA-Z])(\\d+)?([\u0600-\u06ff])"));
+    thread_local static QRegExp RxPersianNumber = QRegExp(QStringLiteral("([\u0600-\u06ff])(\\d+)"));
+
+
     if(_inStr.trimmed().isEmpty())
         return "";
     QString InputPhrase, OutputPhrase;
@@ -207,19 +208,19 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
     TargomanDebug(7,"[NRM] |"<<OutputPhrase<<"|");
     OutputPhrase.replace("&amp;", " & ").replace("&gt;", " > ").replace("&lt;", " < "); //replace '<' a '>' with some special string in order to prevent errors in xml tags.
     TargomanDebug(7,"[NR2] |"<<OutputPhrase<<"|");
-    OutputPhrase.replace(this->RxNumbering, "\\1 ");
+    OutputPhrase.replace(RxNumbering, "\\1 ");
     TargomanDebug(7,"[OLI] |"<<OutputPhrase<<"|");
     QStringList PhraseTokens = OutputPhrase.split(" ", QString::SkipEmptyParts);
 
     // if first token is number we are not sure whether it is for ordered list or not. So we will check it in this if
-    if (PhraseTokens.size() && this->RxNumbering.exactMatch(PhraseTokens.first())){
-        if (this->RxNumberValidator.exactMatch(PhraseTokens.first())){ //check whether first token is a normal number (numbers with optional thousand seperator or decimal numbers )or not.
+    if (PhraseTokens.size() && RxNumbering.exactMatch(PhraseTokens.first())){
+        if (RxNumberValidator.exactMatch(PhraseTokens.first())){ //check whether first token is a normal number (numbers with optional thousand seperator or decimal numbers )or not.
             LstNumberLeft.append(PhraseTokens.first());
             PhraseTokens[0] = "TGMNNUL";
-        }else if (this->RxURLValidator.exactMatch(PhraseTokens.first())){ //check whether first token is IP of a website or not.
+        }else if (RxURLValidator.exactMatch(PhraseTokens.first())){ //check whether first token is IP of a website or not.
             LstURL.append(PhraseTokens.first());
             PhraseTokens[0] = "TGMNURL";
-        }else if (this->RxAbbrDic.exactMatch(PhraseTokens.first())){ //check whether first token is in abbreviation dictionary or not.
+        }else if (RxAbbrDic.exactMatch(PhraseTokens.first())){ //check whether first token is in abbreviation dictionary or not.
             LstAbbr[0].append(PhraseTokens.first());
             PhraseTokens[0] = "TGMNABD";
         }else{  // if first token was non of the above, it is ordered list item.
@@ -229,33 +230,33 @@ QString IXMLWriter::convert2IXML(const QString &_inStr,
         OutputPhrase = PhraseTokens.join(" ");
     }
     //adds a space between persian word and number
-    OutputPhrase.replace(this->RxPersianNumber, "\\1 \\2");
+    OutputPhrase.replace(RxPersianNumber, "\\1 \\2");
     TargomanDebug(7,"[P2N] |"<<OutputPhrase<<"|");
     //adds spaces between persian word ,number and latin word.
-    OutputPhrase.replace(this->RxPersianLatin, "\\1 \\2 \\3");
+    OutputPhrase.replace(RxPersianLatin, "\\1 \\2 \\3");
     TargomanDebug(7,"[P2L] |"<<OutputPhrase<<"|");
     // it doesn't add space between latin word and number but adds space between number and persian word.
-    OutputPhrase.replace(this->RxLatinPersian, "\\1\\2  \\3");
+    OutputPhrase.replace(RxLatinPersian, "\\1\\2  \\3");
     TargomanDebug(7,"[L2P] |"<<OutputPhrase<<"|");
 
     //find and replace a list patterns.
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxEmail, "EML", &LstEmail);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxAbbr, "ABR", &LstAbbr[1]);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxAbbrDotless, "ABS", &LstAbbr[2]);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxAbbrDic, "ABD", &LstAbbr[0]);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxURL, "URL", &LstURL);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxMultiDots, "MDT", NULL);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxDate, "DAT", &LstDate);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxTime, "TIM", &LstTime);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxOrdinalNumber, "ORD", &LstOrdinal);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxSpecialNumber, "SNM", &LstSpecialNumber);
-    OutputPhrase.replace(this->RxDashSeparator, "\\1 - \\2"); // adds space before and after dashes in string.
+    OutputPhrase = this->markByRegex(OutputPhrase, RxEmail, "EML", &LstEmail);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxAbbr, "ABR", &LstAbbr[1]);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxAbbrDotless, "ABS", &LstAbbr[2]);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxAbbrDic, "ABD", &LstAbbr[0]);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxURL, "URL", &LstURL);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxMultiDots, "MDT", NULL);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxDate, "DAT", &LstDate);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxTime, "TIM", &LstTime);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxOrdinalNumber, "ORD", &LstOrdinal);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxSpecialNumber, "SNM", &LstSpecialNumber);
+    OutputPhrase.replace(RxDashSeparator, "\\1 - \\2"); // adds space before and after dashes in string.
     TargomanDebug(7,"[DSH] |"<<OutputPhrase<<"|");
-    OutputPhrase.replace(this->RxUnderlineSeparator, "\\1 _ \\2"); // adds space before and after underlines in string.
+    OutputPhrase.replace(RxUnderlineSeparator, "\\1 _ \\2"); // adds space before and after underlines in string.
     TargomanDebug(7,"[UND] |"<<OutputPhrase<<"|");
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxNumberRight,"NUR", &LstNumberRight, 2);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxNumberLeft, "NUL", &LstNumberLeft);
-    OutputPhrase = this->markByRegex(OutputPhrase, this->RxSuffix, "SFX", &LstSuffixes);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxNumberRight,"NUR", &LstNumberRight, 2);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxNumberLeft, "NUL", &LstNumberLeft);
+    OutputPhrase = this->markByRegex(OutputPhrase, RxSuffix, "SFX", &LstSuffixes);
 
     //add space before and after non alphaNumeric characters.
     InputPhrase = OutputPhrase;
@@ -370,7 +371,7 @@ QString IXMLWriter::supportedSuffixes() const
  * @return returns replaced string with mark.
  */
 QString IXMLWriter::markByRegex(const QString &_phrase,
-                                QRegExp _regex,
+                                QRegExp &_regex,
                                 const QString &_mark,
                                 QStringList* _listOfMatches,
                                 quint8 _capID)

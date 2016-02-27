@@ -110,7 +110,7 @@ struct stuPos : public QPair<qint32, qint32>{
 }
 }
 
-class QWildCard : public QRegExp{
+class QWildCard : private QRegExp{
 public:
     QWildCard():
         QRegExp()
@@ -124,6 +124,22 @@ public:
     QWildCard(const QRegExp &rx):
         QRegExp(rx)
     { }
+
+    inline QString pattern() const{
+        return QRegExp::pattern();
+    }
+
+    inline bool exactMatch(const QString &_str) const{
+        return QRegExp::exactMatch(_str);
+    }
+
+    bool isValid() const{
+        return QRegExp::isValid();
+    }
+
+    QString errorString() const{
+        return QRegExp::errorString();
+    }
 };
 
 //qRegisterMetaType<Targoman::Common::stuPong>("Targoman::Common::stuPong");
