@@ -144,6 +144,9 @@ QString tmplConfigurable<bool>::validValues() const { return "true|false|0|1"; }
 //////QRegExp
 template <>
 bool tmplConfigurable<QRegExp>::validate(const QVariant& _value, QString& _errorMessage) const{
+    _errorMessage = "As QRegExp is not Thread safe we must change some of its methods to be thread safe. Use it at your own risk.";
+    return false;
+
     if (_value.toString().size()){
         QRegExp TempRegex(_value.toString(), Qt::CaseSensitive, QRegExp::RegExp);
         if (TempRegex.isValid() == false){
@@ -173,7 +176,7 @@ QString tmplConfigurable<QRegExp>::validValues() const { return "Valid regular e
 template <>
 bool tmplConfigurable<QWildCard>::validate(const QVariant& _value, QString& _errorMessage) const{
     if (_value.toString().size()){
-        QWildCard TempRegex(_value.toString(), Qt::CaseSensitive, QWildCard::WildcardUnix);
+        QWildCard TempRegex(_value.toString(), Qt::CaseSensitive, QRegExp::WildcardUnix);
         if (TempRegex.isValid() == false){
             _errorMessage = "Invalid wildcard pattern: " + TempRegex.errorString();
             return false;
@@ -186,7 +189,7 @@ void tmplConfigurable<QWildCard>::setFromVariant(const QVariant& _value){
     QString ErrorMessage;
     if (this->validate(_value, ErrorMessage))this->Value = QWildCard(_value.value<QString>(),
                                                                    Qt::CaseSensitive,
-                                                                   QWildCard::WildcardUnix);
+                                                                   QRegExp::WildcardUnix);
     else throw exConfiguration(this->ConfigPath + ": " + ErrorMessage);
 }
 

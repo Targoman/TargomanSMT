@@ -15,11 +15,12 @@ function log(){ echo -e "\033[0m$*"; }
 
 function usage() {
     log "updateInstall script. v0.1. This script updates installed binaries and configs automatically"
-    log "Usage: $0 -H REMOTE_HOST [-p REMOTE_SSH_PORT] [-u REMOTE_SSH_USER] [-l][-s][-t][-b] [-n] [-v VERSION_STRING] [-k]" 1>&2;
+    log "Usage: $0 -H REMOTE_HOST [-p REMOTE_SSH_PORT] [-u REMOTE_SSH_USER] [-l][-e][-s][-t][-b] [-n] [-v VERSION_STRING] [-k]" 1>&2;
     log "\t\t  -l: Update Load Balancer" 1>&2;
     log "\t\t  -b: Update Load Balancer for test" 1>&2;
     log "\t\t  -s: Update SMT Server" 1>&2;
     log "\t\t  -t: Update SMT Server for test" 1>&2;
+    log "\t\t  -e: Run E4SMT on corpora" 1>&2;
     log "\t\t  -H: Remote host to where install" 1>&2;
     log "\t\t  -p: SSH port used to ssh to remote host (default=$RemotePort)" 1>&2;
     log "\t\t  -u: Username used to login and install into remote host (default=$RemoteUser)" 1>&2;
@@ -185,6 +186,10 @@ function doService() {
     done
 }
 
+function processCorpora(){
+    /data/TestSuite/Repo/Corpora/Bilingual/updateIXML.sh $TagDir
+    /data/TestSuite/Repo/Corpora/Monolingual/updateIXML.sh $TagDir
+}
 
 function updateLoadBalancer(){
     Libraries="QJsonRPC TargomanCommon"
@@ -250,16 +255,37 @@ function updateSMTServer(){
     logSection "Finished"
 }
 
+function updateE4SMT(){
+    Libraries="QJsonRPC TargomanCommon TargomanTextProcessor"
+    Binaries="E4SMT"
+
+    if [ -n "$TagString" ];then
+        logSection "Installing E4SMT [$TagString version]"
+    else
+        logSection "Installing E4SMT"
+    fi
+
+    sendLibraries             "$Libraries"
+    sendBinaries              "$Binaries"
+
+    runOnRemote unpackBinaries
+    runOnRemote updateSymlinks
+
+    runOnRemote processCorpora
+    logSection "Finished"
+}
+
 function main(){
     IsTest=0
     ConfigureAndRestart=0
     cd $(dirname $0)
-    while getopts ":lbstH:p:v:u:g:nkc" o; do
+    while getopts ":lebstH:p:v:u:g:nkc" o; do
         case "${o}" in
             l)  What2Install="$What2Install LoadBalancer";;
             b)  What2Install="LoadBalancer";IsTest=1;;
             s)  What2Install="$What2Install SMTServer";;
             t)  What2Install="SMTServer";IsTest=1;;
+            e)  What2Install="E4SMT";;
             H)  RemoteHost=${OPTARG};;
             p)  RemotePort=${OPTARG}; ((Port < 10 || Port > 65535)) || usage ;;
             u)  RemoteUser=${OPTARG};;

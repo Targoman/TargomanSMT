@@ -120,8 +120,6 @@ private:
     QString                 ConfigFileName;                 /** < Configuration file address */
     bool                    BinaryMode;                 /** < If Normalization data is in binary mode this variable will be true.*/
     QChar                   LastChar;                   /** < Last character in normalization process.*/
-    QRegExp                 RxDetokenDQuote;            /** < A Regular expression to detokenize Double Quote characters. */
-    QRegExp                 RxDetokenQuote;             /** < A Regular expression to detokenize Quote characters. */
 };
 
 }
