@@ -37,19 +37,19 @@ using namespace Configuration;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(NBestPath);
 
-tmplConfigurable<QString> NBestPath::NBestFile(
-        MAKE_CONFIG_PATH("NBestFile"),
-        "Output file for the NBests",
-        "",
-        Validators::tmplPathAccessValidator<
-            (enuPathAccess::Type)(enuPathAccess::Writeatble),
-            false>
-//#ifndef SMT
-//        ,"nb",
-//        "NBEST_PATH",
-//        "nbest-path"
-//#endif
-        );
+//tmplConfigurable<QString> NBestPath::NBestFile(
+//        MAKE_CONFIG_PATH("NBestFile"),
+//        "Output file for the NBests",
+//        "",
+//        Validators::tmplPathAccessValidator<
+//            (enuPathAccess::Type)(enuPathAccess::Writeatble),
+//            false>
+////#ifndef SMT
+////        ,"nb",
+////        "NBEST_PATH",
+////        "nbest-path"
+////#endif
+//        );
 
 tmplRangedConfigurable<int> NBestPath::NBestPathSize(
         MAKE_CONFIG_PATH("NBestPathSize"),

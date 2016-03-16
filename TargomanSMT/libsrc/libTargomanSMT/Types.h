@@ -65,6 +65,7 @@ struct stuTranslationOutput{
     QString             OriginalText;
     bool                SpellCorrected;
     QList<stuMetaInfo>  MetaInfo;
+    QList<QString>      NBestTranslations;
 };
 
 typedef stuTranslationOutput::stuMetaInfo               TranslationMetaInfo_t;

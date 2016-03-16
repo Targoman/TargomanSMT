@@ -42,8 +42,11 @@ void clsTranslationJob::run()
 {
     TranslationWriter::instance().writeTranslation(
                 this->Index,
-                Translator::translate(this->SourceString,true).Translation);
-    Translator::printNBestPath(this->SourceString, this->Index);
+                Translator::translate(this->SourceString,true, gConfigs::NBestFile.value().size() > 0));
+//    TranslationWriter::instance().writeTranslation(
+//                this->Index,
+//                Translator::translate(this->SourceString,true).Translation);
+//    Translator::printNBestPath(this->SourceString, this->Index);
 }
 
 }

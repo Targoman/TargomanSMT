@@ -27,10 +27,12 @@
 
 #include <QMutex>
 #include <QMap>
-
+#include "libTargomanSMT/Types.h"
 
 namespace Targoman {
 namespace Apps {
+
+using namespace SMT;
 
 class TranslationWriter
 {
@@ -42,16 +44,19 @@ public:
                     * Instance :
                     *(Instance = new TranslationWriter);
     }
-    void writeTranslation(quint64 _index, const QString& _translation);
+//    void writeTranslation(quint64 _index, const QString& _translation);
+    void writeTranslation(quint64 _index, const stuTranslationOutput &_output);
     void finialize();
 
 private:
     TranslationWriter();
     void writeTranslation(const QString& _translation);
+    void writeNBest(quint64 _index, const QList<QString> &_nBestTranslations);
 
 private:
     QMutex                  OutputListLock;
-    QMap<quint64, QString>  PendingTranslations;
+//    QMap<quint64, QString>  PendingTranslations;
+    QMap<quint64, stuTranslationOutput>  PendingTranslations;
     quint64                 LastSavedIndex = 0;
 };
 

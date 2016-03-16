@@ -42,6 +42,7 @@ public:
     static void saveBinaryRuleTable(const QString& _filePath);
     static stuTranslationOutput translate(const QString& _inputStr,
                                           bool _justTranslationString = false,
+                                          bool _getNBest = false,
                                           bool _isIXML = false);
     static void printNBestPath(const QString& _inputStr, int _sentenceNum, bool _isIXML = false);
 };

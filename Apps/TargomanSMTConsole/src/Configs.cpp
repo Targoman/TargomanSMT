@@ -101,6 +101,18 @@ tmplConfigurable<quint16>     gConfigs::MaxThreads(
         "MAX_THREADS",
         "max-threads");
 
+tmplConfigurable<QString> gConfigs::NBestFile(
+        gConfigs::appConfig("NBestFile"),
+        "Output file for the NBests",
+        "",
+        Validators::tmplPathAccessValidator<
+            (enuPathAccess::Type)(enuPathAccess::Writeatble),
+            false>,
+        "nb",
+        "NBEST_PATH",
+        "nbest-path"
+        );
+
 }
 }
 

@@ -56,8 +56,11 @@ void appTargomanSMTConsole::slotExecute()
             if(gConfigs::InputText.value().size()){
                 Translator::init(ConfigManager::instance().configSettings());
                 TranslationWriter::instance().writeTranslation(1,
-                                                               Translator::translate(gConfigs::InputText.value(), true).Translation);
-                Translator::printNBestPath(gConfigs::InputText.value(), 1);
+                                                               Translator::translate(gConfigs::InputText.value(), true,
+                                                                                     gConfigs::NBestFile.value().size() > 0));
+//                TranslationWriter::instance().writeTranslation(1,
+//                                                               Translator::translate(gConfigs::InputText.value(), true).Translation);
+//                Translator::printNBestPath(gConfigs::InputText.value(), 1);
             } else if (gConfigs::InputFile.value().size()) {
                 QFile InFile(gConfigs::InputFile.value());
                 if (InFile.open(QFile::ReadOnly) == false)

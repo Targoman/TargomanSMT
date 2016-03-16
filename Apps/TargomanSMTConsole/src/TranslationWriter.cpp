@@ -26,6 +26,7 @@
 #include <QMutexLocker>
 #include "TranslationWriter.h"
 #include "Configs.h"
+#include "libTargomanCommon/Types.h"
 
 namespace Targoman {
 namespace Apps {
@@ -57,22 +58,57 @@ void TranslationWriter::writeTranslation(const QString &_translation)
 void TranslationWriter::finialize()
 {
     while(this->PendingTranslations.size())
-        this->writeTranslation(this->PendingTranslations.begin().value());
+        this->writeTranslation(this->PendingTranslations.begin().key(), this->PendingTranslations.begin().value());
 }
 
-void TranslationWriter::writeTranslation(quint64 _index, const QString &_translation)
+//void TranslationWriter::writeTranslation(quint64 _index, const QString &_translation)
+//{
+//    QMutexLocker Locker(&this->OutputListLock);
+
+//    if (_index == this->LastSavedIndex + 1){
+//        this->writeTranslation(_translation);
+//    }else{
+//        this->PendingTranslations.insert(_index, _translation);
+//    }
+
+//    while(this->PendingTranslations.size() &&
+//          this->PendingTranslations.firstKey() == this->LastSavedIndex + 1){
+//        this->writeTranslation(this->PendingTranslations.begin().value());
+//    }
+//}
+
+void TranslationWriter::writeTranslation(quint64 _index, const stuTranslationOutput &_output)
 {
     QMutexLocker Locker(&this->OutputListLock);
 
     if (_index == this->LastSavedIndex + 1){
-        this->writeTranslation(_translation);
+        this->writeNBest(_index, _output.NBestTranslations);
+        this->writeTranslation(_output.Translation);
     }else{
-        this->PendingTranslations.insert(_index, _translation);
+        this->PendingTranslations.insert(_index, _output);
     }
 
     while(this->PendingTranslations.size() &&
           this->PendingTranslations.firstKey() == this->LastSavedIndex + 1){
-        this->writeTranslation(this->PendingTranslations.begin().value());
+        this->writeNBest(this->PendingTranslations.begin().key(), this->PendingTranslations.begin().value().NBestTranslations);
+        this->writeTranslation(this->PendingTranslations.begin().value().Translation);
+
+    }
+}
+
+void TranslationWriter::writeNBest(quint64 _index, const QList<QString> &_nBestTranslations)
+{
+
+    if (gConfigs::NBestFile.value().size()){
+        QFile OutFile(gConfigs::NBestFile.value());
+        if (OutFile.open(QFile::Append), OutFile.isWritable() == false)
+            throw exTargomanSMTConsole("Unable to open: "+ OutFile.fileName() + " for Writing");
+        QTextStream Stream(&OutFile);
+        Stream.setCodec("UTF-8");
+        for(int i = 0; i < _nBestTranslations.size(); i++){
+            Stream<< QString::number(_index - 1) << " ||| " << _nBestTranslations[i] <<"\n";
+        }
+
     }
 }
 

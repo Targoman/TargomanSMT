@@ -154,7 +154,7 @@ private:
     static Configuration::tmplConfigurable<bool> IsDistinct;
     static Configuration::tmplRangedConfigurable<int> NBestFactor;
 public:
-    static Configuration::tmplConfigurable<QString> NBestFile;
+//    static Configuration::tmplConfigurable<QString> NBestFile;
 
     TARGOMAN_DEFINE_SINGLETON_MODULE(NBestPath);
 
