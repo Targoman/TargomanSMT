@@ -51,9 +51,10 @@ public:
 public:
     stuTranslationOutput translationOutput();
     QString translationString();
+    QString getTargetString(const RuleTable::clsTargetRule& _target, const stuPos& _sourcePhrasePos);
 
 private:
-    QString getTargetString(const RuleTable::clsTargetRule& _target, const stuPos& _sourcePhrasePos);
+
     QString nodeTranslation(const SearchGraphBuilder::clsSearchGraphNode& _node);
 
 private:

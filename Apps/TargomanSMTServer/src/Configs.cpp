@@ -36,7 +36,7 @@ tmplRangedConfigurable<quint16>     gConfigs::MaxThreads(
         "Maximum Concurrent Translations",
         0,255,
         64,
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "t",
         "MAX_THREADS",
         "max-threads");

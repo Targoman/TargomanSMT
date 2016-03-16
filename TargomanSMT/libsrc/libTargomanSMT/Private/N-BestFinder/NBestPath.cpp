@@ -25,6 +25,8 @@
  */
 
 #include "NBestPath.h"
+#include "libTargomanCommon/Configuration/Validators.hpp"
+#include <iostream>
 
 namespace Targoman{
 namespace SMT {
@@ -34,6 +36,20 @@ namespace NBestFinder {
 using namespace Configuration;
 
 TARGOMAN_REGISTER_SINGLETON_MODULE(NBestPath);
+
+tmplConfigurable<QString> NBestPath::NBestFile(
+        MAKE_CONFIG_PATH("NBestFile"),
+        "Output file for the NBests",
+        "",
+        Validators::tmplPathAccessValidator<
+            (enuPathAccess::Type)(enuPathAccess::Writeatble),
+            false>
+//#ifndef SMT
+//        ,"nb",
+//        "NBEST_PATH",
+//        "nbest-path"
+//#endif
+        );
 
 tmplRangedConfigurable<int> NBestPath::NBestPathSize(
         MAKE_CONFIG_PATH("NBestPathSize"),
@@ -52,14 +68,33 @@ tmplRangedConfigurable<int> NBestPath::NBestFactor(
 tmplConfigurable<bool> NBestPath::IsDistinct(
         MAKE_CONFIG_PATH("IsDistinct"),
         "Determines whether only distinct paths are to be obtained",
-        true
+        false
         );
 
-clsTrellisPath::clsTrellisPath(const SearchGraphBuilder::clsSearchGraphNode &_node){
+QVector<Cost_t> getPathCostElements(SearchGraphBuilder::clsSearchGraphNode _node, int _featureID){
+    QVector<Cost_t> res = _node.featureFunctionDataAt(_featureID)->costElements();
+    _node = _node.prevNode();
+    while(!_node.isInvalid()){
 
-    for(size_t i = 0; i < SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount; ++i)
-        if(_node.featureFunctionDataAt(i) != NULL)
+            QVector<Cost_t> v = _node.featureFunctionDataAt(_featureID)->costElements();
+            for(int j = 0; j < res.size(); j++){
+                res[j] += v[j];
+            }
+            _node = _node.prevNode();
+        }
+    return res;
+}
+
+clsTrellisPath::clsTrellisPath(const SearchGraphBuilder::clsSearchGraphNode &_node):
+Data(new clsTrellisPathData()){
+
+    for(size_t i = 0; i < SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount; ++i){
+       if(_node.featureFunctionDataAt(i) != NULL){
             setFeatureFunctionData(i, _node.featureFunctionDataAt(i)->copy());
+            QVector<Cost_t> v = getPathCostElements(_node, i);
+             setFeatureFunctionData(i, v);
+       }
+    }
 
     this->Data->TotalCost = _node.getTotalCost();
 
@@ -71,12 +106,12 @@ clsTrellisPath::clsTrellisPath(const SearchGraphBuilder::clsSearchGraphNode &_no
 
 }
 
-clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedEdgeIndex, const SearchGraphBuilder::clsSearchGraphNode &_changedArc): Data(_prevPath.Data){
+clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedEdgeIndex, const SearchGraphBuilder::clsSearchGraphNode &_changedArc): Data(new clsTrellisPathData()){
 
     QVector<SearchGraphBuilder::clsSearchGraphNode> PrevNodes = _prevPath.getNodes();
     this->Data->Nodes.reserve(PrevNodes.size());
     for (size_t currEdge = 0; currEdge < _changedEdgeIndex; currEdge++){
-        this->Data->Nodes.push_back(PrevNodes.at(currEdge));
+        this->Data->Nodes.push_back(PrevNodes[currEdge]);
     }
     this->Data->Nodes.push_back(_changedArc);
 
@@ -88,40 +123,44 @@ clsTrellisPath::clsTrellisPath(const clsTrellisPath &_prevPath, size_t _changedE
     }
 
     this->Data->TotalCost = _prevPath.getTotalCost();
-    this->Data->TotalCost -= PrevNodes.at(_changedEdgeIndex).getCost();
+    this->Data->TotalCost -= PrevNodes[_changedEdgeIndex].getCost();
     this->Data->TotalCost += _changedArc.getCost();
 
     for(size_t i = 0; i < SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount; ++i){
         if(_prevPath.featureFunctionDataAt(i) != NULL){
-            //this->Data->FeatureFunctionsData.append(_prevPath.featureFunctionDataAt(i)->copy());
             QVector<Cost_t> PrevPathCosts = _prevPath.featureFunctionDataAt(i)->costElements();
-            QVector<Cost_t> PrevArcCosts = PrevNodes.at(_changedEdgeIndex).featureFunctionDataAt(i)->costElements();
-            QVector<Cost_t> NewArcCosts = _changedArc.featureFunctionDataAt(i)->costElements();
+            QVector<Cost_t> PrevArcCosts = getPathCostElements(PrevNodes[_changedEdgeIndex], i);
+                                        //PrevNodes[_changedEdgeIndex].featureFunctionDataAt(i)->costElements();
+            QVector<Cost_t> NewArcCosts = getPathCostElements(_changedArc, i);
+                    //_changedArc.featureFunctionDataAt(i)->costElements();
 
             for(int CostsIter = 0; CostsIter < PrevArcCosts.size(); CostsIter++){
-                PrevPathCosts.replace(CostsIter, PrevPathCosts.at(CostsIter) - PrevArcCosts.at(CostsIter) + NewArcCosts.at(CostsIter));
+                PrevPathCosts.replace(CostsIter, PrevPathCosts[CostsIter] - PrevArcCosts[CostsIter] + NewArcCosts[CostsIter]);
             }
+            Data->FeatureFunctionsData[i] = _prevPath.featureFunctionDataAt(i)->copy();
             setFeatureFunctionData(i, PrevPathCosts);
         }
     }
 
+    this->Data->PrevEdgeChanged = _changedEdgeIndex;
 }
 
-QString clsTrellisPath::printPath(){
 
+QString clsTrellisPath::printPath(OutputComposer::clsOutputComposer &_outputComposer){
 
-    QString res = getTranslation();
+    QString res = getTranslation(_outputComposer);
     res += " |||";
 
+    for(auto ffIter = gConfigs.ActiveFeatureFunctions.constBegin(); ffIter != gConfigs.ActiveFeatureFunctions.constEnd(); ffIter++){
 
-    for(size_t i = 0; i < SearchGraphBuilder::clsSearchGraphNodeData::RegisteredFeatureFunctionCount; ++i){
-        if(this->featureFunctionDataAt(i) != NULL){
-            //// TODO: get feature names
+        size_t index = ffIter.value()->getDataIndex();
+        if(this->featureFunctionDataAt(index) != NULL){
 
-            res += " Feature" + QString::number(i) + "=";
-            QVector<Cost_t> costs = this->featureFunctionDataAt(i)->costElements();
+            QStringList ffName = ffIter.key().split("/");
+            res += " " + ffName.back() + "=";
+            QVector<Cost_t> costs = this->featureFunctionDataAt(index)->costElements();
             for(int j = 0; j < costs.size(); j++){
-                res += " " + QString::number(costs.at(j));
+                res += " " + QString::number(costs[j]);
             }
         }
     }
@@ -136,22 +175,24 @@ void NBestPath::createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPa
     QVector<SearchGraphBuilder::clsSearchGraphNode> PathNodes = _prevPath.getNodes();
     if(_prevPath.getPrevEdgeChanged() == -1){
         for(size_t currEdge = 0; currEdge < _prevPath.getSize(); currEdge++){
-            if(PathNodes.at(currEdge).isRecombined())
+            if(PathNodes[currEdge].isRecombined())
                 continue;
-             QList<SearchGraphBuilder::clsSearchGraphNode> CombinedNodes = PathNodes.at(currEdge).getCombindedNodes();
+             QList<SearchGraphBuilder::clsSearchGraphNode> CombinedNodes = PathNodes[currEdge].getCombindedNodes();
              for(int cn = 0; cn < CombinedNodes.size(); cn++){
-                 clsTrellisPath NewPath(_prevPath, currEdge, CombinedNodes.at(cn));
+                 clsTrellisPath NewPath(_prevPath, currEdge, CombinedNodes[cn]);
                  _pathCollection.add(NewPath, N);
 
              }
         }
+
     }else{
         for(size_t currEdge = _prevPath.getPrevEdgeChanged() + 1; currEdge < _prevPath.getSize(); currEdge++){
-            if(PathNodes.at(currEdge).isRecombined())
+
+            if(PathNodes[currEdge].isRecombined())
                 continue;
-             QList<SearchGraphBuilder::clsSearchGraphNode> CombinedNodes = PathNodes.at(currEdge).getCombindedNodes();
+             QList<SearchGraphBuilder::clsSearchGraphNode> CombinedNodes = PathNodes[currEdge].getCombindedNodes();
              for(int cn = 0; cn < CombinedNodes.size(); cn++){
-                 clsTrellisPath NewPath(_prevPath, currEdge, CombinedNodes.at(cn));
+                 clsTrellisPath NewPath(_prevPath, currEdge, CombinedNodes[cn]);
                  _pathCollection.add(NewPath, N);
 
              }
@@ -160,7 +201,7 @@ void NBestPath::createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPa
 }
 
 void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
-                                const SearchGraphBuilder::clsSearchGraph &_searchGraph)
+                                const SearchGraphBuilder::clsSearchGraph &_searchGraph, OutputComposer::clsOutputComposer &_outputComposer)
                                 //,SearchGraphBuilder::clsCardinalityHypothesisContainer &_lastCardinality)
 {
 
@@ -179,6 +220,7 @@ void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
     SearchGraphBuilder::clsLexicalHypoNodeSet BestNodeSet = _searchGraph.getSameCoverageNodes(FullCoverage);
 
     for(int i = 0; i < BestNodeSet.size(); i++){
+
         clsTrellisPath BestPath(BestNodeSet.at(i));
         if(OnlyDistinct)
             BestPathsCollection.add(BestPath, N * NBestFactor);
@@ -188,10 +230,9 @@ void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
 
     int iteration = 0;
     while(BestPathsCollection.getSize() > 0 && _storage.size() < N && (iteration < N * NBestFactor)){
-
         clsTrellisPath Path = BestPathsCollection.pop();
         if(OnlyDistinct){
-            QString t = Path.getTranslation();
+            QString t = Path.getTranslation(_outputComposer);
             if(DistinctHypos.find(t) == DistinctHypos.end()){
                 _storage.push_back(Path);
                 DistinctHypos.insert(t);
@@ -201,7 +242,6 @@ void NBestPath::retrieveNBestPaths(NBestPath::Container_t &_storage,
             _storage.push_back(Path);
             createDeviantPaths(Path, BestPathsCollection, N);
         }
-
         iteration++;
 
     }

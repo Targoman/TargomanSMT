@@ -43,8 +43,7 @@ public:
     static stuTranslationOutput translate(const QString& _inputStr,
                                           bool _justTranslationString = false,
                                           bool _isIXML = false);
-    static void printNBestPath(const QString& _inputStr,
-                               QString _outputFileName, int _sentenceNum, bool _isIXML = false);
+    static void printNBestPath(const QString& _inputStr, int _sentenceNum, bool _isIXML = false);
 };
 
 }

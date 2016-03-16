@@ -82,7 +82,7 @@ tmplConfigurable<enuWorkingModes::Type> stuGlobalConfigs::WorkingMode(
         MAKE_CONFIG_PATH("Language/WorkingMode"),
         "WorkingModes can be (" + enuWorkingModes::options().join("|") + ")",
         enuWorkingModes::toStr(enuWorkingModes::Decode),
-        ReturnTrueCrossValidator
+        ReturnTrueCrossValidator()
 #ifndef SMT
     ,"wm",
     "WORKING_MODE",

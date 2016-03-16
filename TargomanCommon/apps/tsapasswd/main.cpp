@@ -110,7 +110,7 @@ tmplConfigurable<QString> UserName(
         clsConfigPath("Arguments/User"),
         "Username",
         "",
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "u",
         "USER_NAME",
         "user",enuConfigSource::Arg);
@@ -119,7 +119,7 @@ tmplConfigurable<QString> Password(
         clsConfigPath("Arguments/Pass"),
         "Password for specified user read from arguments set to - to read from stdin",
         "-",
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "p",
         "PASSWORD",
         "pass");
@@ -128,7 +128,7 @@ tmplConfigurable<QString> CIDR(
         clsConfigPath("Arguments/CIDR"),
         "Valid IP-Range from which login is allowed in CIDR format",
         "0.0.0.0/0",
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "i",
         "CIDR",
         "cidr",enuConfigSource::Arg);

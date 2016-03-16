@@ -76,7 +76,7 @@ tmplConfigurable<QString>     gConfigs::InputText(
         gConfigs::appConfig("InputText"),
         "Input Text to translate",
         "",
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "i",
         "TEXT",
         "input-text");
@@ -96,7 +96,7 @@ tmplConfigurable<quint16>     gConfigs::MaxThreads(
         gConfigs::appConfig("MaxThreads"),
         "Maximum concurrent translations",
         5,
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "t",
         "MAX_THREADS",
         "max-threads");

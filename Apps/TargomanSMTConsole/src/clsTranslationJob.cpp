@@ -43,7 +43,7 @@ void clsTranslationJob::run()
     TranslationWriter::instance().writeTranslation(
                 this->Index,
                 Translator::translate(this->SourceString,true).Translation);
-    Translator::printNBestPath(gConfigs::InputText.value(), gConfigs::OutputFile.value() + ".nbest", this->Index);
+    Translator::printNBestPath(this->SourceString, this->Index);
 }
 
 }

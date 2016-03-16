@@ -30,7 +30,7 @@
 #include "libTargomanCommon/Types.h"
 #include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "Private/RuleTable/clsTargetRule.h"
-
+#include<iostream>
 namespace Targoman{
 namespace SMT {
 namespace Private{
@@ -60,8 +60,8 @@ public:
 
     inline const QVector<Common::Cost_t>&     costElements()const{return this->CostElements;}
 
-    inline void  setCostElements( QVector<Common::Cost_t>& _costs){
-        for(int i = 0; i < _costs.size(); i++)
+    inline void  setCostElements(const QVector<Common::Cost_t>& _costs){
+       for(int i = 0; i < CostElements.size(); i++)
             CostElements.replace(i, _costs.at(i));
 
     }
@@ -125,6 +125,23 @@ public:
 public:
     bool operator == (const clsSearchGraphNode& _other) const {
         return this->Data == _other.Data;
+
+//        return qHash(this->futureStateHash()) == qHash(_other.futureStateHash());
+
+    }
+    bool operator < (const clsSearchGraphNode &_other) const
+    {
+        if(this->sourceRangeEnd() < _other.sourceRangeEnd())
+            return true;
+        else if(this->sourceRangeEnd() > _other.sourceRangeEnd())
+            return false;
+
+        int ComparisonResult = compareSearchGraphNodeStates(*this, _other);
+        if(ComparisonResult < 0)
+              return true;
+        else if(ComparisonResult > 0)
+              return false;
+        return false;
     }
 
 private:

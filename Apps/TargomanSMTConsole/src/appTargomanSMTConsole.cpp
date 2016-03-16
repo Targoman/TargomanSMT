@@ -48,7 +48,7 @@ void appTargomanSMTConsole::slotExecute()
             Translator::saveBinaryRuleTable(gConfigs::OutputFile.value());
             break;
         case enuAppMode::Training:
-            //TODO Implement training        
+            //TODO Implement training
             break;
         case enuAppMode::Translation:
             TranslationWriter::instance(); //Just to initialize first instance in order to suppress multithreaded instantiation
@@ -57,7 +57,7 @@ void appTargomanSMTConsole::slotExecute()
                 Translator::init(ConfigManager::instance().configSettings());
                 TranslationWriter::instance().writeTranslation(1,
                                                                Translator::translate(gConfigs::InputText.value(), true).Translation);
-                Translator::printNBestPath(gConfigs::InputText.value(), gConfigs::OutputFile.value() + ".nbest", 1);
+                Translator::printNBestPath(gConfigs::InputText.value(), 1);
             } else if (gConfigs::InputFile.value().size()) {
                 QFile InFile(gConfigs::InputFile.value());
                 if (InFile.open(QFile::ReadOnly) == false)

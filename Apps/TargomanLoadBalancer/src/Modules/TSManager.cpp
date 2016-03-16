@@ -41,7 +41,7 @@ tmplRangedConfigurable<quint16> TSManager::MaxTranslationTime(
         "Maximum time to wait for a translation response in seconds",
         1,5*60,
         120,
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "","","",
         Common::Configuration::enuConfigSource::File
         );
@@ -51,7 +51,7 @@ tmplRangedConfigurable<quint8> TSManager::MaxRetries(
         "Maximum tries to translate if disconnected from server",
         1,30,
         5,
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "","","",
         Common::Configuration::enuConfigSource::File
         );

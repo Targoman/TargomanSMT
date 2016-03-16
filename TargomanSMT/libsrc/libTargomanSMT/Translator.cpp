@@ -36,7 +36,7 @@
 #include "Private/Proxies/Transliteration/intfTransliterator.h"
 #include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
 #include "Private/N-BestFinder/NBestPath.h"
-
+#include<iostream>
 
 namespace Targoman{
 /**
@@ -103,31 +103,38 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     return Output;
 }
 
-void Translator::printNBestPath(const QString &_inputStr, QString _outputFileName, int _sentenceNum, bool _isIXML)
+void Translator::printNBestPath(const QString &_inputStr, int _sentenceNum, bool _isIXML)
 {
     if (TranslatorInitialized == false)
         throw exTargomanCore("Translator is not initialized");
 
-   // QTime start = QTime::currentTime();
+    if(NBestFinder::NBestPath::NBestFile.toVariant().toString().isEmpty())
+        return;
 
     InputDecomposer::clsInput Input(_inputStr, _isIXML);
     SearchGraphBuilder::clsSearchGraph  SearchGraph(Input.tokens());
 
-    QFile OutFile(_outputFileName);
+    OutputComposer::clsOutputComposer   OutputComposer(Input, SearchGraph);
+
+    QFile OutFile(NBestFinder::NBestPath::NBestFile.value());
     if (OutFile.open(QFile::Append), OutFile.isWritable() == false)
         throw exTargomanCore("Unable to open: "+ OutFile.fileName() + " for Writing");
 
     QTextStream Stream(&OutFile);
 
+    QTime start = QTime::currentTime();
     Stream.setCodec("UTF-8");
     NBestFinder::NBestPath::Container_t Storage;
 
-    NBestFinder::NBestPath::retrieveNBestPaths(Storage, SearchGraph);
+    NBestFinder::NBestPath::retrieveNBestPaths(Storage, SearchGraph, OutputComposer);
 
     for(int i = 0; i < Storage.size(); i++){
-        Stream<< QString::number(_sentenceNum) << " ||| " << Storage.takeAt(i).printPath() <<"\n";
+        Stream<< QString::number(_sentenceNum - 1) << " ||| " << Storage[i].printPath(OutputComposer) <<"\n";
     }
 
+    int Elapsed = start.elapsed();
+    TargomanLogInfo(1, "NBest Creation [" << Elapsed / 1000.0 << "s]"<<
+                     _inputStr);
 
 }
 

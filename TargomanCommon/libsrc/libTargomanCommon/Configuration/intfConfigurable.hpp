@@ -59,7 +59,10 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuConfigType,
 class intfConfigurable;
 /// @brief A predefined lambda function used which always returns true used when there
 /// is no further crossvalidation condition.
-static std::function<void(const intfConfigurable&)> VoidFinalizer = [] (const intfConfigurable&) {};
+static std::function<void(const intfConfigurable&)> VoidFinalizer() {
+    static std::function<void(const intfConfigurable&)> VoidLambda = [] (const intfConfigurable&) {};
+    return VoidLambda;
+}
 
 #ifndef CONFIG_ROOT_PATH
 #define CONFIG_ROOT_PATH /
@@ -113,7 +116,7 @@ public:
                             enuConfigSource::File |
                             enuConfigSource::Net ),
                      bool _remoteView = true,
-                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer
+                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer()
                      );
 
 

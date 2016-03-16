@@ -149,7 +149,7 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
 
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
         Data->CostElements[Orientation] =
-                _newHypothesisNode.prevNode().targetRule().field(this->FieldIndexes.at(Orientation));
+                _newHypothesisNode.prevNode().targetRule().field(this->FieldIndexes.at(Orientation)) ;
     }
 
     if (this->IsBidirectional.value()) {
@@ -159,7 +159,7 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
                 this->ScalingFactors[Orientation].value();
         if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
             Data->CostElements[Orientation] =
-                    _newHypothesisNode.targetRule().field(this->FieldIndexes.at(Orientation));
+                    _newHypothesisNode.targetRule().field(this->FieldIndexes.at(Orientation)) ;
         }
     }
 
@@ -229,16 +229,29 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
     return 0;
 }
 
+int compare(const Coverage_t& _first, const Coverage_t& _second) {
+    int ComparisonResult = _first.size() - _second.size();
+    if (ComparisonResult != 0)
+        return ComparisonResult;
+    for(int i = 0; i < _first.size(); ++i ) {
+        ComparisonResult = _first.testBit(i) - _second.testBit(i);
+        if (ComparisonResult != 0)
+            return ComparisonResult;
+    }
+    return 0;
+//    int SizeInBytes = 1 + _first.size() / 8 + (_first.size() % 8 == 0 ? 0 : 1);
+//    return memcmp(*(const char**)&_first, *(const char**)&_second, SizeInBytes);
+}
+
 int LexicalReordering::compareStates(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
 {
     if(clsTargetRule::lexicalReorderingAvailable() == false)
         return 0;
     if(this->IsBidirectional.value()) {
         if(_first.prevNode().isInvalid() == false || _second.prevNode().isInvalid() == false) {
-            if(_first.prevNode().coverage() > _second.prevNode().coverage())
-                return 1;
-            else if(_first.prevNode().coverage() < _second.prevNode().coverage())
-                return -1;
+            int ComparisonResult = compare(_first.prevNode().coverage(), _second.prevNode().coverage());
+            if(ComparisonResult != 0)
+                return ComparisonResult;
         }
     }
 

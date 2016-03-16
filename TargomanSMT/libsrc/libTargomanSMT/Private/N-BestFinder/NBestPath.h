@@ -36,7 +36,7 @@
 #include "Private/SearchGraphBuilder/clsSearchGraphNode.h"
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
 #include "libTargomanCommon/Configuration/tmplConfigurable.h"
-
+#include "Private/OutputComposer/clsOutputComposer.h"
 namespace Targoman{
 namespace SMT {
 namespace Private{
@@ -64,9 +64,9 @@ public:
     inline void setFeatureFunctionData(size_t _index, QVector<Cost_t>& newCosts);
     inline void setFeatureFunctionData(size_t _index, SearchGraphBuilder::intfFeatureFunctionData* _data);
     inline size_t getSize() const;
-    inline QString getTranslation();
+    inline QString getTranslation(OutputComposer::clsOutputComposer &_outputComposer);
 
-    QString printPath();
+    QString printPath(OutputComposer::clsOutputComposer &_outputComposer);
 
 
 private:
@@ -91,12 +91,12 @@ public:
         FeatureFunctionsData(_other.FeatureFunctionsData.size())
     {
         for(int i = 0; i < this->FeatureFunctionsData.size(); ++i)
-            this->FeatureFunctionsData[i] = _other.FeatureFunctionsData.at(i)->copy();
+            this->FeatureFunctionsData[i] = _other.FeatureFunctionsData[i]->copy();
     }
 
     ~clsTrellisPathData() {
         for(int i = 0; i < this->FeatureFunctionsData.size(); ++i) {
-            if(this->FeatureFunctionsData.at(i) != NULL)
+            if(this->FeatureFunctionsData[i] != NULL)
                 delete FeatureFunctionsData[i];
         }
     }
@@ -144,7 +144,7 @@ public:
 
 public:
     static void retrieveNBestPaths(NBestPath::Container_t& _storage,
-                                   const SearchGraphBuilder::clsSearchGraph &_searchGraph);
+                                   const SearchGraphBuilder::clsSearchGraph &_searchGraph, OutputComposer::clsOutputComposer &_outputComposer);
                                    //, SearchGraphBuilder::clsCardinalityHypothesisContainer& _lastCardinality);
 
     static void createDeviantPaths(const clsTrellisPath &_prevPath, clsTrellisPathCollection &_pathCollection, const size_t N);
@@ -153,6 +153,8 @@ private:
     static Configuration::tmplRangedConfigurable<int> NBestPathSize;
     static Configuration::tmplConfigurable<bool> IsDistinct;
     static Configuration::tmplRangedConfigurable<int> NBestFactor;
+public:
+    static Configuration::tmplConfigurable<QString> NBestFile;
 
     TARGOMAN_DEFINE_SINGLETON_MODULE(NBestPath);
 
@@ -167,7 +169,7 @@ inline Common::Cost_t clsTrellisPath::getTotalCost() const{
     return this->Data->TotalCost;
 }
 
-inline void clsTrellisPath::setFeatureFunctionData(size_t _index, QVector<Cost_t> &newCosts){
+inline void clsTrellisPath::setFeatureFunctionData(size_t _index, QVector<Cost_t> & newCosts){
     Data->FeatureFunctionsData[_index]->setCostElements(newCosts);
 }
 
@@ -176,7 +178,7 @@ inline void clsTrellisPath::setFeatureFunctionData(size_t _index, SearchGraphBui
 }
 
 inline const SearchGraphBuilder::intfFeatureFunctionData * clsTrellisPath::featureFunctionDataAt(size_t _index) const {
-    return this->Data->FeatureFunctionsData.at(_index);
+    return this->Data->FeatureFunctionsData[_index];
 }
 
 inline int clsTrellisPath::getPrevEdgeChanged() const{
@@ -190,13 +192,17 @@ inline const QVector<SearchGraphBuilder::clsSearchGraphNode>& clsTrellisPath::ge
     return this->Data->Nodes;
 }
 
-inline QString clsTrellisPath::getTranslation() {
+inline QString clsTrellisPath::getTranslation(OutputComposer::clsOutputComposer &_outputComposer) {
     QVector<SearchGraphBuilder::clsSearchGraphNode> PathNodes = this->getNodes();
     QString Translation = "";
     for(int i = PathNodes.size() - 1; i >= 0 ; i--){
         if(Translation.length() > 0)
             Translation += ' ';
-        Translation += PathNodes[i].targetRule().toStr();
+       Translation += _outputComposer.getTargetString(
+                    PathNodes[i].targetRule(),
+                    stuPos(PathNodes[i].sourceRangeBegin(), PathNodes[i].sourceRangeEnd()));
+
+//        Translation += PathNodes[i].targetRule().toStr();
     }
     return Translation;
 }

@@ -39,7 +39,7 @@ public:
                      const QString&  _description,
                      const QVariant& _default = QVariant(),
                      const std::function< bool(const intfConfigurable& _item,
-                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator,
+                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator(),
                      const QString&  _shortSwitch = "",
                      const QString&  _shortHelp = "",
                      const QString&  _LongSwitch = "",
@@ -48,7 +48,7 @@ public:
                 enuConfigSource::File |
                 enuConfigSource::Net ),
                      bool _remoteView = true,
-                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer
+                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer()
                      ) :
         intfConfigurable(enuConfigType::Normal,
                          _configPath,

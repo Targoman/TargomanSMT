@@ -39,10 +39,14 @@ namespace Configuration {
 
 /// @brief A predefined lambda function used which always returns true used when there
 /// is no further crossvalidation condition.
-static std::function<bool(const intfConfigurable& _item,
-                          QString& _errorMessage)> ReturnTrueCrossValidator =
-        [] (const intfConfigurable&, QString& ) {return true;};
 
+static std::function<bool(const intfConfigurable& _item,
+                          QString& _errorMessage)> ReturnTrueCrossValidator(){
+    static std::function<bool(const intfConfigurable& _item,
+                              QString& _errorMessage)> DefaultTrueCrossValidator  =
+        [] (const intfConfigurable&, QString& ) {return true;};
+    return DefaultTrueCrossValidator;
+}
 /**
  * @brief The clsConfigurable template is used to store and validate different configurable items
  */
@@ -53,7 +57,7 @@ public:
                      const QString&  _description,
                      const QVariant& _default = QVariant(),
                      const std::function< bool(const intfConfigurable& _item,
-                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator,
+                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator(),
                      const QString&  _shortSwitch = "",
                      const QString&  _shortHelp = "",
                      const QString&  _LongSwitch = "",
@@ -62,7 +66,7 @@ public:
                 enuConfigSource::File |
                 enuConfigSource::Net ),
                      bool _remoteView = true,
-                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer
+                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer()
                      ) :
         intfConfigurable(enuConfigType::Normal,
                          _configPath,
@@ -165,7 +169,7 @@ public:
                      itmplType_t _max,
                      const QVariant& _default = QVariant(),
                      const std::function< bool(const intfConfigurable& _item,
-                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator,
+                                               QString& _errorMessage) >& _crossValidator = ReturnTrueCrossValidator(),
                      const QString&  _shortSwitch = "",
                      const QString&  _shortHelp = "",
                      const QString&  _LongSwitch = "",
@@ -174,7 +178,7 @@ public:
                 enuConfigSource::File |
                 enuConfigSource::Net ),
                      bool _remoteView = true,
-                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer
+                     const std::function< void(const intfConfigurable& _item) >& _finalizer = VoidFinalizer()
                      ) :
         tmplConfigurable<itmplType_t>(
             _configPath,

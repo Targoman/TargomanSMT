@@ -98,7 +98,7 @@ Common::Cost_t LanguageModel::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchG
     Data->SentenceScorer->updateFutureStateHash(_hash);
 
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode)
-        Data->CostElements[0] = Cost;
+        Data->CostElements[0] = Cost * log(10);
 
     // For compatiblity reasons
     return Cost * log(10) * LanguageModel::ScalingFactor.value();
