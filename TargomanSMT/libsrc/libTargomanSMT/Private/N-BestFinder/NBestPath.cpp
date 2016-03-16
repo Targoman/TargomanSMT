@@ -160,11 +160,12 @@ QString clsTrellisPath::printPath(OutputComposer::clsOutputComposer &_outputComp
             res += " " + ffName.back() + "=";
             QVector<Cost_t> costs = this->featureFunctionDataAt(index)->costElements();
             for(int j = 0; j < costs.size(); j++){
-                res += " " + QString::number(costs[j]);
+                res += " " + QString::number(-costs[j]);
+
             }
         }
     }
-    res += " ||| " + QString::number(getTotalCost());
+    res += " ||| " + QString::number(-getTotalCost());
 
     return res;
 }
