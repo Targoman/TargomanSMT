@@ -64,7 +64,7 @@ def extractScores(line):
 			raise ValueError("Unknown string " + name + " in nbest-list feature scores section");
 	res = "";
 	for key in feature_order:
-		ffname = key.split("/")[0];
+		ffname = re.sub("/ScalingFactor(s?)", "", key);#key.split("/")[0];
 		if ffname in scores:
 			res += scores[ffname];
 			del scores[ffname];
@@ -111,7 +111,7 @@ subprocess.call(targoman_bin + " -c " + targoman_conf + " 2> temp.log", shell=Tr
 
 ## update iteration number 
 iteration += 1;
-subprocess.call("echo " + str(iteration) + " > iteration", shell=True);
+subprocess.call("echo " + str(iteration) + " > " + iteration_file, shell=True);
 
 ##############################################################################
 ### modify the nbest-list to conform the zmert required format		   ###

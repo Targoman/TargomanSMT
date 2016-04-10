@@ -118,12 +118,12 @@ zm_file = open(zmert_cfg, "w");
 zm_file.write("-r\t" + args.targetDevFile + "\n");
 zm_file.write("-rps\t" + str(num_of_refs)+ "\n");
 zm_file.write("-txtNrm\t0\n");
-zm_file.write("-p\tparams.txt\n");
+zm_file.write("-p\t" + params_file + "\n");
 zm_file.write("-m\t" + args.metric+ "\n");
 zm_file.write("-save\t" + str(args.save) + "\n");
 zm_file.write("-cmd\t" + decoder_cmd+ "\n");
 zm_file.write("-decOut\t" + nbest_file + "\n");
-zm_file.write("-dcfg\tdecoder_cfg.txt\n");
+zm_file.write("-dcfg\t" + decoder_cfg + "\n");
 zm_file.write("-N\t" + str(args.nbest)+ "\n");
 zm_file.write("-v\t1\n");
 zm_file.write("-decV\t1\n");
@@ -146,7 +146,7 @@ cmd = "sed -i \"s#targoman_bin = .*#targoman_bin = \\\"" + args.decoderBinFile +
 print "running command: \t" + cmd;
 subprocess.call(cmd, shell=True);
 
-cmd = "sed -i \"s#targoman_lib = .*#targoman_lib = \\\"" + args.decoderLibFile + "\\\"#g\" " + decoder_cmd;
+cmd = "sed -i \"s#targoman_lib = .*#targoman_lib = \\\"" + args.decoderLibDir + "\\\"#g\" " + decoder_cmd;
 print "running command: \t" + cmd;
 subprocess.call(cmd, shell=True);
 
@@ -160,7 +160,7 @@ subprocess.call("chmod +x " + decoder_cmd, shell=True);
 ####  running z-mert  ####
 ##########################
 
-cmd = "java -cp " + args.mert_dir + "/zmert.jar ZMERT -maxMem 500 " + zmert_cfg;
+cmd = "java -cp " + args.mert_dir + "/zmert.jar ZMERT " + zmert_cfg;
 print "running command: \t" + cmd;
 subprocess.call(cmd, shell=True);
 

@@ -157,10 +157,13 @@ QString clsTrellisPath::printPath(OutputComposer::clsOutputComposer &_outputComp
         if(this->featureFunctionDataAt(index) != NULL){
 
             QStringList ffName = ffIter.key().split("/");
-            res += " " + ffName.back() + "=";
+            QStringList colName = ffIter.value()->columnNames();
+
             QVector<Cost_t> costs = this->featureFunctionDataAt(index)->costElements();
             for(int j = 0; j < costs.size(); j++){
-                res += " " + QString::number(-costs[j]);
+                if(colName.size() > j) res += " " + ffName.back() + "/" + colName[j];
+                else res += " " + ffName.back();
+                res += "= " + QString::number(-costs[j]);
 
             }
         }
