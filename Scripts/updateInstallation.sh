@@ -286,7 +286,7 @@ function main(){
     IsBranch=0
     ConfigureAndRestart=0
     cd $(dirname $0)
-    while getopts ":lebstH:p:v:u:g:nkc" o; do
+    while getopts ":lebstTH:p:v:u:g:nkc" o; do
         case "${o}" in
             l)  What2Install="$What2Install LoadBalancer";;
             b)  What2Install="LoadBalancer";IsTest=1;;
