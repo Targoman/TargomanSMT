@@ -183,7 +183,15 @@ public:
                    this->Data->WorstNode = Node;
                return false;
            }
-           this->Data->SortedByTotalCost.clear();
+//           this->Data->SortedByTotalCost.clear();
+           if(this->Data->SortedByTotalCost.size() > 0){
+                 int Pos = findInsertionPos(this->Data->SortedByTotalCost,
+                                      _node,
+                                      [] (const clsSearchGraphNode& _first, const clsSearchGraphNode& _second) {
+                        return _second.getTotalCost() - _first.getTotalCost();
+                 });
+                 this->Data->SortedByTotalCost.insert(Pos, _node);
+           }
            if(this->Data->BestNode.isInvalid() || _node.getTotalCost() < this->Data->BestNode.getTotalCost())
                this->Data->BestNode = _node;
            if(this->Data->WorstNode.isInvalid() || _node.getTotalCost() > this->Data->WorstNode.getTotalCost())

@@ -36,6 +36,8 @@ TranslationWriter::TranslationWriter()
     this->LastSavedIndex = 0;
     if (gConfigs::OutputFile.value().size())
         QFile::remove(gConfigs::OutputFile.value());
+    if (gConfigs::NBestFile.value().size())
+        QFile::remove(gConfigs::NBestFile.value());
 }
 
 void TranslationWriter::writeTranslation(const QString &_translation)

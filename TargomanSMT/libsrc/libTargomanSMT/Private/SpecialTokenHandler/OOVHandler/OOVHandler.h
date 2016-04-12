@@ -57,13 +57,18 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exOOVHandler, exTargomanCore);
 class OOVHandler : public Targoman::Common::Configuration::intfModule
 {
 public:
+    OOVHandler(){}
     QList<WordIndex_t> getWordIndexOptions(const QString& _token, QVariantMap& _attrs);
-    RuleTable::TargetRulesContainer_t generateTargetRules(const QString& _token);
+//    RuleTable::TargetRulesContainer_t generateTargetRules(const QString& _token);
     void initialize();
 
+public:
+    inline RuleTable::TargetRulesContainer_t gatherTemporaryTargetRules(const QString& _token, QVariantMap& _attrs){
+        return this->gatherTargetRules(_token, _attrs, false);
+    }
+
 private:
-    OOVHandler(){}
-    RuleTable::TargetRulesContainer_t gatherTargetRules(const QString& _token, QVariantMap& _attrs);
+    RuleTable::TargetRulesContainer_t gatherTargetRules(const QString& _token, QVariantMap& _attrs, bool _reusable);
 
 
 private:
