@@ -358,7 +358,8 @@ void clsInput::makeSentence()
         if (WordIndexes.isEmpty()){
             WordIndex_t WordIndex = gConfigs.SourceVocab.value(
                         TokenInfo.Str, Constants::SrcVocabUnkWordIndex);
-            if (WordIndex == Constants::SrcVocabUnkWordIndex){
+            if (WordIndex == Constants::SrcVocabUnkWordIndex ||
+                    gConfigs.VocabWithoutSingleWordRule.contains(TokenInfo.Str)){
                 WordIndexes = OOVHandler::instance().getWordIndexOptions(TokenInfo.Str, TokenInfo.Attrs);
                 if (WordIndexes.isEmpty()){
                     RuleTable::TargetRulesContainer_t TargetRules = OOVHandler::instance().gatherTemporaryTargetRules(TokenInfo.Str, TokenInfo.Attrs);
@@ -369,6 +370,8 @@ void clsInput::makeSentence()
                     if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
                         return; // OOVHandler says that I must ignore this word when decoding
                 }
+                if(WordIndex != Constants::SrcVocabUnkWordIndex)
+                    WordIndexes.append(WordIndex);
             }else
                 WordIndexes.append(WordIndex);
         }

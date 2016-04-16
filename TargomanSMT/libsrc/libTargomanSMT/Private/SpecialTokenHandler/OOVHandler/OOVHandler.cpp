@@ -132,8 +132,7 @@ QList<WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token, QVaria
         TargetRulesContainer_t TargetRules = this->gatherTargetRules(_token, _attrs, true);
 
         if (TargetRules.isEmpty()){
-            SpecialTokensRegistry::instance().insertExpirableSpecialToken(_token, SpecialTokensRegistry::clsExpirableSpecialToken(Constants::SrcVocabUnkWordIndex, _attrs));
-            return (QList<Common::WordIndex_t>() << Constants::SrcVocabUnkWordIndex); // There are no new handlers so keep it as unknown and cache result
+            return QList<Common::WordIndex_t>(); // There are no handlers so keep it as unknown
         }
 
         clsRuleNode RuleNode;

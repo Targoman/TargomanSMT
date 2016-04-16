@@ -173,7 +173,8 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
                         gConfigs.SourceVocab.size()<<" Items");
 
         foreach(auto TokenIter, ItersToRemove)
-            gConfigs.SourceVocab.erase(TokenIter);
+//            gConfigs.SourceVocab.erase(TokenIter);
+            gConfigs.VocabWithoutSingleWordRule.insert(TokenIter.key());
 
     }catch(exTargomanNotImplemented &e){
         throw exTargomanNotImplemented(
