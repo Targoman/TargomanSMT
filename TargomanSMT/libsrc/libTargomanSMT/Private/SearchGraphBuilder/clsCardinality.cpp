@@ -78,12 +78,12 @@ void clsCardinalityHypothesisContainer::removeSelectedLexicalHypothesisIfEmpty()
 
 bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &_node)
 {
-    if(_node.getTotalCost() +
-            clsCardinalityHypothesisContainer::SearchBeamWidth.value() <
+    if(_node.getTotalCost() -
+            log(clsCardinalityHypothesisContainer::SearchBeamWidth.value()) <
             this->Data->CostLimit)
     {
-        this->Data->CostLimit = _node.getTotalCost() +
-                clsCardinalityHypothesisContainer::SearchBeamWidth.value();
+        this->Data->CostLimit = _node.getTotalCost() -
+                log(clsCardinalityHypothesisContainer::SearchBeamWidth.value());
     }
 
     // To speed up things, the lexical hypothesis is preselected by another function
@@ -245,8 +245,8 @@ void clsCardinalityHypothesisContainer::prune()
             clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value()) {
         Coverage_t ChosenCoverage;
         Cost_t ChosenNodeTotalCost =
-                this->Data->BestLexicalHypothesis->getBestCost() +
-                clsCardinalityHypothesisContainer::SearchBeamWidth.value();
+                this->Data->BestLexicalHypothesis->getBestCost() -
+                log(clsCardinalityHypothesisContainer::SearchBeamWidth.value());
         for(auto HypoContainerIter = this->Data->LexicalHypothesisContainer.begin();
             HypoContainerIter != this->Data->LexicalHypothesisContainer.end();
             ++HypoContainerIter) {

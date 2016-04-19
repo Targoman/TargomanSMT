@@ -361,7 +361,17 @@ void clsInput::makeSentence()
             if (WordIndex == Constants::SrcVocabUnkWordIndex ||
                     gConfigs.VocabWithoutSingleWordRule.contains(TokenInfo.Str)){
                 WordIndexes = OOVHandler::instance().getWordIndexOptions(TokenInfo.Str, TokenInfo.Attrs);
-                if (WordIndexes.isEmpty()){
+
+                bool SingleWordIdxFound = false, RepeatedWordIdx = false;
+                for(WordIndex_t w : WordIndexes){
+                    if(w == WordIndex)
+                        RepeatedWordIdx = true;
+                    if(gConfigs.VocabWithoutSingleWordRule.contains(
+                                gConfigs.SourceVocab.key(w)))
+                        SingleWordIdxFound = true;
+                }
+
+                if (WordIndexes.isEmpty() || SingleWordIdxFound){
                     RuleTable::TargetRulesContainer_t TargetRules = OOVHandler::instance().gatherTemporaryTargetRules(TokenInfo.Str, TokenInfo.Attrs);
                     if (TargetRules.size()){
                         TokenInfo.TemporaryRuleNode.detachInvalidData();
@@ -370,8 +380,9 @@ void clsInput::makeSentence()
                     if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
                         return; // OOVHandler says that I must ignore this word when decoding
                 }
-                if(WordIndex != Constants::SrcVocabUnkWordIndex)
+                if(WordIndex != Constants::SrcVocabUnkWordIndex && !RepeatedWordIdx){
                     WordIndexes.append(WordIndex);
+                }
             }else
                 WordIndexes.append(WordIndex);
         }
