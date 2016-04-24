@@ -74,7 +74,7 @@ private:
     }
 
 private:
-    static Common::Configuration::tmplRangedConfigurable<double> ScalingFactor;
+    static Common::Configuration::tmplConfigurable<double> ScalingFactor;
     //TODO: change name.
     static Common::Configuration::tmplRangedConfigurable<quint8> MaximumJumpWidth;
 
