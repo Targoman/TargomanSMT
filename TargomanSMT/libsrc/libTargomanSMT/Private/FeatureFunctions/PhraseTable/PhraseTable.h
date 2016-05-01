@@ -67,6 +67,9 @@ public:
     static inline void setColumnNames(const QStringList _columnNames){
         PhraseTable::ColumnNames = _columnNames;}
 
+    inline QList<double> getScalingFactors() const{
+        return ScalingFactors;
+    }
     Common::Cost_t getPhraseCost(const RuleTable::clsTargetRule& _targetRule) const;
 
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);

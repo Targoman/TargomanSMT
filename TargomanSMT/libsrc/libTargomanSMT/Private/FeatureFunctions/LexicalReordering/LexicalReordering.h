@@ -84,6 +84,16 @@ private:
                     enuLexicalReorderingFields::options().mid(0,3);
     }
 
+    inline QList<double> getScalingFactors() const{
+        QList<double> res;
+        for(int i = 0; i < 3; i++)
+            res.push_back(this->ScalingFactors[i].value());
+        if(LexicalReordering::IsBidirectional.value() )
+            for(int i = 3; i < 6; i++)
+                res.push_back(this->ScalingFactors[i].value());
+        return res;
+    }
+
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
 private:

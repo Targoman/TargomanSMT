@@ -143,6 +143,7 @@ public:
      * @return Returns string list of features' names.
      */
     virtual QStringList columnNames() const = 0;
+    virtual QList<double> getScalingFactors() const = 0;
 
 protected:
     static QString baseScalingFactorsConfigPath(){ return "/ScalingFactors"; }

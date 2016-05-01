@@ -43,6 +43,10 @@ void appTargomanSMTConsole::slotExecute()
 {
     try{
         switch(gConfigs::Mode.value()){
+        case enuAppMode::ShowWeights:
+            Translator::init(ConfigManager::instance().configSettings());
+            Translator::showWeights();
+            break;
         case enuAppMode::MakeBinary:
             Translator::init(ConfigManager::instance().configSettings());
             Translator::saveBinaryRuleTable(gConfigs::OutputFile.value());

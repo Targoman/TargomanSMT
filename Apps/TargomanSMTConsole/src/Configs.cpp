@@ -49,6 +49,8 @@ tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
                 }else
                     return true;
                 break;
+            case enuAppMode::ShowWeights:
+                return true;
             default:
                 break;
             }

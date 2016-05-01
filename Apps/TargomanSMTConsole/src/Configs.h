@@ -38,7 +38,8 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTConsole, Common::exTargomanBase);
 TARGOMAN_DEFINE_ENHANCED_ENUM(enuAppMode,
                               Translation,
                               Training,
-                              MakeBinary
+                              MakeBinary,
+                              ShowWeights
                               );
 }
 }

@@ -160,5 +160,26 @@ void Translator::saveBinaryRuleTable(const QString &_filePath)
     clsSearchGraph::saveBinaryRuleTable(_filePath);
 }
 
+void Translator::showWeights()
+{
+
+    QString res = "";
+
+    for(auto ffIter = gConfigs.ActiveFeatureFunctions.constBegin(); ffIter != gConfigs.ActiveFeatureFunctions.constEnd(); ffIter++){
+
+        QStringList ffName = ffIter.key().split("/");
+        QStringList colName = ffIter.value()->columnNames();
+        QList<double> scalingFactors = ffIter.value()->getScalingFactors();
+        for(int j = 0; j < scalingFactors.size(); j++){
+            if(colName.size() > j) res += ffName.back() + "/" + colName[j];
+            else res += ffName.back();
+            res += "= " + QString::number(scalingFactors[j]) + "\n";
+
+        }
+    }
+    //TargomanInlineOut(1, res);
+    std::cout << res.toStdString();
+}
+
 }
 }

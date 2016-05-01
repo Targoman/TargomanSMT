@@ -61,6 +61,12 @@ public:
 
     inline QStringList columnNames() const{return QStringList();}
 
+    inline QList<double> getScalingFactors() const{
+        QList<double> res;
+        res.push_back(ScalingFactor.value());
+        return res;
+    }
+
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 
 private:
