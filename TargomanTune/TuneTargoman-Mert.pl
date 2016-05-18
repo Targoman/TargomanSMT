@@ -584,7 +584,9 @@ for(my $i = 0; $i < scalar(@{$featlist->{"names"}}); $i++) {
 
 if ($___ACTIVATE_FEATURES) {
   $mert_mert_args .= " -o \"$___ACTIVATE_FEATURES\"";
-} elsif($___Fixed){
+} 
+=pod 
+elsif($___Fixed){
 	my @fixedparams = split (/,/, $___Fixed);
 	my %params = map { $_ => 1 } @fixedparams;
 	for(my $i = 0; $i < scalar(@{$featlist->{"names"}}); $i++) {
@@ -597,8 +599,8 @@ if ($___ACTIVATE_FEATURES) {
 		}
 	}
 	$mert_mert_args .= " -o \"$___ACTIVATE_FEATURES\"";
-}	
- 
+}
+=cut
 
 # Mark which features are disabled:
 if (defined $___ACTIVATE_FEATURES) {
@@ -857,12 +859,27 @@ while (1) {
   }
 
   # Create the initial weights file for mert: init.opt
-  my @MIN  = @{$featlist->{"mins"}};
-  my @MAX  = @{$featlist->{"maxs"}};
+  my @MIN = @{$featlist->{"mins"}};
+  my @MAX = @{$featlist->{"maxs"}};
   my @CURR = @{$featlist->{"values"}};
-  my @NAME = @{$featlist->{"names"}};
 
   open my $out, '>', $weights_in_file or die "Can't write $weights_in_file (WD now $___WORKING_DIR)";
+ my @fixedparams = split (/,/, $___Fixed);
+  my %params = map { $_ => 1 } @fixedparams;
+  my $size = 0;
+=pod   for(my $i = 0; $i < scalar(@{$featlist->{"names"}}); $i++) {
+	my $name = $featlist->{"names"}->[$i];
+	if(!exists($params{$name})){
+	#if($totlambda < abs($vals[$i])) {
+		$MIN[$size] = $featlist->{"mins"}->[$i];
+		$MAX[$size] = $featlist->{"maxs"}->[$i];
+		$CURR[$size] = $featlist->{"values"}->[$i];
+		$size += 1;
+	}
+	#}
+  }
+=cut
+
   print $out join(" ", @CURR) . "\n";
   print $out join(" ", @MIN) . "\n";  # this is where we could pass MINS
   print $out join(" ", @MAX) . "\n";  # this is where we could pass MAXS
@@ -1071,7 +1088,17 @@ while (1) {
     close $weights_fh;
   }
 
-  $featlist->{"values"} = \@newweights;
+  $size = 0;
+  for(my $i = 0; $i < scalar(@{$featlist->{"names"}}); $i++) {
+	my $name = $featlist->{"names"}->[$i];
+	if(!exists($params{$name})){
+	#if($totlambda < abs($vals[$i])) {
+		$featlist->{"values"}->[$i] = $newweights[$size];
+		$size += 1;
+	}
+	#}
+  }
+#  $featlist->{"values"} = \@newweights;
 
   if (scalar keys %sparse_weights) {
     $sparse_weights_file = "run" . ($run + 1) . ".sparse-weights";
@@ -1246,13 +1273,13 @@ sub run_decoder {
     print "params = $___DECODER_FLAGS\n";
 
     my @vals = @{$featlist->{"values"}};
-    if ($need_to_normalize) {
+=pod    if ($need_to_normalize) {
       print STDERR "Normalizing lambdas: @vals\n";
       my $totlambda = 0;
       grep($totlambda += abs($_), @vals);
       grep($_ /= $totlambda, @vals);
     }
-
+=cut
     # moses now does not seem accept "-tm X -tm Y" but needs "-tm X Y"
     my %model_weights;
     for(my $i=0; $i<scalar(@{$featlist->{"names"}}); $i++) {
@@ -1282,12 +1309,23 @@ sub run_decoder {
 
     print STDERR "Executing: $decoder_cmd \n";
     safesystem($decoder_cmd) or die "The decoder died. CONFIG WAS $decoder_config \n";
+   
+    ####### deleting fixed features from n-best file #######
+	my @fixedparam = split (/,/, $___Fixed);
+        for(my $i = 0; $i < scalar(@fixedparam); $i++) {
+		my $prm = $fixedparam[$i];
+		my $sed_cmd = "sed -i \"s/$prm= \\S* //g\" $filename";
+		safesystem($sed_cmd) or die "Sed Command Failed";
+	}
 
     if (!$___HG_MIRA) {
       sanity_check_order_of_lambdas($featlist,$filename);
     } else {
       print STDERR "WARN: No sanity check of order of features in hypergraph mira\n";
     }
+
+
+
     return ($filename, '', '');
 }
 
@@ -1336,7 +1374,7 @@ sub sanity_check_order_of_lambdas {
   my $featlist = shift;
   my $filename_or_stream = shift;
 
-  my @expected_lambdas = @{$featlist->{"names"}};
+  my @expected_lambdas = @{$featlist->{"names"}}; 
   my @got = get_order_of_scores_from_nbestlist($filename_or_stream);
   die "Mismatched lambdas. Decoder returned @got, we expected @expected_lambdas"
     if "@got" ne "@expected_lambdas";
@@ -1369,13 +1407,16 @@ sub get_featlist_from_file {
   open my $fh, '<', $featlistfn or die "Can't read $featlistfn : $!";
   my $nr = 0;
   my @errs = ();
+  my @fixedparams = split (/,/, $___Fixed);
+  my %params = map { $_ => 1 } @fixedparams;
+  	
   while (<$fh>) {
     $nr++;
     chomp;
     if (/^(\S+)= (.+)$/) { # only for feature functions with dense features
       my ($longname, $valuesStr) = ($1, $2);
       next if (!defined($valuesStr));
-    
+      next if (exists($params{$longname}));
       my @values = split(/ /, $valuesStr);
 		  foreach my $value (@values) {
 			  push @errs, "$featlistfn:$nr:Bad initial value of $longname: $value\n"
@@ -1447,8 +1488,8 @@ sub create_config {
   my $need_to_normalize = shift;
   my @keep_weights = ();
 
- my @vals = @{$featlist->{"values"}};
  if ($need_to_normalize) {
+      my @vals = @{$featlist->{"values"}};
       print STDERR "Normalizing lambdas: @vals\n";
       my $totlambda = 0;
       my @fixedparams = split (/,/, $___Fixed);
@@ -1456,8 +1497,10 @@ sub create_config {
       for(my $i = 0; $i < scalar(@{$featlist->{"names"}}); $i++) {
 	my $name = $featlist->{"names"}->[$i];
 	if(!exists($params{$name})){
-		$totlambda += $vals[$i];
+	#if($totlambda < abs($vals[$i])) {
+		$totlambda += ($vals[$i]);
 	}
+	#}
       }
       for(my $i = 0; $i < scalar(@{$featlist->{"names"}}); $i++) {
 	my $name = $featlist->{"names"}->[$i];

@@ -31,7 +31,7 @@ namespace Private{
 namespace SpecialTokenHandler {
 namespace IXMLTagHandler {
 
-TARGOMAN_REGISTER_MODULE(clsOrdinalsHandler);
+TARGOMAN_REGISTER_SINGLETON_MODULE(clsOrdinalsHandler);
 using namespace RuleTable;
 
 
@@ -46,7 +46,8 @@ TargetRulesContainer_t clsOrdinalsHandler::getTargetRules(const QString& _token)
 QString clsOrdinalsHandler::getDefaultTranslation(const QString& _token)
 {
     Q_UNUSED(_token);
-    return QString();
+    return _token;
+//    return QString();
 }
 
 }

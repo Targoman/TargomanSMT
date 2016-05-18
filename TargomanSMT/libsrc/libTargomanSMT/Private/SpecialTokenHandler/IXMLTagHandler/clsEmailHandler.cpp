@@ -31,7 +31,7 @@ namespace Private{
 namespace SpecialTokenHandler {
 namespace IXMLTagHandler {
 
-TARGOMAN_REGISTER_MODULE(clsEmailHandler);
+TARGOMAN_REGISTER_SINGLETON_MODULE(clsEmailHandler);
 using namespace RuleTable;
 
 

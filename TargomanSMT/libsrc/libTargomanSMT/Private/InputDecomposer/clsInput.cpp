@@ -298,6 +298,11 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
         }
     }
 
+    if(Token.size()){
+        this->newTokenInfo(Token);
+        Token.clear();
+    }
+
     switch(ParsingState){
     case Look4Open:
         return;

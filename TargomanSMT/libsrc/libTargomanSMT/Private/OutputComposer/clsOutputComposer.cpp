@@ -126,19 +126,29 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
     QString String;
     for(size_t i=0; i< _target.size(); ++i) {
         QList<int> Alignments = _target.wordLevelAlignment(i);
+        QString TargetWordString = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(i));
         if(Alignments.size() == 1) {
             int Alignment = Alignments.at(0);
             clsToken Token = this->InputDecomposerRef.tokens().at(Alignment + _sourcePhrasePos.start());
-            if(Token.tagStr().size()) {
-                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)))
+            if(Token.tagStr().size() && TargetWordString.contains("<")) {
+                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation))){
                     String += Token.attrs().value(
                                 enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)).toString();
-                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)))
+                    if(Q_LIKELY(i != _target.size() - 1))
+                        String+= " ";
+                    continue;
+                }
+                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation))){
                     String += Token.attrs().value(
                                 enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
+                    if(Q_LIKELY(i != _target.size() - 1))
+                        String+= " ";
+                    continue;
+                }
+
             }
         }
-        QString TargetWordString = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(i));
+
         String+= TargetWordString;
         if(Q_LIKELY(i != _target.size() - 1))
             String+= " ";
