@@ -113,7 +113,7 @@ stuTranslationOutput Translator::translate(const QString &_inputStr,
     }
 
     Elapsed = start.elapsed();
-    TargomanLogInfo(1, "NBest Creation [" << Elapsed / 1000.0 << "s]"<<
+    TargomanLogInfo(9, "NBest Creation [" << Elapsed / 1000.0 << "s]"<<
                      _inputStr);
     return Output;
 }

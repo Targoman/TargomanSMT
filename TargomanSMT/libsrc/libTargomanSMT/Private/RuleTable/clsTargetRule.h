@@ -231,6 +231,7 @@ public:
         QSharedData(_other),
         TargetPhrase(_other.TargetPhrase),
         Fields(_other.Fields),
+        Alignment(_other.Alignment),
         PrecomputedValues(_other.PrecomputedValues),
         IsUnknownWord(_other.IsUnknownWord)
     {}

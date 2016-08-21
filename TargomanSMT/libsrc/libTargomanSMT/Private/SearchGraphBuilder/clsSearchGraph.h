@@ -254,6 +254,7 @@ private:
     bool conformsIBM1Constraint(const Coverage_t& _newCoverage);
     bool conformsHardReorderingJumpLimit(const Coverage_t &_prevCoverage, size_t _prevStart, size_t _prevEnd, size_t _startPos, size_t _endPos);
     Common::Cost_t calculateRestCost(const Coverage_t &_coverage, size_t _beginPos, size_t _endPos) const;
+    void PrintBestPathInfo();
 
 private:
     QExplicitlySharedDataPointer<clsSearchGraphData>        Data;                               /**< A pointer to clsSearchGraphBuilderData class which manages data member of this class*/

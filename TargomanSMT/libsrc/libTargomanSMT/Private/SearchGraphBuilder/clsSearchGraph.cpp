@@ -519,6 +519,7 @@ bool clsSearchGraph::decode()
     {
         this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().bestNode();
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
+        PrintBestPathInfo();
         return true;
     } else {
         static clsSearchGraphNode InvalidGoalNode;
@@ -526,6 +527,41 @@ bool clsSearchGraph::decode()
         TargomanLogWarn(1, "No translation option for: " << this->Data->Sentence);
         return false;
     }
+}
+
+void clsSearchGraph::PrintBestPathInfo(){
+    TargomanLogInfo(8, "Translation Score: " << this->Data->GoalNode->getTotalCost());
+
+    clsSearchGraphNode Hypo = *this->Data->GoalNode;
+    QList<int> Alignments;
+    QVector<clsSearchGraphNode> Nodes;
+
+    while(!Hypo.isInvalid()){
+        Nodes.push_back(Hypo);
+        Hypo = Hypo.prevNode();
+    }
+    int TargetIndex = 0;
+    for(int node = (int)Nodes.size() - 1; node >= 0; node--){
+        Hypo = Nodes[node];
+        if(Hypo.targetRule().alignmentDataAvailable()){
+            for(size_t i = Hypo.sourceRangeBegin(); i <= Hypo.sourceRangeEnd(); i++){
+                QList<int> Aligned = Hypo.targetRule().wordLevelAlignment(i - Hypo.sourceRangeBegin());
+                for(int j = 0; j < Aligned.size(); j++){
+                    Alignments.push_back(i);
+                    Alignments.push_back(Aligned[j] + TargetIndex);
+                }
+
+            }
+        }
+        TargetIndex += Hypo.targetRule().size();
+    }
+
+    QString Alignment = "";
+    for(int i = 0; i < Alignments.size(); i += 2){
+        Alignment += QString::number(Alignments[i]) + "-" + QString::number(Alignments[i + 1]) + " ";
+    }
+    TargomanLogInfo(8, "Translation Alignment:  " << Alignment);
+
 }
 
 /**

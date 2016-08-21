@@ -104,7 +104,7 @@ void clsBinaryRuleTable::initializeSchema()
 
         // TODO: Implement a more decent approach!
         if(Columns.contains("BackwardMonotone"))
-            intfRuleTable::setReorderingAndAlignmentAvailability(true, false);
+            intfRuleTable::setReorderingAndAlignmentAvailability(true, true);
 
         //Load PhraseTable column names
         ColumnCount = this->InputStream->read<int>();

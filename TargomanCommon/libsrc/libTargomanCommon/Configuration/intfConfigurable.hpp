@@ -28,6 +28,7 @@
 
 #include <QString>
 #include <QVariant>
+#include <functional>
 
 #include "libTargomanCommon/Macros.h"
 

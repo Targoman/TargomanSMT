@@ -49,7 +49,7 @@ protected:
     QVariantList bulkQuery(const QString &_parentPath,
                           bool _isRegex,
                           bool _showDetails,
-                          bool _justUpdatable,
+                          int _justUpdatable,
                           const QString &_justType,
                           const QString &_stripString);
     QVariant    set(const QString &_path, const QVariant& _newValue);

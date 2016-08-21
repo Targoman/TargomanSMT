@@ -100,12 +100,12 @@ void clsTargetRule::writeBinary(clsOFStreamExtended &_output) const
     foreach(Cost_t Cost, this->Data->Fields)
         _output.write(Cost);
 
-    _output.write(this->Data->Alignment.size());
-    foreach (int key, this->Data->Alignment.keys()) {
-        foreach (int value, this->Data->Alignment.values(key)){
-            _output.write(key);
-            _output.write(value);
-        }
+    _output.write(this->Data->Alignment.count());
+
+    for(QMap<int, int>::iterator it = this->Data->Alignment.begin();
+        it != this->Data->Alignment.end(); it++){
+             _output.write(it.key());
+             _output.write(it.value());
     }
 
 }

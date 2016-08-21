@@ -96,7 +96,7 @@ QVariant clsBaseConfigOverNet::query(const QString& _path)
 QVariantList clsBaseConfigOverNet::bulkQuery(const QString& _parentPath,
                                             bool _isRegex,
                                             bool _showDetails,
-                                            bool _justUpdatable,
+                                            int _justUpdatable,
                                             const QString& _justType,
                                             const QString& _stripString)
 {
