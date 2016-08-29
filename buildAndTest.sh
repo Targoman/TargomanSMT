@@ -51,7 +51,8 @@ Projects="ExternalToolsAndLibs/
           TargomanSMT/ 
           Apps/TargomanSMTConsole 
           Apps/TargomanSMTServer 
-          Apps/TargomanLoadBalancer"
+          Apps/TargomanLoadBalancer
+	  PhraseExtract"
           
 BasePath=`pwd`
 export LD_LIBRARY_PATH="$BasePath/out/lib"
