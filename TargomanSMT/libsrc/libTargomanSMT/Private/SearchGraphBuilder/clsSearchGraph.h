@@ -208,7 +208,7 @@ class clsSearchGraph
 public:
     explicit clsSearchGraph(const InputDecomposer::Sentence_t& _sentence);
 
-    static void init(QSharedPointer<QSettings> _configSettings);
+    static void init(QSharedPointer<QSettings> _configSettings, bool isDecoding);
 
 
     /**
@@ -224,6 +224,10 @@ public:
      */
     inline const clsLexicalHypoNodeSet& getSameCoverageNodes(Coverage_t _coverage) const {
         return this->Data->HypothesisHolder[_coverage.count(true)].lexicalHypotheses().value(_coverage).nodes();
+    }
+
+    static int ruleTablePrecomputedValueIndex(){
+        return pRuleTable->getPreComputedValueIndex();
     }
 
     static inline void saveBinaryRuleTable(const QString& _filePath){

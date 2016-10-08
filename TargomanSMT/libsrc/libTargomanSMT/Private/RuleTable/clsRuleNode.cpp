@@ -26,6 +26,7 @@
 
 #include "clsRuleNode.h"
 #include "libTargomanCommon/FStreamExtended.h"
+#include<iostream>
 
 namespace Targoman {
 namespace SMT {

@@ -112,7 +112,7 @@ clsSearchGraph::clsSearchGraph(const Sentence_t& _sentence):
  * @brief Loads rule and phrase tables, inititializes all feature functions and sets #UnknownWordRuleNode.
  * @param _configFilePath Address of config file.
  */
-void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
+void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings, bool isDecoding)
 {
     clsSearchGraph::pRuleTable = gConfigs.RuleTable.getInstance<intfRuleTable>();
 
@@ -129,9 +129,8 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
 
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions)
         FF->initialize(_configSettings);
-    clsSearchGraph::pRuleTable->loadTableData();
+    clsSearchGraph::pRuleTable->loadTableData(isDecoding);
     clsSearchGraph::pPhraseTable = gConfigs.ActiveFeatureFunctions.value("PhraseTable");
-
 
     RulesPrefixTree_t::pNode_t Node = clsSearchGraph::pRuleTable->prefixTree().rootNode();
     if(Node->isInvalid())
@@ -144,42 +143,44 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
 
     clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData(), true);
 
-    TargomanLogInfo(7, "Checking Source Vocab");
-    try{
-        QList<QHash<QString, Common::WordIndex_t>::iterator> ItersToRemove;
-        /// @note As a result of aligning some words to NULL by general word aligners, we need to take care of
-        ///       tokens that have a word index but only contribute to multi-word phrases. These will cause
-        ///       malfunction of OOV handler module as it will assume these words have translations by themselves
-        for(auto TokenIter = gConfigs.SourceVocab.begin();
-            TokenIter != gConfigs.SourceVocab.end();
-            ++TokenIter) {
-            clsRuleNode& SingleWordRuleNode =
-                    clsSearchGraph::pRuleTable->prefixTree().getOrCreateNode(
-                        QList<WordIndex_t>() << TokenIter.value()
-                        )->getData();
-            if(SingleWordRuleNode.isInvalid() ||
-                    SingleWordRuleNode.targetRules().isEmpty())
-                ItersToRemove.append(TokenIter);
-            /*if(SingleWordRuleNode.isInvalid())
-                SingleWordRuleNode.detachInvalidData();
+    if(isDecoding){
+        TargomanLogInfo(7, "Checking Source Vocab");
+        try{
+            QList<QHash<QString, Common::WordIndex_t>::iterator> ItersToRemove;
+            /// @note As a result of aligning some words to NULL by general word aligners, we need to take care of
+            ///       tokens that have a word index but only contribute to multi-word phrases. These will cause
+            ///       malfunction of OOV handler module as it will assume these words have translations by themselves
+            for(auto TokenIter = gConfigs.SourceVocab.begin();
+                TokenIter != gConfigs.SourceVocab.end();
+                ++TokenIter) {
+                clsRuleNode& SingleWordRuleNode =
+                        clsSearchGraph::pRuleTable->prefixTree().getOrCreateNode(
+                            QList<WordIndex_t>() << TokenIter.value()
+                            )->getData();
+                if(SingleWordRuleNode.isInvalid() ||
+                        SingleWordRuleNode.targetRules().isEmpty())
+                    ItersToRemove.append(TokenIter);
+                /*if(SingleWordRuleNode.isInvalid())
+                    SingleWordRuleNode.detachInvalidData();
 
-            if(SingleWordRuleNode.targetRules().isEmpty())
-                SingleWordRuleNode.targetRules().append(
-                            OOVHandler::instance().generateTargetRules(TokenIter.key())
-                            );*/
+                if(SingleWordRuleNode.targetRules().isEmpty())
+                    SingleWordRuleNode.targetRules().append(
+                                OOVHandler::instance().generateTargetRules(TokenIter.key())
+                                );*/
+            }
+            TargomanLogWarn(8, ItersToRemove.size()<<
+                            " Tokens removed from Source vocab which had: "<<
+                            gConfigs.SourceVocab.size()<<" Items");
+
+            foreach(auto TokenIter, ItersToRemove)
+    //            gConfigs.SourceVocab.erase(TokenIter);
+                gConfigs.VocabWithoutSingleWordRule.insert(TokenIter.key());
+
+        }catch(exTargomanNotImplemented &e){
+            throw exTargomanNotImplemented(
+                        e.what() +
+                        ". Maybe you are using an incompatible BinaryRuleTable.");
         }
-        TargomanLogWarn(8, ItersToRemove.size()<<
-                        " Tokens removed from Source vocab which had: "<<
-                        gConfigs.SourceVocab.size()<<" Items");
-
-        foreach(auto TokenIter, ItersToRemove)
-//            gConfigs.SourceVocab.erase(TokenIter);
-            gConfigs.VocabWithoutSingleWordRule.insert(TokenIter.key());
-
-    }catch(exTargomanNotImplemented &e){
-        throw exTargomanNotImplemented(
-                    e.what() +
-                    ". Maybe you are using an incompatible BinaryRuleTable.");
     }
     TargomanLogInfo(7, "Search Graph Initialized successfully.");
 }
@@ -236,7 +237,23 @@ void clsSearchGraph::collectPhraseCandidates()
             this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality, 1);
 
             this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, RuleNodes);
+/*
+            for(int i = 0; i < this->Data->PhraseCandidateCollections[FirstPosition][0].targetRules().size(); i++){
 
+               // for(int j = FirstPosition; j <= LastPosition; j++)
+                    std::cout << this->Data->Sentence.at(FirstPosition).string().toStdString() << " ";
+                              //<<this->Data->PhraseCandidateCollections[FirstPosition][0].targetRules()[i];
+
+                std::cout << "\t" <<  this->Data->PhraseCandidateCollections[FirstPosition][0].targetRules()[i].toStr().toStdString()
+                          << "\t" ;
+
+                for(int j = 0; j < this->Data->PhraseCandidateCollections[FirstPosition][0].targetRules()[i].PrecomputedValuesSize; j++ ){
+                    std::cout << this->Data->PhraseCandidateCollections[FirstPosition][0].targetRules()[i].precomputedValue(j)
+                            << "\t";
+                }
+                std::cout << std::endl;
+            }
+*/
         }
 
         for (size_t LastPosition = FirstPosition + 1; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
@@ -250,10 +267,24 @@ void clsSearchGraph::collectPhraseCandidates()
             this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, RuleNodes);
             this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                       (int)(LastPosition - FirstPosition + 1));
+/*
+            for(int i = 0; i < this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].targetRules().size(); i++){
+
+                for(int j = FirstPosition; j <= LastPosition; j++)
+                    std::cout << this->Data->Sentence.at(j).string().toStdString() << " ";
+
+                std::cout << "\t" << this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].targetRules()[i].toStr().toStdString()
+                          << "\t";
+                for(int j = 0; j < this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].targetRules()[i].PrecomputedValuesSize; j++ ){
+                    std::cout << this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition].targetRules()[i].precomputedValue(j)
+                            << "\t";
+                }
+                std::cout << std::endl;
+            }
+*/
         }
     }
 }
-
 
 /**
  * @brief This function checks IBM1 Constraints.
@@ -562,6 +593,16 @@ void clsSearchGraph::PrintBestPathInfo(){
     }
     TargomanLogInfo(8, "Translation Alignment:  " << Alignment);
 
+    for(int node = (int)Nodes.size() - 1; node >= 0; node--){
+        Hypo = Nodes[node];
+        QString SrcPhrase = "";
+        for(size_t i = Hypo.sourceRangeBegin(); i < Hypo.sourceRangeEnd(); i++){
+            SrcPhrase += this->Data->Sentence.at(i).string();
+            SrcPhrase += " ";
+        }
+        TargomanLogInfo(9, "[ " + SrcPhrase + "] Translated to [ " +
+                        Hypo.targetRule().toStr() + " ] => Hypo Score : " + QString::number(Hypo.getCost()));
+    }
 }
 
 /**
@@ -645,7 +686,23 @@ clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _begin
                 this->TargetRules.size()
                 );
 
-    // TODO: Maybe sorting can be added here
+    std::nth_element(
+                TargetRules.begin(),
+                TargetRules.begin() + UsableTargetRuleCount,
+                TargetRules.end(),
+                [&] (const clsTargetRule& _first, const clsTargetRule& _second) {
+                    return _first.precomputedValue(clsSearchGraph::ruleTablePrecomputedValueIndex()) <
+                            _second.precomputedValue(clsSearchGraph::ruleTablePrecomputedValueIndex());
+                }
+    );
+
+    // Prune the unnecessary rules
+    if(UsableTargetRuleCount < TargetRules.size())
+        TargetRules.erase(
+                TargetRules.begin() + UsableTargetRuleCount,
+                TargetRules.end()
+                );
+
     this->BestApproximateCost = INFINITY;
     // _observationHistogramSize must be taken care of to not exceed this->TargetRules.size()
     for(int Count = 0; Count < this->UsableTargetRuleCount; ++Count) {

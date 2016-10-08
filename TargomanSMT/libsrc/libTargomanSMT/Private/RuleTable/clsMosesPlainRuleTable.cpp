@@ -35,6 +35,8 @@
 #include "Private/FeatureFunctions/WordPenalty/WordPenalty.h"
 #include "Private/FeatureFunctions/LexicalReordering/LexicalReordering.h"
 
+#include<iostream>
+
 namespace Targoman {
 namespace SMT {
 namespace Private {
@@ -199,7 +201,7 @@ void clsMosesPlainRuleTable::initializeSchema()
 /**
  * @brief clsMosesPlainRuleTable::loadTableData Loads phrase table from file and adds each phrase (rule) to pefix tree.
  */
-void clsMosesPlainRuleTable::loadTableData()
+void clsMosesPlainRuleTable::loadTableData(bool isDecoding)
 {
     TargomanLogInfo(5,
                     "Loading Moses plain text rule set from " +
@@ -302,37 +304,41 @@ void clsMosesPlainRuleTable::loadTableData()
         this->addRule(TotalRuleNodes, PhraseTableFields[mosesFormatSourcePhrase], PhraseTableFields[mosesFormatTargetPhrase], PhraseCostsFields, WordAlignments, RulesRead);
     }
 
-    TargomanLogInfo(5, "Sorting rule nodes ...");
+    if(isDecoding){
 
-    for(int i = 0; i < TotalRuleNodes.size(); ++i) {
-        QList<clsTargetRule>& TargetRuleList = TotalRuleNodes[i].targetRules();
-        int NumberOfRulesToKeep = qMin(
-                    (int)clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount.value(),
-                    TargetRuleList.size()
-                    );
-        std::nth_element(
-                    TargetRuleList.begin(),
-                    TargetRuleList.begin() + NumberOfRulesToKeep,
-                    TargetRuleList.end(),
-                    [&] (const clsTargetRule& _first, const clsTargetRule& _second) {
-                        return _first.precomputedValue(this->PrecomputedValueIndex) <
-                                _second.precomputedValue(this->PrecomputedValueIndex);
-                    }
-        );
+        TargomanLogInfo(5, "Sorting rule nodes ...");
 
-        // Prune the unnecessary rules
-        if(NumberOfRulesToKeep < TargetRuleList.size())
-            TargetRuleList.erase(
-                    TargetRuleList.begin() + NumberOfRulesToKeep,
-                    TargetRuleList.end()
-                    );
+        for(int i = 0; i < TotalRuleNodes.size(); ++i) {
+            QList<clsTargetRule>& TargetRuleList = TotalRuleNodes[i].targetRules();
+            int NumberOfRulesToKeep = qMin(
+                        (int)clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount.value(),
+                        TargetRuleList.size()
+                        );
+            std::nth_element(
+                        TargetRuleList.begin(),
+                        TargetRuleList.begin() + NumberOfRulesToKeep,
+                        TargetRuleList.end(),
+                        [&] (const clsTargetRule& _first, const clsTargetRule& _second) {
+                            return _first.precomputedValue(this->PrecomputedValueIndex) <
+                                    _second.precomputedValue(this->PrecomputedValueIndex);
+                        }
+            );
 
-        qStableSort(TargetRuleList.begin(), TargetRuleList.end(),
-                    [&] (const clsTargetRule& _first, const clsTargetRule& _second) {
-                        return _first.precomputedValue(this->PrecomputedValueIndex) <
-                        _second.precomputedValue(this->PrecomputedValueIndex);
-                    }
-        );
+            // Prune the unnecessary rules
+            if(NumberOfRulesToKeep < TargetRuleList.size())
+                TargetRuleList.erase(
+                        TargetRuleList.begin() + NumberOfRulesToKeep,
+                        TargetRuleList.end()
+                        );
+
+            qStableSort(TargetRuleList.begin(), TargetRuleList.end(),
+                        [&] (const clsTargetRule& _first, const clsTargetRule& _second) {
+                            return _first.precomputedValue(this->PrecomputedValueIndex) <
+                            _second.precomputedValue(this->PrecomputedValueIndex);
+                        }
+            );
+
+        }
     }
     TargomanLogInfo(5, "Moses plain text rule set loaded. ");
 }
@@ -342,16 +348,16 @@ void clsMosesPlainRuleTable::loadTableData()
  * @param _targetRule                   input target rule for which the cost is computed
  * @return                              the computed cost
  */
-/*inline */Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule)
-{
-    PhraseTable& PhraseCostFeature = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
-    LanguageModel& LanguageModelFeature = *static_cast<LanguageModel*>(LanguageModel::moduleInstance());
-    WordPenalty& WordPenaltyFeature = *static_cast<WordPenalty*>(WordPenalty::moduleInstance());
-    Cost_t PhraseCost = PhraseCostFeature.getPhraseCost(_targetRule);
-    Cost_t LanguageModelCost = LanguageModelFeature.getLanguageModelCost(_targetRule);
-    Cost_t WordPenaltyCost = WordPenaltyFeature.getWordPenaltyCost(_targetRule);
-    return  PhraseCost + LanguageModelCost + WordPenaltyCost;
-}
+///*inline */Cost_t getPrematureTargetRuleCost(const clsTargetRule& _targetRule)
+//{
+//    PhraseTable& PhraseCostFeature = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
+//    LanguageModel& LanguageModelFeature = *static_cast<LanguageModel*>(LanguageModel::moduleInstance());
+//    WordPenalty& WordPenaltyFeature = *static_cast<WordPenalty*>(WordPenalty::moduleInstance());
+//    Cost_t PhraseCost = PhraseCostFeature.getPhraseCost(_targetRule);
+//    Cost_t LanguageModelCost = LanguageModelFeature.getLanguageModelCost(_targetRule);
+//    Cost_t WordPenaltyCost = WordPenaltyFeature.getWordPenaltyCost(_targetRule);
+//    return  PhraseCost + LanguageModelCost + WordPenaltyCost;
+//}
 
 /**
  * @brief clsMosesPlainRuleTable::addRule   adds a new rule to the rule prefix tree
@@ -375,7 +381,7 @@ void clsMosesPlainRuleTable::addRule(QList<clsRuleNode>& _ruleNodeList,
     }
     TargetRule.setPrecomputedValue(
                 this->PrecomputedValueIndex,
-                getPrematureTargetRuleCost(TargetRule)
+                TargetRule.getPrematureTargetRuleCost()
                 );
     RuleNode.targetRules().append(TargetRule);
 }

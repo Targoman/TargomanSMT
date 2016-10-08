@@ -102,6 +102,7 @@ public:
     inline Common::Cost_t precomputedValue(size_t _index) const;
     inline void setCosts(const QList<Common::Cost_t>& _costs);
     inline void setPrecomputedValue(size_t _index, Common::Cost_t _value);
+    Cost_t getPrematureTargetRuleCost();
     /**
      * @brief getColumnIndex    returns index of column by its name.
      * @param[in] _columnName   name of column.

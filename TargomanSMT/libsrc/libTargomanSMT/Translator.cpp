@@ -53,7 +53,7 @@ using namespace SearchGraphBuilder;
 
 static bool TranslatorInitialized = false;
 
-void Translator::init(QSharedPointer<QSettings> _configSettings)
+void Translator::init(QSharedPointer<QSettings> _configSettings, bool isDecoding)
 {
     if (TranslatorInitialized){
         TargomanWarn(5, "Reinitialization of translator has no effect");
@@ -66,7 +66,7 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
 
     OOVHandler::instance().initialize();
     IXMLTagHandler::instance().initialize();
-    SearchGraphBuilder::clsSearchGraph::init(_configSettings);
+    SearchGraphBuilder::clsSearchGraph::init(_configSettings, isDecoding);
 
     TranslatorInitialized = true;
     TargomanLogHappy(5, "Translator Initialized successfully");

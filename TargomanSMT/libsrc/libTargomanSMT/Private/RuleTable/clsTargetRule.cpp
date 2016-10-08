@@ -29,12 +29,19 @@
 #include "Private/GlobalConfigs.h"
 #include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 
+#include "Private/FeatureFunctions/PhraseTable/PhraseTable.h"
+#include "Private/FeatureFunctions/LanguageModel/LanguageModel.h"
+#include "Private/FeatureFunctions/WordPenalty/WordPenalty.h"
+#include "Private/FeatureFunctions/LexicalReordering/LexicalReordering.h"
+
+
 namespace Targoman {
 namespace SMT {
 namespace Private {
 namespace RuleTable{
 
 using namespace Common;
+using namespace FeatureFunction;
 
 QStringList  clsTargetRule::ColumnNames;
 size_t clsTargetRule::PrecomputedValuesSize = 0;
@@ -67,6 +74,17 @@ clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QLis
         this->Data->IsUnknownWord = true;
 }
 
+/*inline */Cost_t clsTargetRule::getPrematureTargetRuleCost()
+{
+    PhraseTable& PhraseCostFeature = *static_cast<PhraseTable*>(PhraseTable::moduleInstance());
+    LanguageModel& LanguageModelFeature = *static_cast<LanguageModel*>(LanguageModel::moduleInstance());
+    WordPenalty& WordPenaltyFeature = *static_cast<WordPenalty*>(WordPenalty::moduleInstance());
+    Cost_t PhraseCost = PhraseCostFeature.getPhraseCost(*this);
+    Cost_t LanguageModelCost = LanguageModelFeature.getLanguageModelCost(*this);
+    Cost_t WordPenaltyCost = WordPenaltyFeature.getWordPenaltyCost(*this);
+    return  PhraseCost + LanguageModelCost + WordPenaltyCost;
+}
+
 void clsTargetRule::readBinary(clsIFStreamExtended &_input)
 {
     if(this->isInvalid())
@@ -89,6 +107,8 @@ void clsTargetRule::readBinary(clsIFStreamExtended &_input)
         int value = _input.read<int>();
         this->Data->Alignment.insertMulti(key, value);
     }
+    this->setPrecomputedValue(clsTargetRule::PrecomputedValuesSize - 1,
+                              getPrematureTargetRuleCost());
 }
 
 void clsTargetRule::writeBinary(clsOFStreamExtended &_output) const

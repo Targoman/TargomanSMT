@@ -48,7 +48,7 @@ public:
     ~clsMosesPlainRuleTable();
 
     void initializeSchema();
-    void loadTableData();
+    void loadTableData(bool isDecoding);
 
 private:
     void addRule(QList<clsRuleNode>& _ruleNodeList,
@@ -66,7 +66,6 @@ private:
 private:
     int PhraseFeatureCount = 0;
     int ReorderingFeatureCount = 0;
-    int PrecomputedValueIndex = -1;
 
 private:
     static Targoman::Common::Configuration::tmplConfigurable<FilePath_t>   PhraseTableFilePath;         /**< File name of phrase table. */

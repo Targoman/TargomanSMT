@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         //Targoman::SMT::Private::RuleTable::clsBinaryRuleTable BRT(1);
 
         printMemoryUsage("after init");
-        Translator::init(ConfigManager::instance().configSettings());
+        Translator::init(ConfigManager::instance().configSettings(), true);
 
 
 

@@ -44,11 +44,11 @@ void appTargomanSMTConsole::slotExecute()
     try{
         switch(gConfigs::Mode.value()){
         case enuAppMode::ShowWeights:
-            Translator::init(ConfigManager::instance().configSettings());
+            Translator::init(ConfigManager::instance().configSettings(), false);
             Translator::showWeights();
             break;
         case enuAppMode::MakeBinary:
-            Translator::init(ConfigManager::instance().configSettings());
+            Translator::init(ConfigManager::instance().configSettings(), false);
             Translator::saveBinaryRuleTable(gConfigs::OutputFile.value());
             break;
         case enuAppMode::Training:
@@ -58,7 +58,7 @@ void appTargomanSMTConsole::slotExecute()
             TranslationWriter::instance(); //Just to initialize first instance in order to suppress multithreaded instantiation
 
             if(gConfigs::InputText.value().size()){
-                Translator::init(ConfigManager::instance().configSettings());
+                Translator::init(ConfigManager::instance().configSettings(), true);
                 TranslationWriter::instance().writeTranslation(1,
                                                                Translator::translate(gConfigs::InputText.value(), true,
                                                                                      gConfigs::NBestFile.value().size() > 0));
@@ -73,7 +73,7 @@ void appTargomanSMTConsole::slotExecute()
                 QTextStream InStream(&InFile);
                 InStream.setCodec("UTF-8");
                 QThreadPool::globalInstance()->setMaxThreadCount(gConfigs::MaxThreads.value());
-                Translator::init(ConfigManager::instance().configSettings());
+                Translator::init(ConfigManager::instance().configSettings(), true);
                 int Index = 0;
                 while(InStream.atEnd() == false){
                     QThreadPool::globalInstance()->start(new clsTranslationJob(++Index, InStream.readLine()));

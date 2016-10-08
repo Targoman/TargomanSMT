@@ -49,7 +49,7 @@ public:
     ~clsBinaryRuleTable();
 
     void initializeSchema();
-    void loadTableData();
+    void loadTableData(bool isDecoding);
 
 private:
     QScopedPointer<Common::clsIFStreamExtended> InputStream;

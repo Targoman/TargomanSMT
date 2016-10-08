@@ -145,8 +145,9 @@ void clsJanePlainRuleTable::initializeSchema()
 /**
  * @brief clsJanePlainRuleTable::loadTableData Loads phrase table from file and adds each phrase (rule) to pefix tree.
  */
-void clsJanePlainRuleTable::loadTableData()
+void clsJanePlainRuleTable::loadTableData(bool isDecoding)
 {
+    Q_UNUSED(isDecoding);
     TargomanLogInfo(5, "Loading Jane plain text rule set from: " + this->FilePath.value());
 
     this->PrefixTree.reset(new RulesPrefixTree_t());

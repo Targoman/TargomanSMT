@@ -64,7 +64,7 @@ public:
     virtual ~intfRuleTable(){}
 
     virtual void initializeSchema() = 0;
-    virtual void loadTableData() = 0;
+    virtual void loadTableData(bool isDecoding) = 0;
     void saveBinaryRuleTable(const QString& _filePath){
         try{
             Common::clsOFStreamExtended OutStream(_filePath);
@@ -104,6 +104,10 @@ public:
         return *this->PrefixTree;
     }
 
+    int getPreComputedValueIndex(){
+        return PrecomputedValueIndex;
+    }
+
 protected:
     void setReorderingAndAlignmentAvailability(bool _lexicalReorderingAvailable,
                                                bool _alignmentAvailable)
@@ -114,6 +118,7 @@ protected:
 
 protected:
     QScopedPointer<RulesPrefixTree_t> PrefixTree;               /**< The container which stores the source and target phrases. */
+    int PrecomputedValueIndex = -1;
 };
 
 

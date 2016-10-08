@@ -120,10 +120,11 @@ void clsBinaryRuleTable::initializeSchema()
     TargomanLogInfo(5, "Binary rule table set schema loaded. ");
 }
 
-void clsBinaryRuleTable::loadTableData()
+void clsBinaryRuleTable::loadTableData(bool isDecoding)
 {
+    Q_UNUSED(isDecoding);
     TargomanLogInfo(5, "Loading binary rule table from: " + this->FilePath.value());
-
+    this->PrecomputedValueIndex = clsTargetRule::allocatePrecomputedValue();
     this->PrefixTree.reset(new RulesPrefixTree_t());
     this->PrefixTree->readBinary(*this->InputStream,
                                  clsBinaryRuleTable::LoadMode.value(),

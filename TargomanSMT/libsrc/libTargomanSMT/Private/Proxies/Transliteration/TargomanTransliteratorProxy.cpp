@@ -54,7 +54,7 @@ TargomanTransliteratorProxy::TargomanTransliteratorProxy()
 
 void TargomanTransliteratorProxy::init(QSharedPointer<QSettings> _configSettings)
 {
-    Targoman::SWT::Translator::init(_configSettings);
+    Targoman::SWT::Translator::init(_configSettings, true);
 }
 
 QString TargomanTransliteratorProxy::transliterate(QString _word)
