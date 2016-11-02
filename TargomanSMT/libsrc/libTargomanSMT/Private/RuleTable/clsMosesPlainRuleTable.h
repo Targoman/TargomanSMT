@@ -48,7 +48,9 @@ public:
     ~clsMosesPlainRuleTable();
 
     void initializeSchema();
-    void loadTableData(bool isDecoding);
+    void loadTableData();
+    void loadingRootChildren(QList<WordIndex_t> & _children);
+    void binarizeTableData(const QString& _filePath);
 
 private:
     void addRule(QList<clsRuleNode>& _ruleNodeList,

@@ -64,7 +64,8 @@ public:
     virtual ~intfRuleTable(){}
 
     virtual void initializeSchema() = 0;
-    virtual void loadTableData(bool isDecoding) = 0;
+    virtual void loadTableData() = 0;
+    virtual void binarizeTableData(const QString& _filePath) = 0;
     void saveBinaryRuleTable(const QString& _filePath){
         try{
             Common::clsOFStreamExtended OutStream(_filePath);
@@ -95,6 +96,39 @@ public:
 
             //Call prefix tree to store nodes
             PrefixTree->writeBinary(OutStream);
+        }catch(std::exception &e){
+            throw exRuleTable(QString::fromUtf8(e.what()));
+        }
+    }
+
+    void saveBinarySchema(Common::clsOFStreamExtended& OutStream){
+        try{
+
+            //Write Bnary file header
+            OutStream.write(TARGOMAN_BINARY_RULETABLE_HEADER.toLatin1().constData(),
+                            TARGOMAN_BINARY_RULETABLE_HEADER.toLatin1().size());
+            //write Vocab
+            OutStream.write(gConfigs.SourceVocab.size());
+            for(auto VocabIter = gConfigs.SourceVocab.begin();
+                VocabIter != gConfigs.SourceVocab.end();
+                ++VocabIter){
+                OutStream.write(VocabIter.key());
+                OutStream.write(VocabIter.value());
+            }
+
+            //Write TargetRuleColumnNames
+            OutStream.write(clsTargetRule::columnNames().size());
+            foreach (const QString& ColumnName, clsTargetRule::columnNames())
+                OutStream.write(ColumnName);
+
+            //Write Phrase table specific column names
+            const QStringList PhraseTableColumnNames =
+                    static_cast<FeatureFunction::intfFeatureFunction*>
+                    (FeatureFunction::PhraseTable::moduleInstance())->columnNames();
+            OutStream.write(PhraseTableColumnNames.size());
+            foreach (const QString& ColumnName,PhraseTableColumnNames)
+                OutStream.write(ColumnName);
+
         }catch(std::exception &e){
             throw exRuleTable(QString::fromUtf8(e.what()));
         }

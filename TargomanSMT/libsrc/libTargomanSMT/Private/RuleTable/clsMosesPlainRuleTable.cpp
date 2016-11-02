@@ -201,7 +201,7 @@ void clsMosesPlainRuleTable::initializeSchema()
 /**
  * @brief clsMosesPlainRuleTable::loadTableData Loads phrase table from file and adds each phrase (rule) to pefix tree.
  */
-void clsMosesPlainRuleTable::loadTableData(bool isDecoding)
+void clsMosesPlainRuleTable::loadTableData()
 {
     TargomanLogInfo(5,
                     "Loading Moses plain text rule set from " +
@@ -304,7 +304,6 @@ void clsMosesPlainRuleTable::loadTableData(bool isDecoding)
         this->addRule(TotalRuleNodes, PhraseTableFields[mosesFormatSourcePhrase], PhraseTableFields[mosesFormatTargetPhrase], PhraseCostsFields, WordAlignments, RulesRead);
     }
 
-    if(isDecoding){
 
         TargomanLogInfo(5, "Sorting rule nodes ...");
 
@@ -339,9 +338,221 @@ void clsMosesPlainRuleTable::loadTableData(bool isDecoding)
             );
 
         }
-    }
     TargomanLogInfo(5, "Moses plain text rule set loaded. ");
 }
+
+/**
+ * @brief clsMosesPlainRuleTable::loadingRootChildren Loads phrase table from file and returns the first words of source phrases
+ */
+void clsMosesPlainRuleTable::loadingRootChildren(QList<WordIndex_t> & _children)
+{
+    TargomanLogInfo(5,
+                    "Loading Moses plain text rule set from " +
+                    this->PhraseTableFilePath.value());
+
+    size_t RulesRead = 0;
+    clsCmdProgressBar ProgressBar("Reading Source Phrases from MosesRuleTable");
+
+    clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFilePath.value().toStdString());
+
+    while (PhraseTableInputStream.peek() >= 0){
+        std::string PhraseTableLine;
+        getline(PhraseTableInputStream, PhraseTableLine);
+
+        if (PhraseTableLine == "")
+            continue;
+
+        ++RulesRead;
+        ProgressBar.setValue(RulesRead);
+
+        QStringList PhraseTableFields = QString::fromUtf8(PhraseTableLine.c_str()).split("|||");
+
+        if (PhraseTableFields.size() < 3)
+            throw exMosesPhraseTable(QString("Bad phrase table file format in line %1 : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
+
+
+        if (PhraseTableFields[mosesFormatTargetPhrase].isEmpty()){
+            TargomanWarn(5,"Ignoring phrase with empty target side at line: " + QString::number(RulesRead));
+            continue;
+        }
+
+        QList<WordIndex_t> SourcePhrase;
+        foreach(const QString& Word, PhraseTableFields[mosesFormatSourcePhrase].split(" ", QString::SkipEmptyParts)){
+            WordIndex_t WordIndex = gConfigs.SourceVocab.value(Word, Constants::SrcVocabUnkWordIndex);
+            if (WordIndex == Constants::SrcVocabUnkWordIndex && Word != "<unk>"){
+                WordIndex = gConfigs.SourceVocab.size() + 1;
+                gConfigs.SourceVocab.insert(Word, WordIndex);
+            }
+            SourcePhrase.append(WordIndex);
+        }
+
+        _children.append(SourcePhrase[0]);
+
+    }
+    PhraseTableInputStream.close();
+
+}
+
+/**
+ * @brief clsMosesPlainRuleTable::binarizeTableData Loads phrase table from file and adds each phrase (rule) to pefix tree.
+ */
+void clsMosesPlainRuleTable::binarizeTableData(const QString& _filePath)
+{
+
+    QList<WordIndex_t> Children;
+    QMap<WordIndex_t, PosType_t> ChildPositions;
+
+    this->PrefixTree.reset(new RulesPrefixTree_t());
+    QList<clsRuleNode> TotalRuleNodes;
+
+    Children.append(Constants::SrcVocabUnkWordIndex);
+    addUnkToUnkRule(TotalRuleNodes);
+
+    loadingRootChildren(Children);
+
+    Common::clsOFStreamExtended OutStream(_filePath);
+    this->saveBinarySchema(OutStream);
+
+    TargomanLogInfo(5,
+                    "Loading Moses plain text rule set from " +
+                    this->PhraseTableFilePath.value() +
+                    " and " + this->ReorderingTableFilePath.value());
+
+
+
+
+    clsCmdProgressBar ProgressBar("Loading MosesRuleTable and Binarize");
+
+
+
+    // write children positions of the root node
+    PosType_t NullPosition = 0;
+    OutStream.write(Children.size());
+    PosType_t StartPosition = OutStream.tellp();
+    for(int i = 0; i < Children.size(); i++) {
+        OutStream.write(Children[i]);
+        OutStream.write(NullPosition);
+    }
+    this->prefixTree().rootNode()->getData().writeBinary(OutStream);
+    ChildPositions[Constants::SrcVocabUnkWordIndex] = OutStream.tellp();
+    this->prefixTree().rootNode()->follow(Constants::SrcVocabUnkWordIndex)->writeBinary(OutStream);
+    this->PrefixTree.reset(new RulesPrefixTree_t());
+
+    clsCompressedInputStream PhraseTableInputStream(clsMosesPlainRuleTable::PhraseTableFilePath.value().toStdString());
+    clsCompressedInputStream ReorderingTableInputStream;
+    bool ReorderingFileExists = QFile::exists(clsMosesPlainRuleTable::ReorderingTableFilePath.value());
+    if(ReorderingFileExists)
+        ReorderingTableInputStream.open(clsMosesPlainRuleTable::ReorderingTableFilePath.value().toStdString(), true);
+
+    size_t RulesRead = 0;
+
+    clsCompressedInputStream AlignmentInputStream;
+    bool AlignmentFileExists = QFile::exists(clsMosesPlainRuleTable::WordAlignmentFilePath.value());
+    if(AlignmentFileExists)
+        AlignmentInputStream.open(clsMosesPlainRuleTable::WordAlignmentFilePath.value().toStdString(), true);
+
+    WordIndex_t PreviousWordIndex = 0;
+    while (PhraseTableInputStream.peek() >= 0
+           && (ReorderingFileExists == false || ReorderingTableInputStream.peek() >= 0)
+           && (AlignmentFileExists == false || AlignmentInputStream.peek() >= 0)){
+        std::string PhraseTableLine, ReorderingTableLine, AlignmentFileLine;
+        getline(PhraseTableInputStream, PhraseTableLine);
+        if(ReorderingFileExists)
+            getline(ReorderingTableInputStream, ReorderingTableLine);
+        if(AlignmentFileExists)
+            getline(AlignmentInputStream, AlignmentFileLine);
+
+        if (PhraseTableLine == "" ||
+            (ReorderingFileExists && ReorderingTableLine == "") ||
+            (AlignmentFileExists && AlignmentFileLine == ""))
+            continue;
+
+        ++RulesRead;
+        ProgressBar.setValue(RulesRead);
+
+        QStringList PhraseTableFields = QString::fromUtf8(PhraseTableLine.c_str()).split("|||");
+
+        if (PhraseTableFields.size() < 3)
+            throw exMosesPhraseTable(QString("Bad phrase table file format in line %1 : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
+
+        QStringList ReorderingTableFields;
+        if(ReorderingFileExists) {
+            ReorderingTableFields = QString::fromUtf8(ReorderingTableLine.c_str()).split("|||");
+
+            if (ReorderingTableFields.size() < 3)
+                throw exMosesPhraseTable(QString("Bad reordering table file format in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
+
+            if (ReorderingTableFields[mosesFormatSourcePhrase] != PhraseTableFields[mosesFormatSourcePhrase] ||
+                    ReorderingTableFields[mosesFormatTargetPhrase] != PhraseTableFields[mosesFormatTargetPhrase])
+                throw exMosesPhraseTable(QString("Reordering and phrase tables do not match (at line %1) : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
+        }
+
+        if (PhraseTableFields[mosesFormatTargetPhrase].isEmpty()){
+            TargomanWarn(5,"Ignoring phrase with empty target side at line: " + QString::number(RulesRead));
+            continue;
+        }
+
+        QStringList AlignmentFileFields;
+        if(AlignmentFileExists)
+            AlignmentFileFields = QString::fromUtf8(AlignmentFileLine.c_str()).split("|||");
+
+        QStringList PhraseCostsFields = PhraseTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
+        QStringList ReorderingCostsFields;
+        if(ReorderingFileExists)
+            ReorderingCostsFields = ReorderingTableFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
+        QStringList WordAlignments;
+        if(AlignmentFileExists)
+            WordAlignments = AlignmentFileFields[mosesFormatScores].split(" ", QString::SkipEmptyParts);
+
+        if(ReorderingFileExists){
+            if (ReorderingCostsFields.size() != 3 && ReorderingCostsFields.size() != 6 )
+                throw exMosesPhraseTable(QString("Invalid count of reordering scores in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
+        }
+
+        if (PhraseCostsFields.size() != this->PhraseFeatureCount)
+            throw exMosesPhraseTable(QString("Inconsistent phrase scores in line %1 : %2").arg(RulesRead).arg(PhraseTableLine.c_str()));
+
+        if(ReorderingFileExists){
+            if (ReorderingCostsFields.size() != this->ReorderingFeatureCount)
+                throw exMosesPhraseTable(QString("Inconsistent reordering scores in line %1 : %2").arg(RulesRead).arg(ReorderingTableLine.c_str()));
+        }
+
+        if(ReorderingFileExists){
+            if(this->ReorderingFeatureCount == 6)
+                PhraseCostsFields.append(ReorderingCostsFields.mid(3, 3));
+            PhraseCostsFields.append(ReorderingCostsFields.mid(0, 3));
+        }
+
+        QString FirstWord = PhraseTableFields[mosesFormatSourcePhrase].split(" ", QString::SkipEmptyParts)[0];
+        WordIndex_t FirstWordIndex = gConfigs.SourceVocab.value(FirstWord, Constants::SrcVocabUnkWordIndex);
+
+        if(FirstWordIndex != PreviousWordIndex && PreviousWordIndex > 0){
+            //std::cout << PreviousWordIndex << std::endl;
+            ChildPositions[PreviousWordIndex] = OutStream.tellp();
+            this->PrefixTree.data()->getNode(PreviousWordIndex)->writeBinary(OutStream);
+            this->PrefixTree.reset(new RulesPrefixTree_t());
+            TotalRuleNodes.clear();
+
+        }
+        PreviousWordIndex = FirstWordIndex;
+        this->addRule(TotalRuleNodes, PhraseTableFields[mosesFormatSourcePhrase], PhraseTableFields[mosesFormatTargetPhrase], PhraseCostsFields, WordAlignments, RulesRead);
+    }
+
+    ChildPositions[PreviousWordIndex] = OutStream.tellp();
+    this->PrefixTree.data()->getNode(PreviousWordIndex)->writeBinary(OutStream);
+
+    PosType_t EndPosition = OutStream.tellp();
+    OutStream.seekp(StartPosition, std::ios_base::beg);
+    for(int i = 0; i < Children.size(); i++) {
+        OutStream.seekp(sizeof(WordIndex_t), std::ios_base::cur);
+        OutStream.write(ChildPositions[Children[i]]);
+    }
+    OutStream.seekp(EndPosition, std::ios_base::beg);
+
+
+    TargomanLogInfo(5, "Moses plain text rule set loaded. ");
+}
+
 
 /**
  * @brief getPrematureTargetRuleCost    helper function for clsMosesPlainRuleTable::addRule() that computes a score for target rules forgetting about where they are to be placed

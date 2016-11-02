@@ -131,6 +131,14 @@ public:
             Result = Result->getOrCreateChildByKey(Key);
         return Result;
     }
+
+    inline pNode_t getNode(itmplKey_t key){
+        pNode_t Result = this->RootNode;
+        Result = Result->follow(key);
+        return Result;
+
+    }
+
     /**
      * @brief returns root node of prefix tree.
      */

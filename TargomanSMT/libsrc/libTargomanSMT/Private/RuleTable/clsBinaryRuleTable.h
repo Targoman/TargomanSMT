@@ -49,7 +49,8 @@ public:
     ~clsBinaryRuleTable();
 
     void initializeSchema();
-    void loadTableData(bool isDecoding);
+    void loadTableData();
+    void binarizeTableData(const QString& _filePath){}
 
 private:
     QScopedPointer<Common::clsIFStreamExtended> InputStream;

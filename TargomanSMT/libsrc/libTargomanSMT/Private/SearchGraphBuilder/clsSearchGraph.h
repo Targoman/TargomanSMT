@@ -232,7 +232,8 @@ public:
 
     static inline void saveBinaryRuleTable(const QString& _filePath){
         Q_ASSERT(clsSearchGraph::pRuleTable != NULL);
-        clsSearchGraph::pRuleTable->saveBinaryRuleTable(_filePath);
+//        clsSearchGraph::pRuleTable->saveBinaryRuleTable(_filePath);
+        clsSearchGraph::pRuleTable->binarizeTableData(_filePath);
     }
 
 public:

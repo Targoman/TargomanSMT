@@ -47,7 +47,8 @@ public:
     ~clsJanePlainRuleTable();
 
     void initializeSchema();
-    void loadTableData(bool isDecoding);
+    void loadTableData();
+    void binarizeTableData(const QString& _filePath){}
 
 private:
     void addRule(const QStringList &_phraseFieldValue,
