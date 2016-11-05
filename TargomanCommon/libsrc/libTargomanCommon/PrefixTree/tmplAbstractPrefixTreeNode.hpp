@@ -83,6 +83,9 @@ public:
         return pNode_t(&tmplAbstractPrefixTreeNode<itmplKey_t,itmplData_t>::invalidInstance());
     }
 
+    virtual QList<itmplKey_t> getChildren(){
+        return QList<itmplKey_t>();
+    }
 protected:
     tmplAbstractPrefixTreeNode()
     {

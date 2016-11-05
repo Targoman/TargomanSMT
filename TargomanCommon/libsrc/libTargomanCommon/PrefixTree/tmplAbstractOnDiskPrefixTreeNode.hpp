@@ -112,6 +112,10 @@ public:
         return this->Data->NodeData;
     }
 
+    QList<itmplKey_t> getChildren(){
+        return this->Data->ChildPositionInStream.keys();
+    }
+
 protected:
     tmplAbstractOnDiskPrefixTreeNode() { }
 

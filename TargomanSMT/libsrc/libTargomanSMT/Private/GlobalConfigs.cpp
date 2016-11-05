@@ -118,8 +118,8 @@ QScopedPointer<Targoman::SMT::Private::Proxies::LanguageModel::intfLMSentenceSco
 QHash<QString, Common::WordIndex_t>
     stuGlobalConfigs::SourceVocab;
 
-QSet<QString>
-    stuGlobalConfigs::VocabWithoutSingleWordRule;
+QSet<Common::WordIndex_t>
+    stuGlobalConfigs::VocabWithSingleWordRule;
 
 }
 }

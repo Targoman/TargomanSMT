@@ -74,7 +74,7 @@ struct stuGlobalConfigs{
     static QScopedPointer<SMT::Private::Proxies::LanguageModel::intfLMSentenceScorer>      EmptyLMScorer;
 // There is no transliteration for anything but Statistical Machine Translation!
     static QHash<QString, Common::WordIndex_t>                              SourceVocab;
-    static QSet<QString>                                                    VocabWithoutSingleWordRule;
+    static QSet<WordIndex_t>                                                VocabWithSingleWordRule;
     static QMap<QString, FeatureFunction::intfFeatureFunction*>             ActiveFeatureFunctions;
     static QString moduleName(){return "Common";}
 };

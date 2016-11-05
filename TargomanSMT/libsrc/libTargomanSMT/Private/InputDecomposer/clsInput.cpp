@@ -29,6 +29,7 @@
 #include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
 #include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
+#include "Private/SearchGraphBuilder/clsSearchGraph.h"
 
 using Targoman::NLPLibs::TargomanTextProcessor;
 
@@ -364,15 +365,14 @@ void clsInput::makeSentence()
             WordIndex_t WordIndex = gConfigs.SourceVocab.value(
                         TokenInfo.Str, Constants::SrcVocabUnkWordIndex);
             if (WordIndex == Constants::SrcVocabUnkWordIndex ||
-                    gConfigs.VocabWithoutSingleWordRule.contains(TokenInfo.Str)){
+                    !gConfigs.VocabWithSingleWordRule.contains(WordIndex)){
                 WordIndexes = OOVHandler::instance().getWordIndexOptions(TokenInfo.Str, TokenInfo.Attrs);
 
                 bool SingleWordIdxFound = false, RepeatedWordIdx = false;
                 for(WordIndex_t w : WordIndexes){
                     if(w == WordIndex)
                         RepeatedWordIdx = true;
-                    if(gConfigs.VocabWithoutSingleWordRule.contains(
-                                gConfigs.SourceVocab.key(w)))
+                    if(!gConfigs.VocabWithSingleWordRule.contains(w))
                         SingleWordIdxFound = true;
                 }
 

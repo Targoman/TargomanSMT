@@ -146,21 +146,27 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings, bool isDeco
 
     clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData(), true);
 
-    if(isDecoding){
         TargomanLogInfo(7, "Checking Source Vocab");
         try{
 //            QList<QHash<QString, Common::WordIndex_t>::iterator> ItersToRemove;
             /// @note As a result of aligning some words to NULL by general word aligners, we need to take care of
             ///       tokens that have a word index but only contribute to multi-word phrases. These will cause
             ///       malfunction of OOV handler module as it will assume these words have translations by themselves
-            for(auto TokenIter = gConfigs.SourceVocab.begin();
-                TokenIter != gConfigs.SourceVocab.end();
-                ++TokenIter) {
-                clsRuleNode& SingleWordRuleNode =
-                        clsSearchGraph::pRuleTable->prefixTree().getNode(TokenIter.value())->getData();
-                if(SingleWordRuleNode.isInvalid() ||
-                        SingleWordRuleNode.targetRules().isEmpty())
-                    gConfigs.VocabWithoutSingleWordRule.insert(TokenIter.key());
+//            for(auto TokenIter = gConfigs.SourceVocab.begin();
+//                TokenIter != gConfigs.SourceVocab.end();
+//                ++TokenIter) {
+//
+                QList<WordIndex_t> Children = clsSearchGraph::pRuleTable->prefixTree().rootNode()->getChildren();
+//                TargomanLogInfo(7, "number of root's children: " << Children.size());
+                for(size_t i = 0; i < Children.size(); i++){
+                    clsRuleNode& SingleWordRuleNode =
+                                            clsSearchGraph::pRuleTable->prefixTree().getNode(Children[i])->getData();
+                    if(!SingleWordRuleNode.isInvalid() &&
+                            !SingleWordRuleNode.targetRules().isEmpty())
+                        gConfigs.VocabWithSingleWordRule.insert(Children[i]);
+//                    if(i % 100 == 0)
+//                        TargomanLogInfo(7, i);
+                }
 //                    ItersToRemove.append(TokenIter);
                 /*if(SingleWordRuleNode.isInvalid())
                     SingleWordRuleNode.detachInvalidData();
@@ -169,9 +175,9 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings, bool isDeco
                     SingleWordRuleNode.targetRules().append(
                                 OOVHandler::instance().generateTargetRules(TokenIter.key())
                                 );*/
-            }
-            TargomanLogWarn(8, "Number of existing vocabs for which there is no single word rule:"
-                            << gConfigs.VocabWithoutSingleWordRule.size());
+//            }
+            TargomanLogWarn(8, "Number of existing vocabs for which there is single word rule:"
+                            << gConfigs.VocabWithSingleWordRule.size());
 
 //            foreach(auto TokenIter, ItersToRemove)
     //            gConfigs.SourceVocab.erase(TokenIter);
@@ -182,7 +188,7 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings, bool isDeco
                         e.what() +
                         ". Maybe you are using an incompatible BinaryRuleTable.");
         }
-    }
+    
     TargomanLogInfo(7, "Search Graph Initialized successfully.");
 }
 
