@@ -49,7 +49,7 @@ public:
 
     void initializeSchema();
     void loadTableData();
-    void loadingRootChildren(QList<WordIndex_t> & _children);
+    void loadingRootChildren(QSet<WordIndex_t> & _children);
     void binarizeTableData(const QString& _filePath);
 
 private:

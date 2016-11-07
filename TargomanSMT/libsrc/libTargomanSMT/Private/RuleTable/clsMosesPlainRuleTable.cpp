@@ -344,7 +344,7 @@ void clsMosesPlainRuleTable::loadTableData()
 /**
  * @brief clsMosesPlainRuleTable::loadingRootChildren Loads phrase table from file and returns the first words of source phrases
  */
-void clsMosesPlainRuleTable::loadingRootChildren(QList<WordIndex_t> & _children)
+void clsMosesPlainRuleTable::loadingRootChildren(QSet<WordIndex_t> & _children)
 {
     TargomanLogInfo(5,
                     "Loading Moses plain text rule set from " +
@@ -386,7 +386,7 @@ void clsMosesPlainRuleTable::loadingRootChildren(QList<WordIndex_t> & _children)
             SourcePhrase.append(WordIndex);
         }
 
-        _children.append(SourcePhrase[0]);
+        _children.insert(SourcePhrase[0]);
 
     }
     PhraseTableInputStream.close();
@@ -399,13 +399,13 @@ void clsMosesPlainRuleTable::loadingRootChildren(QList<WordIndex_t> & _children)
 void clsMosesPlainRuleTable::binarizeTableData(const QString& _filePath)
 {
 
-    QList<WordIndex_t> Children;
+    QSet<WordIndex_t> Children;
     QMap<WordIndex_t, PosType_t> ChildPositions;
 
     this->PrefixTree.reset(new RulesPrefixTree_t());
     QList<clsRuleNode> TotalRuleNodes;
 
-    Children.append(Constants::SrcVocabUnkWordIndex);
+    Children.insert(Constants::SrcVocabUnkWordIndex);
     addUnkToUnkRule(TotalRuleNodes);
 
     loadingRootChildren(Children);
@@ -429,8 +429,8 @@ void clsMosesPlainRuleTable::binarizeTableData(const QString& _filePath)
     PosType_t NullPosition = 0;
     OutStream.write(Children.size());
     PosType_t StartPosition = OutStream.tellp();
-    for(int i = 0; i < Children.size(); i++) {
-        OutStream.write(Children[i]);
+    for(WordIndex_t child : Children) {
+        OutStream.write(child);
         OutStream.write(NullPosition);
     }
     this->prefixTree().rootNode()->getData().writeBinary(OutStream);
@@ -543,9 +543,9 @@ void clsMosesPlainRuleTable::binarizeTableData(const QString& _filePath)
 
     PosType_t EndPosition = OutStream.tellp();
     OutStream.seekp(StartPosition, std::ios_base::beg);
-    for(int i = 0; i < Children.size(); i++) {
+    for(WordIndex_t child : Children) {
         OutStream.seekp(sizeof(WordIndex_t), std::ios_base::cur);
-        OutStream.write(ChildPositions[Children[i]]);
+        OutStream.write(ChildPositions[child]);
     }
     OutStream.seekp(EndPosition, std::ios_base::beg);
 
