@@ -35,7 +35,6 @@
 #include "Private/FeatureFunctions/WordPenalty/WordPenalty.h"
 #include "Private/FeatureFunctions/LexicalReordering/LexicalReordering.h"
 
-#include<iostream>
 
 namespace Targoman {
 namespace SMT {

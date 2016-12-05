@@ -30,7 +30,9 @@
 #include "libTargomanCommon/Types.h"
 #include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "Private/RuleTable/clsTargetRule.h"
+#include "Private/InputDecomposer/clsInput.h"
 #include<iostream>
+
 namespace Targoman{
 namespace SMT {
 namespace Private{
@@ -81,6 +83,7 @@ public:
                        quint16 _endPos,
                        const Coverage_t &_newCoverage,
                        const RuleTable::clsTargetRule& _targetRule,
+                       const InputDecomposer::Sentence_t& _input,
                        bool _isFinal,
                        Common::Cost_t _restCost);
     clsSearchGraphNode(const clsSearchGraphNode& _other) : Data(_other.Data) {}

@@ -94,6 +94,7 @@ public:
 
     inline Common::WordIndex_t at(int _index) const;
     inline QList<int> wordLevelAlignment(int _index) const;
+    inline QMap<int, int> getWordLevelAlignments() const;
     inline size_t size() const;
     inline bool isUnknownWord() const;
     inline void setIsUnknownWord(bool);
@@ -259,6 +260,10 @@ inline Common::WordIndex_t clsTargetRule::at(int _index) const{
 
 inline QList<int> clsTargetRule::wordLevelAlignment(int _index) const{
     return this->Data->Alignment.values(_index);
+}
+
+inline QMap<int, int> clsTargetRule::getWordLevelAlignments() const{
+    return this->Data->Alignment;
 }
 
 /**

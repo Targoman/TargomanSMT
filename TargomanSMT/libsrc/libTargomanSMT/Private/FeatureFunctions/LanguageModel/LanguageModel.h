@@ -44,7 +44,7 @@ public:
 
     void initialize(QSharedPointer<QSettings>){}
 
-    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, QCryptographicHash& _hash) const;
+    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, const InputDecomposer::Sentence_t &_input, QCryptographicHash& _hash) const;
 
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage);
@@ -58,7 +58,7 @@ public:
      * @note Either getRestCostForPosition or this function must return 0
      */
     Common::Cost_t getApproximateCost(unsigned _sourceStart,
-                                      unsigned _sourceEnd,
+                                      unsigned _sourceEnd, const InputDecomposer::Sentence_t& _input,
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
     int compareStates(const SearchGraphBuilder::clsSearchGraphNode &_first,

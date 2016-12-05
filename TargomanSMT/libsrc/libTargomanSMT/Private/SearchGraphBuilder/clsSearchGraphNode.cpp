@@ -69,6 +69,7 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
                                        quint16 _endPos,
                                        const Coverage_t &_newCoverage,
                                        const clsTargetRule &_targetRule,
+                                       const InputDecomposer::Sentence_t& _input,
                                        bool _isFinal,
                                        Cost_t _restCost):
     Data(new clsSearchGraphNodeData(
@@ -82,7 +83,7 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
 {
     QCryptographicHash Hash(QCryptographicHash::Md5);
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions) {
-        Cost_t Cost = FF->scoreSearchGraphNodeAndUpdateFutureHash(*this, Hash);
+        Cost_t Cost = FF->scoreSearchGraphNodeAndUpdateFutureHash(*this, _input, Hash);
         this->Data->Cost += Cost;
     }
     this->Data->FutureStateHash = Hash.result();

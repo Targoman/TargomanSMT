@@ -78,8 +78,10 @@ public:
  * @brief This function computes cost of language model with the help of previous node LM history.
  * @return Returns score of language model for this search graph node.
  */
-Common::Cost_t LanguageModel::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
+Common::Cost_t LanguageModel::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchGraphNode &_newHypothesisNode,
+                                                                      const InputDecomposer::Sentence_t& _input, QCryptographicHash &_hash) const
 {
+    Q_UNUSED(_input);
     const clsLanguageModelFeatureData* PrevNodeData =
             static_cast<const clsLanguageModelFeatureData*>
             (_newHypothesisNode.prevNode().featureFunctionDataAt(this->DataIndex));
@@ -104,10 +106,11 @@ Common::Cost_t LanguageModel::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchG
     return Cost * log(10) * LanguageModel::ScalingFactor.value();
 }
 
-Cost_t LanguageModel::getApproximateCost(unsigned _sourceStart, unsigned _sourceEnd, const clsTargetRule &_targetRule) const
+Cost_t LanguageModel::getApproximateCost(unsigned _sourceStart, unsigned _sourceEnd, const InputDecomposer::Sentence_t& _input, const clsTargetRule &_targetRule) const
 {
     Q_UNUSED(_sourceStart)
     Q_UNUSED(_sourceEnd)
+    Q_UNUSED(_input)
     return this->getLanguageModelCost(_targetRule);
 }
 

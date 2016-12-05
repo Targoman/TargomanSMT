@@ -70,7 +70,7 @@ public:
      * @param _endPos                           ending position of source phrase
      * @param _ruleNode                         the rule node from which target rules will be considered
      */
-    clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const QList<RuleTable::clsRuleNode>& _ruleNodes);
+    clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const InputDecomposer::Sentence_t& _input, const QList<RuleTable::clsRuleNode>& _ruleNodes);
 
     static QString moduleName();
 public:
@@ -104,8 +104,8 @@ public:
         Data(_other.Data)
     {}
 
-    clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos,  const RuleTable::clsRuleNode& _ruleNodes) :
-        Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, QList<RuleTable::clsRuleNode>() << _ruleNodes))
+    clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos, const InputDecomposer::Sentence_t& _input,  const RuleTable::clsRuleNode& _ruleNodes) :
+        Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, _input, QList<RuleTable::clsRuleNode>() << _ruleNodes))
     {}
 
     /**
@@ -114,8 +114,8 @@ public:
      * @param _endPos                       ending position of source phrase
      * @param _ruleNode                     the rule node from which target rules will be considered
      */
-    clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos,  const QList<RuleTable::clsRuleNode>& _ruleNodes) :
-        Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, _ruleNodes))
+    clsPhraseCandidateCollection(size_t _beginPos, size_t _endPos,  const InputDecomposer::Sentence_t& _intput, const QList<RuleTable::clsRuleNode>& _ruleNodes) :
+        Data(new clsPhraseCandidateCollectionData(_beginPos, _endPos, _intput, _ruleNodes))
     {}
 
     /**

@@ -73,7 +73,9 @@ HEADERS += \
     $$PWD/libTargomanSMT/Private/Proxies/Transliteration/TargomanTransliteratorProxy.h \
     $$PWD/libTargomanSMT/Private/Proxies/NamedEntityRecognition/ZhangMaxEntProxy.h \
     $$PWD/libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/TransliterateNamedEntities.h \
-    $$PWD/libTargomanSMT/Private/N-BestFinder/NBestPath.h
+    $$PWD/libTargomanSMT/Private/N-BestFinder/NBestPath.h \
+    $$PWD/libTargomanSMT/Private/FeatureFunctions/OSM/OperationalSequenceModel.h \
+    $$PWD/libTargomanSMT/Private/FeatureFunctions/OSM/OSMState.h
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -115,7 +117,9 @@ SOURCES += libID.cpp \
     $$PWD/libTargomanSMT/Private/Proxies/Transliteration/TargomanTransliteratorProxy.cpp \
     $$PWD/libTargomanSMT/Private/Proxies/NamedEntityRecognition/ZhangMaxEntProxy.cpp \
     $$PWD/libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/TransliterateNamedEntities.cpp \
-    $$PWD/libTargomanSMT/Private/N-BestFinder/NBestPath.cpp
+    $$PWD/libTargomanSMT/Private/N-BestFinder/NBestPath.cpp \
+    $$PWD/libTargomanSMT/Private/FeatureFunctions/OSM/OperationalSequenceModel.cpp \
+    $$PWD/libTargomanSMT/Private/FeatureFunctions/OSM/OSMState.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

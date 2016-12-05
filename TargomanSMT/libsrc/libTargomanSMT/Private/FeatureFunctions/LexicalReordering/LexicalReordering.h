@@ -57,8 +57,7 @@ public:
 
     void newSentence(const InputDecomposer::Sentence_t &inputSentence);
 
-    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(
-            SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,
+    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, const InputDecomposer::Sentence_t &_input,
             QCryptographicHash& _hash) const;
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage);
@@ -67,7 +66,7 @@ public:
         return 0;
     }
     Common::Cost_t getApproximateCost(unsigned _sourceStart,
-                                      unsigned _sourceEnd,
+                                      unsigned _sourceEnd, const InputDecomposer::Sentence_t& _input,
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
     int compareStates(const SearchGraphBuilder::clsSearchGraphNode &_first, const SearchGraphBuilder::clsSearchGraphNode &_second) const;

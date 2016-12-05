@@ -243,7 +243,7 @@ void clsSearchGraph::collectPhraseCandidates()
 
             this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality, 1);
 
-            this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, RuleNodes);
+            this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, this->Data->Sentence, RuleNodes);
 /*
             for(int i = 0; i < this->Data->PhraseCandidateCollections[FirstPosition][0].targetRules().size(); i++){
 
@@ -271,7 +271,8 @@ void clsSearchGraph::collectPhraseCandidates()
             if (RuleNodes.isEmpty())
                 break; // Appending next word breaks phrase lookup
 
-            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, RuleNodes);
+            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1,
+                                                                                                                               this->Data->Sentence, RuleNodes);
             this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                       (int)(LastPosition - FirstPosition + 1));
 /*
@@ -481,6 +482,7 @@ bool clsSearchGraph::decode()
                                                            NewPhraseEndPos,
                                                            NewCoverage,
                                                            CurrentPhraseCandidate,
+                                                           this->Data->Sentence,
                                                            IsFinal,
                                                            RestCost);
                             // If current NewHypoNode is worse than worst stored node ignore it
@@ -683,7 +685,7 @@ Cost_t clsSearchGraph::calculateRestCost(const Coverage_t& _coverage, size_t _be
     return RestCosts;
 }
 
-clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const QList<clsRuleNode> &_ruleNodes)
+clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const InputDecomposer::Sentence_t& _input, const QList<clsRuleNode> &_ruleNodes)
 {
     foreach(const clsRuleNode& RuleNode, _ruleNodes)
         this->TargetRules.append(RuleNode.targetRules());
@@ -718,7 +720,7 @@ clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _begin
         Cost_t ApproximateCost = 0;
         foreach (FeatureFunction::intfFeatureFunction* FF , gConfigs.ActiveFeatureFunctions)
             if(FF->canComputePositionSpecificRestCost() == false) {
-                Cost_t Cost = FF->getApproximateCost(_beginPos, _endPos, TargetRule);
+                Cost_t Cost = FF->getApproximateCost(_beginPos, _endPos, _input, TargetRule);
                 ApproximateCost += Cost;
             }
         this->BestApproximateCost = qMin(this->BestApproximateCost, ApproximateCost);

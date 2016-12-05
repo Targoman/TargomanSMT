@@ -29,7 +29,6 @@
 #include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
 #include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
-#include "Private/SearchGraphBuilder/clsSearchGraph.h"
 
 using Targoman::NLPLibs::TargomanTextProcessor;
 

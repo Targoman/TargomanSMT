@@ -81,9 +81,10 @@ public:
  * @return Returns score of ReorderingJumpfor this search graph node.
  */
 Common::Cost_t ReorderingJump::scoreSearchGraphNodeAndUpdateFutureHash(
-        clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
+        clsSearchGraphNode &_newHypothesisNode, const InputDecomposer::Sentence_t& _input, QCryptographicHash &_hash) const
 {
     Q_UNUSED(_hash);
+    Q_UNUSED(_input);
     clsReorderingJumpFeatureData* Data = new clsReorderingJumpFeatureData;
     _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);
 

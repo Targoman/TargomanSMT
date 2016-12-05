@@ -107,7 +107,8 @@ public:
      * The first secondary model will encounter an uninitialized hypothesis state, thus don't forget to call
      * newHypothesisNode.getHypothesisState()->initializeSecondaryModelStatesIfNecessary();
      */
-    virtual Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, QCryptographicHash& _hash) const = 0;
+    virtual Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,
+                                                                   const InputDecomposer::Sentence_t& _input, QCryptographicHash& _hash) const = 0;
 
     /**
      * @brief Returns wethere this feature function can compute node specific rest costs or not. If it can,
@@ -130,6 +131,7 @@ public:
       */
     virtual Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                               unsigned _sourceEnd,
+                                              const InputDecomposer::Sentence_t& _input,
                                               const RuleTable::clsTargetRule& _targetRule) const = 0;
 
     /**

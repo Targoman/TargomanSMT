@@ -133,8 +133,9 @@ void LexicalReordering::newSentence(const Sentence_t &_inputSentence)
  */
 
 Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
-        clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
+        clsSearchGraphNode &_newHypothesisNode, const InputDecomposer::Sentence_t& _input, QCryptographicHash &_hash) const
 {
+    Q_UNUSED(_input);
     if(clsTargetRule::lexicalReorderingAvailable() == false)
         return 0;
 
@@ -204,12 +205,12 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
  */
 
 Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
-                                                     unsigned _sourceEnd,
+                                                     unsigned _sourceEnd, const InputDecomposer::Sentence_t& _input,
                                                      const clsTargetRule &_targetRule) const
 {
     Q_UNUSED(_sourceStart)
     Q_UNUSED(_sourceEnd)
-
+    Q_UNUSED(_input)
     /*
     Cost_t Cost = 0;
     for (int i = enuLexicalReorderingFields::ForwardMonotone; i<= enuLexicalReorderingFields::ForwardDiscontinous; ++i){
