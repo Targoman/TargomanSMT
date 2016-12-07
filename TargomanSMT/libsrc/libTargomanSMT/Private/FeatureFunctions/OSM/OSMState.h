@@ -24,6 +24,8 @@ class OSMState
 {
 public:
     OSMState(size_t _last, size_t _right, QMap<size_t, bool> _gaps, KenState &_LMState);
+    OSMState();
+
     ~OSMState(){}
     int compareState(const OSMState &_otherOSMState) const;
 
@@ -82,10 +84,10 @@ private:
 class OSMScorer{
 
 public:
-    OSMScorer(QList<QString> _src, QList<QString> _trg, const OSMState &_prevState){
+    OSMScorer(QList<QString> _src, QList<QString> _trg, const OSMState &_prevState, const KenState &_LMState){
         SourcePhrase = _src;
         TargetPhrase = _trg;
-        LMState = _prevState.getLMState();
+        LMState = _LMState;
         LastGeneratedSourceIndex = _prevState.getLastGeneratedSourceIndex();
         RightmostGeneratedSourceIndex = _prevState.getRightmostGeneratedSourceIndex();
         Gaps = _prevState.getGaps();
@@ -125,8 +127,8 @@ private:
     QList<QString> SourcePhrase;
     QList<QString> TargetPhrase;
     QList<QString> OperationsSquence;
-    size_t LastGeneratedSourceIndex;
-    size_t RightmostGeneratedSourceIndex;
+    int LastGeneratedSourceIndex;
+    int RightmostGeneratedSourceIndex;
     QMap<size_t, bool> Gaps;
     KenState LMState;
     int GapWidth, GapCount, DeletionCount, OpenGapCount;

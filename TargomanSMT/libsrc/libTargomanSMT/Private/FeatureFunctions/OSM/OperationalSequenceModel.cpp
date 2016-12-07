@@ -61,7 +61,7 @@ public:
 
     explicit clsOperationalSequenceModelFeatureData(size_t _costElementsSize):
         intfFeatureFunctionData(_costElementsSize)
-    {}
+    { state.reset(new OSMState()); }
 
     intfFeatureFunctionData* copy() const {
         clsOperationalSequenceModelFeatureData* Copy = new clsOperationalSequenceModelFeatureData(this->CostElements.size());
@@ -137,7 +137,11 @@ Common::Cost_t OperationalSequenceModel::scoreSearchGraphNodeAndUpdateFutureHash
     QList<QString> SourcePhrase;
     QList<QString> TargetPhrase = _newHypothesisNode.targetRule().toStr().split(" ");
      /// TODO : change OOV target words to "_TRANS_SLF_"
-     ///
+
+    for(int i = 0; i < TargetPhrase.size(); i++){
+        if(_newHypothesisNode.targetRule().isUnknownWord())
+            TargetPhrase[i] = "_TRANS_SLF_";
+    }
     Coverage_t Coverage = _newHypothesisNode.coverage();
 
     for(size_t i = _newHypothesisNode.sourceRangeBegin(); i < _newHypothesisNode.sourceRangeEnd(); i++){
@@ -152,10 +156,13 @@ Common::Cost_t OperationalSequenceModel::scoreSearchGraphNodeAndUpdateFutureHash
     const clsOperationalSequenceModelFeatureData* PrevNodeData =
             static_cast<const clsOperationalSequenceModelFeatureData*>
             (_newHypothesisNode.prevNode().featureFunctionDataAt(this->DataIndex));
+    KenState PrevState = OSM->BeginSentenceState();
+    if(!_newHypothesisNode.prevNode().isInvalid())
+        PrevState = PrevNodeData->state->getLMState();
     clsOperationalSequenceModelFeatureData* Data = new clsOperationalSequenceModelFeatureData(NumberOfFeatures);
 
 
-    OSMScorer Scorer(SourcePhrase, TargetPhrase, *PrevNodeData->state);
+    OSMScorer Scorer(SourcePhrase, TargetPhrase, *PrevNodeData->state, PrevState);
     QList<Cept_t> CeptsInPhrase = Scorer.createCepts(_newHypothesisNode.sourceRangeBegin(),_newHypothesisNode.sourceRangeEnd(),
                                                      _newHypothesisNode.targetRule());
     Scorer.computeOSM(_newHypothesisNode.sourceRangeBegin(), Coverage, CeptsInPhrase);

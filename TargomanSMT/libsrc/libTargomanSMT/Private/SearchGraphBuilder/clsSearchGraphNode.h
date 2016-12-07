@@ -111,6 +111,7 @@ public:
     inline const intfFeatureFunctionData* featureFunctionDataAt(size_t _index) const;
     inline intfFeatureFunctionData& featureFunctionData(size_t _index);
     inline const QList<clsSearchGraphNode> getCombindedNodes() const;
+    inline int getNodeNumber() const;
 
     inline bool isFinal();
 
@@ -174,7 +175,8 @@ public:
         SourceRangeBegin(0),
         SourceRangeEnd(0),
         PrevNode(NULL),
-        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL)
+        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL),
+      NodeNumber(NumberOfNodes++)
     {
     }
 
@@ -205,7 +207,8 @@ public:
         SourceRangeBegin(_startPos),
         SourceRangeEnd(_endPos),
         PrevNode(&_prevNode),
-        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL)
+        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL),
+        NodeNumber(NumberOfNodes++)
     {}
 
     /**
@@ -224,7 +227,8 @@ public:
         SourceRangeEnd(_other.SourceRangeEnd),
         PrevNode(_other.PrevNode),
         CombinedNodes(_other.CombinedNodes),
-        FeatureFunctionsData(_other.FeatureFunctionsData.size())
+        FeatureFunctionsData(_other.FeatureFunctionsData.size()),
+        NodeNumber(NumberOfNodes++)
     {
         for(int i = 0; i < this->FeatureFunctionsData.size(); ++i)
             this->FeatureFunctionsData[i] = _other.FeatureFunctionsData.at(i)->copy();
@@ -251,6 +255,8 @@ public:
     QList<clsSearchGraphNode>           CombinedNodes;                  /**< List of nodes that are combined with this node.*/
     QVector<intfFeatureFunctionData*>   FeatureFunctionsData;           /**< Every feature function has a special data. Each index of this list stores data for one the feature function. Each feature function knows his own index in this list.  */
     static  size_t                      RegisteredFeatureFunctionCount; /**< Number of active feature functions.*/
+    int                                 NodeNumber;
+    static int                          NumberOfNodes;
 
     friend class UnitTestNameSpace::clsUnitTest;
 
@@ -289,6 +295,9 @@ inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecom
 inline bool clsSearchGraphNode::isInvalid() const {return this->Data == InvalidSearchGraphNodeData;}
 inline bool clsSearchGraphNode::isFinal(){return this->Data->IsFinal;}
 inline const QList<clsSearchGraphNode> clsSearchGraphNode::getCombindedNodes() const {return this->Data->CombinedNodes;}
+
+inline int clsSearchGraphNode::getNodeNumber() const{ return this->Data->NodeNumber; }
+
 #ifdef TARGOMAN_SHOW_DEBUG
 /**
  * @brief Returns a list of cost of all feature funcitons.

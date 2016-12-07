@@ -42,6 +42,7 @@ using namespace Common;
 clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
 clsSearchGraphNode* pInvalidSearchGraphNode = NULL;
 size_t  clsSearchGraphNodeData::RegisteredFeatureFunctionCount;
+int     clsSearchGraphNodeData::NumberOfNodes = 0;
 
 /**
  * @brief constructor of this class set invalid data to #Data in order to know whether it is used before or not.

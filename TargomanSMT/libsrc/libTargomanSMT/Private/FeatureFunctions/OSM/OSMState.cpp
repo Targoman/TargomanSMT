@@ -18,6 +18,11 @@ OSMState::OSMState(size_t _last, size_t _right, QMap<size_t, bool> _gaps, KenSta
 
 }
 
+OSMState::OSMState(){
+    LastGeneratedSourceIndex = 0;
+    RightmostGeneratedSourceIndex = 0;
+}
+
 int OSMState::compareState(const OSMState &_otherOSMState) const
 {
     if(LastGeneratedSourceIndex != _otherOSMState.getLastGeneratedSourceIndex())
@@ -175,7 +180,7 @@ void OSMScorer::generateOperation(unsigned _sourceStart, size_t _sourceIndexToGe
     int GapNumber = 0;
 
     if(LastGeneratedSourceIndex < _sourceIndexToGenerate){
-        if(_coverage.testBit(LastGeneratedSourceIndex)){
+        if(_coverage.testBit(LastGeneratedSourceIndex) == 0){
             OperationsSquence.append("_INS_GAP_");
             GapFlag++;
             Gaps.insert(LastGeneratedSourceIndex, true);
@@ -190,7 +195,7 @@ void OSMScorer::generateOperation(unsigned _sourceStart, size_t _sourceIndexToGe
 
     if(LastGeneratedSourceIndex > _sourceIndexToGenerate){
         if(LastGeneratedSourceIndex < RightmostGeneratedSourceIndex
-                && _coverage.testBit(LastGeneratedSourceIndex)){
+                && _coverage.testBit(LastGeneratedSourceIndex) == 0){
             OperationsSquence.append("_INS_GAP_");
             GapFlag++;
             Gaps.insert(LastGeneratedSourceIndex, true);
@@ -234,6 +239,7 @@ void OSMScorer::generateOperation(unsigned _sourceStart, size_t _sourceIndexToGe
 
     _coverage.setBit(LastGeneratedSourceIndex);
     LastGeneratedSourceIndex++;
+
     if(RightmostGeneratedSourceIndex < LastGeneratedSourceIndex)
         RightmostGeneratedSourceIndex = LastGeneratedSourceIndex;
     if(GapFlag > 0)
@@ -264,7 +270,10 @@ void OSMScorer::generateDeleteOperation(int _targetIndex, QSet<int> & _generated
 
 int OSMScorer::getClosestGap(size_t _sourceIndexToGenerate, int & _gapCount){
     _gapCount = 0;
-    for(QMap<size_t, bool>::iterator gapIter = Gaps.end() - 1; gapIter != Gaps.begin(); gapIter--){
+    QMapIterator<size_t, bool> gapIter(Gaps);
+    gapIter.toBack();
+    while(gapIter.hasPrevious()){
+        gapIter.previous();
         _gapCount++;
         if(_sourceIndexToGenerate >= gapIter.key())
             return gapIter.key();
@@ -286,12 +295,10 @@ QList<double> OSMScorer::getOSMScores(int _numberOfFeatures){
     double OperationsProbability = 0;
     KenState CurrentState = LMState;
     KenState TempState;
-
     for (int i = 0; i < OperationsSquence.size(); i++) {
       TempState = CurrentState;
       OperationsProbability += OperationalSequenceModel::OSM->Score(TempState, OperationsSquence[i], CurrentState);
     }
-
     LMState = CurrentState;
 
     QList<double> Scores;
