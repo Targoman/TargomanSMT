@@ -101,9 +101,14 @@ Common::Cost_t OperationalSequenceModel::getApproximateCost(unsigned _sourceStar
     for(size_t i = _sourceStart; i < _sourceEnd; i++){
 
         /// TODO: Use tagstr for some input words
-        SourcePhrase.append(_input[i].string());
+        if(_input[i].tagStr().size())
+            SourcePhrase.append("<" + _input[i].tagStr() + ">");
+        else
+            SourcePhrase.append(_input[i].string());
     }
     QList<QString> TargetPhrase = _targetRule.toStr().split(" ");
+
+    // change OOV target words to "_TRANS_SLF_"
     for(int i = 0; i < TargetPhrase.size(); i++){
         if(_targetRule.isUnknownWord())
             TargetPhrase[i] = "_TRANS_SLF_";
@@ -137,8 +142,8 @@ Common::Cost_t OperationalSequenceModel::scoreSearchGraphNodeAndUpdateFutureHash
 
     QList<QString> SourcePhrase;
     QList<QString> TargetPhrase = _newHypothesisNode.targetRule().toStr().split(" ");
-     /// TODO : change OOV target words to "_TRANS_SLF_"
 
+    // change OOV target words to "_TRANS_SLF_"
     for(int i = 0; i < TargetPhrase.size(); i++){
         if(_newHypothesisNode.targetRule().isUnknownWord())
             TargetPhrase[i] = "_TRANS_SLF_";
@@ -148,7 +153,10 @@ Common::Cost_t OperationalSequenceModel::scoreSearchGraphNodeAndUpdateFutureHash
     for(size_t i = _newHypothesisNode.sourceRangeBegin(); i < _newHypothesisNode.sourceRangeEnd(); i++){
 
         /// TODO: Use tagstr for some input words
-        SourcePhrase.append(_input[i].string());
+        if(_input[i].tagStr().size())
+            SourcePhrase.append("<" + _input[i].tagStr() + ">");
+        else
+            SourcePhrase.append(_input[i].string());
         Coverage.clearBit(i);
     }
 
