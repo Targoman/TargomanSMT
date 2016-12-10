@@ -13,8 +13,8 @@ namespace FeatureFunction {
 
 TARGOMAN_DEFINE_ENHANCED_ENUM(enuOSMFields,
                               OSMProbability,
-                              GapCount,
                               GapWidth,
+                              GapCount,
                               OpenGapCount,
                               DeletionCount
                               )

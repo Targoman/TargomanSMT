@@ -109,10 +109,7 @@ void OSMScorer::computeOSM(unsigned _sourceStart, Coverage_t & _coverage, const 
     int TargetIndex = 0;
     int LastGeneratedSourceIndex = 0;
     QSet<int> GeneratedTargetIndexes;
-//    std::cout << _sourceStart  << "    ";
-//    for(int i = 0; i < _coverage.size(); i++)
-//        std::cout << _coverage.at(i);
-//    std::cout << std::endl;
+
     if(UnalignedSourceWords.find(_sourceStart) != UnalignedSourceWords.end()){
         LastGeneratedSourceIndex = _sourceStart;
         QString TargetString = "_INS_";
@@ -132,12 +129,11 @@ void OSMScorer::computeOSM(unsigned _sourceStart, Coverage_t & _coverage, const 
         QString TargetString = "";
 
         for(int i = 0; i < SourceSide.size(); i++){
-//            std::cout << "--- " << SourceSide[i] << std::endl;
             if(SourceString.length() > 0)
                 SourceString += "^_^";
             SourceString += SourcePhrase[SourceSide[i]];
         }
-//        std::cout << SourceString.toStdString() << std::endl;
+
         TargetIndex = TargetSide[0];
         for(int i = 0; i < TargetSide.size(); i++){
             if(TargetString.length() > 0){
@@ -303,18 +299,36 @@ QList<double> OSMScorer::getOSMScores(int _numberOfFeatures){
 
     QList<double> Scores;
 
-    Scores.append(OperationsProbability);
+    Scores.append(-OperationsProbability);
+
+
+
+//    for (int i = 0; i< OperationsSquence.size(); i++) {
+//        std::cout <<OperationsSquence[i].toStdString()<<" ";
+
+//      }
+
+//      std::cout<<std::endl<<std::endl;
+
+//      std::cout<<"Operation Probability "<<OperationsProbability<<std::endl;
+//      std::cout<<"Gap Count "<<GapCount<<std::endl;
+//      std::cout<<"Open Gap Count "<<OpenGapCount<<std::endl;
+//      std::cout<<"Gap Width "<<GapWidth<<std::endl;
+//      std::cout<<"Deletion Count "<<DeletionCount<<std::endl;
+
+//      std::cout<<"____________________________"<<std::endl;
 
     if (_numberOfFeatures == 1)
       return Scores;
 
-    Scores.append(GapCount);
-    Scores.append(GapWidth);
-    Scores.append(OpenGapCount);
-    Scores.append(DeletionCount);
+    Scores.append(-GapWidth);
+    Scores.append(-GapCount);
+    Scores.append(-OpenGapCount);
+    Scores.append(-DeletionCount);
     return Scores;
 
 }
+
 
 }
 }

@@ -70,8 +70,10 @@ clsTargetRule::clsTargetRule():
 clsTargetRule::clsTargetRule(const QList<WordIndex_t> &_targetPhrase, const QList<Cost_t> &_fields, const QMap<int, int> &_alignments, bool _hasNoRuleTableRecord):
     Data(new clsTargetRuleData(_targetPhrase, _fields, _alignments, clsTargetRule::PrecomputedValuesSize, _hasNoRuleTableRecord))
 {
-    if(_targetPhrase.size() == 1 && _targetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex())
+    if(_targetPhrase.size() == 1 && _targetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex()){
         this->Data->IsUnknownWord = true;
+        this->Data->Alignment.insert(0, 0);
+    }
 }
 
 /*inline */Cost_t clsTargetRule::getPrematureTargetRuleCost()
@@ -95,8 +97,10 @@ void clsTargetRule::readBinary(clsIFStreamExtended &_input)
         WordIndex_t WordIndex = _input.read<WordIndex_t>();
         this->Data->TargetPhrase.append(WordIndex);
     }
-    if(this->Data->TargetPhrase.size() == 1 && this->Data->TargetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex())
+    if(this->Data->TargetPhrase.size() == 1 && this->Data->TargetPhrase.at(0) == gConfigs.EmptyLMScorer->unknownWordIndex()){
         this->Data->IsUnknownWord = true;
+        this->Data->Alignment.insert(0, 0);
+    }
     for(Cost_t& Cost : this->Data->Fields)
         Cost = _input.read<Cost_t>();
     this->Data->PrecomputedValues.fill(-INFINITY, clsTargetRule::PrecomputedValuesSize);

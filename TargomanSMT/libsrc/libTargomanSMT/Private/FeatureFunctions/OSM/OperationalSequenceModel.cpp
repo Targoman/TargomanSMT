@@ -24,12 +24,12 @@ tmplConfigurable<double>    OperationalSequenceModel::ScalingFactors[] = {
     "Scaling factor for OSMProbability score",
     1),
     tmplConfigurable<double>(
-    MAKE_CONFIG_PATH("ScalingFactors/GapCount"),
-    "Scaling factor for GapCount score",
-    1),
-    tmplConfigurable<double>(
     MAKE_CONFIG_PATH("ScalingFactors/GapWidth"),
     "Scaling factor for GapWidth score",
+    1),
+    tmplConfigurable<double>(
+    MAKE_CONFIG_PATH("ScalingFactors/GapCount"),
+    "Scaling factor for GapCount score",
     1),
     tmplConfigurable<double>(
     MAKE_CONFIG_PATH("ScalingFactors/OpenGapCount"),
@@ -104,27 +104,28 @@ Common::Cost_t OperationalSequenceModel::getApproximateCost(unsigned _sourceStar
         SourcePhrase.append(_input[i].string());
     }
     QList<QString> TargetPhrase = _targetRule.toStr().split(" ");
-   /// TODO : change OOV target words to "_TRANS_SLF_"
+    for(int i = 0; i < TargetPhrase.size(); i++){
+        if(_targetRule.isUnknownWord())
+            TargetPhrase[i] = "_TRANS_SLF_";
+    }
 
     if(!_targetRule.alignmentDataAvailable())
         TargomanError(" OSM Model can not be used without alignment data in the phrase-table");
 
     KenState PreviousState = OSM->NullContextState();
     Coverage_t Coverage(_sourceEnd - _sourceStart);
-//    std::cout << "****** " << SourcePhrase.size() << " " << TargetPhrase.size() << std::endl;
     OSMScorer Scorer(SourcePhrase, TargetPhrase, PreviousState);
     QList<Cept_t> CeptsInPhrase = Scorer.createCepts(_sourceStart, _sourceEnd, _targetRule);
-//    std::cout << CeptsInPhrase.size() << std::endl;
     Scorer.computeOSM(0, Coverage, CeptsInPhrase);
     int NumberOfFeatures = (JustUseOSMProbability.value() == true ? 1 : 5);
-//    std::cout << "++++ " << NumberOfFeatures << std::endl;
+
     QList<double> Scores = Scorer.getOSMScores(NumberOfFeatures);
 
     Cost_t Cost = 0;
     for(int i = 0; i < NumberOfFeatures; i++){
         Cost += (Scores[i] * ScalingFactors[i].value());
     }
-//    std::cout << Cost << std::endl;
+
     return Cost;
 
 }

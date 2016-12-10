@@ -494,44 +494,6 @@ bool clsSearchGraph::decode()
 
                             if(CurrCardHypoContainer.insertNewHypothesis(NewHypoNode)) {
                                 // Log insertion of hypothesis here if it is needed
-//                                auto cov2str = [] (const Coverage_t _coverage) {
-//                                    QString result;
-//                                    QTextStream stream;
-//                                    stream.setString(&result);
-//                                    stream << _coverage;
-//                                    return result;
-//                                };
-
-//                                std::stringstream Stream;
-//                                Stream << NewHypoNode.getNodeNumber() << " ||| ";
-////                                Stream << std::fixed << std::setprecision(3) << SelectedNode.getTotalCost() << "\t";
-//                                Stream << "Cardinality:  ";
-////                                Stream << car2str(NewCardinality).toUtf8().constData();
-//                                Stream << "  Coverage:  " << cov2str(NewHypoNode.coverage()).toUtf8().constData();
-
-//                                QString res = "";
-//                                for(auto ffIter = gConfigs.ActiveFeatureFunctions.constBegin(); ffIter != gConfigs.ActiveFeatureFunctions.constEnd(); ffIter++){
-
-//                                    size_t index = ffIter.value()->getDataIndex();
-//                                    if(NewHypoNode.featureFunctionDataAt(index) != NULL){
-
-//                                        QStringList ffName = ffIter.key().split("/");
-//                                        QStringList colName = ffIter.value()->columnNames();
-//                                        QVector<Cost_t> costs = NewHypoNode.featureFunctionDataAt(index)->costElements();
-//                                        for(int j = 0; j < costs.size(); j++){
-//                                            if(colName.size() > j) res += " " + ffName.back() + "/" + colName[j];
-//                                            else res += " " + ffName.back();
-//                                            res += "= " + QString::number(-costs[j]);
-
-//                                        }
-//                                    }
-//                                }
-//                                Stream << " " << res.toStdString();
-//                                Stream << " |||  Cost:  " << std::setprecision(3) << NewHypoNode.getCost()
-//                                       << " , RestCost: " << std::setprecision(3) << (NewHypoNode.getTotalCost() - NewHypoNode.getCost())
-//                                       << " , Str: (" << NewHypoNode.prevNode().targetRule().toStr().toUtf8().constData()
-//                                       << ")" << NewHypoNode.targetRule().toStr().toUtf8().constData() << std::endl;
-//                                std::cout << Stream.str().c_str();
                             }
                         }
                     }//foreach PrevLexHypoNode

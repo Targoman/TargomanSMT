@@ -282,6 +282,7 @@ inline bool clsTargetRule::isUnknownWord() const
 inline void clsTargetRule::setIsUnknownWord(bool _isUknownWord)
 {
     this->Data->IsUnknownWord = _isUknownWord;
+    if(_isUknownWord) this->Data->Alignment.insert(0, 0);
 }
 
 
