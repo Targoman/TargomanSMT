@@ -226,7 +226,7 @@ template<class Class_t, class Container_t, typename Functor_t>
  * @return Returns correct place of insertion.
  */
 size_t findInsertionPos(const Container_t& _sortedConatiner, const Class_t& _element, Functor_t _comparator){
-    for(size_t i = 0; i< _sortedConatiner.size(); ++i){
+    for(size_t i = 0; i< (size_t)_sortedConatiner.size(); ++i){
         if (_comparator(_element, _sortedConatiner.at(i)) > 0)
             return i;
     }

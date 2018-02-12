@@ -224,10 +224,15 @@ private:
      */
     void prune();
 
+
+
 private:
     static size_t MaxCardinalitySizeLazyPruning;
 
 public:
+    double getCostLimit(){
+        return this->Data->CostLimit;
+    }
     static void setHardReorderingJumpLimit(int _hardReorderingJumpLimit) {
         clsCardinalityHypothesisContainer::MaxCardinalitySizeLazyPruning = 2 * clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value() - 1;
         if(clsCardinalityHypothesisContainer::PrimaryCoverageShare.value() != 0)

@@ -62,7 +62,7 @@ public:
     static Common::Configuration::tmplConfigurable<QString>             Language;
     static Common::Configuration::tmplConfigurable<FilePath_t>          InputFile;
     static Common::Configuration::tmplConfigurable<FilePath_t>          InputDir;
-    static Common::Configuration::tmplConfigurable<FilePath_t>          OutputDir;
+    static Common::Configuration::tmplConfigurable<FilePath_t>          OutputPath;
     static Common::Configuration::tmplConfigurable<QWildCard>           IncludePattern;
     static Common::Configuration::tmplConfigurable<FilePath_t>          DTDFilePath;
     static Common::Configuration::tmplConfigurable<bool>                Overwrite;
@@ -71,6 +71,7 @@ public:
     static Common::Configuration::tmplConfigurable<bool>                Interactive;
     static Common::Configuration::tmplConfigurable<bool>                NoSpellcorrector;
     static Common::Configuration::tmplConfigurable<bool>                Recursive;
+    static Common::Configuration::tmplConfigurable<bool>                BreakLines;
 };
 
 }

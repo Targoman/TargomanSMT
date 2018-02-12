@@ -47,16 +47,15 @@ void appTargomanSMTConsole::slotExecute()
             Translator::init(ConfigManager::instance().configSettings());
             Translator::saveBinaryRuleTable(gConfigs::OutputFile.value());
             break;
-        case enuAppMode::Training:
-            //TODO Implement training
-            break;
+        case enuAppMode::NBestTranslations:
         case enuAppMode::Translation:
             TranslationWriter::instance(); //Just to initialize first instance in order to suppress multithreaded instantiation
 
             if(gConfigs::InputText.value().size()){
                 Translator::init(ConfigManager::instance().configSettings());
                 TranslationWriter::instance().writeTranslation(1,
-                                                               Translator::translate(gConfigs::InputText.value(), true).Translation);
+                                                               Translator::translate(gConfigs::InputText.value(),
+                                                                                     enuOutputFormat::JustBestTranslation).Translations.first());
             } else if (gConfigs::InputFile.value().size()) {
                 QFile InFile(gConfigs::InputFile.value());
                 if (InFile.open(QFile::ReadOnly) == false)

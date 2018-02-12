@@ -74,7 +74,7 @@ stuTranslationOutput clsTranslationJob::mapLineTranslation(const QString &_line)
 
 
     if (this->KeepAsSource){
-        Result = Translator::translate(_line, this->Brief);
+        Result = Translator::translate(_line, this->Brief ? enuOutputFormat::JustBestTranslation : enuOutputFormat::BestTranslationAndPhraseSuggestions);
     }else{
 
         QStringList NormalizedSentences = TaggedSource.replace(
@@ -89,13 +89,13 @@ stuTranslationOutput clsTranslationJob::mapLineTranslation(const QString &_line)
 
     Result.TaggedSource = TaggedSource.replace('\n',' ');
     Result.SpellCorrected = SpellCorrected;
-    Result.OriginalText   = _line;
+    Result.OriginalSource   = _line;
     return Result;
 }
 
 stuTranslationOutput clsTranslationJob::mapSentenceTranslation(const QString &_ixml)
 {
-    return Translator::translate(_ixml, this->Brief);
+    return Translator::translate(_ixml, this->Brief ? enuOutputFormat::JustBestTranslation : enuOutputFormat::BestTranslationAndPhraseSuggestions);
 }
 
 //TODO this method must be revised and optimized after upgrading WebInterface
@@ -113,18 +113,18 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
     QVariantList TranslationSection = (_result[0].toList().isEmpty() ? QVariantList() : _result[0].toList());
     TranslationSection.insert(TranslationSection.size(),
                               QVariantList()<<
-                              TargomanTextProcessor::instance().ixml2Text(_intermediate.Translation)<<
+                              TargomanTextProcessor::instance().ixml2Text(_intermediate.Translations.first())<<
                               _intermediate.TaggedSource);
     _result[0] = TranslationSection;
 
     if (this->Brief == false){
         QMap<size_t, QString> PhraseIndexMap;
         QMap<size_t, QVariantList> AlignInfoMap;
-        QStringList TranslationWords = _intermediate.Translation.split(" ", QString::SkipEmptyParts);
+        QStringList TranslationWords = _intermediate.Translations.first().split(" ", QString::SkipEmptyParts);
         QStringList SourceWords = _intermediate.TaggedSource.split(' ', QString::SkipEmptyParts);
 
         QVector<stuPos> Tagged2OrigianlCharMap =
-                Common::getCorrespondence(_intermediate.OriginalText,
+                Common::getCorrespondence(_intermediate.OriginalSource,
                                           _intermediate.TaggedSource);
 
         QList<stuPos>  TaggedWordsCharMap;
@@ -137,7 +137,7 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
             LastAcceptedChar+=SourceWords.at(i).size();
         }
 
-        foreach(const stuTranslationOutput::stuMetaInfo& MetaInfo, _intermediate.MetaInfo){
+        foreach(const stuTranslationOutput::stuPhraseAlternatives& MetaInfo, _intermediate.BestTranslationPhraseAlternatives){
 
             QString TargetPhrase;
             if ((size_t)TranslationWords.size() > MetaInfo.TargetWordsPos.start()){
@@ -174,7 +174,7 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
 
             QVariantList TranslationOptions;
             bool IsFirstOption = true;
-            foreach(const QString& Option, MetaInfo.TranslationOptions){
+            foreach(const QString& Option, MetaInfo.Alternatives){
                 TranslationOptions.insert(TranslationOptions.size(),
                                           QVariantList()<<
                                           TargomanTextProcessor::instance().ixml2Text(Option)<<
@@ -204,9 +204,9 @@ void clsTranslationJob::reduceLineTranslation(QVariantList &_result,
                         LastChar = qMax(Tagged2OrigianlCharMap.at(i).second, LastChar);
                     }
                 }
-                while (_intermediate.OriginalText.size() > FirstChar &&
-                       _intermediate.OriginalText.at(FirstChar) == ' ') ++FirstChar;
-                while (LastChar > 0 && _intermediate.OriginalText.at(LastChar - 1) == ' ') --LastChar;
+                while (_intermediate.OriginalSource.size() > FirstChar &&
+                       _intermediate.OriginalSource.at(FirstChar) == ' ') ++FirstChar;
+                while (LastChar > 0 && _intermediate.OriginalSource.at(LastChar - 1) == ' ') --LastChar;
                 CharAlignInfo.insert(CharAlignInfo.size(), QVariantList()<<FirstChar<<LastChar);
             }else{
                 TargomanDebug(5,"TaggedSourceCharRange Failed"<<
@@ -253,19 +253,19 @@ void clsTranslationJob::reduceSentenceTranslation(stuTranslationOutput &_result,
                                                   const stuTranslationOutput &_intermediate)
 {
     size_t Offset = 0;
-    if (_result.Translation.size()){
-        _result.Translation.append(" ");
-        Offset = _result.Translation.count(' ');
+    if (_result.Translations.first().size()){
+        _result.Translations[0].append(" ");
+        Offset = _result.Translations.first().count(' ');
     }
 
-    _result.Translation.append(_intermediate.Translation);
+    _result.Translations[0].append(_intermediate.Translations.first());
 
-    foreach(stuTranslationOutput::stuMetaInfo MetaInfo, _intermediate.MetaInfo){
+    foreach(stuTranslationOutput::stuPhraseAlternatives MetaInfo, _intermediate.BestTranslationPhraseAlternatives){
         MetaInfo.SourceWordsPos.first  += Offset;
         MetaInfo.SourceWordsPos.second += Offset;
         MetaInfo.TargetWordsPos.first  += Offset;
         MetaInfo.TargetWordsPos.second += Offset;
-        _result.MetaInfo.append(MetaInfo);
+        _result.BestTranslationPhraseAlternatives.append(MetaInfo);
     }
 }
 

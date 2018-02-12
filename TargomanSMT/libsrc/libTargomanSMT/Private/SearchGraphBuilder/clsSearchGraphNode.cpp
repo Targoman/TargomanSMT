@@ -39,6 +39,7 @@ namespace SearchGraphBuilder {
 using namespace RuleTable;
 using namespace Common;
 
+InputDecomposer::Sentence_t InvalidSentence;
 clsSearchGraphNodeData* InvalidSearchGraphNodeData = NULL;
 clsSearchGraphNode* pInvalidSearchGraphNode = NULL;
 size_t  clsSearchGraphNodeData::RegisteredFeatureFunctionCount;
@@ -64,7 +65,8 @@ clsSearchGraphNode::clsSearchGraphNode():
  * @param _isFinal          Has this node covered translation for all word of input sentence.
  * @param _restCost         Approximated cost of rest of translation.
  */
-clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
+clsSearchGraphNode::clsSearchGraphNode(const InputDecomposer::Sentence_t& _sentence,
+                                       const clsSearchGraphNode &_prevNode,
                                        quint16 _startPos,
                                        quint16 _endPos,
                                        const Coverage_t &_newCoverage,
@@ -72,6 +74,7 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
                                        bool _isFinal,
                                        Cost_t _restCost):
     Data(new clsSearchGraphNodeData(
+             _sentence,
              _prevNode,
              _startPos,
              _endPos,
@@ -82,7 +85,7 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
 {
     QCryptographicHash Hash(QCryptographicHash::Md5);
     foreach (FeatureFunction::intfFeatureFunction* FF, gConfigs.ActiveFeatureFunctions) {
-        Cost_t Cost = FF->scoreSearchGraphNodeAndUpdateFutureHash(*this, Hash);
+        Cost_t Cost = FF->scoreSearchGraphNodeAndUpdateFutureHash(*this,  this->Data->Sentence, Hash);
         this->Data->Cost += Cost;
     }
     this->Data->FutureStateHash = Hash.result();
@@ -91,6 +94,10 @@ clsSearchGraphNode::clsSearchGraphNode(const clsSearchGraphNode &_prevNode,
 void clsSearchGraphNode::swap(clsSearchGraphNode &_other)
 {
     this->Data.swap(_other.Data);
+//    int t = this->getNodeNum();
+//    this->Data->NodeNumber = _other.getNodeNum();
+//    _other.Data->NodeNumber= t;
+
 }
 
 /**

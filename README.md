@@ -25,35 +25,39 @@ Targoman: A robust Statistical Machine Translation framework
 See INSTALL for build instructions.
 
 **Targoman Project Tree**
-```
-  ├── Apps 
-  │   ├── E4SMT    
-  │   ├── TargomanLoadBalancer    
-  │   ├── TargomanSMTConsole     
-  │   └── TargomanSMTServer       
-  ├── ExternalToolsAndLibs        
-  │   └── KenLM                   
-  ├── NLPLibs
-  │   ├── TargomanLM              
-  │   ├── TargomanStem (Not yet published)
-  │   └── TargomanTextProcessor
-  ├── Scripts 
-  ├── Samples
-  ├── TargomanCommon 
-  ├── TargomanSMT  
-  ├── Templates                 
-  └── Tests   
-  ```
+>    ├── Apps
+    │   ├── E4SMT    
+    │   ├── TargomanLoadBalancer    
+    │   ├── TargomanSMTConsole     
+    │   ├── TargomanSMTServer       
+    │   ├── TargomanWebAPI        
+    │   └── TargomanWebUI    
+    ├── ExternalToolsAndLibs        
+    │   └── KenLM                   
+    ├── NLPLibs
+    │   ├── TargomanLM              
+    │   ├── TargomanStem (Not yet published)
+    │   ├── TargomanTextProcessor
+    │   └── TargomanTransliterate (Not yet published)
+    ├── Scripts 
+    ├── Samples
+    ├── TargomanCommon 
+    ├── TargomanSMT  
+    ├── Templates                 
+    └── Tests   
 #####**Sub-directories Specification:**
 
 > - **E4SMT**: Application based on TargomanTextProcessor which converts text to IXML and vice versa it also validates XML files and some more stuff.
 > - **TargomanLoadBalancer**:Application that monitors translation servers and load-balances requests between them.
 > - **TargomanSMTConsole**: Application based on TargomanSMT as a multithreaded console application. 
 > - **TargomanSMTServer**: Application based on TargomanSMT as a multithreaded server application. This app comunicates with TargomanLoadBalancer and  can be set-up on clouds.
+> - **TargomanWebAPI**: WebAPI to contact with TargomanLoadBalancer and do other DB based stuff. 
+> - **TargomanWebUI**: WebInterface of Targoman 
 > - **KenLM**: KenLM Langugae model library 
 > - **TargomanLM**: Targoman Language Model Library 
 > - **TargomanStem**: Targoman Stemmer Library  (Not yet published) 
 > - **TargomanTextProcessor**: Targoman TextProcessor Library. Used to  normalize characters, tokenize text, tag special tokens and vice versa
+> - **TargomanTransliterate**: Targoman Transliteration Library (Not yet published) 
 > - **Scripts**: Train, Tune, and other usefull scripts (Not yet published)
 > - **Samples**: Sample config file and corpora to test Targoman. 
 > - **TargomanCommon**: Usefull and common tools as a compact library

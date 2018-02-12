@@ -32,6 +32,7 @@
 #include "Private/SpecialTokenHandler/SpecialTokensRegistry.hpp"
 #include "libTargomanTextProcessor/TextProcessor.h"
 #include <libTargomanSMT/Private/RuleTable/clsTargetRule.h>
+#include "libTargomanCommon/Configuration/tmplAddinConfig.hpp"
 
 namespace Targoman{
 namespace SMT {
@@ -68,7 +69,7 @@ private:
 
 private:
 
-    static Targoman::Common::Configuration::tmplConfigurable<QString>   IXMLTagHandlerModules;
+    static Targoman::Common::Configuration::tmplAddinConfig<intfIXMLTagHandlerModule>   IXMLTagHandlerModules;
     static QMap<QString, intfIXMLTagHandlerModule*>                     AvailableTagHandlers; /**< List of available special tag handlers*/
     static Targoman::Common::Configuration::tmplConfigurable<bool>      IgnoreUserDefinedTags;
     static Targoman::Common::Configuration::tmplConfigurable<bool>      KeepUnknownUserDefinedTags;
@@ -78,7 +79,7 @@ private:
 #define TARGOMAN_DEFINE_TAG_HANDLER_MODULE(_tagName, _name) \
 public: \
     static inline QString tagName(){return Targoman::NLPLibs::enuTextTags::toStr(_tagName);}  \
-    TARGOMAN_DEFINE_MODULE(_name)
+    TARGOMAN_DEFINE_SINGLETON_MODULE(_name)
 }
 }
 }

@@ -1,13 +1,13 @@
 /****************************************************************************
 ** Resource object code
 **
-** Created by: The Resource Compiler for Qt version 5.4.2
+** Created by: The Resource Compiler for Qt version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
 static const unsigned char qt_resource_data[] = {
-  // /home/user/SVN/Targoman/targoman/Trunk/ExternalToolsAndLibs/qjsonrpc/tests/auto/qjsonrpcsocket/testwire.json
+  // /data/Projects/Targoman/SVN/targoman/Trunk/ExternalToolsAndLibs/qjsonrpc/tests/auto/qjsonrpcsocket/testwire.json
   0x0,0x0,0xd,0xda,
   0x0,
   0x0,0xb7,0xe9,0x78,0x9c,0xed,0x5a,0xe9,0x72,0xdb,0xc8,0x11,0xfe,0xef,0xa7,0x98,
@@ -247,8 +247,10 @@ static const unsigned char qt_resource_name[] = {
 static const unsigned char qt_resource_struct[] = {
   // :
   0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,
+0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
   // :/testwire.json
   0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,
+0x0,0x0,0x1,0x51,0xf1,0xf2,0x57,0x6,
 
 };
 
@@ -280,7 +282,7 @@ int QT_RCC_MANGLE_NAMESPACE(qInitResources_tst_qjsonrpcsocket)();
 int QT_RCC_MANGLE_NAMESPACE(qInitResources_tst_qjsonrpcsocket)()
 {
     QT_RCC_PREPEND_NAMESPACE(qRegisterResourceData)
-        (0x01, qt_resource_struct, qt_resource_name, qt_resource_data);
+        (0x02, qt_resource_struct, qt_resource_name, qt_resource_data);
     return 1;
 }
 
@@ -288,7 +290,7 @@ int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_tst_qjsonrpcsocket)();
 int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_tst_qjsonrpcsocket)()
 {
     QT_RCC_PREPEND_NAMESPACE(qUnregisterResourceData)
-       (0x01, qt_resource_struct, qt_resource_name, qt_resource_data);
+       (0x02, qt_resource_struct, qt_resource_name, qt_resource_data);
     return 1;
 }
 

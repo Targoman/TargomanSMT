@@ -48,8 +48,10 @@ public:
      * @brief When an instance of any kind of special SpecialTagHandler instantiates, its name and pointer will be added to AvailableTagHandlers data member of OOVHandler class.
      */
     intfIXMLTagHandlerModule(const QString& _tagName) {
-        IXMLTagHandler::instance().AvailableTagHandlers.insert(_tagName, this);
+        IXMLTagHandler::instance().ActiveTagHandlers.insert(_tagName, this);
     }
+    TARGOMAN_DEFINE_MODULE_SCOPE(intfIXMLTagHandlerModule)
+
     virtual TargetRulesContainer_t getTargetRules(const QString& _token) = 0;
     virtual QString getDefaultTranslation(const QString& _token) = 0;
 

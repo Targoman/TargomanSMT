@@ -141,7 +141,6 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
     if (Node->isInvalid())
         throw exSearchGraph("No Rule defined for UNKNOWN word");
 
-
     clsSearchGraph::UnknownWordRuleNode = new clsRuleNode(Node->getData(), true);
 
     TargomanLogInfo(7, "Checking Source Vocab");
@@ -158,8 +157,13 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
                         QList<WordIndex_t>() << TokenIter.value()
                         )->getData();
             if(SingleWordRuleNode.isInvalid() ||
-                    SingleWordRuleNode.targetRules().isEmpty())
+                    SingleWordRuleNode.targetRules().isEmpty()) {
+                if(TokenIter.key() == "forward") {
+                    int a = 2;
+                    ++a;
+                }
                 ItersToRemove.append(TokenIter);
+            }
             /*if(SingleWordRuleNode.isInvalid())
                 SingleWordRuleNode.detachInvalidData();
 
@@ -173,7 +177,8 @@ void clsSearchGraph::init(QSharedPointer<QSettings> _configSettings)
                         gConfigs.SourceVocab.size()<<" Items");
 
         foreach(auto TokenIter, ItersToRemove)
-            gConfigs.SourceVocab.erase(TokenIter);
+//            gConfigs.SourceVocab.erase(TokenIter);
+            gConfigs.VocabWithoutSingleWordRule.insert(TokenIter.key());
 
     }catch(exTargomanNotImplemented &e){
         throw exTargomanNotImplemented(
@@ -193,6 +198,7 @@ void clsSearchGraph::extendSourcePhrase(const QList<WordIndex_t>& _wordIndexes,
             RulesPrefixTree_t::pNode_t NextNode = PrevNode->follow(WordIndex);
             if(NextNode->isInvalid() == false) {
                 _ruleNodes.append(NextNode->getData());
+                NextNode->getData();
                 NextNodes.append(NextNode);
             }
         }
@@ -234,19 +240,35 @@ void clsSearchGraph::collectPhraseCandidates()
 
             this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality, 1);
 
-            this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, RuleNodes);
+            this->Data->PhraseCandidateCollections[FirstPosition][0] = clsPhraseCandidateCollection(FirstPosition, FirstPosition + 1, this->Data->Sentence, RuleNodes);
+
 
         }
 
         for (size_t LastPosition = FirstPosition + 1; LastPosition < (size_t)this->Data->Sentence.size() ; ++LastPosition){
-
             QList<clsRuleNode> RuleNodes;
             extendSourcePhrase(this->Data->Sentence.at(LastPosition).wordIndexes(), PrevNodes, RuleNodes);
+
+//            std::cout << "Extracting Rule Nodes: " << FirstPosition << "   " << LastPosition + 1
+//                      << "   " << RuleNodes.size() << "   "
+//                      << this->Data->Sentence.at(LastPosition).string().toStdString()
+//                      << "   ";
+//            for(int i = 0; i < RuleNodes.size(); i++){
+//                std::cout << RuleNodes[i].targetRules().size() << " ||| ";
+//                for(int j = 0; j < RuleNodes[i].targetRules().size(); j++){
+//                    std::cout << RuleNodes[i].targetRules()[j].toStr().toStdString() << " ||| ";
+//                }
+//            }
+////            foreach (WordIndex_t w, this->Data->Sentence.at(LastPosition).wordIndexes())
+////                std::cout << w << " ";
+
+//            std::cout << std::endl;
+
 
             if (RuleNodes.isEmpty())
                 break; // Appending next word breaks phrase lookup
 
-            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, RuleNodes);
+            this->Data->PhraseCandidateCollections[FirstPosition][LastPosition - FirstPosition] = clsPhraseCandidateCollection(FirstPosition, LastPosition + 1, this->Data->Sentence, RuleNodes);
             this->Data->MaxMatchingSourcePhraseCardinality = qMax(this->Data->MaxMatchingSourcePhraseCardinality,
                                                                       (int)(LastPosition - FirstPosition + 1));
         }
@@ -305,9 +327,39 @@ float roundDouble(double inputNumber)
 {
     return (float)((int(100 * inputNumber + 0.5))/100.0);
 }
+
+void printNode(clsSearchGraphNode SelectedNode, int card, double cost){
+//    auto car2str = [] (int _cardinality) {
+//        QString result;
+//        for(int i = 0; i < 5; ++i) {
+//            result = ('0' + _cardinality % 10) + result;
+//            _cardinality /= 10;
+//        }
+//        return result;
+//    };
+    auto cov2str = [] (const Coverage_t _coverage) {
+        QString result;
+        QTextStream stream;
+        stream.setString(&result);
+        stream << _coverage;
+        return result;
+    };
+    std::stringstream Stream;
+    Stream << "hyp=" << SelectedNode.getNodeNum();
+    Stream << " stack=" << card;
+    Stream << " back=" << SelectedNode.prevNode().getNodeNum();
+    Stream << " score=" << SelectedNode.getCost();
+    Stream << " transition=" << SelectedNode.getCost() - SelectedNode.prevNode().getCost();
+//                    Stream << " forward=" << SelectedNode;
+    Stream << " fscore=" << SelectedNode.getTotalCost() - SelectedNode.getCost();
+    Stream << " covered=" << cov2str(SelectedNode.coverage()).toUtf8().constData();
+    Stream << " out=" << SelectedNode.targetRule().toStr().toUtf8().constData()
+           << " CostLimit=" << cost << std::endl;
+    std::cout << Stream.str().c_str() << std::endl;
+    std::flush(std::cout);
+
+}
 #endif
-
-
 
 /**
  * @brief This is the main function that performs the decoding process.
@@ -409,10 +461,11 @@ bool clsSearchGraph::decode()
                     clsPhraseCandidateCollection& PhraseCandidates =
                             this->Data->PhraseCandidateCollections[NewPhraseBeginPos][NewPhraseCardinality - 1];
 
-                    //There is no rule defined in rule table for current phrase
-                    if (PhraseCandidates.isInvalid())
-                        continue; //TODO If there are no more places to fill after this startpos break
 
+                    //There is no rule defined in rule table for current phrase
+                    if (PhraseCandidates.isInvalid()){
+                        continue; //TODO If there are no more places to fill after this startpos break
+                    }
                     Cost_t RestCost =  this->calculateRestCost(NewCoverage, NewPhraseBeginPos, NewPhraseEndPos);
 
                     CurrCardHypoContainer.setLexicalHypothesis(NewCoverage);
@@ -437,7 +490,9 @@ bool clsSearchGraph::decode()
                             const clsTargetRule& CurrentPhraseCandidate = PhraseCandidates.targetRules().at(i);
 
 
-                            clsSearchGraphNode NewHypoNode(PrevLexHypoNode,
+//                            std::cout << "*** " << CurrentPhraseCandidate.toStr().toStdString() << std::endl;
+                            clsSearchGraphNode NewHypoNode(this->Data->Sentence,
+                                                           PrevLexHypoNode,
                                                            NewPhraseBeginPos,
                                                            NewPhraseEndPos,
                                                            NewCoverage,
@@ -445,6 +500,9 @@ bool clsSearchGraph::decode()
                                                            IsFinal,
                                                            RestCost);
                             // If current NewHypoNode is worse than worst stored node ignore it
+#ifdef TARGOMAN_SHOW_DEBUG
+//                            printNode(NewHypoNode, NewCardinality, CurrCardHypoContainer.getCostLimit());
+#endif
                             if (clsSearchGraph::DoPrunePreInsertion.value() &&
                                 CurrCardHypoContainer.mustBePruned(NewHypoNode.getTotalCost())){
                                 ++PrunedPreInsertion;
@@ -454,6 +512,7 @@ bool clsSearchGraph::decode()
                             if(CurrCardHypoContainer.insertNewHypothesis(NewHypoNode)) {
                                 // Log insertion of hypothesis here if it is needed
                             }
+
                         }
                     }//foreach PrevLexHypoNode
 
@@ -464,50 +523,64 @@ bool clsSearchGraph::decode()
         }//for PrevCardinality
         CurrCardHypoContainer.finlizePruningAndcleanUp();
 
-#ifdef TARGOMAN_SHOW_DEBUG
+//#ifdef TARGOMAN_SHOW_DEBUG
         // Vedadian
-        /*
-        auto car2str = [] (int _cardinality) {
-            QString result;
-            for(int i = 0; i < 5; ++i) {
-                result = ('0' + _cardinality % 10) + result;
-                _cardinality /= 10;
-            }
-            return result;
-        };
-        auto cov2str = [] (const Coverage_t _coverage) {
-            QString result;
-            QTextStream stream;
-            stream.setString(&result);
-            stream << _coverage;
-            return result;
-        };
-        if(CurrCardHypoContainer.lexicalHypotheses().size() != 0) {
-            for(auto Iterator = CurrCardHypoContainer.lexicalHypotheses().end() - 1;
-                true;
-                --Iterator) {
-                const QList<clsSearchGraphNode>& Nodes = Iterator->nodes();
-                foreach(const clsSearchGraphNode& SelectedNode, Nodes) {
-                    std::stringstream Stream;
-                    Stream << std::fixed << std::setprecision(3) << SelectedNode.getTotalCost() << "\t";
-                    Stream << "Cardinality:  ";
-                    Stream << car2str(NewCardinality).toUtf8().constData();
-                    Stream << "  Coverage:  " << cov2str(SelectedNode.coverage()).toUtf8().constData();
-                    Stream << "  Cost:  " << std::setprecision(3) << SelectedNode.getCost()
-                           << " , RestCost: " << std::setprecision(3) << (SelectedNode.getTotalCost() - SelectedNode.getCost())
-                           << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
-                           << ")" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
-                    std::cout << Stream.str().c_str();
-                    //TargomanDebug(5, QString::fromUtf8(Stream.str().c_str()));
-                }
-                if(Iterator == CurrCardHypoContainer.lexicalHypotheses().begin())
-                    break;
-            }
-        }
-        std::cout << "\n\n\n";
+
+//        auto car2str = [] (int _cardinality) {
+//            QString result;
+//            for(int i = 0; i < 5; ++i) {
+//                result = ('0' + _cardinality % 10) + result;
+//                _cardinality /= 10;
+//            }
+//            return result;
+//        };
+//        auto cov2str = [] (const Coverage_t _coverage) {
+//            QString result;
+//            QTextStream stream;
+//            stream.setString(&result);
+//            stream << _coverage;
+//            return result;
+//        };
+//        if(CurrCardHypoContainer.lexicalHypotheses().size() != 0) {
+//            for(auto Iterator = CurrCardHypoContainer.lexicalHypotheses().end() - 1;
+//                true;
+//                --Iterator) {
+//                clsLexicalHypoNodeSet& Nodes = Iterator->nodes();
+//                foreach(const clsSearchGraphNode& SelectedNode, Nodes) {
+//                    std::stringstream Stream;
+////                    Stream << std::fixed << std::setprecision(3) << SelectedNode.getTotalCost() << "\t";
+////                    Stream << "NodeNumber: " << SelectedNode.getNodeNum() <<" Cardinality:  ";
+////                    Stream << car2str(NewCardinality).toUtf8().constData();
+////                    Stream << "  Coverage:  " << cov2str(SelectedNode.coverage()).toUtf8().constData();
+////                    Stream << "  Cost:  " << std::setprecision(3) << SelectedNode.getCost()
+////                           << " , RestCost: " << std::setprecision(3) << (SelectedNode.getTotalCost() - SelectedNode.getCost())
+////                           << " , Str: (" << SelectedNode.prevNode().targetRule().toStr().toUtf8().constData()
+////                           << ")" << SelectedNode.targetRule().toStr().toUtf8().constData()
+////                           << " , isRecombined: " << SelectedNode.isRecombined()
+////                           << " , recombinedSize: " << SelectedNode.getCombindedNodes().size()
+////                           <<  std::endl;
+
+//                    Stream << "hyp=" << SelectedNode.getNodeNum();
+//                    Stream << " stack=" << car2str(NewCardinality).toUtf8().constData();
+//                    Stream << " back=" << SelectedNode.prevNode().getNodeNum();
+//                    Stream << " score=" << SelectedNode.getCost();
+//                    Stream << " transition=" << SelectedNode.getCost() - SelectedNode.prevNode().getCost();
+////                    Stream << " forward=" << SelectedNode;
+//                    Stream << " fscore=" << SelectedNode.getTotalCost() - SelectedNode.getCost();
+//                    Stream << " covered=" << cov2str(SelectedNode.coverage()).toUtf8().constData();
+//                    Stream << " out=" << SelectedNode.targetRule().toStr().toUtf8().constData() << std::endl;
+//                    std::cout << Stream.str().c_str();
+
+//                    //TargomanDebug(5, QString::fromUtf8(Stream.str().c_str()));
+//                }
+//                if(Iterator == CurrCardHypoContainer.lexicalHypotheses().begin())
+//                    break;
+//            }
+//        }
+//        std::cout << "\n\n\n";
         //TargomanDebug(5,"\n\n\n");
-        //*/
-#endif
+        //
+//#endif
     }//for NewCardinality
 
     Coverage_t FullCoverage;
@@ -518,6 +591,7 @@ bool clsSearchGraph::decode()
     {
         this->Data->GoalNode = &this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].nodes().bestNode();
         this->Data->HypothesisHolder[this->Data->Sentence.size()][FullCoverage].finalizeRecombination();
+//        std::cout << Data->GoalNode->getTotalCost() << std::endl;
         return true;
     } else {
         static clsSearchGraphNode InvalidGoalNode;
@@ -598,7 +672,7 @@ Cost_t clsSearchGraph::calculateRestCost(const Coverage_t& _coverage, size_t _be
     return RestCosts;
 }
 
-clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const QList<clsRuleNode> &_ruleNodes)
+clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _beginPos, size_t _endPos, const InputDecomposer::Sentence_t& _sentence, const QList<clsRuleNode> &_ruleNodes)
 {
     foreach(const clsRuleNode& RuleNode, _ruleNodes)
         this->TargetRules.append(RuleNode.targetRules());
@@ -617,7 +691,7 @@ clsPhraseCandidateCollectionData::clsPhraseCandidateCollectionData(size_t _begin
         Cost_t ApproximateCost = 0;
         foreach (FeatureFunction::intfFeatureFunction* FF , gConfigs.ActiveFeatureFunctions)
             if(FF->canComputePositionSpecificRestCost() == false) {
-                Cost_t Cost = FF->getApproximateCost(_beginPos, _endPos, TargetRule);
+                Cost_t Cost = FF->getApproximateCost(_beginPos, _endPos, _sentence, TargetRule);
                 ApproximateCost += Cost;
             }
         this->BestApproximateCost = qMin(this->BestApproximateCost, ApproximateCost);

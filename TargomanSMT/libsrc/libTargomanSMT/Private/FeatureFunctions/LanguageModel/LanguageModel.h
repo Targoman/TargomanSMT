@@ -44,7 +44,7 @@ public:
 
     void initialize(QSharedPointer<QSettings>){}
 
-    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, QCryptographicHash& _hash) const;
+    Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, const InputDecomposer::Sentence_t& _input, QCryptographicHash& _hash) const;
 
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage);
@@ -59,12 +59,13 @@ public:
      */
     Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                       unsigned _sourceEnd,
+                                      const InputDecomposer::Sentence_t& _sentence,
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
     int compareStates(const SearchGraphBuilder::clsSearchGraphNode &_first,
                             const SearchGraphBuilder::clsSearchGraphNode &_second) const;
 
-    inline QStringList columnNames() const{return QStringList();}
+    inline QStringList columnNames() const{ return QStringList(); }
 
     void initRootNode(SearchGraphBuilder::clsSearchGraphNode &_rootNode);
 

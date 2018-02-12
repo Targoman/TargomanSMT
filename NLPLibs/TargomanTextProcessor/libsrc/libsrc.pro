@@ -25,6 +25,7 @@ BasePath = ".."
 HEADERS += \
     libTargomanTextProcessor/Private/Normalizer.h \
     libTargomanTextProcessor/TextProcessor.h \
+    libTargomanTextProcessor/TextProcessor_c.h \
     libTargomanTextProcessor/Private/Unicode.hpp \
     libTargomanTextProcessor/Private/IXMLWriter.h \
     libTargomanTextProcessor/Private/SpellCorrector.h \
@@ -35,6 +36,7 @@ HEADERS += \
 SOURCES += libID.cpp \
     libTargomanTextProcessor/Private/Normalizer.cpp \
     libTargomanTextProcessor/TextProcessor.cpp \
+    libTargomanTextProcessor/TextProcessor_c.cpp \
     libTargomanTextProcessor/Private/IXMLWriter.cpp \
     libTargomanTextProcessor/Private/SpellCorrector.cpp \
     libTargomanTextProcessor/Private/Configs.cpp \
@@ -69,7 +71,8 @@ OTHER_FILES += \
     conf/SpellCorrectors/Persian/Adjectives.tbl \
     conf/SpellCorrectors/Persian/VerbStemPresent.tbl \
     conf/SpellCorrectors/Persian/StartWith_Na.tbl \
-    conf/SpellCorrectors/Persian/StartWith_Bi_Ba.tbl
+    conf/SpellCorrectors/Persian/StartWith_Bi_Ba.tbl \
+    conf/SpellCorrectors/Persian/NeedHeYe.txt
 
 ################################################################################
 #                       DO NOT CHANGE ANYTHING BELOW                           #
@@ -95,6 +98,3 @@ build_static {
 }
 
 QMAKE_POST_LINK += $$BaseOutput/linuxPostBuild.sh lib$$ProjectName $$BaseLibraryIncludeFolder $$BaseConfigFolder
-
-
-

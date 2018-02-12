@@ -49,8 +49,13 @@ public:
     {}
 
 public:
-    stuTranslationOutput translationOutput();
-    QString translationString();
+    stuTranslationOutput getTranslationOutput(enuOutputFormat::Type _outputFormat);
+    QString pathTranslation(const QList<SearchGraphBuilder::clsSearchGraphNode>& path);
+
+private:
+    stuTranslationOutput justBestTranslation();
+    stuTranslationOutput bestTranslationAndPhraseSuggestions();
+    stuTranslationOutput nBestTranslations();
 
 private:
     QString getTargetString(const RuleTable::clsTargetRule& _target, const stuPos& _sourcePhrasePos);

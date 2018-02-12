@@ -121,10 +121,6 @@ void LexicalReordering::initialize(QSharedPointer<QSettings>)
     }
 }
 
-void LexicalReordering::newSentence(const Sentence_t &_inputSentence)
-{
-    Q_UNUSED(_inputSentence)
-}
 
 /**
  * @brief LexicalReordering::scoreSearchGraphNode   computes score of search graph node based on its orientation and wether it is bidirectional or not.
@@ -133,8 +129,9 @@ void LexicalReordering::newSentence(const Sentence_t &_inputSentence)
  */
 
 Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
-        clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
+        clsSearchGraphNode &_newHypothesisNode, const InputDecomposer::Sentence_t& _input, QCryptographicHash &_hash) const
 {
+    Q_UNUSED(_input)
     if(clsTargetRule::lexicalReorderingAvailable() == false)
         return 0;
 
@@ -174,17 +171,19 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
 //        }
 //    }
 //    _hash.addData(RawData);
-    if(this->IsBidirectional.value()) {
-        if(_newHypothesisNode.prevNode().isInvalid() == false) {
-            const Coverage_t& PrevCoverage = _newHypothesisNode.prevNode().coverage();
-            _hash.addData((char*)&PrevCoverage, (
-                              1 +  // Extra byte holding number of bits used from the last byte!
-                              PrevCoverage.size() / 8 + // Number of bytes actually used by this bit array
-                              (PrevCoverage.size() % 8 != 0 ? 1 : 0) // The last byte not all of which is used
-                              ));
-        }
-    }
 
+///////////////////////////////////////////////
+//    if(this->IsBidirectional.value()) {
+//        if(_newHypothesisNode.prevNode().isInvalid() == false) {
+//            const Coverage_t& PrevCoverage = _newHypothesisNode.prevNode().coverage();
+//            _hash.addData((char*)&PrevCoverage, (
+//                              1 +  // Extra byte holding number of bits used from the last byte!
+//                              PrevCoverage.size() / 8 + // Number of bytes actually used by this bit array
+//                              (PrevCoverage.size() % 8 != 0 ? 1 : 0) // The last byte not all of which is used
+//                              ));
+//        }
+//    }
+/////////////////////////////////////////////
     const clsTargetRule& TargetRule = _newHypothesisNode.targetRule();
     for(int Orientation = enuLexicalReorderingFields::ForwardMonotone;
         Orientation <= enuLexicalReorderingFields::ForwardDiscontinous;
@@ -205,11 +204,12 @@ Common::Cost_t LexicalReordering::scoreSearchGraphNodeAndUpdateFutureHash(
 
 Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
                                                      unsigned _sourceEnd,
+                                                     const InputDecomposer::Sentence_t& _input,
                                                      const clsTargetRule &_targetRule) const
 {
     Q_UNUSED(_sourceStart)
     Q_UNUSED(_sourceEnd)
-
+    Q_UNUSED(_input)
     /*
     Cost_t Cost = 0;
     for (int i = enuLexicalReorderingFields::ForwardMonotone; i<= enuLexicalReorderingFields::ForwardDiscontinous; ++i){
@@ -229,16 +229,29 @@ Common::Cost_t LexicalReordering::getApproximateCost(unsigned _sourceStart,
     return 0;
 }
 
+int compare(const Coverage_t& _first, const Coverage_t& _second) {
+    int ComparisonResult = _first.size() - _second.size();
+    if (ComparisonResult != 0)
+        return ComparisonResult;
+    for(int i = 0; i < _first.size(); ++i ) {
+        ComparisonResult = _first.testBit(i) - _second.testBit(i);
+        if (ComparisonResult != 0)
+            return ComparisonResult;
+    }
+    return 0;
+//    int SizeInBytes = 1 + _first.size() / 8 + (_first.size() % 8 == 0 ? 0 : 1);
+//    return memcmp(*(const char**)&_first, *(const char**)&_second, SizeInBytes);
+}
+
 int LexicalReordering::compareStates(const clsSearchGraphNode &_first, const clsSearchGraphNode &_second) const
 {
     if(clsTargetRule::lexicalReorderingAvailable() == false)
         return 0;
     if(this->IsBidirectional.value()) {
         if(_first.prevNode().isInvalid() == false || _second.prevNode().isInvalid() == false) {
-            if(_first.prevNode().coverage() > _second.prevNode().coverage())
-                return 1;
-            else if(_first.prevNode().coverage() < _second.prevNode().coverage())
-                return -1;
+            int ComparisonResult = compare(_first.prevNode().coverage(), _second.prevNode().coverage());
+            if(ComparisonResult != 0)
+                return ComparisonResult;
         }
     }
 

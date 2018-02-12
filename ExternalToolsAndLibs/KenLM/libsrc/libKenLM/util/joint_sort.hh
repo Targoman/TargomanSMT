@@ -36,6 +36,7 @@ template <class KeyIter, class ValueIter> class JointIter {
     }
 
     void swap(const JointIter &other) {
+      JointIter& castedOther = const_cast<JointIter&>(other);
       std::swap(key_, other.key_);
       std::swap(value_, other.value_);
     }

@@ -29,7 +29,7 @@
 #include "Private/SpecialTokenHandler/OOVHandler/OOVHandler.h"
 #include "Private/SpecialTokenHandler/IXMLTagHandler/IXMLTagHandler.h"
 #include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
-
+#include<iostream>
 using Targoman::NLPLibs::TargomanTextProcessor;
 
 namespace Targoman {
@@ -298,6 +298,11 @@ void clsInput::parseRichIXML(const QString &_inputIXML)
         }
     }
 
+    if(Token.size()){
+        this->newTokenInfo(Token);
+        Token.clear();
+    }
+
     switch(ParsingState){
     case Look4Open:
         return;
@@ -358,9 +363,18 @@ void clsInput::makeSentence()
         if (WordIndexes.isEmpty()){
             WordIndex_t WordIndex = gConfigs.SourceVocab.value(
                         TokenInfo.Str, Constants::SrcVocabUnkWordIndex);
-            if (WordIndex == Constants::SrcVocabUnkWordIndex){
+            if (WordIndex == Constants::SrcVocabUnkWordIndex || gConfigs.VocabWithoutSingleWordRule.contains(TokenInfo.Str)){
                 WordIndexes = OOVHandler::instance().getWordIndexOptions(TokenInfo.Str, TokenInfo.Attrs);
-                if (WordIndexes.isEmpty()){
+
+                bool wordIdxFound = false, repeatedWordIdx = false;
+                for(WordIndex_t w : WordIndexes){
+                    if(w == WordIndex)
+                        repeatedWordIdx = true;
+                    if(gConfigs.VocabWithoutSingleWordRule.contains(
+                                gConfigs.SourceVocab.key(w)))
+                        wordIdxFound = true;
+                }
+                if (WordIndexes.isEmpty() || wordIdxFound){
                     RuleTable::TargetRulesContainer_t TargetRules = OOVHandler::instance().gatherTemporaryTargetRules(TokenInfo.Str, TokenInfo.Attrs);
                     if (TargetRules.size()){
                         TokenInfo.TemporaryRuleNode.detachInvalidData();
@@ -369,9 +383,14 @@ void clsInput::makeSentence()
                     if (TokenInfo.Attrs.value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoDecode)).isValid())
                         return; // OOVHandler says that I must ignore this word when decoding
                 }
+                if(WordIndex != Constants::SrcVocabUnkWordIndex && !repeatedWordIdx){
+
+                        WordIndexes.append(WordIndex);
+                }
             }else
                 WordIndexes.append(WordIndex);
         }
+
         this->Tokens.append(clsToken(TokenInfo, WordIndexes));
         TargomanLogDebug(9,TokenInfo.Str<<","<<
                          TokenInfo.TagStr<<","<<

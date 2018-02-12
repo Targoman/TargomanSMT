@@ -25,7 +25,7 @@
  */
 
 #include "clsTargetRule.h"
-
+#include<iostream>
 #include "Private/GlobalConfigs.h"
 #include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 
@@ -82,6 +82,13 @@ void clsTargetRule::readBinary(clsIFStreamExtended &_input)
     for(Cost_t& Cost : this->Data->Fields)
         Cost = _input.read<Cost_t>();
     this->Data->PrecomputedValues.fill(-INFINITY, clsTargetRule::PrecomputedValuesSize);
+
+    int AlignmentSize = _input.read<int>();
+    for(int i = 0; i < AlignmentSize; i++){
+        int key = _input.read<int>();
+        int value = _input.read<int>();
+        this->Data->Alignment.insertMulti(key, value);
+    }
 }
 
 void clsTargetRule::writeBinary(clsOFStreamExtended &_output) const
@@ -92,6 +99,16 @@ void clsTargetRule::writeBinary(clsOFStreamExtended &_output) const
 
     foreach(Cost_t Cost, this->Data->Fields)
         _output.write(Cost);
+
+    _output.write(this->Data->Alignment.size());
+    foreach (int key, this->Data->Alignment.keys()) {
+        foreach (int value, this->Data->Alignment.values(key)){
+//            QString align = QString(key) + QString("-") + QString(value);
+            _output.write(key);
+            _output.write(value);
+//            _output.write(align.toStdString().c_str());
+        }
+    }
 }
 
 #ifdef TARGOMAN_SHOW_DEBUG

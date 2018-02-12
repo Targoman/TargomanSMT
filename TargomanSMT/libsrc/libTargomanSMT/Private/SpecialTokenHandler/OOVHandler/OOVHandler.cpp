@@ -95,6 +95,11 @@ QList<WordIndex_t> OOVHandler::getWordIndexOptions(const QString &_token, QVaria
             gConfigs.SourceVocab.value(toPascalCase(_token), Constants::SrcVocabUnkWordIndex)
         };
 
+//        QList<QString> TrivialWords = {
+//            _token.toLower(),
+//            _token.toUpper(),
+//            toPascalCase(_token)
+//        };
         for(int i = TrivialWordIndexes.size() - 1; i >= 0; --i) {
             if(TrivialWordIndexes.at(i) == Constants::SrcVocabUnkWordIndex)
                 TrivialWordIndexes.removeAt(i);

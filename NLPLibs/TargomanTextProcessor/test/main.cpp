@@ -65,7 +65,17 @@ int main(int _argc, char *_argv[])
         Configs.SpellCorrectorLanguageBasedConfigs.insert("fa", PersianSpellCorrector);
         TargomanTextProcessor::instance().init(Configs);
 
-        QStringList Tests = {"this is just  a test.",
+        QStringList Tests = {"دانش آموزهای",
+                             "عنبرماهی",
+                             "عنبر ماهی" ,
+                             "پروانهماهی",
+                             "پروانه‌ی",
+                             "پروانه‌ ی",
+                             "الهام",
+                             "پروازهای",
+                             "شهرهای",
+                             "دوشنبه شب",
+                             "this is just  a test.",
                              "A simple \"Test\" for you.",
                              "A simple 'Test' for you.",
                              "با سویه H1N1رخ داد",

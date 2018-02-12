@@ -69,11 +69,11 @@ template <Targoman::Common::enuPathAccess::Type _requiredAccess, bool _required 
                 (PathInfo.exists() == false || PathInfo.isDir() == false)){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be a directory";
             return false;
-        }else if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::File) &&
+        }/*else if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::File) &&
                   (PathInfo.exists() == false || PathInfo.isFile() == false)){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be a file";
             return false;
-        }
+        }*/
         if (Targoman::Common::testFlag(_requiredAccess, Targoman::Common::enuPathAccess::Executable) &&
                 PathInfo.isExecutable() == false){
             _errorMessage = _item.configPath() + ": <"+Path+"> must be executable";

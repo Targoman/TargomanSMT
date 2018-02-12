@@ -63,11 +63,11 @@ template <template <class itmplKey, class itmplVal> class BaseContainer_t, class
 
         inline Iterator_t insert(itmplKey _key, itmplVal _val){
             QMutexLocker Locker(&this->Lock);
-            if(this->MaxItems && BaseContainer_t<itmplKey, itmplVal>::size() >= this->MaxItems){
+            if(this->MaxItems && BaseContainer_t<itmplKey, itmplVal>::size() >= (int)this->MaxItems){
                 QList<QTime> Values = this->KeyAccessDateTime.values();
                 std::nth_element(Values.begin(), Values.begin() + this->MaxItems / 2, Values.end());
                 QList<itmplKey> ExpiredKeys;
-                for(int Index = 0; Index < this->MaxItems / 2; ++Index)
+                for(quint32 Index = 0; Index < this->MaxItems / 2; ++Index)
                         ExpiredKeys.append(this->KeyAccessDateTime.keys(Values.at(Index)));
 
                 foreach(itmplKey Key, ExpiredKeys){

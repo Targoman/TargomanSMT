@@ -38,24 +38,29 @@ using namespace Targoman::Common::Configuration;
 using namespace std::placeholders;
 using namespace InputDecomposer;
 
-tmplConfigurable<QString> IXMLTagHandler::IXMLTagHandlerModules(
+//tmplConfigurable<QString> IXMLTagHandler::IXMLTagHandlerModules(
+//        MAKE_CONFIG_PATH("Handlers"),
+//        "Name of IXMLTagHandler Modules to be used. Comma Separated",
+//        "",
+//        [] (const intfConfigurable& _item, QString& _errorMessage) {
+//    QSet<QString> ModuleNames = QSet<QString>::fromList(_item.toVariant().toString().split(",", QString::SkipEmptyParts));
+//    for(auto Iterator = ModuleNames.begin(); Iterator != ModuleNames.end(); ++Iterator) {
+//        const QString& ModuleName = *Iterator;
+//        fpModuleInstantiator_t Instantiator = ConfigManager::instance().getInstantiator(ModuleName);
+//        if(Instantiator == NULL) {
+//            _errorMessage = "Unknown IXMLTagHandlerModule `" + ModuleName + "`";
+//            return false;
+//        }
+//        // Just create the object and leave it alone, this will be handled by IXMLTagHandler itself
+//        Instantiator();
+//    }
+//    return true;
+//});
+
+tmplAddinConfig<intfIXMLTagHandlerModule> IXMLTagHandler::IXMLTagHandlerModules(
         MAKE_CONFIG_PATH("Handlers"),
-        "Name of IXMLTagHandler Modules to be used. Comma Separated",
-        "",
-        [] (const intfConfigurable& _item, QString& _errorMessage) {
-    QSet<QString> ModuleNames = QSet<QString>::fromList(_item.toVariant().toString().split(",", QString::SkipEmptyParts));
-    for(auto Iterator = ModuleNames.begin(); Iterator != ModuleNames.end(); ++Iterator) {
-        const QString& ModuleName = *Iterator;
-        fpModuleInstantiator_t Instantiator = ConfigManager::instance().getInstantiator(ModuleName);
-        if(Instantiator == NULL) {
-            _errorMessage = "Unknown IXMLTagHandlerModule `" + ModuleName + "`";
-            return false;
-        }
-        // Just create the object and leave it alone, this will be handled by IXMLTagHandler itself
-        Instantiator();
-    }
-    return true;
-});
+        "Name of IXMLTagHandler Modules to be used. Comma Separated"
+        );
 
 tmplConfigurable<bool> IXMLTagHandler::IgnoreUserDefinedTags(
         MAKE_CONFIG_PATH("IgnoreUserDefinedTags"),
@@ -75,20 +80,20 @@ TARGOMAN_REGISTER_SINGLETON_MODULE(IXMLTagHandler);
 
 void IXMLTagHandler::initialize()
 {
-    QStringList TagHandlers = IXMLTagHandler::IXMLTagHandlerModules.value().split(",", QString::SkipEmptyParts);
-    foreach(const QString& TagHandlerName, TagHandlers){
-        intfIXMLTagHandlerModule* pTagHandler = this->AvailableTagHandlers.value(TagHandlerName);
-        if (pTagHandler == NULL)
-            throw exIXMLTagHandler("Invalid TagHandler name: "+ TagHandlerName );
-        this->ActiveTagHandlers.insert(TagHandlerName, pTagHandler);
-    }
+//    QStringList TagHandlers = IXMLTagHandler::IXMLTagHandlerModules.value().split(",", QString::SkipEmptyParts);
+//    foreach(const QString& TagHandlerName, TagHandlers){
+//        intfIXMLTagHandlerModule* pTagHandler = this->AvailableTagHandlers.value(TagHandlerName);
+//        if (pTagHandler == NULL)
+//            throw exIXMLTagHandler("Invalid TagHandler name: "+ TagHandlerName );
+//        this->ActiveTagHandlers.insert(TagHandlerName, pTagHandler);
+//    }
 }
 
 QList<WordIndex_t> IXMLTagHandler::getWordIndexOptions(const QString& _tagStr, const QString& _token, INOUT QVariantMap& _attrs) {
     QList<WordIndex_t> Result;
     if(this->ActiveTagHandlers.contains(_tagStr) != false)
     {
-        Result = this->process(_tagStr,
+        Result = this->process("<" + _tagStr + ">",
                                _token,
                                _attrs,
                                this->ActiveTagHandlers[_tagStr]->getTargetRules(_token),

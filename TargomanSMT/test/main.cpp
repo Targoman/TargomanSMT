@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
         while(Stream.atEnd() == false)
         {
 
-            std::cout << Translator::translate(Stream.readLine(), false).Translation.toStdString() << std::endl;
+            std::cout << Translator::translate(Stream.readLine(), enuOutputFormat::JustBestTranslation).Translations.first().toStdString() << std::endl;
             //printMemoryUsage(QString::number(++LineNumber) + ": after translate");
         }
 

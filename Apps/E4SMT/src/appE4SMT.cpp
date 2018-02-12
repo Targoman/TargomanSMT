@@ -35,9 +35,19 @@ using namespace NLPLibs;
 using namespace Common;
 using namespace Common::Configuration;
 
+thread_local static QList<stuIXMLReplacement> SentenceBreakReplacements;
+
+
+
 void appE4SMT::slotExecute()
 {
     try{
+        if (gConfigs::BreakLines.value())
+            SentenceBreakReplacements.append(
+                        stuIXMLReplacement(
+                            QRegExp("(\\s)([\\.\\?\\!])(\\s)"),
+                            "\\1\\2\n\\3"));
+
         if (gConfigs::Mode.value() == enuAppMode::Server){
             connect(&ConfigManager::instance(),
                     &ConfigManager::sigValidateAgent,
@@ -64,7 +74,9 @@ void appE4SMT::slotExecute()
                                    gConfigs::Language.value(),
                                    0,
                                    false,
-                                   (gConfigs::NoSpellcorrector.value() ? false : true)
+                                   (gConfigs::NoSpellcorrector.value() ? false : true),
+                                   QList<enuTextTags::Type>(),
+                                   SentenceBreakReplacements
                                    ).toUtf8().constData()<<std::endl;
                     break;
                 case enuAppMode::IXML2Text:
@@ -78,8 +90,10 @@ void appE4SMT::slotExecute()
                                        SpellCorrected,
                                        gConfigs::Language.value(),
                                        0,
-                                       false,
-                                       (gConfigs::NoSpellcorrector.value() ? false : true)
+                                       gConfigs::Interactive.value(),
+                                       (gConfigs::NoSpellcorrector.value() ? false : true),
+                                       QList<enuTextTags::Type>(),
+                                       SentenceBreakReplacements
                                        )).toUtf8().constData()<<std::endl;
                     break;
                 case enuAppMode::Normalize:
@@ -95,10 +109,10 @@ void appE4SMT::slotExecute()
                 TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());
                 QFileInfo InputFileInfo(gConfigs::InputFile.value());
                 this->processFile(gConfigs::InputFile.value(),
-                                  (gConfigs::OutputDir.value().isEmpty() ?
-                                      InputFileInfo.path() :
-                                      gConfigs::OutputDir.value())
-                                  + '/' + InputFileInfo.fileName());
+                                  (gConfigs::OutputPath.value().isEmpty() ?
+                                      InputFileInfo.path() + '/' + InputFileInfo.fileName():
+                                      gConfigs::OutputPath.value())
+                                  );
             }else if (gConfigs::InputDir.value().size()){
                 TargomanTextProcessor::instance().init(ConfigManager::instance().configSettings());
                 this->processDir("/./", gConfigs::InputDir.value());
@@ -150,7 +164,8 @@ Targoman::Common::Configuration::stuRPCOutput appE4SMT::rpcText2IXML(const QVari
                                                        0,
                                                        false,
                                                        UseSpellCorrector,
-                                                       RemovingTags);
+                                                       RemovingTags,
+                                                       SentenceBreakReplacements);
     QVariantMap Args;
     Args.insert("spell",WasSpellCorrected);
     return stuRPCOutput(Text, Args);
@@ -187,7 +202,9 @@ Targoman::Common::Configuration::stuRPCOutput appE4SMT::rpcTokenize(const QVaria
                                                        0,
                                                        false,
                                                        UseSpellCorrector,
-                                                       RemovingTags);
+                                                       RemovingTags,
+                                                       SentenceBreakReplacements);
+
     Text = TargomanTextProcessor::instance().ixml2Text(Text);
     QVariantMap Args;
     Args.insert("spell",WasSpellCorrected);
@@ -202,24 +219,28 @@ void appE4SMT::processDir(const QString &_relativeDir, const QString& _basePath)
                 QDir::Name | QDir::DirsFirst);
     foreach (const QFileInfo& FileInfo, SelectedFiles){
         if (FileInfo.isDir()){
-            if(gConfigs::OutputDir.value().size())
-                QDir().mkpath(gConfigs::OutputDir.value() + '/' + _relativeDir + '/' + FileInfo.fileName());
+            if(gConfigs::OutputPath.value().size())
+                QDir().mkpath(gConfigs::OutputPath.value() + '/' + _relativeDir + '/' + FileInfo.fileName());
             this->processDir(_relativeDir + "/" + FileInfo.fileName(), _basePath);
         }else{
             if (gConfigs::IncludePattern.value().pattern().size() &&
                     gConfigs::IncludePattern.value().exactMatch(FileInfo.fileName()) == false)
                 continue;
             this->processFile(gConfigs::InputDir.value() + '/' + _relativeDir + '/' + FileInfo.fileName(),
-                              (gConfigs::OutputDir.value().isEmpty() ?
-                                  gConfigs::InputDir.value()  : gConfigs::OutputDir.value())
+                              (gConfigs::OutputPath.value().isEmpty() ?
+                                  gConfigs::InputDir.value()  : gConfigs::OutputPath.value())
                               + '/' + _relativeDir + '/' + FileInfo.fileName());
         }
     }
 }
 
 #define OPEN_OUT_STREAM(_extension) \
-    if (gConfigs::OutputDir.value().isEmpty()) OutFile.open(stdout, QIODevice::WriteOnly); \
-    else{ OutFile.setFileName(_outFile + '.' + _extension); \
+    if (gConfigs::OutputPath.value().isEmpty()) OutFile.open(stdout, QIODevice::WriteOnly); \
+    else{ \
+          if (gConfigs::InputFile.value().size()) \
+                OutFile.setFileName(_outFile); \
+          else \
+                OutFile.setFileName(_outFile + '.' + _extension); \
           if(OutFile.exists() && gConfigs::Overwrite.value() == false){ \
              TargomanWarn(1, "Ignoring save to existent file: "<<OutFile.fileName()); \
              return; } \
@@ -247,14 +268,20 @@ void appE4SMT::processFile(const QString& _inputFile, const QString &_outFile)
                            gConfigs::Language.value(),
                            0,
                            false,
-                           (gConfigs::NoSpellcorrector.value() ? false : true)
+                           (gConfigs::NoSpellcorrector.value() ? false : true),
+                           QList<enuTextTags::Type>(),
+                           SentenceBreakReplacements
                            )<<"\n";
         break;
     case enuAppMode::IXML2Text:
         OPEN_OUT_STREAM("txt");
         foreach (const QString& Line, this->retrieveFileItems(_inputFile))
             OutStream<<TargomanTextProcessor::instance().ixml2Text(
-                           Line)<<"\n";
+                           Line,
+                           "",
+                           true,
+                           true,
+                           false)<<"\n";
         break;
     case enuAppMode::Tokenize:
         OPEN_OUT_STREAM("tokenized");
@@ -266,8 +293,14 @@ void appE4SMT::processFile(const QString& _inputFile, const QString &_outFile)
                                gConfigs::Language.value(),
                                0,
                                false,
-                               (gConfigs::NoSpellcorrector.value() ? false : true)
-                               ))<<"\n";
+                               (gConfigs::NoSpellcorrector.value() ? false : true),
+                               QList<enuTextTags::Type>(),
+                               SentenceBreakReplacements
+                               ),
+                           "",
+                           false,
+                           false,
+                           false)<<"\n";
         break;
     case enuAppMode::Normalize:
         OPEN_OUT_STREAM("normalized");

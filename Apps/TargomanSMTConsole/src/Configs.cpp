@@ -38,14 +38,15 @@ tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
             switch(enuAppMode::toEnum(_item.toVariant().toString().toLatin1().constData())){
             case enuAppMode::Translation:
                 return true;
-            case enuAppMode::Training:
-                _errorMessage = "Targoman training is not implemented yet!!!";
-                return false;
+            case enuAppMode::NBestTranslations:
+                return true;
             case enuAppMode::MakeBinary:
                 if (gConfigs::OutputFile.value().isEmpty()){
-                    _errorMessage = "No output file defined to save binary file";return false;
+                    _errorMessage = "No output file defined to save binary file";
+                    return false;
                 }else if (ConfigManager::instance().getConfig("/Modules/RuleTable").toString().contains("Binary")){
-                    _errorMessage = "Binary rule table table can not be saved again";return false;
+                    _errorMessage = "The input rule table is already binary";
+                    return false;
                 }else
                     return true;
                 break;
@@ -60,6 +61,15 @@ tmplConfigurable<enuAppMode::Type> gConfigs::Mode(
         (enuConfigSource::Type)(
             enuConfigSource::Arg  |
             enuConfigSource::File));
+
+tmplConfigurable<quint16>     gConfigs::NBestPathCount(
+        gConfigs::appConfig("NBestPathCount"),
+        "Number of translations to return as NBest",
+        15,
+        ReturnTrueCrossValidator(),
+        "n",
+        "NBESTPATH_COUNT",
+        "nbestpath-count");
 
 tmplConfigurable<QString>     gConfigs::InputFile(
         gConfigs::appConfig("InputFile"),
@@ -76,7 +86,7 @@ tmplConfigurable<QString>     gConfigs::InputText(
         gConfigs::appConfig("InputText"),
         "Input Text to translate",
         "",
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "i",
         "TEXT",
         "input-text");
@@ -96,7 +106,7 @@ tmplConfigurable<quint16>     gConfigs::MaxThreads(
         gConfigs::appConfig("MaxThreads"),
         "Maximum concurrent translations",
         5,
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "t",
         "MAX_THREADS",
         "max-threads");

@@ -53,14 +53,14 @@ tmplConfigurable<enuBinaryLoadMode::Type> clsBinaryRuleTable::LoadMode(
         MAKE_CONFIG_PATH("LoadMode"),
         "Binary file load mode.",
         enuBinaryLoadMode::OnDemand,
-        ReturnTrueCrossValidator);
+        ReturnTrueCrossValidator());
 
 tmplRangedConfigurable<quint32> clsBinaryRuleTable::MaxCachedItems(
         MAKE_CONFIG_PATH("MaxCachedItems"),
         "Maximum items to be cached",
         1,100000000,
         100000,
-        ReturnTrueCrossValidator);
+        ReturnTrueCrossValidator());
 
 TARGOMAN_REGISTER_MODULE(clsBinaryRuleTable);
 
@@ -104,7 +104,7 @@ void clsBinaryRuleTable::initializeSchema()
 
         // TODO: Implement a more decent approach!
         if(Columns.contains("BackwardMonotone"))
-            intfRuleTable::setReorderingAndAlignmentAvailability(true, false);
+            intfRuleTable::setReorderingAndAlignmentAvailability(true, true);
 
         //Load PhraseTable column names
         ColumnCount = this->InputStream->read<int>();

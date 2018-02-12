@@ -37,7 +37,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanSMTConsole, Common::exTargomanBase);
 
 TARGOMAN_DEFINE_ENHANCED_ENUM(enuAppMode,
                               Translation,
-                              Training,
+                              NBestTranslations,
                               MakeBinary
                               );
 }
@@ -53,6 +53,7 @@ public:
     static inline Common::Configuration::clsConfigPath appConfig(const QString& _name){
         return Common::Configuration::clsConfigPath("App/" + _name);
     }
+    static Common::Configuration::tmplConfigurable<quint16>             NBestPathCount;
     static Common::Configuration::tmplConfigurable<enuAppMode::Type>    Mode;
     static Common::Configuration::tmplConfigurable<QString>             InputFile;
     static Common::Configuration::tmplConfigurable<QString>             InputText;

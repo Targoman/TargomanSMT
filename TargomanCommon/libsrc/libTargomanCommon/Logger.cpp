@@ -93,7 +93,7 @@ tmplConfigurable<QString> Identifier(
         clsConfigPath(Logger::moduleName() + "/" + "Identifier"),
         "An identifier to be printed on every log line. used to distinguish between master and slave logs",
         "",
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "",
         "",
         "log-identifier",

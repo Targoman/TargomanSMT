@@ -32,6 +32,12 @@
 
 cd $(dirname $0)
 
+N_CORES_TO_USE=$(cat /proc/cpuinfo| grep processor | wc -l)
+N_CORES_TO_USE=$((N_CORES_TO_USE - 1))
+if [ $N_CORES_TO_USE -lt 1 ]; then
+  N_CORES_TO_USE=1
+fi
+
 QMAKE_COMMAND=qmake-qt5
 if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
   QMAKE_COMMAND=qmake
@@ -41,7 +47,7 @@ if [ -z "$(which $QMAKE_COMMAND 2> /dev/null)" ]; then
   fi
 fi
 
-echo Using $QMAKE_COMMAND ...
+echo "Using $QMAKE_COMMAND and $N_CORES_TO_USE processing cores for build ..."
 
 #TODO -Werror
 Projects="ExternalToolsAndLibs/
@@ -72,7 +78,7 @@ if [ "$1" == "full" ]; then
     if [ -f *.pro ]; then
       $QMAKE_COMMAND $QMAKE_CONFIG
     fi
-    make -j 8
+    make -j $N_CORES_TO_USE
     if [ $? -ne 0 ];then
       echo -e "\n\e[31m!!!!!!!!!!!!!!!!! $Proj Build Has failed!!!!!!!!!!!!!!!! \e[39m\n"
       exit 1;
@@ -96,7 +102,7 @@ else
   mkdir -p out/include
   for Proj in $Projects
   do
-    cd  $BasePath/$Proj
+    cd  "$BasePath/$Proj"
     $QMAKE_COMMAND $QMAKE_CONFIG
     make -j 8
     if [ $? -ne 0 ];then
@@ -106,6 +112,10 @@ else
       echo -e "\n\e[32m Module $Proj Compiled Successfully\e[39m\n"
     fi
   done
-
 fi
 
+cd "$BasePath"
+mkdir -p ./out/scripts
+for Path in ./Scripts/*; do
+  ln -snf "../../$Path" "./out/scripts/${Path#./Scripts/}"
+done

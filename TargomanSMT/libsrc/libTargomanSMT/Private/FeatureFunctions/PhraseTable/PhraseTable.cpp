@@ -96,9 +96,10 @@ void PhraseTable::initialize(QSharedPointer<QSettings> _configSettings)
  * @brief PhraseTable::scoreSearchGraphNode   Sets CostElements values and compute phrase cost.
  * @return Returns score of phrase table for this search graph node.
  */
-Cost_t PhraseTable::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchGraphNode &_newHypothesisNode, QCryptographicHash &_hash) const
+Cost_t PhraseTable::scoreSearchGraphNodeAndUpdateFutureHash(clsSearchGraphNode &_newHypothesisNode, const InputDecomposer::Sentence_t& _input, QCryptographicHash &_hash) const
 {
     Q_UNUSED(_hash);
+    Q_UNUSED(_input)
     if(gConfigs.WorkingMode.value() != enuWorkingModes::Decode) {
         clsPhraseTableFeatureData* Data = new clsPhraseTableFeatureData(this->ColumnNames.size());
         _newHypothesisNode.setFeatureFunctionData(this->DataIndex, Data);

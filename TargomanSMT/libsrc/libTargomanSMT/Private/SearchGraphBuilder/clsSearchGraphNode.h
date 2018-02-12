@@ -28,6 +28,7 @@
 #define TARGOMAN_CORE_PRIVATE_SEARCHGRAPHBUILDER_CLSSEARCHGRAPHNODE_H
 
 #include "libTargomanCommon/Types.h"
+#include "Private/InputDecomposer/clsInput.h"
 #include "Private/Proxies/LanguageModel/intfLMSentenceScorer.hpp"
 #include "Private/RuleTable/clsTargetRule.h"
 
@@ -40,6 +41,7 @@ TARGOMAN_ADD_EXCEPTION_HANDLER(exSearchGraph, exTargomanCore);
 
 class clsSearchGraphNodeData;
 
+static int TotalNodeNumber;
 /**
  * @brief Every feature function has some data. This base class is an interface to hold function basic data.
  * every feature function oveloads this class to store its feature specific data.
@@ -60,6 +62,12 @@ public:
 
     inline const QVector<Common::Cost_t>&     costElements() const {return this->CostElements;}
 
+    inline void  setCostElements(const QVector<Common::Cost_t>& _costs){
+       for(int i = 0; i < CostElements.size(); i++)
+            CostElements.replace(i, _costs.at(i));
+
+    }
+
 public:
     QVector<Common::Cost_t>     CostElements;           /**< Feature fucntion stores its costs to this vector. */
 };
@@ -70,7 +78,8 @@ class clsSearchGraphNode
 {
 public:
     clsSearchGraphNode();
-    clsSearchGraphNode(const clsSearchGraphNode& _prevNode,
+    clsSearchGraphNode(const InputDecomposer::Sentence_t& _sentence,
+                       const clsSearchGraphNode& _prevNode,
                        quint16 _startPos,
                        quint16 _endPos,
                        const Coverage_t &_newCoverage,
@@ -99,6 +108,9 @@ public:
     inline bool isInvalid() const;
     inline void setFeatureFunctionData(size_t _index, intfFeatureFunctionData* _data);
     inline const intfFeatureFunctionData* featureFunctionDataAt(size_t _index) const;
+    inline intfFeatureFunctionData& featureFunctionData(size_t _index);
+    inline const QList<clsSearchGraphNode> getCombindedNodes() const;
+    inline int getNodeNum() const;
 
     inline bool isFinal();
 
@@ -115,7 +127,32 @@ public:
 
 public:
     bool operator == (const clsSearchGraphNode& _other) const {
+////        return qHash(this->futureStateHash()) == qHash(_other.futureStateHash());
         return this->Data == _other.Data;
+    }
+
+    bool operator < (const clsSearchGraphNode &_other) const
+    {
+        if(this->sourceRangeEnd() < _other.sourceRangeEnd())
+            return true;
+        else if(this->sourceRangeEnd() > _other.sourceRangeEnd())
+            return false;
+//        for(auto FeatureIter = gConfigs.ActiveFeatureFunctions.constBegin();
+//            FeatureIter != gConfigs.ActiveFeatureFunctions.constEnd(); ++FeatureIter) {
+//            int ComparisonResult = FeatureIter.value()->compareStates(*this, _other);
+////                FeatureIter.value();
+//            if(ComparisonResult < 0)
+//                return true;
+//            else if(ComparisonResult > 0)
+//                return false;
+//        }
+
+        int ComparisonResult = compareSearchGraphNodeStates(*this, _other);
+        if(ComparisonResult < 0)
+              return true;
+        else if(ComparisonResult > 0)
+              return false;
+        return false;
     }
 
 private:
@@ -124,6 +161,7 @@ private:
     friend class UnitTestNameSpace::clsUnitTest;
 };
 
+extern InputDecomposer::Sentence_t InvalidSentence;
 
 /**
  * @brief The clsSearchGraphNodeData class is responsible for storing and managing data member of clsSearchGraphNode class.
@@ -136,6 +174,7 @@ public:
      * @brief This is the default constructor of this class.
      */
     clsSearchGraphNodeData() :
+        Sentence(InvalidSentence),
         IsFinal(false),
         Cost(0),
         RestCost(0),
@@ -145,7 +184,8 @@ public:
         SourceRangeBegin(0),
         SourceRangeEnd(0),
         PrevNode(NULL),
-        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL)
+        FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL),
+        NodeNumber(0)
     {
     }
 
@@ -160,13 +200,15 @@ public:
      * @param _isFinal          Has this node covered translation for all word of input sentence.
      * @param _restCost         approximated cost of rest of translation.
      */
-    clsSearchGraphNodeData(const clsSearchGraphNode& _prevNode,
+    clsSearchGraphNodeData(const InputDecomposer::Sentence_t& _sentence,
+                           const clsSearchGraphNode& _prevNode,
                            quint8 _startPos,
                            quint8 _endPos,
                            const Coverage_t &_newCoverage,
                            const RuleTable::clsTargetRule &_targetRule,
                            bool _isFinal,
                            Common::Cost_t _restCost):
+        Sentence(_sentence),
         IsFinal(_isFinal),
         Cost(_prevNode.getCost()),
         RestCost(_restCost),
@@ -177,13 +219,16 @@ public:
         SourceRangeEnd(_endPos),
         PrevNode(&_prevNode),
         FeatureFunctionsData(clsSearchGraphNodeData::RegisteredFeatureFunctionCount, NULL)
-    {}
+    {
+                NodeNumber = TotalNodeNumber++;
+    }
 
     /**
      * @brief Copy constructor of this class.
      */
     clsSearchGraphNodeData(clsSearchGraphNodeData& _other) :
         QSharedData(_other),
+        Sentence(_other.Sentence),
         FutureStateHash(_other.FutureStateHash),
         IsFinal(_other.IsFinal),
         Cost(_other.Cost),
@@ -197,6 +242,7 @@ public:
         CombinedNodes(_other.CombinedNodes),
         FeatureFunctionsData(_other.FeatureFunctionsData.size())
     {
+        NodeNumber = TotalNodeNumber++;
         for(int i = 0; i < this->FeatureFunctionsData.size(); ++i)
             this->FeatureFunctionsData[i] = _other.FeatureFunctionsData.at(i)->copy();
     }
@@ -209,6 +255,7 @@ public:
     }
 
 public:
+    const InputDecomposer::Sentence_t&  Sentence;
     QByteArray                          FutureStateHash;
     bool                                IsFinal;                        /**< Has this node covered translation for all word of input sentence.*/
     Common::Cost_t                      Cost;                           /**< Cost of translation up to now.*/
@@ -222,10 +269,12 @@ public:
     QList<clsSearchGraphNode>           CombinedNodes;                  /**< List of nodes that are combined with this node.*/
     QVector<intfFeatureFunctionData*>   FeatureFunctionsData;           /**< Every feature function has a special data. Each index of this list stores data for one the feature function. Each feature function knows his own index in this list.  */
     static  size_t                      RegisteredFeatureFunctionCount; /**< Number of active feature functions.*/
+    int                                 NodeNumber;
 
     friend class UnitTestNameSpace::clsUnitTest;
 
 };
+
 
 inline QByteArray clsSearchGraphNode::futureStateHash() const {
     return this->Data->FutureStateHash;
@@ -260,6 +309,9 @@ inline bool clsSearchGraphNode::isRecombined() const {return this->Data->IsRecom
 inline bool clsSearchGraphNode::isInvalid() const {return this->Data == InvalidSearchGraphNodeData;}
 inline bool clsSearchGraphNode::isFinal(){return this->Data->IsFinal;}
 
+inline const QList<clsSearchGraphNode> clsSearchGraphNode::getCombindedNodes() const {return this->Data->CombinedNodes;}
+inline int clsSearchGraphNode::getNodeNum() const { return this->Data->NodeNumber; }
+
 #ifdef TARGOMAN_SHOW_DEBUG
 /**
  * @brief Returns a list of cost of all feature funcitons.
@@ -289,6 +341,11 @@ inline void clsSearchGraphNode::setFeatureFunctionData(size_t _index, intfFeatur
 const intfFeatureFunctionData *clsSearchGraphNode::featureFunctionDataAt(size_t _index) const {
     return this->Data->FeatureFunctionsData.at(_index);
 }
+
+intfFeatureFunctionData& clsSearchGraphNode::featureFunctionData(size_t _index){
+    return *this->Data->FeatureFunctionsData[_index];
+}
+
 
 int compareSearchGraphNodeStates(const clsSearchGraphNode& _first, const clsSearchGraphNode& _second);
 

@@ -101,7 +101,8 @@ unix {
                                /usr/lib \
                                /usr/lib64 \
                                /usr/local/lib \
-                               /usr/local/lib64
+                               /usr/local/lib64 \
+                               /lib/x86_64-linux-gnu
 }
 
 QMAKE_LIBDIR +=  $$DependencyLibPaths
@@ -141,6 +142,7 @@ defineTest(addSubdirs) {
 }
 
 QMAKE_CXXFLAGS += -std=c++11
+CONFIGS += c++11
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 WITH_QJsonRPC{

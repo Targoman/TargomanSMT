@@ -39,7 +39,7 @@ tmplRangedConfigurable<quint16> TSMonitor::UpdateInterval(
         "Interval to collect information from servers in seconds must be less than 100",
         1,100,
         1,
-        ReturnTrueCrossValidator,
+        ReturnTrueCrossValidator(),
         "","","",
         Common::Configuration::enuConfigSource::File
         );

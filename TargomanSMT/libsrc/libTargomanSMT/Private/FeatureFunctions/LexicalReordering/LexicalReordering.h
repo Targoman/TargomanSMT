@@ -28,7 +28,7 @@
 #define TARGOMAN_CORE_PRIVATE_FEATUREFUNCTIONS_LEXICALREORDERING_H
 
 #include "Private/FeatureFunctions/intfFeatureFunction.hpp"
-
+#include<iostream>
 namespace Targoman{
 namespace SMT {
 namespace Private{
@@ -55,10 +55,9 @@ public:
     ~LexicalReordering(){}
     void initialize(QSharedPointer<QSettings>);
 
-    void newSentence(const InputDecomposer::Sentence_t &inputSentence);
-
     Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(
             SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,
+            const InputDecomposer::Sentence_t& _input,
             QCryptographicHash& _hash) const;
     Common::Cost_t getRestCostForPosition(const Coverage_t& _coverage, size_t _beginPos, size_t endPos) const {
         Q_UNUSED(_coverage);
@@ -68,6 +67,7 @@ public:
     }
     Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                       unsigned _sourceEnd,
+                                      const InputDecomposer::Sentence_t& _input,
                                       const RuleTable::clsTargetRule& _targetRule) const;
 
     int compareStates(const SearchGraphBuilder::clsSearchGraphNode &_first, const SearchGraphBuilder::clsSearchGraphNode &_second) const;

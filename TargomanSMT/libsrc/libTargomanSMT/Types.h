@@ -44,30 +44,52 @@ using namespace Targoman::Common;
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTargomanCore, Targoman::Common::exTargomanBase);
 
+TARGOMAN_DEFINE_ENHANCED_ENUM(enuOutputFormat,
+    JustBestTranslation,
+    BestTranslationAndPhraseSuggestions,
+    NBestTranslations
+);
+
 struct stuTranslationOutput{
 
-    struct stuMetaInfo{
+    struct stuPhraseAlternatives {
         stuPos      SourceWordsPos;
         stuPos      TargetWordsPos;
-        QStringList TranslationOptions;
+        QStringList Alternatives;
 
-        stuMetaInfo(const stuPos& _sourceWordsPos,
+        stuPhraseAlternatives(const stuPos& _sourceWordsPos,
                     const stuPos& _targetWordsPos,
                     const QStringList&  _translationOptions){
             this->SourceWordsPos     = _sourceWordsPos;
             this->TargetWordsPos     = _targetWordsPos;
-            this->TranslationOptions = _translationOptions;
+            this->Alternatives = _translationOptions;
         }
     };
 
-    QString             Translation;
-    QString             TaggedSource;
-    QString             OriginalText;
-    bool                SpellCorrected;
-    QList<stuMetaInfo>  MetaInfo;
+    struct stuCostElement {
+        QString FeatureName;
+        Cost_t  Cost;
+        stuCostElement(const QString _featureName, const Cost_t _cost) {
+            this->FeatureName = _featureName;
+            this->Cost = _cost;
+        }
+    };
+
+    struct stuCostElements {
+        QList<stuCostElement> Elements;
+        Cost_t Total;
+        int size() const { return this->Elements.size(); }
+    };
+
+    QStringList                     Translations;
+    QString                         TaggedSource;
+    QString                         OriginalSource;
+    bool                            SpellCorrected;
+    QList<stuPhraseAlternatives>    BestTranslationPhraseAlternatives;
+    QList<stuCostElements>           TranslationsCostElements;
 };
 
-typedef stuTranslationOutput::stuMetaInfo               TranslationMetaInfo_t;
+typedef stuTranslationOutput::stuPhraseAlternatives               PhraseAlternatives_t;
 
 }
 }

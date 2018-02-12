@@ -44,6 +44,8 @@ HEADERS += \
     libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/OOVDefaultHandlers.h \
     libTargomanSMT/Private/RuleTable/clsMosesPlainRuleTable.h \
     libTargomanSMT/Private/FeatureFunctions/LanguageModel/LanguageModel.h \
+    libTargomanSMT/Private/FeatureFunctions/OperationSequenceModel/OperationSequenceModel.h \
+    libTargomanSMT/Private/FeatureFunctions/OperationSequenceModel/OSMState.h \
     libTargomanSMT/Private/FeatureFunctions/ReorderingJump/ReorderingJump.h \
     libTargomanSMT/Types.h \
     libTargomanSMT/Private/PrivateTypes.h \
@@ -73,7 +75,7 @@ HEADERS += \
     $$PWD/libTargomanSMT/Private/Proxies/Transliteration/TargomanTransliteratorProxy.h \
     $$PWD/libTargomanSMT/Private/Proxies/NamedEntityRecognition/ZhangMaxEntProxy.h \
     $$PWD/libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/TransliterateNamedEntities.h \
-    $$PWD/libTargomanSMT/Private/N-BestFinder/NBestPath.h
+    $$PWD/libTargomanSMT/Private/N-BestFinder/NBestPaths.h \
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 SOURCES += libID.cpp \
@@ -93,6 +95,8 @@ SOURCES += libID.cpp \
     libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/OOVDefaultHandlers.cpp \
     libTargomanSMT/Private/RuleTable/clsMosesPlainRuleTable.cpp \
     libTargomanSMT/Private/FeatureFunctions/LanguageModel/LanguageModel.cpp \
+    libTargomanSMT/Private/FeatureFunctions/OperationSequenceModel/OperationSequenceModel.cpp \
+    libTargomanSMT/Private/FeatureFunctions/OperationSequenceModel/OSMState.cpp \
     libTargomanSMT/Private/FeatureFunctions/ReorderingJump/ReorderingJump.cpp \
     libTargomanSMT/Private/FeatureFunctions/WordPenalty/WordPenalty.cpp \
     libTargomanSMT/Private/RuleTable/clsBinaryRuleTable.cpp \
@@ -115,7 +119,7 @@ SOURCES += libID.cpp \
     $$PWD/libTargomanSMT/Private/Proxies/Transliteration/TargomanTransliteratorProxy.cpp \
     $$PWD/libTargomanSMT/Private/Proxies/NamedEntityRecognition/ZhangMaxEntProxy.cpp \
     $$PWD/libTargomanSMT/Private/SpecialTokenHandler/OOVHandler/TransliterateNamedEntities.cpp \
-    $$PWD/libTargomanSMT/Private/N-BestFinder/NBestPath.cpp
+    $$PWD/libTargomanSMT/Private/N-BestFinder/NBestPaths.cpp
 
 # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 OTHER_FILES +=

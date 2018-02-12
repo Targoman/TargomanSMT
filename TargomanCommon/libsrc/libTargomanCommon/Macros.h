@@ -28,6 +28,7 @@
 #include <string>
 #include <QString>
 #include <cstring>
+#include <functional>
 
 /********************************************************************************************
   Environmet detection macros

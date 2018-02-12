@@ -41,7 +41,7 @@ void clsTranslationJob::run()
 {
     TranslationWriter::instance().writeTranslation(
                 this->Index,
-                Translator::translate(this->SourceString,true).Translation);
+                Translator::translate(this->SourceString, enuOutputFormat::JustBestTranslation).Translations.first());
 }
 
 }

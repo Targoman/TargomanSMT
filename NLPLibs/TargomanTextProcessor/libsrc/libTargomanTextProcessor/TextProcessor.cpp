@@ -104,7 +104,8 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
                                          quint32 _lineNo,
                                          bool _interactive,
                                          bool _useSpellCorrector,
-                                         QList<enuTextTags::Type> _removingTags) const
+                                         QList<enuTextTags::Type> _removingTags,
+                                         QList<stuIXMLReplacement> _replacements) const
 {
     if (!Initialized)
         throw exTextProcessor("Text Processor has not been initialized");
@@ -119,6 +120,9 @@ QString TargomanTextProcessor::text2IXML(const QString &_inStr,
                 _lineNo,
                 _interactive,
                 _useSpellCorrector);
+
+    foreach(const stuIXMLReplacement& Replacement, _replacements)
+        IXML.replace(Replacement.SearchRegExp, Replacement.AfterString);
 
     foreach(enuTextTags::Type Tag, _removingTags)
         IXML.remove(
@@ -185,7 +189,7 @@ QStringList getIXMLLines(QString& _data)
  * @param _ixml
  * @return
  */
-QString TargomanTextProcessor::ixml2Text(const QString &_ixml, const QString& _lang) const
+QString TargomanTextProcessor::ixml2Text(const QString &_ixml, const QString& _lang, bool _detokenize, bool _hinidiDigits, bool _breakSentences) const
 {
     if (!Initialized)
         throw exTextProcessor("Text Processor has not been initialized");
@@ -207,41 +211,49 @@ QString TargomanTextProcessor::ixml2Text(const QString &_ixml, const QString& _l
     QStringList Lines = getIXMLLines (IXML);
     for (int i = 0; i < Lines.count (); ++i)
     {
+        //remove first spaces
+        while(Lines[i].size() && Lines[i].at(0) == ' ')
+            Lines[i].remove(0,1);
+
         Lines[i] = Lines[i].replace (RxSuffixes, "\\1 ");
         Lines[i] = Lines[i].replace (RxAllIXMLTags,"");
 
-        int Pos=0;
-        while ((Pos=RxDetokenDQuote.indexIn(Lines[i], 0)) != -1) {
-            Lines[i]=
-                    Lines[i].mid(0,Pos) +
-                    " \"" + RxDetokenDQuote.cap(1) + "\" " +
-                    Lines[i].mid(Pos + RxDetokenDQuote.matchedLength());
-        }
+        if (_detokenize){
+            int Pos=0;
+            while ((Pos=RxDetokenDQuote.indexIn(Lines[i], 0)) != -1) {
+                Lines[i]=
+                        Lines[i].mid(0,Pos) +
+                        " \"" + RxDetokenDQuote.cap(1) + "\" " +
+                        Lines[i].mid(Pos + RxDetokenDQuote.matchedLength());
+            }
 
-        Pos=0;
-        while ((Pos=RxDetokenQuote.indexIn(Lines[i], 0)) != -1) {
-            Lines[i]=
-                    Lines[i].mid(0,Pos) +
-                    " '" + RxDetokenQuote.cap(1) + "' " +
-                    Lines[i].mid(Pos + RxDetokenQuote.matchedLength());
+            Pos=0;
+            while ((Pos=RxDetokenQuote.indexIn(Lines[i], 0)) != -1) {
+                Lines[i]=
+                        Lines[i].mid(0,Pos) +
+                        " '" + RxDetokenQuote.cap(1) + "' " +
+                        Lines[i].mid(Pos + RxDetokenQuote.matchedLength());
+            }
         }
-
         Lines[i] = Lines[i].replace ("&gt;", ">");
         Lines[i] = Lines[i].replace ("&lt;", "<");
         Lines[i] = Lines[i].replace ("&amp;", "&");
-        Lines[i] = Lines[i].replace (" .", ".");
 
-        Lines[i] = Lines[i].replace (" .", ".");
-        Lines[i] = Lines[i].replace (" ,", ",");
-        Lines[i] = Lines[i].replace (" ;", ";");
-        Lines[i] = Lines[i].replace (" :", ":");
-        Lines[i] = Lines[i].replace (" ?", "?");
-        Lines[i] = Lines[i].replace (" !", "!");
-        Lines[i] = Lines[i].replace (" )", ")");
-        Lines[i] = Lines[i].replace (") ", ")");
-        Lines[i] = Lines[i].replace ("( ", "(");
+        if (_detokenize){
+            Lines[i] = Lines[i].replace ("  ", " ");
+            Lines[i] = Lines[i].replace ("  ", " ");
+            Lines[i] = Lines[i].replace (" .", ".");
+            Lines[i] = Lines[i].replace (" ,", ",");
+            Lines[i] = Lines[i].replace (" ;", ";");
+            Lines[i] = Lines[i].replace (" :", ":");
+            Lines[i] = Lines[i].replace (" ?", "?");
+            Lines[i] = Lines[i].replace (" !", "!");
+            Lines[i] = Lines[i].replace (" )", ")");
+            Lines[i] = Lines[i].replace (") ", ")");
+            Lines[i] = Lines[i].replace ("( ", "(");
+        }
 
-        if (LangCode && (!strcmp(LangCode, "fa") || !strcmp(LangCode,"ar"))){
+        if (_hinidiDigits && (LangCode && (!strcmp(LangCode, "fa") || !strcmp(LangCode,"ar")))){
             static QString ArabicCharacters=QStringLiteral("۰۱۲۳۴۵۶۷۸۹؟؛،");
             for (int j=0; j<Lines[i].size(); ++j){
                 switch(Lines[i][j].unicode()){
@@ -262,7 +274,10 @@ QString TargomanTextProcessor::ixml2Text(const QString &_ixml, const QString& _l
             }
         }
     }
-    return Lines.join("\n");
+    if (_breakSentences)
+        return Lines.join("\n");
+    else
+        return Lines.join(" ");
 }
 
 /**

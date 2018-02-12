@@ -61,7 +61,11 @@ QString TargomanTransliteratorProxy::transliterate(QString _word)
 {
     Q_UNUSED(_word);
     QString intermediateSource = _word.split("", QString::SkipEmptyParts).join(" ");
-    QString intermediateTarget = Targoman::SWT::Translator::translate(intermediateSource, true, false).Translation;
+    Targoman::SWT::stuTranslationOutput transliterationOutput =
+            Targoman::SWT::Translator::translate(
+                intermediateSource, Targoman::SWT::enuOutputFormat::JustBestTranslation,
+                false);
+    QString intermediateTarget = transliterationOutput.Translations.first();
     return intermediateTarget.replace(" ", "");
 }
 

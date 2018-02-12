@@ -80,15 +80,16 @@ Cost_t clsLexicalHypothesisContainer::getWorstCost() const
  */
 bool clsLexicalHypothesisContainer::insertHypothesis(clsSearchGraphNode& _node)
 {
-    QPair<clsSearchGraphNode, bool> InsertionResult = this->Data->Nodes.insert(_node);
-    if(InsertionResult.second == false) {
-        if(clsLexicalHypothesisContainer::KeepRecombined.value())
-            InsertionResult.first.recombine(_node);
-        else if(InsertionResult.first.getTotalCost() > _node.getTotalCost())
-            InsertionResult.first.swap(_node);
-        return false;
-    }
-    return true;
+    bool InsertionResult = this->Data->Nodes.insert(_node, clsLexicalHypothesisContainer::KeepRecombined.value());
+    return InsertionResult;
+//    if(InsertionResult.second == false) {
+//        if(clsLexicalHypothesisContainer::KeepRecombined.value())
+//            InsertionResult.first.recombine(_node);
+//        else if(InsertionResult.first.getTotalCost() > _node.getTotalCost())
+//            InsertionResult.first.swap(_node);
+//        return false;
+//    }
+//    return true;
 }
 
 /**

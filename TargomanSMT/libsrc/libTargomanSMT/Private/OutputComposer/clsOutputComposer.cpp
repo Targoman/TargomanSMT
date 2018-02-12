@@ -26,6 +26,7 @@
 
 #include "clsOutputComposer.h"
 #include "Private/N-BestFinder/NBestSuggestions.h"
+#include "Private/N-BestFinder/NBestPaths.h"
 
 namespace Targoman{
 namespace SMT {
@@ -43,12 +44,29 @@ using namespace RuleTable;
  * this function is an interface that calls N-Best Finder and Input Decomposer modules and puts their return values together in a well formed manner
  * @return                                      created translation output strucutre
  */
-stuTranslationOutput clsOutputComposer::translationOutput()
+stuTranslationOutput clsOutputComposer::getTranslationOutput(enuOutputFormat::Type _outputFormat)
+{
+    switch(_outputFormat) {
+    case enuOutputFormat::BestTranslationAndPhraseSuggestions:
+        return this->bestTranslationAndPhraseSuggestions();
+    case enuOutputFormat::NBestTranslations:
+        return this->nBestTranslations();
+    default:
+        return this->justBestTranslation();
+    }
+}
+
+stuTranslationOutput clsOutputComposer::justBestTranslation()
 {
     stuTranslationOutput Output;
-
-    Output.Translation = this->translationString();
     Output.TaggedSource = this->InputDecomposerRef.normalizedString();
+    Output.Translations.append(this->nodeTranslation(this->SearchGraphRef.goalNode()));
+    return Output;
+}
+
+stuTranslationOutput clsOutputComposer::bestTranslationAndPhraseSuggestions()
+{
+    stuTranslationOutput Output = this->justBestTranslation();
 
     NBestSuggestions::Container_t NBestSuggestions =
             NBestSuggestions::retrieve(this->SearchGraphRef);
@@ -63,8 +81,8 @@ stuTranslationOutput clsOutputComposer::translationOutput()
                 TargetOptions.append(TargetString);
         }
 
-        Output.MetaInfo.append(
-                    TranslationMetaInfo_t(
+        Output.BestTranslationPhraseAlternatives.append(
+                    PhraseAlternatives_t(
                         NBestIter.key(),
                         NBestIter.value().Pos,
                         TargetOptions));
@@ -73,13 +91,61 @@ stuTranslationOutput clsOutputComposer::translationOutput()
     return Output;
 }
 
-/**
- * @brief clsOutputComposer::translationString  creates the string representation of the best translation hypothesis useful for debugging purposes
- * @return
- */
-QString clsOutputComposer::translationString()
+stuTranslationOutput clsOutputComposer::nBestTranslations()
 {
-    return this->nodeTranslation(this->SearchGraphRef.goalNode());
+    stuTranslationOutput Output;
+
+    Output.TaggedSource = this->InputDecomposerRef.normalizedString();
+
+    NBestPaths::Container_t NBestPaths =
+            NBestPaths::retrieve(this->SearchGraphRef, *this);
+
+    for(NBestPaths::Container_t::ConstIterator NBestIter = NBestPaths.constBegin();
+        NBestIter != NBestPaths.constEnd();
+        ++NBestIter) {
+
+
+        Output.Translations.append(this->pathTranslation(NBestIter->getNodes()));
+        stuTranslationOutput::stuCostElements CostElements;
+
+        foreach(FeatureFunction::intfFeatureFunction* FeatureFunction, gConfigs.ActiveFeatureFunctions.values()) {
+
+            size_t index = FeatureFunction->getDataIndex();
+
+            if(NBestIter->featureFunctionDataAt(index) != NULL){
+
+
+                QString FeatureFunctionName = FeatureFunction->name();
+                QStringList FeatureElementNames = FeatureFunction->getFeatureElementNames();
+
+                QVector<Cost_t> Costs = NBestIter->featureFunctionDataAt(index)->costElements();
+                for(int j = 0; j < Costs.size(); j++) {
+                    CostElements.Elements.push_back(stuTranslationOutput::stuCostElement(
+                        FeatureElementNames .size() > j ? FeatureFunctionName + "/" + FeatureElementNames [j] : FeatureFunctionName,
+                        Costs[j]
+                    ));
+                }
+            }
+        }
+
+        CostElements.Total = NBestIter->getTotalCost();
+
+        Output.TranslationsCostElements.push_back(CostElements);
+    }
+
+    return Output;
+}
+
+QString clsOutputComposer::pathTranslation(const QList<SearchGraphBuilder::clsSearchGraphNode> &_path)
+{
+    QString result;
+    foreach(const SearchGraphBuilder::clsSearchGraphNode& Node, _path) {
+        if(result.isEmpty() == false)
+            result += " ";
+        result += this->getTargetString(Node.targetRule(),
+                                        stuPos(Node.sourceRangeBegin(), Node.sourceRangeEnd()));
+    }
+    return result;
 }
 
 
@@ -91,6 +157,7 @@ QString clsOutputComposer::translationString()
  */
 QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const stuPos &_sourcePhrasePos)
 {
+//    std::cout << _target.size() << " ||| " << _target.toStr().toStdString() << std::endl;
     if (_sourcePhrasePos.hasSingleItem() && _target.size() == 1) {
         clsToken Token = this->InputDecomposerRef.tokens().at(_sourcePhrasePos.start());
         if(Token.tagStr().size()) {
@@ -102,6 +169,7 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
                             enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
             if (Token.attrs().value(enuDefaultAttrs::toStr(enuDefaultAttrs::NoShow), false) == true)
                 return QString();
+            return Token.string();
         }
         // Absolutely just a fall-back for when the translation can not be shown using
         // a target language word
@@ -129,19 +197,33 @@ QString clsOutputComposer::getTargetString(const clsTargetRule &_target, const s
     QString String;
     for(size_t i=0; i< _target.size(); ++i) {
         QList<int> Alignments = _target.wordLevelAlignment(i);
+//        std::cout << "--- " << Alignments.size() << std::endl;
+        QString TargetWordString = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(i));
         if(Alignments.size() == 1) {
             int Alignment = Alignments.at(0);
             clsToken Token = this->InputDecomposerRef.tokens().at(Alignment + _sourcePhrasePos.start());
-            if(Token.tagStr().size()) {
-                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)))
+//            std::cout << "*** " << Token.string().toStdString() << " " << Token.tagStr().toStdString()<< std::endl;
+            if(Token.tagStr().size() && TargetWordString.contains("<")) {
+                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::Translation))){
                     String += Token.attrs().value(
                                 enuDefaultAttrs::toStr(enuDefaultAttrs::Translation)).toString();
-                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)))
+                    if(Q_LIKELY(i != _target.size() - 1))
+                        String+= " ";
+                    continue;
+                }
+                if(Token.attrs().contains(enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation))){
                     String += Token.attrs().value(
                                 enuDefaultAttrs::toStr(enuDefaultAttrs::DefaultTranslation)).toString();
+//                if(Token.attrs().empty()){
+//                    String += Token.string();
+//                }
+                if(Q_LIKELY(i != _target.size() - 1))
+                    String+= " ";
+                continue;
+                }
             }
         }
-        QString TargetWordString = gConfigs.EmptyLMScorer->getWordByIndex(_target.at(i));
+
         String+= TargetWordString;
         if(Q_LIKELY(i != _target.size() - 1))
             String+= " ";

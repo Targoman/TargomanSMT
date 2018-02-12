@@ -52,7 +52,7 @@ tmplRangedConfigurable<quint8> clsCardinalityHypothesisContainer::PrimaryCoverag
 tmplRangedConfigurable<double> clsCardinalityHypothesisContainer::SearchBeamWidth(
         MAKE_CONFIG_PATH("SearchBeamWidth"),
         "Maximum search beam width",
-        0.5,64,
+        0.0000005,64,
         5
         );
 
@@ -78,12 +78,12 @@ void clsCardinalityHypothesisContainer::removeSelectedLexicalHypothesisIfEmpty()
 
 bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &_node)
 {
-    if(_node.getTotalCost() +
-            clsCardinalityHypothesisContainer::SearchBeamWidth.value() <
+    if(_node.getTotalCost() -
+            log(clsCardinalityHypothesisContainer::SearchBeamWidth.value()) <
             this->Data->CostLimit)
     {
-        this->Data->CostLimit = _node.getTotalCost() +
-                clsCardinalityHypothesisContainer::SearchBeamWidth.value();
+        this->Data->CostLimit = _node.getTotalCost() -
+                log(clsCardinalityHypothesisContainer::SearchBeamWidth.value());
     }
 
     // To speed up things, the lexical hypothesis is preselected by another function
@@ -94,6 +94,7 @@ bool clsCardinalityHypothesisContainer::insertNewHypothesis(clsSearchGraphNode &
     size_t OldContainerSize = Container.nodes().size();
 
     bool InsertionDone = Container.insertHypothesis(_node);
+
     if (InsertionDone){
         if (this->Data->BestLexicalHypothesis == NULL){
             Q_ASSERT(this->Data->WorstLexicalHypothesis == NULL);
@@ -171,18 +172,12 @@ void clsCardinalityHypothesisContainer::updateBestAndWorstNodes()
             }
             if(WorstCost < LexIter->getWorstCost()){
                 WorstCost = LexIter->getWorstCost();
+
                 WorstLexIter = LexIter;
             }
         }
     }
 
-    if(BestLexIter != this->Data->LexicalHypothesisContainer.end()) {
-        this->Data->BestLexicalHypothesis = &(*BestLexIter);
-        this->Data->BestCoverage = BestLexIter.key();
-    } else {
-        this->Data->BestLexicalHypothesis = NULL;
-        this->Data->BestCoverage = Coverage_t();
-    }
     if(WorstLexIter != this->Data->LexicalHypothesisContainer.end()) {
         this->Data->WorstLexicalHypothesis = &(*WorstLexIter);
         this->Data->WorstCoverage = WorstLexIter.key();
@@ -190,12 +185,26 @@ void clsCardinalityHypothesisContainer::updateBestAndWorstNodes()
         this->Data->WorstLexicalHypothesis = NULL;
         this->Data->WorstCoverage = Coverage_t();
     }
+    if(BestLexIter != this->Data->LexicalHypothesisContainer.end()) {
+        this->Data->BestLexicalHypothesis = &(*BestLexIter);
+        this->Data->BestCoverage = BestLexIter.key();
+    } else {
+        this->Data->BestLexicalHypothesis = NULL;
+        this->Data->BestCoverage = Coverage_t();
+    }
+
 }
 
 void clsCardinalityHypothesisContainer::localUpdateBestAndWorstNodes(const Coverage_t& _coverage, clsLexicalHypothesisContainer &_container, const clsSearchGraphNode &_node)
 {
     if (_node.isRecombined())
         return;
+
+
+    if (_node.getTotalCost() > this->Data->WorstLexicalHypothesis->getWorstCost()){
+        this->Data->WorstLexicalHypothesis = &_container;
+        this->Data->WorstCoverage = _coverage;
+    }
 
     if (/* this->Data->BestLexicalHypothesis != NULL && */
             _node.getTotalCost() <
@@ -204,10 +213,6 @@ void clsCardinalityHypothesisContainer::localUpdateBestAndWorstNodes(const Cover
         this->Data->BestCoverage = _coverage;
     }
 
-    if (_node.getTotalCost() > this->Data->WorstLexicalHypothesis->getWorstCost()){
-        this->Data->WorstLexicalHypothesis = &_container;
-        this->Data->WorstCoverage = _coverage;
-    }
 }
 
 void clsCardinalityHypothesisContainer::prune()
@@ -245,8 +250,8 @@ void clsCardinalityHypothesisContainer::prune()
             clsCardinalityHypothesisContainer::MaxCardinalityContainerSize.value()) {
         Coverage_t ChosenCoverage;
         Cost_t ChosenNodeTotalCost =
-                this->Data->BestLexicalHypothesis->getBestCost() +
-                clsCardinalityHypothesisContainer::SearchBeamWidth.value();
+                this->Data->BestLexicalHypothesis->getBestCost() -
+                log(clsCardinalityHypothesisContainer::SearchBeamWidth.value());
         for(auto HypoContainerIter = this->Data->LexicalHypothesisContainer.begin();
             HypoContainerIter != this->Data->LexicalHypothesisContainer.end();
             ++HypoContainerIter) {

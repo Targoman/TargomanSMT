@@ -78,7 +78,7 @@ public:
 
     tmplConfigurableArray(const QString&  _configPath,
                           const QString&  _description,
-                           size_t _minItemsCount,
+                          int _minItemsCount,
                           int    _maxItemsCount = -1) :
         intfConfigurable(enuConfigType::Array,
                          _configPath,
@@ -133,11 +133,11 @@ public:
     }
 
     void reserve(size_t _count){
-        if (_count < Items.size())
+        if (_count < (size_t)Items.size())
             throw exConfiguration(this->configPath() + " cannot remove items via calling reserve");
-        if (this->MaxItems<0 && this->Items.size() + _count > this->MaxItems)
+        if (this->MaxItems<0 && (size_t)this->Items.size() + _count > (size_t)this->MaxItems)
             throw exConfiguration(this->configPath() + " is full. Cannot add more items");
-        for (int i=Items.size(); i<_count; ++i)
+        for (int i=Items.size(); i<(int)_count; ++i)
             this->Items.append(tmplConfigurableArrayItem<itmplType_t>(this->configPath(), i));
     }
 

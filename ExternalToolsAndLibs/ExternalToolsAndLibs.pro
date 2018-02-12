@@ -24,8 +24,10 @@ CONFIG += ordered
 SUBDIRS  =  ISO639 \
             KenLM \
             qjsonrpc \
-            Maxent
-
+            Maxent \
+            symal \
+            lexical-reordering \
+            phrase-extract
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-#
 

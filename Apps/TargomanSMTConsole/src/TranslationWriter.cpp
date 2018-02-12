@@ -37,7 +37,7 @@ TranslationWriter::TranslationWriter()
         QFile::remove(gConfigs::OutputFile.value());
 }
 
-void TranslationWriter::writeTranslation(const QString &_translation)
+void TranslationWriter::writeOutputLines(const QList<QString>& _outputLines)
 {
     if (gConfigs::OutputFile.value().size()){
         QFile OutFile(gConfigs::OutputFile.value());
@@ -45,19 +45,32 @@ void TranslationWriter::writeTranslation(const QString &_translation)
             throw exTargomanSMTConsole("Unable to open: "+ OutFile.fileName() + " for Writing");
         QTextStream Stream(&OutFile);
         Stream.setCodec("UTF-8");
-        Stream<<_translation<<"\n";
+        foreach(const QString& Line, _outputLines)
+            Stream << Line << "\n";
 
     }else{
-        TargomanHappy(1,_translation)
+        foreach(const QString& Line, _outputLines)
+            TargomanHappy(1, Line)
     }
+    // TODO: Make this more appropriate
     ++this->LastSavedIndex;
     this->PendingTranslations.remove(this->LastSavedIndex);
+}
+
+QString TranslationWriter::getNBestPathString(const QString& _translation,  const SMT::stuTranslationOutput::stuCostElements& _costElements)
+{
+    const QString SEPARATOR = " ||| ";
+    QStringList FeatureCosts;
+    foreach(const auto& CostElement, _costElements.Elements) {
+        FeatureCosts << CostElement.FeatureName + "= " + QString::number(-CostElement.Cost);
+    }
+    return _translation + SEPARATOR + FeatureCosts.join(" ") + SEPARATOR + QString::number(-_costElements.Total);
 }
 
 void TranslationWriter::finialize()
 {
     while(this->PendingTranslations.size())
-        this->writeTranslation(this->PendingTranslations.begin().value());
+        this->writeOutputLines(this->PendingTranslations.values(this->PendingTranslations.firstKey()));
 }
 
 void TranslationWriter::writeTranslation(quint64 _index, const QString &_translation)
@@ -65,15 +78,44 @@ void TranslationWriter::writeTranslation(quint64 _index, const QString &_transla
     QMutexLocker Locker(&this->OutputListLock);
 
     if (_index == this->LastSavedIndex + 1){
-        this->writeTranslation(_translation);
+        this->writeOutputLines(QList<QString>() << _translation);
     }else{
         this->PendingTranslations.insert(_index, _translation);
     }
 
     while(this->PendingTranslations.size() &&
           this->PendingTranslations.firstKey() == this->LastSavedIndex + 1){
-        this->writeTranslation(this->PendingTranslations.begin().value());
+        this->writeOutputLines(this->PendingTranslations.values(this->PendingTranslations.firstKey()));
     }
+}
+
+void TranslationWriter::writeNBestPaths(quint64 _index, const SMT::stuTranslationOutput &_translationOutput)
+{
+    QMutexLocker Locker(&this->OutputListLock);
+
+    if(_translationOutput.Translations.size() != _translationOutput.TranslationsCostElements.size()) {
+        TargomanLogError("Translation output error: Number of translations does not match the number of cost element descriptors");
+        // TODO: What to do, what not to do?!
+        return;
+    }
+
+    QList<QString> PathStrings;
+    for(int PathIndex = 0; PathIndex < _translationOutput.Translations.size(); ++PathIndex) {
+        PathStrings << this->getNBestPathString(_translationOutput.Translations.at(PathIndex),
+                                             _translationOutput.TranslationsCostElements.at(PathIndex));
+    }
+    if (_index == this->LastSavedIndex + 1) {
+        this->writeOutputLines(PathStrings);
+    }else{
+        foreach(const QString& PathString, PathStrings)
+        this->PendingTranslations.insert(_index, PathString);
+    }
+
+    while(this->PendingTranslations.size() &&
+          this->PendingTranslations.firstKey() == this->LastSavedIndex + 1){
+        this->writeOutputLines(this->PendingTranslations.values(this->PendingTranslations.firstKey()));
+    }
+
 }
 
 }

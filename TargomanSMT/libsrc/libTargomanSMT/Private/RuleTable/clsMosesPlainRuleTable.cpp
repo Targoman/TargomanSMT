@@ -298,7 +298,6 @@ void clsMosesPlainRuleTable::loadTableData()
                 PhraseCostsFields.append(ReorderingCostsFields.mid(3, 3));
             PhraseCostsFields.append(ReorderingCostsFields.mid(0, 3));
         }
-
         this->addRule(TotalRuleNodes, PhraseTableFields[mosesFormatSourcePhrase], PhraseTableFields[mosesFormatTargetPhrase], PhraseCostsFields, WordAlignments, RulesRead);
     }
 
@@ -306,6 +305,8 @@ void clsMosesPlainRuleTable::loadTableData()
 
     for(int i = 0; i < TotalRuleNodes.size(); ++i) {
         QList<clsTargetRule>& TargetRuleList = TotalRuleNodes[i].targetRules();
+//        if(TargetRuleList.size())
+//            std::cout << TargetRuleList[0].toStr().toStdString() << std::endl;
         int NumberOfRulesToKeep = qMin(
                     (int)clsMosesPlainRuleTable::MaxRuleNodeTargetRuleCount.value(),
                     TargetRuleList.size()

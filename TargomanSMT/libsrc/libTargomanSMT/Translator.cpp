@@ -35,6 +35,7 @@
 // TODO: This header must be included in OOVHandler module
 #include "Private/Proxies/Transliteration/intfTransliterator.h"
 #include "Private/Proxies/NamedEntityRecognition/intfNamedEntityRecognizer.h"
+#include "Private/N-BestFinder/NBestPaths.h"
 
 namespace Targoman{
 /**
@@ -70,36 +71,32 @@ void Translator::init(QSharedPointer<QSettings> _configSettings)
 }
 
 stuTranslationOutput Translator::translate(const QString &_inputStr,
-                                           bool _justTranslationString,
+                                           enuOutputFormat::Type _outputFormat,
                                            bool _isIXML)
 {
     if (TranslatorInitialized == false)
         throw exTargomanCore("Translator is not initialized");
 
     QTime start = QTime::currentTime();
-
+    SearchGraphBuilder::TotalNodeNumber = 1;
     InputDecomposer::clsInput Input(_inputStr, _isIXML);
     SearchGraphBuilder::clsSearchGraph  SearchGraph(Input.tokens());
     OutputComposer::clsOutputComposer   OutputComposer(Input, SearchGraph);
 
-    stuTranslationOutput Output;
-    if (_justTranslationString){
-        Output.Translation = OutputComposer.translationString();
-    }else{
-        Output = OutputComposer.translationOutput();
-    }
+    stuTranslationOutput Output = OutputComposer.getTranslationOutput(_outputFormat);
     int Elapsed = start.elapsed();
 #ifndef SMT
     TargomanLogInfo(7, "Translation [" << Elapsed / 1000.0 << "s]"<<
-                     _inputStr << " => " << Output.Translation);
+                     _inputStr << " => " << Output.Translations.first());
 #else
     QString InputWord = _inputStr;
-    Output.Translation.replace(" ", "");
-    if (Output.Translation.size())
-        Output.Translation[0] = Output.Translation[0].toUpper();
+    Output.Translations[0].replace(" ", "");
+    if (Output.Translations[0].size())
+        Output.Translations[0][0] = Output.Translations[0][0].toUpper();
     TargomanLogInfo(7, "Transliteration [" << Elapsed / 1000.0 << "s]" <<
-                     InputWord.replace(" ", "") << " => " << Output.Translation);
+                     InputWord.replace(" ", "") << " => " << Output.Translations.first());
 #endif
+
     return Output;
 }
 

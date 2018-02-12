@@ -157,7 +157,7 @@ QString SpellCorrector::process(const QString& _lang,
                 Output.clear();
 
                 bool HasRemaining = true;
-                for(int FromTokenIndex=0; FromTokenIndex<=Tokens.size() - MaxTokens ; FromTokenIndex++){
+                for(int FromTokenIndex=0; FromTokenIndex<=Tokens.size() - MaxTokens ; ++FromTokenIndex){
                     HasRemaining = true;
                     MultiWordBuffer.clear();
                     for (int i=0; i<MaxTokens; i++)

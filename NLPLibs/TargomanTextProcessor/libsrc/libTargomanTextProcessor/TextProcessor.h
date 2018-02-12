@@ -52,6 +52,17 @@ TARGOMAN_DEFINE_ENHANCED_ENUM(enuTextTags,
 
 TARGOMAN_ADD_EXCEPTION_HANDLER(exTextProcessor, Targoman::Common::exTargomanBase);
 
+struct stuIXMLReplacement{
+    QRegExp SearchRegExp;
+    QString AfterString;
+
+    stuIXMLReplacement(const QRegExp& _searchRegExp = QRegExp(),
+                       const QString& _afterString = QString()):
+        SearchRegExp(_searchRegExp),
+        AfterString(_afterString)
+    {}
+};
+
 class TargomanTextProcessor
 {
 public:
@@ -77,9 +88,14 @@ public:
                       quint32 _lineNo = 0,
                       bool _interactive = true,
                       bool _useSpellCorrector = true,
-                      QList<enuTextTags::Type> _removingTags = QList<enuTextTags::Type>()) const;
+                      QList<enuTextTags::Type> _removingTags = QList<enuTextTags::Type>(),
+                      QList<stuIXMLReplacement> _replacements = QList<stuIXMLReplacement>()) const;
 
-    QString ixml2Text(const QString& _ixml, const QString& _lang = "") const;
+    QString ixml2Text(const QString& _ixml,
+                      const QString& _lang = "",
+                      bool _detokenize = true,
+                      bool _hinidiDigits = true,
+                      bool _breakSentences = true) const;
 
     inline QString normalizeText(const QString _input,
                                  bool _interactive,

@@ -100,6 +100,14 @@ QVariantList clsBaseConfigOverNet::bulkQuery(const QString& _parentPath,
                                             const QString& _justType,
                                             const QString& _stripString)
 {
+    Q_UNUSED(_parentPath);
+    Q_UNUSED(_isRegex);
+    Q_UNUSED(_showDetails);
+    Q_UNUSED(_justUpdatable);
+    Q_UNUSED(_justType);
+    Q_UNUSED(_stripString);
+    throw exTargomanNotImplemented("clsBaseConfigOverNet::bulkQuery");
+    /*
     if (this->AllowedToView == false)
         throw exNoLogin("Invalid Request. Please login first");
 
@@ -132,7 +140,7 @@ QVariantList clsBaseConfigOverNet::bulkQuery(const QString& _parentPath,
 
     foreach(intfConfigurable* Item, ConfigItems) {
         if (Item->remoteView() == false
-                || (_justUpdatable != -2
+                || (_justUpdatable != -2 // WHAT THE PHASE!, boolean != -2
                     && (Item->canBeConfigured(enuConfigSource::Net) &&
                         this->AllowedToChange) != _justUpdatable)
                 || (_justType.size() &&
@@ -164,6 +172,7 @@ QVariantList clsBaseConfigOverNet::bulkQuery(const QString& _parentPath,
         Table.append(TableRows);
     }
     return Table;
+    */
 }
 
 QVariant clsBaseConfigOverNet::set(const QString& _path, const QVariant& _newValue)

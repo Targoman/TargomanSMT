@@ -61,6 +61,7 @@ public:
      */
     intfFeatureFunction(const QString& _moduleName, bool _canComputePositionSpecificRestCost) {
         gConfigs.ActiveFeatureFunctions.insert(_moduleName, this);
+        this->Name = _moduleName.split("/").back();
         this->CanComputePositionSpecificRestCost = _canComputePositionSpecificRestCost;
         this->PrecomputedIndex = RuleTable::clsTargetRule::allocatePrecomputedValue();
         this->DataIndex =  SearchGraphBuilder::clsSearchGraphNode::allocateFeatureFunctionData();
@@ -88,10 +89,16 @@ public:
      */
     virtual void initialize(QSharedPointer<QSettings> _configSettings)  = 0;
 
-    virtual void newSentence(const InputDecomposer::Sentence_t &_inputSentence) {Q_UNUSED(_inputSentence)}
+    size_t getDataIndex(){
+        return this->DataIndex;
+    }
 
-    const QVector<Cost_t> getCostElements(SearchGraphBuilder::clsSearchGraphNode& _hypothesisNode) const{
+    const QVector<Cost_t> getCostElements(SearchGraphBuilder::clsSearchGraphNode& _hypothesisNode)const{
         return _hypothesisNode.featureFunctionDataAt(this->DataIndex)->costElements();
+    }
+
+    void setCostElements(SearchGraphBuilder::clsSearchGraphNode& _hypothesisNode, QVector<Cost_t>& _costs){
+        _hypothesisNode.featureFunctionData(this->DataIndex).setCostElements(_costs);
     }
 
     /**
@@ -99,7 +106,9 @@ public:
      * The first secondary model will encounter an uninitialized hypothesis state, thus don't forget to call
      * newHypothesisNode.getHypothesisState()->initializeSecondaryModelStatesIfNecessary();
      */
-    virtual Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode, QCryptographicHash& _hash) const = 0;
+    virtual Common::Cost_t scoreSearchGraphNodeAndUpdateFutureHash(SearchGraphBuilder::clsSearchGraphNode& _newHypothesisNode,
+                                                                   const InputDecomposer::Sentence_t& _input,
+                                                                   QCryptographicHash& _hash) const = 0;
 
     /**
      * @brief Returns wethere this feature function can compute node specific rest costs or not. If it can,
@@ -122,6 +131,7 @@ public:
       */
     virtual Common::Cost_t getApproximateCost(unsigned _sourceStart,
                                               unsigned _sourceEnd,
+                                              const InputDecomposer::Sentence_t& _input,
                                               const RuleTable::clsTargetRule& _targetRule) const = 0;
 
     /**
@@ -135,6 +145,18 @@ public:
      * @return Returns string list of features' names.
      */
     virtual QStringList columnNames() const = 0;
+
+    virtual QStringList getFeatureElementNames() const {
+        return this->columnNames();
+    }
+
+    inline QString name() const {
+        return this->Name;
+    }
+
+private:
+    QString Name;
+
 
 protected:
     static QString baseScalingFactorsConfigPath(){ return "/ScalingFactors"; }
